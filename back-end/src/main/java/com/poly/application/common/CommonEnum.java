@@ -36,8 +36,8 @@ public class CommonEnum {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum TrangThaiThuocTinh{
-        ACTIVE("ACTIVE", "Hoạt động", ""),
-        INACTIVE("INACTIVE", "Không hoạt động", "");
+        ACTIVE("ACTIVE", "Hoạt động", "success"),
+        INACTIVE("INACTIVE", "Không hoạt động", "red");
 
         private final String ten;
         private final String moTa;
