@@ -1,7 +1,10 @@
 package com.poly.application.entity;
 
+import com.poly.application.common.CommonEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,9 +13,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,12 +35,16 @@ public class ThuongHieu implements Serializable {
     @Column(name = "ten")
     private String ten;
 
+    @CreationTimestamp
     @Column(name = "ngay_tao")
-    private LocalDate ngayTao;
+    private LocalDateTime ngayTao;
 
+    @UpdateTimestamp
     @Column(name = "ngay_sua")
-    private LocalDate ngaySua;
+    private LocalDateTime ngaySua;
 
-
+    @Column(name = "trang_thai")
+    @Enumerated(EnumType.STRING)
+    private CommonEnum.TrangThaiThuocTinh trangThai;
 
 }
