@@ -32,4 +32,16 @@ public class CommonEnum {
         private final String mauSac;
     }
 
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum TrangThaiThuocTinh{
+        ACTIVE("ACTIVE", "Hoạt động", ""),
+        INACTIVE("INACTIVE", "Không hoạt động", "");
+
+        private final String ten;
+        private final String moTa;
+        private final String mauSac;
+    }
+
 }
