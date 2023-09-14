@@ -24,17 +24,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "dia_hinh_san")
+@Table(name = "kich_co")
 @Entity
-public class DiaHinhSan implements Serializable {
+public class KichCo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "ten")
-    private String ten;
+    @Column(name = "kich_co")
+    private Float kichCo;
 
     @CreationTimestamp
     @Column(name = "ngay_tao")

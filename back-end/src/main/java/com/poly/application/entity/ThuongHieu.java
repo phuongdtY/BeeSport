@@ -19,6 +19,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@SuppressWarnings("serial")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

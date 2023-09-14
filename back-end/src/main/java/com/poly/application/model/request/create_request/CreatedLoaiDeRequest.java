@@ -7,12 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreatedMauSacRequest {
+public class CreatedLoaiDeRequest {
 
-    @NotBlank(message = "Vui lòng điền mã màu")
-    private String ma;
-
-    @NotBlank(message = "Vui lòng điền tên màu")
+    @NotBlank(message = "Vui lòng điền tên loại đế")
     private String ten;
 
     private CommonEnum.TrangThaiThuocTinh trangThai;

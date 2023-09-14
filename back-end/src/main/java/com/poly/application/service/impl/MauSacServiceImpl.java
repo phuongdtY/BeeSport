@@ -38,15 +38,17 @@ public class MauSacServiceImpl implements MauSacService {
         } else {
             sort = Sort.by("ngayTao").descending();
         }
+
         CommonEnum.TrangThaiThuocTinh trangThai;
-//
+
         if (trangThaiString == null || trangThaiString.equals("")) {
             trangThai = null;
         } else {
             trangThai = CommonEnum.TrangThaiThuocTinh.valueOf(trangThaiString);
         }
+
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<MauSac> mauSacPage = repository.findByALl(pageable, searchText,trangThai);
+        Page<MauSac> mauSacPage = repository.findByAll(pageable, searchText,trangThai);
         return mauSacPage.map(mapper::convertEntityToResponse);
     }
 

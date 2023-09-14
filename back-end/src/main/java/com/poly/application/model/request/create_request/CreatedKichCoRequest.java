@@ -7,13 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreatedMauSacRequest {
+public class CreatedKichCoRequest {
 
-    @NotBlank(message = "Vui lòng điền mã màu")
-    private String ma;
-
-    @NotBlank(message = "Vui lòng điền tên màu")
-    private String ten;
+    @NotBlank(message = "Vui lòng điền kích cỡ")
+    private Float kichCo;
 
     private CommonEnum.TrangThaiThuocTinh trangThai;
 
