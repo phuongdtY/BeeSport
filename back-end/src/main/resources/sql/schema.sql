@@ -200,7 +200,7 @@ CREATE TABLE hoa_don
     ngay_sua			TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     nguoi_tao          	NVARCHAR(100),
     nguoi_sua          	NVARCHAR(100),
-    trang_thai         	ENUM('ACTIVE', 'INACTIVE', 'PAID', 'CANCELLED', 'PROCESSING', 'PENDING', 'PACKING', 'SHIPPING', 'DELIVERED'),
+    trang_thai         	ENUM('PENDING', 'CONFIRMED', 'SHIPPING', 'CANCELLED', 'APPROVED'),
 
     voucher_id         BIGINT,
     tai_khoan_id       BIGINT,
@@ -208,17 +208,23 @@ CREATE TABLE hoa_don
     FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan (id)
 );
 
--- Phương thức thanh toán
-CREATE TABLE phuong_thuc_thanh_toan
+-- Giao dịch
+CREATE TABLE giao_dich
 (
-    id           BIGINT PRIMARY KEY AUTO_INCREMENT,
-    ma_giao_dich VARCHAR(20),
-    ten          NVARCHAR(50),
-    ghi_chu      TEXT,
-    trang_thai   TINYINT,
+    id                      BIGINT PRIMARY KEY AUTO_INCREMENT,
+    ma_giao_dich            VARCHAR(20),
+    nhan_vien_giao_dich     NVARCHAR(50),
+    so_tien_giao_dich       DECIMAL(18, 2),
+    phuong_thuc_thanh_toan  enum('BANKING','CASH','COD'),
+    ghi_chu                 TEXT,
+    ngay_tao   			    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ngay_sua			    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    trang_thai_giao_dich    TINYINT,
 
     hoa_don_id   BIGINT,
-    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don (id)
+    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don(id),
+    tai_khoan_id   BIGINT,
+    FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan(id)
 );
 
 -- Hóa đơn chi tiết
@@ -232,7 +238,7 @@ CREATE TABLE hoa_don_chi_tiet
     ngay_sua   			 TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     nguoi_tao            NVARCHAR(255),
     nguoi_sua            NVARCHAR(255),
-    trang_thai         	 ENUM('ACTIVE', 'INACTIVE', 'PAID', 'CANCELLED', 'PROCESSING', 'PENDING', 'PACKING', 'SHIPPING', 'DELIVERED'),
+    trang_thai         	 enum('APPROVED','UNAPPROVED'),
 
     hoa_don_id           BIGINT,
     chi_tiet_san_pham_id BIGINT,
@@ -305,8 +311,10 @@ CREATE TABLE lich_su_hoa_don
     ngay_tao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ngay_sua   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     ghi_chu    TEXT,
-    trang_thai TINYINT,
+    trang_thai enum('APPROVED','CANCELLED','CONFIRMED','CREATED','EDITED','SHIPPING'),
 
     hoa_don_id BIGINT,
-    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don (id)
+    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don (id),
+    tai_khoan_id BIGINT,
+    FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan (id)
 );

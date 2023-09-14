@@ -92,4 +92,13 @@ import java.util.List;
         @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private List<TaiKhoanVaiTro> taiKhoanVaiTroList;
 
+        @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<HoaDon> hoaDonList;
+
+        @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<LichSuHoaDon> lichSuHoaDonList;
+
+        @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<GiaoDich> giaoDichList;
+
 }
