@@ -7,13 +7,13 @@ import org.springframework.data.domain.Page;
 
 public interface MauSacService {
 
-    Page<MauSacResponse> getAll(Integer pageNo, Integer pageSize);
+    Page<MauSacResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,String searchText,String trangThaiString);
 
     MauSacResponse add(CreatedMauSacRequest request);
 
     MauSacResponse update(Long id, UpdatedMauSacRequest request);
 
-    MauSacResponse delete(Long id);
+    void  delete(Long id);
 
     MauSacResponse findById(Long id);
 

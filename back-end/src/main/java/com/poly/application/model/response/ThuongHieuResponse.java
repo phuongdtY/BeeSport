@@ -8,11 +8,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class MauSacResponse {
+public class ThuongHieuResponse {
 
     private Long id;
-
-    private String ma;
 
     private String ten;
 

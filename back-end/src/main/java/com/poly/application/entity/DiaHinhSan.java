@@ -23,9 +23,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "thuong_hieu")
+@Table(name = "dia_hinh_san")
 @Entity
-public class ThuongHieu implements Serializable {
+public class DiaHinhSan implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

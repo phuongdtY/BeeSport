@@ -1,0 +1,20 @@
+package com.poly.application.service;
+
+import com.poly.application.model.request.create_request.CreatedDiaHinhSanRequest;
+import com.poly.application.model.request.update_request.UpdatedDiaHinhSanRequest;
+import com.poly.application.model.response.DiaHinhSanResponse;
+import org.springframework.data.domain.Page;
+
+public interface DiaHinhSanService {
+
+    Page<DiaHinhSanResponse> getAll(Integer pageNo, Integer pageSize);
+
+    DiaHinhSanResponse add(CreatedDiaHinhSanRequest request);
+
+    DiaHinhSanResponse update(Long id, UpdatedDiaHinhSanRequest request);
+
+    DiaHinhSanResponse delete(Long id);
+
+    DiaHinhSanResponse findById(Long id);
+
+}
