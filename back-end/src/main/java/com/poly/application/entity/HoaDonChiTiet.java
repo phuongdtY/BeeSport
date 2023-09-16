@@ -35,8 +35,10 @@ public class HoaDonChiTiet {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "so_luong")
     private Integer soLuong;
 
+    @Column(name = "don_gia")
     private BigDecimal donGia;
 
     @Column(name = "ghi_chu")

@@ -1,6 +1,9 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.entity.HoaDon;
+import com.poly.application.entity.HoaDonChiTiet;
+import com.poly.application.entity.TaiKhoan;
+import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.HoaDonMapper;
 import com.poly.application.model.request.create_request.CreateHoaDonRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
@@ -14,8 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
-public class HoaDonServiceImpl implements HoaDonService{
+public class HoaDonServiceImpl implements HoaDonService {
 
     @Autowired
     private HoaDonRepository hoaDonRepository;
@@ -40,7 +45,6 @@ public class HoaDonServiceImpl implements HoaDonService{
 
     @Override
     public HoaDonResponse add(CreateHoaDonRequest createHoaDonRequest) {
-
         HoaDon createHoaDon = hoaDonMapper.convertCreateHoaDonRequestToHoaDonEntity(createHoaDonRequest);
         HoaDon savedHoaDon = hoaDonRepository.save(createHoaDon);
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(savedHoaDon);
@@ -48,7 +52,11 @@ public class HoaDonServiceImpl implements HoaDonService{
 
     @Override
     public HoaDonResponse findById(Long id) {
-        return null;
+        Optional<HoaDon> hoaDon = hoaDonRepository.findById(id);
+        if (hoaDon.isEmpty()) {
+            throw new NotFoundException("Hóa đơn không tồn tại");
+        }
+        return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(hoaDon.get());
     }
 
     @Override
