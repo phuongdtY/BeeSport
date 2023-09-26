@@ -1,9 +1,9 @@
 package com.poly.application.service.impl;
 
-import com.amazonaws.services.mq.model.BadRequestException;
-import com.amazonaws.services.mq.model.NotFoundException;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.ThuongHieu;
+import com.poly.application.exception.BadRequestException;
+import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.ThuongHieuMapper;
 import com.poly.application.model.request.create_request.CreatedThuongHieuRequest;
 import com.poly.application.model.request.update_request.UpdatedThuongHieuRequest;
@@ -84,7 +84,6 @@ public class ThuongHieuServiceImpl implements ThuongHieuService {
         if (!request.getTen().equals(optional.get().getTen()) && repository.existsByTen(request.getTen())) {
             throw new BadRequestException("Tên thương hiệu đã tồn tại trong hệ thống!");
         }
-
         ThuongHieu thuongHieu = optional.get();
         mapper.convertUpdateRequestToEntity(request, thuongHieu);
         return mapper.convertEntityToResponse(repository.save(thuongHieu));
