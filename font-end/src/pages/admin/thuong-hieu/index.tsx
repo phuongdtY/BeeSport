@@ -10,7 +10,6 @@ import {
   Button,
   Card,
   Col,
-  ColorPicker,
   Form,
   Input,
   Row,
@@ -24,7 +23,7 @@ import {
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
-import { DataParams, DataType } from "~/interfaces/mauSac.type";
+import { DataParams, DataType } from "~/interfaces/thuongHieu.type";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import request from "~/utils/request";
 
@@ -44,19 +43,6 @@ const index: React.FC = () => {
       rowScope: "row",
       width: "10%",
       render: (_, __, index) => (params.page - 1) * params.pageSize + index + 1,
-    },
-    {
-      title: "Mã",
-      dataIndex: "ma",
-      key: "ma",
-      align: "center",
-      sorter: true,
-      width: "30%",
-      render: (ma) => (
-        <Space>
-          <ColorPicker value={ma} size="small" disabled /> <span>{ma}</span>
-        </Space>
-      ),
     },
     {
       title: "Tên",
@@ -91,7 +77,7 @@ const index: React.FC = () => {
             </Tooltip>
           </Button>
           <Tooltip title="Chỉnh sửa">
-            <Link to={`/admin/mau-sac/${id}`}>
+            <Link to={`/admin/thuong-hieu/update/${id}`}>
               <Button type="link" style={{ padding: 0 }}>
                 <EditOutlined />
               </Button>
@@ -115,14 +101,16 @@ const index: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await request.get("mau-sac", { params: getParams(params) });
+        const res = await request.get("thuong-hieu", {
+          params: getParams(params),
+        });
         setData(res.data.content);
         setTotalElements(res.data.totalElements);
         setLoading(false);
       } catch (error) {
         console.log(error);
         setLoading(false);
-        message.error("Lấy dữ liệu màu sắc thất bại");
+        message.error("Lấy dữ liệu thương hiệu thất bại");
       }
     };
     fetchData();
@@ -160,12 +148,12 @@ const index: React.FC = () => {
   };
   return (
     <>
-      <Card title="DANH SÁCH MÀU SẮC">
+      <Card title="DANH SÁCH THƯƠNG HIỆU">
         <Row>
           <Col span={8}>
             <Input
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Tìm kiếm theo Mã, Tên..."
+              placeholder="Tìm kiếm theo Tên..."
               allowClear
               prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
             />
@@ -186,9 +174,9 @@ const index: React.FC = () => {
             </Form.Item>
           </Col>
           <Col span={3}>
-            <Link to="/admin/mau-sac/add">
+            <Link to="/admin/thuong-hieu/add">
               <Button type="primary" icon={<PlusOutlined />}>
-                Thêm màu sắc
+                Thêm thương hiệu
               </Button>
             </Link>
           </Col>

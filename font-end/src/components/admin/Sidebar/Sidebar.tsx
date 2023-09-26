@@ -51,10 +51,10 @@ const CustomSider: React.FC<{
       getItem(<Link to="/admin/san-pham">Sản phẩm</Link>, "5"),
       getItem("Thuộc tính", "sub1-2", null, [
         getItem(<Link to="/admin/ten-san-pham">Tên sản phẩm</Link>, "6"),
-        getItem(<Link to="/admin/thuong-hieu">Thương hiệu</Link>, "7"),
+        getItem(<Link to="/admin/mau-sac">Màu sắc</Link>, "7"),
         getItem(<Link to="/admin/loai-de">Loại đế</Link>, "8"),
-        getItem(<Link to="/admin/dia-hinh-san">Địa hình sân</Link>, "9"),
-        getItem(<Link to="/admin/mau-sac">Màu sắc</Link>, "10"),
+        getItem(<Link to="/admin/thuong-hieu">Thương hiệu</Link>, "9"),
+        getItem(<Link to="/admin/dia-hinh-san">Địa hình sân</Link>, "10"),
       ]),
     ]),
 
