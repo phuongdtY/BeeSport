@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Setter
 public class UpdatedSanPhamRequest {
 
-
     private Long id;
 
     @NotBlank(message = "Vui lòng điền mã sản phẩm")

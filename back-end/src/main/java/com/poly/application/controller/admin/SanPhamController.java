@@ -56,4 +56,9 @@ public class SanPhamController {
         return ResponseEntity.ok(service.update(id, request));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOne(@PathVariable(name = "id") Long id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
+
 }
