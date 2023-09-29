@@ -1,5 +1,6 @@
 package com.poly.application.controller.admin;
 
+import com.poly.application.common.CommonEnum;
 import com.poly.application.model.request.create_request.CreateHoaDonRequest;
 import com.poly.application.model.request.create_request.CreateTaiKhoanRequest;
 import com.poly.application.service.HoaDonService;
@@ -29,9 +30,11 @@ public class HoaDonController {
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
             @RequestParam(value = "searchText", defaultValue = "", required = false) String searchText,
             @RequestParam(value = "sortField", defaultValue = "", required = false) String sorter,
-            @RequestParam(value = "sortOrder", defaultValue = "", required = false) String sortOrder
+            @RequestParam(value = "sortOrder", defaultValue = "", required = false) String sortOrder,
+            @RequestParam(value = "loaiHoaDon", defaultValue = "", required = false) String loaiHoaDon,
+            @RequestParam(value = "trangThaiHoaDon", defaultValue = "", required = false) String trangThaiHoaDon
     ) {
-        return ResponseEntity.ok(hoaDonService.getAll(page, pageSize, searchText, sorter, sortOrder));
+        return ResponseEntity.ok(hoaDonService.getAll(page, pageSize, searchText, sorter, sortOrder, loaiHoaDon, trangThaiHoaDon));
     }
 
     @GetMapping("/{id}")

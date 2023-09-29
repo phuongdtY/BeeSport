@@ -1,10 +1,12 @@
 package com.poly.application.model.request.create_request;
 
+import com.poly.application.common.CommonEnum;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,10 +20,7 @@ public class CreateHoaDonRequest {
 
     private String sdtNguoiNhan;
 
-//    private LocalDateTime ngayNhan;
-//
-//    private LocalDateTime ngayTao;
-//
-//    private LocalDateTime ngaySua;
+    @Enumerated(EnumType.STRING)
+    private CommonEnum.LoaiHoaDon loaiHoaDon;
 
 }

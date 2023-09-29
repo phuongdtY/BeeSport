@@ -1,5 +1,6 @@
 package com.poly.application.service.impl;
 
+import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.HoaDonChiTiet;
 import com.poly.application.entity.TaiKhoan;
@@ -29,7 +30,7 @@ public class HoaDonServiceImpl implements HoaDonService {
     private HoaDonMapper hoaDonMapper;
 
     @Override
-    public Page<HoaDonResponse> getAll(Integer currentPage, Integer pageSize, String searchText, String sorter, String sortOrder) {
+    public Page<HoaDonResponse> getAll(Integer currentPage, Integer pageSize, String searchText, String sorter, String sortOrder, String loaiHoaDonString, String trangThaiHoaDonString) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sorter).ascending();
@@ -38,14 +39,32 @@ public class HoaDonServiceImpl implements HoaDonService {
         } else {
             sort = Sort.by("ngayTao").descending();
         }
+
+        CommonEnum.LoaiHoaDon loaiHoaDon;
+
+        if (loaiHoaDonString == null || loaiHoaDonString.equals("")) {
+            loaiHoaDon = null;
+        } else {
+            loaiHoaDon = CommonEnum.LoaiHoaDon.valueOf(loaiHoaDonString);
+        }
+
+        CommonEnum.TrangThaiHoaDon trangThaiHoaDon;
+
+        if (trangThaiHoaDonString == null || trangThaiHoaDonString.equals("")) {
+            trangThaiHoaDon = null;
+        } else {
+            trangThaiHoaDon = CommonEnum.TrangThaiHoaDon.valueOf(trangThaiHoaDonString);
+        }
+
         Pageable pageable = PageRequest.of(currentPage - 1, pageSize, sort);
-        Page<HoaDon> hoaDonPage = hoaDonRepository.findAll(pageable);
+        Page<HoaDon> hoaDonPage = hoaDonRepository.findPageHoaDon(pageable,searchText,loaiHoaDon,trangThaiHoaDon);
         return hoaDonPage.map(hoaDonMapper::convertHoaDonEntityToHoaDonResponse);
     }
 
     @Override
     public HoaDonResponse add(CreateHoaDonRequest createHoaDonRequest) {
         HoaDon createHoaDon = hoaDonMapper.convertCreateHoaDonRequestToHoaDonEntity(createHoaDonRequest);
+        createHoaDon.setLoaiHoaDon(CommonEnum.LoaiHoaDon.PHONE_ORDER);
         HoaDon savedHoaDon = hoaDonRepository.save(createHoaDon);
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(savedHoaDon);
     }
