@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -30,10 +30,25 @@ public class VoucherServiceImpl implements VoucherService {
 
 
     @Override
-    public Page<VoucherResponse> getAll(Integer pageNo, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-        Page<Voucher> page = repository.findAll(pageable);
-        return page.map(mapper::convertEntityToResponse);
+    public Page<VoucherResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString) {
+        Sort sort;
+        if ("ascend".equals(sortOrder)) {
+            sort = Sort.by(sortField).ascending();
+        } else if ("descend".equals(sortOrder)) {
+            sort = Sort.by(sortField).descending();
+        } else {
+            sort = Sort.by("ngayTao").descending();
+        }
+        CommonEnum.TrangThaiVoucher trangThai;
+//
+        if (trangThaiString == null || trangThaiString.equals("")) {
+            trangThai = null;
+        } else {
+            trangThai = CommonEnum.TrangThaiVoucher.valueOf(trangThaiString);
+        }
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
+        Page<Voucher> voucherPage = repository.findByALl(pageable, searchText,trangThai);
+        return voucherPage.map(mapper::convertEntityToResponse);
     }
 
     @Override
@@ -77,4 +92,5 @@ public class VoucherServiceImpl implements VoucherService {
         }
         return mapper.convertEntityToResponse(optional.get());
     }
+
 }

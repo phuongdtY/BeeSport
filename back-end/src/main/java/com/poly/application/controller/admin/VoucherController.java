@@ -16,10 +16,15 @@ public class VoucherController {
     private VoucherService service;
     @GetMapping()
     public ResponseEntity<?> getAll(
-            @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-            @RequestParam(name = "pageSize", defaultValue = "2") Integer pageSize
+            @RequestParam(name = "page", defaultValue = "1") Integer page,
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(name = "sortField", required = false) String sortField,
+            @RequestParam(name = "sortOrder", defaultValue = "", required = false) String sortOrder,
+            @RequestParam(name = "searchText", defaultValue = "") String searchText,
+            @RequestParam(name = "trangThai", required = false) String trangThaiString
+
     ) {
-        return ResponseEntity.ok(service.getAll(pageNo, pageSize));
+        return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, trangThaiString));
     }
 
     @PostMapping("/add")

@@ -24,7 +24,6 @@ public class VoucherResponse {
 
     private Date ngayKetThuc;
 
-    @Enumerated(EnumType.STRING)
     private CommonEnum.HinhThucGiam hinhThucGiam;
 
     private BigDecimal giaToiThieu;
@@ -37,7 +36,6 @@ public class VoucherResponse {
 
     private LocalDateTime ngaySua;
 
-    @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;
 
 }

@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 
 public interface VoucherService {
 
-    Page<VoucherResponse> getAll(Integer pageNo, Integer pageSize);
+    Page<VoucherResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString);
 
     VoucherResponse add(CreatedVoucherRequest request);
 
