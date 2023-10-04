@@ -31,8 +31,6 @@ public class CreatedVoucherRequest {
 
     private BigDecimal giaTriGiamToiDa;
 
-    private LocalDateTime ngayTao;
-
-    @Enumerated(EnumType.STRING)
-    private CommonEnum.TrangThaiVoucher trangThai;
+//    @Enumerated(EnumType.STRING)
+//    private CommonEnum.TrangThaiVoucher trangThai;
 }

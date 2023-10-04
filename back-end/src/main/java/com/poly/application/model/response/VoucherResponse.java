@@ -32,10 +32,6 @@ public class VoucherResponse {
 
     private BigDecimal giaTriGiamToiDa;
 
-    private LocalDateTime ngayTao;
-
-    private LocalDateTime ngaySua;
-
     private CommonEnum.TrangThaiVoucher trangThai;
 
 }

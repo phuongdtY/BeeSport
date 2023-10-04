@@ -31,10 +31,10 @@ public class UpdateVoucherRequest {
 
     private BigDecimal giaTriGiamToiDa;
 
-    private LocalDateTime ngayTao;
-
-    private LocalDateTime ngaySua;
-
-    @Enumerated(EnumType.STRING)
-    private CommonEnum.TrangThaiVoucher trangThai;
+//    private LocalDateTime ngayTao;
+//
+//    private LocalDateTime ngaySua;
+//
+//    @Enumerated(EnumType.STRING)
+//    private CommonEnum.TrangThaiVoucher trangThai;
 }
