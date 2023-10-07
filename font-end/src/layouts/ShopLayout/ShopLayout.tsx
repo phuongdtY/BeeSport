@@ -64,7 +64,7 @@ const ShopLayout: React.FC = () => {
             style={{ fontSize: "22px", color: "black", marginRight: 10 }}
           />
         </Link>
-        <Link to="#">
+        <Link to="/gio-hang">
           <Badge count={5}>
             <ShoppingCartOutlined style={{ fontSize: "25px" }} />
           </Badge>

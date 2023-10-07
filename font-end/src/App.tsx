@@ -19,13 +19,16 @@ import UpdateLoaiDe from "./pages/admin/loai-de/update";
 import "./App.css";
 import ShopLayout from "./layouts/ShopLayout/ShopLayout";
 import Home from "./pages/shop/home/Home";
+import GioHang from "./pages/shop/gio-hang/GioHang";
+import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
 
 function App() {
   return (
     <Routes>
+      <Route path="/thanh-toan" element={<ThanhToan />} />
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/gio-hang" element={<Home />} />
+        <Route path="/gio-hang" element={<GioHang />} />
       </Route>
       <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />
