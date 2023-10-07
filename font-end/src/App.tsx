@@ -17,10 +17,16 @@ import IndexLoaiDe from "./pages/admin/loai-de/index";
 import AddLoaiDe from "./pages/admin/loai-de/add";
 import UpdateLoaiDe from "./pages/admin/loai-de/update";
 import "./App.css";
+import ShopLayout from "./layouts/ShopLayout/ShopLayout";
+import Home from "./pages/shop/home/Home";
 
 function App() {
   return (
     <Routes>
+      <Route path="" element={<ShopLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/gio-hang" element={<Home />} />
+      </Route>
       <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />
         <Route path="nhan-vien/add" element={<AddNV />} />
