@@ -20,7 +20,6 @@ public class CreateHoaDonRequest {
 
     private String sdtNguoiNhan;
 
-    @Enumerated(EnumType.STRING)
     private CommonEnum.LoaiHoaDon loaiHoaDon;
 
 }

@@ -64,7 +64,7 @@ public class HoaDonServiceImpl implements HoaDonService {
     @Override
     public HoaDonResponse add(CreateHoaDonRequest createHoaDonRequest) {
         HoaDon createHoaDon = hoaDonMapper.convertCreateHoaDonRequestToHoaDonEntity(createHoaDonRequest);
-        createHoaDon.setLoaiHoaDon(CommonEnum.LoaiHoaDon.PHONE_ORDER);
+//        createHoaDon.setLoaiHoaDon(CommonEnum.LoaiHoaDon.PHONE_ORDER);
         HoaDon savedHoaDon = hoaDonRepository.save(createHoaDon);
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(savedHoaDon);
     }
