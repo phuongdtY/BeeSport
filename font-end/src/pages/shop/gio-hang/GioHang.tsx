@@ -23,6 +23,7 @@ import {
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
+// lấy tạm data địa hình sân
 import { DataParams, DataType } from "~/interfaces/diaHinhSan.type";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import request from "~/utils/request";
@@ -41,7 +42,6 @@ const index: React.FC = () => {
       align: "center",
       rowScope: "row",
       width: "15%",
-      render: (_, __, index) => (params.page - 1) * params.pageSize + index + 1,
     },
     {
       title: "Tên Sản Phẩm",
@@ -82,9 +82,7 @@ const index: React.FC = () => {
       width: "5%",
       render: (id) => (
         <Space>
-          <Button type="link" style={{ padding: 0 }}>
-            
-          </Button>
+          <Button type="link" style={{ padding: 0 }}></Button>
           <Tooltip title="Chỉnh sửa">
             <Link to={"#"}>
               <Button type="link" style={{ padding: 0 }}>
