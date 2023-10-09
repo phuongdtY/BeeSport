@@ -16,8 +16,8 @@ import java.util.List;
 public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
 
     @Query("SELECT tk FROM TaiKhoan tk " +
-            "JOIN tk.taiKhoanVaiTroList vt " +
-            "WHERE vt.vaiTro.ten = :roleName " +
+            "JOIN tk.vaiTroList vt " +
+            "WHERE vt.ten = :roleName " +
             "AND (tk.hoVaTen LIKE %:searchText% OR tk.soDienThoai LIKE %:searchText% OR tk.email LIKE %:searchText% OR tk.canCuocCongDan LIKE %:searchText%) " +
             "AND (:trangThai IS NULL OR tk.trangThai = :trangThai) " +
             "AND (:gioiTinh IS NULL OR tk.gioiTinh = :gioiTinh)")
@@ -28,7 +28,6 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
             @Param("trangThai") Integer trangThai,
             @Param("gioiTinh") CommonEnum.GioiTinh gioiTinh
     );
-
 
     TaiKhoan findBySoDienThoai(String sdt);
 

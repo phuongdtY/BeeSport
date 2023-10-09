@@ -54,7 +54,7 @@ import java.util.List;
         @Column(name = "so_dien_thoai",unique = true)
         private String soDienThoai;
 
-        @Column(name = "email")
+        @Column(name = "email",unique = true)
         private String email;
 
         @Column(name = "thanh_pho")
@@ -86,10 +86,16 @@ import java.util.List;
         @Column(name = "trang_thai")
         private Integer trangThai;
 
-    //    @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    //    private List<DiaChi> diaChiList;
+        @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<DiaChi> diaChiList;
 
         @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        private List<TaiKhoanVaiTro> taiKhoanVaiTroList;
+        private List<HoaDon> hoaDonList;
+
+        @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<GiaoDich> giaoDichList;
+
+        @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<VaiTro> vaiTroList;
 
 }

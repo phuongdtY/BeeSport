@@ -42,7 +42,7 @@ const CustomSider: React.FC<{
       <ShopOutlined />
     ),
     getItem(
-      <Link to="/admin/don-hang">Quản lý đơn hàng</Link>,
+      <Link to="/admin/hoa-don">Quản lý đơn hàng</Link>,
       "3",
       <ContainerOutlined />
     ),
