@@ -31,7 +31,7 @@ public class SanPhamServiceImpl implements SanPhamService {
     private SanPhamMapper mapper;
 
     @Override
-    public Page<SanPhamResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, Long thuongHieuId, Long loaiDeId, Long diaHinhSanId, String trangThaiString) {
+    public Page<SanPhamResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, Long thuongHieuId, String trangThaiString) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
@@ -50,7 +50,7 @@ public class SanPhamServiceImpl implements SanPhamService {
         }
 
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<SanPham> pageSanPham = repository.findByAll(pageable, searchText, thuongHieuId, loaiDeId, diaHinhSanId, trangThai);
+        Page<SanPham> pageSanPham = repository.findByAll(pageable, searchText, thuongHieuId, trangThai);
         return pageSanPham.map(mapper::convertEntityToResponse);
     }
 
@@ -104,8 +104,6 @@ public class SanPhamServiceImpl implements SanPhamService {
         sanPham.setTen(request.getTen());
         sanPham.setMoTa(request.getMoTa());
         sanPham.setThuongHieu(request.getThuongHieu());
-        sanPham.setLoaiDe(request.getLoaiDe());
-        sanPham.setDiaHinhSan(request.getDiaHinhSan());
         sanPham.setTrangThai(CommonEnum.TrangThaiSanPham.valueOf(request.getTrangThai()));
         return mapper.convertEntityToResponse(repository.save(sanPham));
     }

@@ -31,12 +31,6 @@ public class UpdatedSanPhamRequest {
     @NotNull(message = "Vui lòng chọn thương hiệu")
     private ThuongHieu thuongHieu;
 
-    @NotNull(message = "Vui lòng chọn loại đế")
-    private LoaiDe loaiDe;
-
-    @NotNull(message = "Vui lòng chọn địa hình sân")
-    private DiaHinhSan diaHinhSan;
-
     private String trangThai;
 
 

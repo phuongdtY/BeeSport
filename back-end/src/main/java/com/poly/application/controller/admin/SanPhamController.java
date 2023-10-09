@@ -37,7 +37,7 @@ public class SanPhamController {
             @RequestParam(name = "diaHinhSanId", defaultValue = "") Long diaHinhSanId,
             @RequestParam(name = "trangThai", required = false) String trangThaiString
     ) {
-        return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, thuongHieuId, loaiDeId, diaHinhSanId, trangThaiString));
+        return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, diaHinhSanId, trangThaiString));
     }
 
     @PostMapping()

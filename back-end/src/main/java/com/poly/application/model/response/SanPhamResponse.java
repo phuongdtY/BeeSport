@@ -29,8 +29,4 @@ public class SanPhamResponse {
 
     private ThuongHieu thuongHieu;
 
-    private LoaiDe loaiDe;
-
-    private DiaHinhSan diaHinhSan;
-
 }

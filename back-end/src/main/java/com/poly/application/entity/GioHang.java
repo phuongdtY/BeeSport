@@ -1,16 +1,15 @@
 package com.poly.application.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.poly.application.common.CommonEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,26 +18,26 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
-@SuppressWarnings("serial")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "dia_hinh_san")
+@Table(name = "gio_hang")
 @Entity
-public class DiaHinhSan implements Serializable {
+public class GioHang {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "ten")
-    private String ten;
+    @Column(name = "ma_gio_hang")
+    private String maGioHang;
+
+    @Column(name = "ghi_chu")
+    private String ghiChu;
 
     @CreationTimestamp
     @Column(name = "ngay_tao")
@@ -49,7 +48,11 @@ public class DiaHinhSan implements Serializable {
     private LocalDateTime ngaySua;
 
     @Column(name = "trang_thai")
-    @Enumerated(EnumType.STRING)
-    private CommonEnum.TrangThaiThuocTinh trangThai;
+    private Integer trangThai;
+
+    @ManyToOne
+    @JoinColumn(name = "nguoi_so_huu", referencedColumnName = "id")
+    private TaiKhoan taiKhoan;
+
 
 }

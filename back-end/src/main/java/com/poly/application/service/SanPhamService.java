@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 public interface SanPhamService {
 
     Page<SanPhamResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText,
-                                 Long thuongHieuId, Long loaiDeId, Long diaHinhSanId, String trangThaiString);
+                                 Long diaHinhSanId, String trangThaiString);
 
     SanPhamResponse add(CreatedSanPhamRequest request);
 

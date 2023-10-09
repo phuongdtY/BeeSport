@@ -28,8 +28,6 @@ public class SanPhamMapper {
         PropertyMap<CreatedSanPhamRequest, SanPham> idMapping = new PropertyMap<CreatedSanPhamRequest, SanPham>() {
             protected void configure() {
                 map().getThuongHieu().setId(source.getThuongHieu().getId());
-                map().getDiaHinhSan().setId(source.getDiaHinhSan().getId());
-                map().getLoaiDe().setId(source.getLoaiDe().getId());
             }
         };
         mapper.addMappings(idMapping);
@@ -41,7 +39,5 @@ public class SanPhamMapper {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         mapper.map(request, sanPham);
     }
-
-
 
 }

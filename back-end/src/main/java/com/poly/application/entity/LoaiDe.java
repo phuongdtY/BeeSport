@@ -52,8 +52,4 @@ public class LoaiDe implements Serializable {
     @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiThuocTinh trangThai;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "loaiDe", fetch = FetchType.LAZY)
-    private List<SanPham> listSanPham;
-
 }
