@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,6 +19,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @SuppressWarnings("serial")
@@ -26,13 +28,35 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "lich_su_hoa_don")
-public class LichSuHoaDon {
+@Table(name = "dia_chi")
+public class DiaChi {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(name = "ho_va_ten")
+    private String hoVaTen;
+
+    @Column(name = "so_dien_thoai")
+    private String soDienThoai;
+
+    @Column(name = "thanh_pho")
+    private String thanhPho;
+
+    @Column(name = "quan_huyen")
+    private String quanHuyen;
+
+    @Column(name = "phuong_xa")
+    private String phuongXa;
+
+    @Column(name = "dia_chi_cu_the")
+    private String diaChiCuThe;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "loai_dia_chi")
+    private CommonEnum.LoaiDiaChi loaiDiaChi;
 
     @CreationTimestamp
     @Column(name = "ngay_tao")
@@ -42,16 +66,9 @@ public class LichSuHoaDon {
     @Column(name = "ngay_sua")
     private LocalDateTime ngaySua;
 
-    @Column(name = "ghi_chu")
-    private String ghiChu;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai")
-    private CommonEnum.TrangThaiLichSuHoaDon trangThaiLichSuHoaDon;
-
-    @ManyToOne
-    @JoinColumn(name = "hoa_don_id",referencedColumnName = "id")
-    private HoaDon hoaDon;
+    private CommonEnum.TrangThaiDiaChi trangThaiDiaChi;
 
     @ManyToOne
     @JoinColumn(name = "tai_khoan_id",referencedColumnName = "id")

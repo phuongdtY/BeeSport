@@ -44,13 +44,6 @@ public class GiaoDich {
     @Column(name = "so_tien_giao_dich")
     private BigDecimal soTienGiaoDich;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "phuong_thuc_thanh_toan")
-    private CommonEnum.PhuongThucThanhToan phuongThucThanhToan;
-
-    @Column(name = "ghi_chu")
-    private String ghiChu;
-
     @CreationTimestamp
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;
@@ -69,5 +62,9 @@ public class GiaoDich {
     @ManyToOne
     @JoinColumn(name = "tai_khoan_id",referencedColumnName = "id")
     private TaiKhoan taiKhoan;
+
+    @ManyToOne
+    @JoinColumn(name = "phuong_thuc_id",referencedColumnName = "id")
+    private PhuongThucThanhToan phuongThucThanhToan;
 
 }

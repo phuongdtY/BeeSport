@@ -64,22 +64,6 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum TrangThaiLichSuHoaDon{
-        CREATED("CREATED", "Tạo Đơn Hàng", "#2dc258"),
-        CONFIRMED("CONFIRMED", "Đã Xác Nhận Thông Tin Thanh Toán", "#2dc258"),
-        SHIPPING("SHIPPING", "Đã Giao Cho Đơn Vị Vận Chuyển", "#2dc258"),
-        APPROVED("APPROVED", "Đã Nhận Được Hàng", "#2dc258"),
-        CANCELLED("CANCELLED", "Đơn Hàng Đã Hủy", "#9c2919"),
-        EDITED("EDITED", "Chỉnh Sửa Đơn Hàng", "#ffc107");
-
-        private final String ten;
-        private final String moTa;
-        private final String mauSac;
-    }
-
-    @AllArgsConstructor
-    @Getter
-    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum PhuongThucThanhToan{
         BANKING("CREATED", "Tạo Đơn Hàng", "#2dc258"),
         CASH("CONFIRMED", "Đã Xác Nhận Thông Tin Thanh Toán", "#2dc258"),
@@ -96,6 +80,33 @@ public class CommonEnum {
     public enum TrangThaiHoaDonChiTiet{
         APPROVED("APPROVED", "Đã Xác Nhận", "primary"),
         UNAPPROVED("UNAPPROVED", "Không Xác Nhận", "error");
+
+        private final String ten;
+        private final String moTa;
+        private final String mauSac;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum LoaiDiaChi{
+        HOME("HOME", "Nhà riêng", ""),
+        COMPANY("COMPANY", "Công ty", ""),
+        OTHER("OTHER", "Khác", "");
+
+        private final String ten;
+        private final String moTa;
+        private final String mauSac;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum TrangThaiDiaChi{
+        ACTIVE("ACTIVE", "Hoạt động", ""),
+        INACTIVE("INACTIVE", "Không hoạt động", ""),
+        DELETED("DELETED", "Xóa", ""),
+        DEFAULT("DEFAULT", "Mặc định", "");
 
         private final String ten;
         private final String moTa;

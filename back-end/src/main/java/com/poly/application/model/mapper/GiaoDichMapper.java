@@ -1,13 +1,9 @@
 package com.poly.application.model.mapper;
 
 import com.poly.application.entity.GiaoDich;
-import com.poly.application.entity.LichSuHoaDon;
 import com.poly.application.model.request.create_request.CreateGiaoDichRequest;
-import com.poly.application.model.request.create_request.CreateLichSuHoaDonRequest;
 import com.poly.application.model.request.update_request.UpdatedGiaoDichRequest;
-import com.poly.application.model.request.update_request.UpdatedLichSuHoaDonRequest;
 import com.poly.application.model.response.GiaoDichResponse;
-import com.poly.application.model.response.LichSuHoaDonResponse;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;

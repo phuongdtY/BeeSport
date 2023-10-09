@@ -104,8 +104,6 @@ public class HoaDon {
     @JoinColumn(name = "tai_khoan_id", referencedColumnName = "id")
     private TaiKhoan taiKhoan;
 
-    @OneToMany(mappedBy = "hoaDon",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<LichSuHoaDon> lichSuHoaDonList;
 
     @OneToMany(mappedBy = "hoaDon",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<GiaoDich> giaoDichList;

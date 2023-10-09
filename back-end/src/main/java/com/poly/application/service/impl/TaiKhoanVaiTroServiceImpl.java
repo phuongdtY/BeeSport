@@ -1,9 +1,7 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.entity.TaiKhoan;
-import com.poly.application.entity.TaiKhoanVaiTro;
 import com.poly.application.entity.VaiTro;
-import com.poly.application.repository.TaiKhoanVaiTroRepository;
 import com.poly.application.repository.VaiTroRepository;
 import com.poly.application.service.TaiKhoanVaiTroService;
 import org.springframework.beans.factory.annotation.Autowired;
