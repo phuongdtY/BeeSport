@@ -54,5 +54,4 @@ public class GioHang {
     @JoinColumn(name = "nguoi_so_huu", referencedColumnName = "id")
     private TaiKhoan taiKhoan;
 
-
 }
