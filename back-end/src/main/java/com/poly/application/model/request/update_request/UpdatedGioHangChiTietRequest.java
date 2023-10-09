@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 @Setter
 public class UpdatedGioHangChiTietRequest {
 
-    private Long id;
-
     private Integer soLuong;
 
     private String ghiChu;

@@ -29,7 +29,7 @@ public class GioHangChiTietMapper {
 
     public void convertUpdateRequestToEntity(UpdatedGioHangChiTietRequest request, GioHangChiTiet gioHangChiTiet) {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        mapper.map(request, gioHangChiTiet);
+        mapper.map(request, GioHangChiTiet.class);
     }
 
 }
