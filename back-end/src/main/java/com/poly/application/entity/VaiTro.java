@@ -34,8 +34,5 @@ public class VaiTro implements Serializable {
     @Column(name = "ten")
     private String ten;
 
-    @OneToMany(mappedBy = "vaiTro", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TaiKhoanVaiTro> taiKhoanVaiTroList;
-
 
 }

@@ -1,45 +1,47 @@
 package com.poly.application.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
+import java.util.List;
 
 @SuppressWarnings("serial")
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@Table(name = "tai_khoan_vai_tro")
-public class TaiKhoanVaiTro implements Serializable {
+@Table(name = "phuong_thuc_thanh_toan")
+public class PhuongThucThanhToan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "tai_khoan_id", referencedColumnName = "id")
-    private TaiKhoan taiKhoan;
+    @Column(name = "ten")
+    private String ten;
 
-    @ManyToOne
-    @JoinColumn(name = "vai_tro_id", referencedColumnName = "id")
-    private VaiTro vaiTro;
+    @Column(name = "ma")
+    private String ma;
 
     @Column(name = "trang_thai")
-    private Integer trangThai;
+    private Integer trang_thai;
+
+    @OneToMany(mappedBy = "phuongThucThanhToan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<GiaoDich> giaoDichList;
+
 
 
 }
