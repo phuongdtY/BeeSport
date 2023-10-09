@@ -125,4 +125,17 @@ public class CommonEnum {
         private final String mauSac;
     }
 
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum TrangThaiChiTietSanPham{
+        ACTIVE("ACTIVE", "Hoạt động", "success"),
+        INACTIVE("INACTIVE", "Không hoạt động", "red"),
+        OUT_OF_STOCK("OUT_OF_STOCK", "Hết hàng", "red");
+
+        private final String ten;
+        private final String moTa;
+        private final String mauSac;
+    }
+
 }
