@@ -12,4 +12,6 @@ public interface GioHangChiTietService {
 
     GioHangChiTietResponse update(Long idGioHangChiTiet, UpdatedGioHangChiTietRequest request);
 
+    GioHangChiTietResponse getOne(Long idGioHangChiTiet);
+
 }

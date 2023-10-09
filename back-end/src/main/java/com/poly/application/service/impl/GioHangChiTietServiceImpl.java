@@ -32,13 +32,7 @@ public class GioHangChiTietServiceImpl implements GioHangChiTietService {
 
     @Override
     public void delete(Long idGioHangChiTiet) {
-        Optional<GioHangChiTiet> optional = repository.findById(idGioHangChiTiet);
-
-        if (optional.isEmpty()) {
-            throw new NotFoundException("Giỏ hàng chi tiết không tồn tại");
-        }
-
-        GioHangChiTiet gioHangChiTiet = optional.get();
+        GioHangChiTiet gioHangChiTiet= repository.tim(idGioHangChiTiet);
         repository.delete(gioHangChiTiet);
     }
 
@@ -53,4 +47,11 @@ public class GioHangChiTietServiceImpl implements GioHangChiTietService {
         mapper.convertUpdateRequestToEntity(request, gioHangChiTiet);
         return mapper.convertEntityToResponse(repository.save(gioHangChiTiet));
     }
+
+    @Override
+    public GioHangChiTietResponse getOne(Long idGioHangChiTiet) {
+        GioHangChiTiet gioHangChiTiet = repository.tim(idGioHangChiTiet);
+        return mapper.convertEntityToResponse(gioHangChiTiet);
+    }
+
 }

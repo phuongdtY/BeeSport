@@ -24,16 +24,6 @@ public class GioHangChiTietMapper {
 
     public GioHangChiTiet convertCreateRequestToEntity(CreatedGioHangChiTietRequest request) {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-
-        // Cấu hình ánh xạ tự động các thuộc tính id từ request vào GioHangChiTiet
-        PropertyMap<CreatedGioHangChiTietRequest, GioHangChiTiet> idMapping = new PropertyMap<CreatedGioHangChiTietRequest, GioHangChiTiet>() {
-            protected void configure() {
-                map().getGioHang().setId(source.getGioHang().getId());
-                map().getChiTietSanPham().setId(source.getChiTietSanPham().getId());
-            }
-        };
-        mapper.addMappings(idMapping);
-
         return mapper.map(request, GioHangChiTiet.class);
     }
 

@@ -40,9 +40,6 @@ public class ChiTietSanPham {
     @Column(name = "gia_tien")
     private BigDecimal giaTien;
 
-    @Column(name = "mo_ta")
-    private String moTa;
-
     @CreationTimestamp
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;
