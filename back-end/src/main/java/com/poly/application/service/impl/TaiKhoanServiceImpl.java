@@ -10,7 +10,6 @@ import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
 import com.poly.application.model.response.TaiKhoanResponse;
 import com.poly.application.repository.TaiKhoanRepository;
 import com.poly.application.service.TaiKhoanService;
-import com.poly.application.service.TaiKhoanVaiTroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,8 +24,6 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
 
     @Autowired
     private TaiKhoanRepository taiKhoanRepository;
-    @Autowired
-    private TaiKhoanVaiTroService taiKhoanVaiTroService;
 
     @Autowired
     private TaiKhoanMapper taiKhoanMapper;
@@ -71,7 +68,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         TaiKhoan createdTaiKhoan = taiKhoanMapper.convertCreateRequestToEntity(request);
         createdTaiKhoan.setTrangThai(1);
         TaiKhoan savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
-        taiKhoanVaiTroService.addNhanVien(savedTaiKhoan);
+//        taiKhoanVaiTroService.addNhanVien(savedTaiKhoan);
         return taiKhoanMapper.convertEntityToResponse(savedTaiKhoan);
     }
 

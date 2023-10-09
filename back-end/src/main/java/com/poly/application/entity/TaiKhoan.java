@@ -95,4 +95,7 @@ import java.util.List;
         @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private List<GiaoDich> giaoDichList;
 
+        @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<VaiTro> vaiTroList;
+
 }
