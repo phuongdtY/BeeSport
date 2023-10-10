@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/admin/api//gio-hang-chi-tiet")
+@RequestMapping("/admin/api/gio-hang-chi-tiet")
 public class GioHangChiTietController {
 
     @Autowired
@@ -38,6 +38,11 @@ public class GioHangChiTietController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable(name = "id") Long id, @RequestBody UpdatedGioHangChiTietRequest request) {
         return ResponseEntity.ok(service.update(id, request));
+    }
+
+    @GetMapping("/detail-gio-hang/{id}")
+    public ResponseEntity<?> getListGioHangChiTietByGioHangId(@PathVariable(name = "id") Long id) {
+        return ResponseEntity.ok(service.getListGioHangChiTietByGioHangId(id));
     }
 
 }

@@ -21,5 +21,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
 
     boolean existsByTen (String ten);
 
+    @Query("SELECT sp FROM SanPham sp ORDER BY sp.ngayTao DESC")
+    List<SanPham> get5SanPhamMoiNhat();
 
 }

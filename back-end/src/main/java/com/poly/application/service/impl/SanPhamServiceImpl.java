@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class SanPhamServiceImpl implements SanPhamService {
@@ -130,7 +131,17 @@ public class SanPhamServiceImpl implements SanPhamService {
 
     @Override
     public List<SanPhamResponse> get5SanPhamMoiNhat() {
-        return null;
+        List<SanPham> sanPhamMoiNhat = repository.get5SanPhamMoiNhat();
+
+        List<SanPhamResponse> sanPhamResponses = sanPhamMoiNhat
+                .stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
+
+        return sanPhamResponses
+                .stream()
+                .limit(5)
+                .collect(Collectors.toList());
     }
 
 }

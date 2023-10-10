@@ -4,6 +4,8 @@ import com.poly.application.model.request.create_request.CreatedGioHangChiTietRe
 import com.poly.application.model.request.update_request.UpdatedGioHangChiTietRequest;
 import com.poly.application.model.response.GioHangChiTietResponse;
 
+import java.util.List;
+
 public interface GioHangChiTietService {
 
     GioHangChiTietResponse add(CreatedGioHangChiTietRequest request);
@@ -11,5 +13,7 @@ public interface GioHangChiTietService {
     void delete(Long idGioHangChiTiet);
 
     GioHangChiTietResponse update(Long idGioHangChiTiet, UpdatedGioHangChiTietRequest request);
+
+    List<GioHangChiTietResponse> getListGioHangChiTietByGioHangId(Long idGioHang);
 
 }

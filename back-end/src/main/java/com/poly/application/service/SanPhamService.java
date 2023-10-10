@@ -10,7 +10,7 @@ import java.util.List;
 public interface SanPhamService {
 
     Page<SanPhamResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText,
-                                 Long diaHinhSanId, String trangThaiString);
+                                 Long thuongHieuId, String trangThaiString);
 
     SanPhamResponse add(CreatedSanPhamRequest request);
 

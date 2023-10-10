@@ -1,5 +1,8 @@
 package com.poly.application.service.impl;
 
+import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.ChiTietSanPham;
+import com.poly.application.entity.SanPham;
 import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedChiTietSanPhamRequest;
 import com.poly.application.model.response.ChiTietSanPhamResponse;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
