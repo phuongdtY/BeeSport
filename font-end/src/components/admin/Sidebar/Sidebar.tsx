@@ -42,7 +42,7 @@ const CustomSider: React.FC<{
       <ShopOutlined />
     ),
     getItem(
-      <Link to="/admin/don-hang">Quản lý đơn hàng</Link>,
+      <Link to="/admin/hoa-don">Quản lý đơn hàng</Link>,
       "3",
       <ContainerOutlined />
     ),
@@ -50,21 +50,20 @@ const CustomSider: React.FC<{
     getItem("Quản lý sản phẩm", "sub1", <AppstoreAddOutlined />, [
       getItem(<Link to="/admin/san-pham">Sản phẩm</Link>, "5"),
       getItem("Thuộc tính", "sub1-2", null, [
-        getItem(<Link to="/admin/ten-san-pham">Tên sản phẩm</Link>, "6"),
-        getItem(<Link to="/admin/thuong-hieu">Thương hiệu</Link>, "7"),
-        getItem(<Link to="/admin/loai-de">Loại đế</Link>, "8"),
+        getItem(<Link to="/admin/mau-sac">Màu sắc</Link>, "6"),
+        getItem(<Link to="/admin/loai-de">Loại đế</Link>, "7"),
+        getItem(<Link to="/admin/thuong-hieu">Thương hiệu</Link>, "8"),
         getItem(<Link to="/admin/dia-hinh-san">Địa hình sân</Link>, "9"),
-        getItem(<Link to="/admin/mau-sac">Màu sắc</Link>, "10"),
       ]),
     ]),
 
     getItem("Quản lý tài khoản", "sub2", <TeamOutlined />, [
-      getItem(<Link to="/admin/khach-hang">Khách hàng</Link>, "11"),
-      getItem(<Link to="/admin/nhan-vien">Nhân viên</Link>, "12"),
+      getItem(<Link to="/admin/khach-hang">Khách hàng</Link>, "10"),
+      getItem(<Link to="/admin/nhan-vien">Nhân viên</Link>, "11"),
     ]),
     getItem(
       <Link to="/admin/voucher">Quản lý voucher</Link>,
-      "13",
+      "12",
       <GiftOutlined />
     ),
   ];

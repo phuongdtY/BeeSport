@@ -7,11 +7,11 @@ import org.springframework.data.domain.Page;
 
 public interface ThuongHieuService {
 
-    Page<ThuongHieuResponse> getAll(Integer pageNo, Integer pageSize);
+    Page<ThuongHieuResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString);
 
     ThuongHieuResponse add(CreatedThuongHieuRequest request);
 
-    ThuongHieuResponse delete(Long id);
+    void delete(Long id);
 
     ThuongHieuResponse update(Long id, UpdatedThuongHieuRequest request);
 

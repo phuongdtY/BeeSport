@@ -1,0 +1,32 @@
+package com.poly.application.model.response;
+
+import com.poly.application.common.CommonEnum;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+public class HoaDonChiTietResponse {
+
+    private Long id;
+
+    private Integer soLuong;
+
+    private BigDecimal donGia;
+
+    private String ghiChu;
+
+    private LocalDateTime ngayTao;
+
+    private LocalDateTime ngaySua;
+
+    private String nguoiTao;
+
+    private String nguoiSua;
+
+    private CommonEnum.TrangThaiHoaDonChiTiet trangThaiHoaDonChiTiet;
+
+}

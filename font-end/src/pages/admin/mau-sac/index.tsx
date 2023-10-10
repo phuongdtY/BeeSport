@@ -20,6 +20,7 @@ import {
   TablePaginationConfig,
   Tag,
   Tooltip,
+  message,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
@@ -121,6 +122,7 @@ const index: React.FC = () => {
       } catch (error) {
         console.log(error);
         setLoading(false);
+        message.error("Lấy dữ liệu màu sắc thất bại");
       }
     };
     fetchData();

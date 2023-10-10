@@ -7,13 +7,13 @@ import org.springframework.data.domain.Page;
 
 public interface DiaHinhSanService {
 
-    Page<DiaHinhSanResponse> getAll(Integer pageNo, Integer pageSize);
+    Page<DiaHinhSanResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString);
 
     DiaHinhSanResponse add(CreatedDiaHinhSanRequest request);
 
     DiaHinhSanResponse update(Long id, UpdatedDiaHinhSanRequest request);
 
-    DiaHinhSanResponse delete(Long id);
+    void delete(Long id);
 
     DiaHinhSanResponse findById(Long id);
 

@@ -6,6 +6,7 @@ import com.poly.application.model.response.ThuongHieuResponse;
 import com.poly.application.service.ThuongHieuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,21 +29,25 @@ public class ThuongHieuController {
 
     @GetMapping()
     public ResponseEntity<?> getAll(
-            @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-            @RequestParam(name = "pageSize", defaultValue = "5") Integer pageSize
+            @RequestParam(name = "page", defaultValue = "1") Integer page,
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(name = "sortField", required = false) String sortField,
+            @RequestParam(name = "sortOrder", defaultValue = "", required = false) String sortOrder,
+            @RequestParam(name = "searchText", defaultValue = "") String searchText,
+            @RequestParam(name = "trangThai", required = false) String trangThaiString
     ) {
-        Page<ThuongHieuResponse> page = service.getAll(pageNo, pageSize);
-        return ResponseEntity.ok(page);
+        return ResponseEntity.ok(service.getAll(page, pageSize,sortField,sortOrder, searchText, trangThaiString));
     }
 
     @PostMapping()
     public ResponseEntity<?> add(@RequestBody CreatedThuongHieuRequest request) {
-        return ResponseEntity.ok(service.add(request));
+        return new ResponseEntity<>(service.add(request), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(name = "id") Long id) {
-        return ResponseEntity.ok(service.delete(id));
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
