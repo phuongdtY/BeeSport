@@ -5,6 +5,9 @@ import AddNV from "./pages/admin/nhan-vien/add";
 import IndexMauSac from "./pages/admin/mau-sac/index";
 import AddMauSac from "./pages/admin/mau-sac/add";
 import UpdateMauSac from "./pages/admin/mau-sac/update";
+import IndexVoucher from "./pages/admin/voucher/index";
+import AddVoucher from "./pages/admin/voucher/add";
+import UpdateVoucher from "./pages/admin/voucher/update";                      
 import "./App.css";
 
 function App() {
@@ -16,6 +19,9 @@ function App() {
         <Route path="mau-sac" element={<IndexMauSac />} />
         <Route path="mau-sac/add" element={<AddMauSac />} />
         <Route path="mau-sac/:id" element={<UpdateMauSac />} />
+        <Route path="voucher" element={<IndexVoucher />} />
+        <Route path="voucher/add" element={<AddVoucher />} />
+        <Route path="voucher/:id" element={<UpdateVoucher />} />
       </Route>
     </Routes>
   );
