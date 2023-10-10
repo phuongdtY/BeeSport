@@ -1,7 +1,6 @@
 package com.poly.application.controller.admin;
 
-import com.poly.application.common.CommonEnum;
-import com.poly.application.model.request.create_request.CreateTaiKhoanRequest;
+import com.poly.application.model.request.create_request.CreatedTaiKhoanRequest;
 import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
 import com.poly.application.model.response.TaiKhoanResponse;
 import com.poly.application.service.TaiKhoanService;
@@ -31,12 +30,12 @@ public class NhanVienController {
             @RequestParam(value = "currentPage", defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
             @RequestParam(value = "searchText", defaultValue = "", required = false) String searchText,
-            @RequestParam(value = "trangThai", defaultValue = "", required = false) Integer trangThai,
+            @RequestParam(value = "trangThai", defaultValue = "", required = false) String trangThai,
             @RequestParam(value = "gioiTinh", required = false) String gioiTinhString,
             @RequestParam(value = "sortField", defaultValue = "", required = false) String sorter,
             @RequestParam(value = "sortOrder", defaultValue = "", required = false) String sortOrder
     ) {
-        return ResponseEntity.ok(taiKhoanService.getAll(page, pageSize, searchText, trangThai, gioiTinhString, sorter, sortOrder));
+        return ResponseEntity.ok(taiKhoanService.getAll(page, pageSize, sorter,sortOrder, gioiTinhString, searchText, trangThai));
     }
 
     @GetMapping("/{id}")
@@ -44,8 +43,8 @@ public class NhanVienController {
         return ResponseEntity.ok(taiKhoanService.findById(id));
     }
 
-    @PostMapping()
-    public ResponseEntity<?> add(@RequestBody CreateTaiKhoanRequest createTaiKhoanRequest) {
+    @PostMapping("/add")
+    public ResponseEntity<?> add(@RequestBody CreatedTaiKhoanRequest createTaiKhoanRequest) {
         return new ResponseEntity<>(taiKhoanService.add(createTaiKhoanRequest), HttpStatus.CREATED);
     }
 

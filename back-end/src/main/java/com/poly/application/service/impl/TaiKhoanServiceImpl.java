@@ -5,12 +5,11 @@ import com.poly.application.entity.TaiKhoan;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.TaiKhoanMapper;
-import com.poly.application.model.request.create_request.CreateTaiKhoanRequest;
+import com.poly.application.model.request.create_request.CreatedTaiKhoanRequest;
 import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
 import com.poly.application.model.response.TaiKhoanResponse;
 import com.poly.application.repository.TaiKhoanRepository;
 import com.poly.application.service.TaiKhoanService;
-import com.poly.application.service.TaiKhoanVaiTroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,20 +24,18 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
 
     @Autowired
     private TaiKhoanRepository taiKhoanRepository;
-    @Autowired
-    private TaiKhoanVaiTroService taiKhoanVaiTroService;
+
 
     @Autowired
     private TaiKhoanMapper taiKhoanMapper;
 
-
     @Override
-    public Page<TaiKhoanResponse> getAll(Integer currentPage, Integer pageSize, String searchText, Integer trangThai, String gioiTinhString, String sorter, String sortOrder) {
+    public Page<TaiKhoanResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String gioiTinhString, String searchText, String trangThaiString) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
-            sort = Sort.by(sorter).ascending();
+            sort = Sort.by(sortField).ascending();
         } else if ("descend".equals(sortOrder)) {
-            sort = Sort.by(sorter).descending();
+            sort = Sort.by(sortField).descending();
         } else {
             sort = Sort.by("ngayTao").descending();
         }
@@ -50,13 +47,20 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         }else {
             gioiTinh = CommonEnum.GioiTinh.valueOf(gioiTinhString);
         }
-        Pageable pageable = PageRequest.of(currentPage - 1, pageSize, sort);
-        Page<TaiKhoan> taiKhoanPage = taiKhoanRepository.findAllByVaiTro(pageable, "Nhân viên", searchText, trangThai,gioiTinh);
+        CommonEnum.TrangThaiThuocTinh trangThai;
+
+        if (trangThaiString == null || trangThaiString.equals("")) {
+            trangThai = null;
+        } else {
+            trangThai = CommonEnum.TrangThaiThuocTinh.valueOf(trangThaiString);
+        }
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
+        Page<TaiKhoan> taiKhoanPage = taiKhoanRepository.findAllByVaiTro(pageable, searchText,trangThai,gioiTinh);
         return taiKhoanPage.map(taiKhoanMapper::convertEntityToResponse);
     }
 
     @Override
-    public TaiKhoanResponse add(CreateTaiKhoanRequest request) {
+    public TaiKhoanResponse add(CreatedTaiKhoanRequest request) {
         TaiKhoan canCuocCongDan = taiKhoanRepository.findByCanCuocCongDan(request.getCanCuocCongDan());
         TaiKhoan soDienThoai = taiKhoanRepository.findBySoDienThoai(request.getSoDienThoai());
         if (canCuocCongDan != null) {
@@ -69,9 +73,8 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
             request.setGioiTinh(CommonEnum.GioiTinh.OTHER);
         }
         TaiKhoan createdTaiKhoan = taiKhoanMapper.convertCreateRequestToEntity(request);
-        createdTaiKhoan.setTrangThai(1);
+//        createdTaiKhoan.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
         TaiKhoan savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
-        taiKhoanVaiTroService.addNhanVien(savedTaiKhoan);
         return taiKhoanMapper.convertEntityToResponse(savedTaiKhoan);
     }
 
@@ -105,6 +108,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
 
     @Override
     public void delete(Long id) {
-
+        Optional<TaiKhoan> optional = this.taiKhoanRepository.findById(id);
+        taiKhoanRepository.delete(optional.get());
     }
 }

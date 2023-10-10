@@ -41,7 +41,7 @@ public class TaiKhoanResponse {
 
     private LocalDateTime ngaySua;
 
-    private Integer trangThai;
+    private CommonEnum.TrangThaiThuocTinh trangThai;
 
 
 }

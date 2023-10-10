@@ -83,13 +83,14 @@ import java.util.List;
         @Column(name = "ngay_sua")
         private LocalDateTime ngaySua;
 
+        @Enumerated(EnumType.STRING)
         @Column(name = "trang_thai")
-        private Integer trangThai;
+        private CommonEnum.TrangThaiThuocTinh trangThai;
 
     //    @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     //    private List<DiaChi> diaChiList;
 
         @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        private List<TaiKhoanVaiTro> taiKhoanVaiTroList;
+        private List<VaiTro> vaiTroList;
 
 }

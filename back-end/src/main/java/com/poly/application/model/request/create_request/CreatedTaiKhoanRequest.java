@@ -14,7 +14,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class CreateTaiKhoanRequest {
+public class CreatedTaiKhoanRequest {
 
     @NotBlank(message = "Vui lòng nhập họ và tên")
     @Pattern(message = "Họ và tên không hợp lệ", regexp = "^[\\p{L}\\s]+$")
@@ -51,5 +51,7 @@ public class CreateTaiKhoanRequest {
     private String diaChiCuThe;
 
     private MultipartFile flieAnhDaiDien;
+
+    private CommonEnum.TrangThaiThuocTinh trangThai;
 
 }
