@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/gio-hang-chi-tiet")
+@RequestMapping("/admin/api//gio-hang-chi-tiet")
 public class GioHangChiTietController {
 
     @Autowired

@@ -5,6 +5,8 @@ import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
 import com.poly.application.model.response.SanPhamResponse;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface SanPhamService {
 
     Page<SanPhamResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText,
@@ -17,5 +19,7 @@ public interface SanPhamService {
     void  delete(Long id);
 
     SanPhamResponse findById(Long id);
+
+    List<SanPhamResponse> get5SanPhamMoiNhat();
 
 }

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
 
@@ -18,5 +20,6 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
     Page<SanPham> findByAll(Pageable pageable, String searchText, Long thuongHieuId, CommonEnum.TrangThaiSanPham trangThai);
 
     boolean existsByTen (String ten);
+
 
 }
