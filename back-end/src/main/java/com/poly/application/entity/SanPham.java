@@ -1,5 +1,6 @@
 package com.poly.application.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.poly.application.common.CommonEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -65,6 +66,7 @@ public class SanPham {
     @JoinColumn(name = "thuong_hieu_id", referencedColumnName = "id")
     private ThuongHieu thuongHieu;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY)
     private List<ChiTietSanPham> listChiTietSanPham;
 
