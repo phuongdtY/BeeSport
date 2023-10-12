@@ -1,6 +1,7 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.ChiTietSanPham;
 import com.poly.application.entity.MauSac;
 import com.poly.application.entity.SanPham;
 import com.poly.application.exception.BadRequestException;
@@ -8,6 +9,8 @@ import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.SanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
+import com.poly.application.model.response.ChiTietSanPhamResponse;
+import com.poly.application.model.response.SanPhamMoiNhatResponse;
 import com.poly.application.model.response.SanPhamResponse;
 import com.poly.application.repository.SanPhamRepository;
 import com.poly.application.service.SanPhamService;
@@ -139,6 +142,20 @@ public class SanPhamServiceImpl implements SanPhamService {
                 .collect(Collectors.toList());
 
         return sanPhamResponses
+                .stream()
+                .limit(5)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SanPhamMoiNhatResponse> giaTien5SanPhamMoiNhat() {
+        List<SanPhamMoiNhatResponse> giaTien5SanPhamMoiNhat = repository.findSanPhamMoiNhat();
+
+        List<SanPhamMoiNhatResponse> chiTietSanPhamResponse = giaTien5SanPhamMoiNhat
+                .stream()
+                .collect(Collectors.toList());
+
+        return chiTietSanPhamResponse
                 .stream()
                 .limit(5)
                 .collect(Collectors.toList());

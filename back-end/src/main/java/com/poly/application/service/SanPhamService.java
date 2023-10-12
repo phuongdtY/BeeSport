@@ -2,6 +2,7 @@ package com.poly.application.service;
 
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
+import com.poly.application.model.response.SanPhamMoiNhatResponse;
 import com.poly.application.model.response.SanPhamResponse;
 import org.springframework.data.domain.Page;
 
@@ -21,5 +22,7 @@ public interface SanPhamService {
     SanPhamResponse findById(Long id);
 
     List<SanPhamResponse> get5SanPhamMoiNhat();
+
+    List<SanPhamMoiNhatResponse> giaTien5SanPhamMoiNhat();
 
 }

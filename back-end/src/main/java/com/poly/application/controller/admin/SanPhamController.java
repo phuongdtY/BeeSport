@@ -64,4 +64,9 @@ public class SanPhamController {
         return ResponseEntity.ok(service.get5SanPhamMoiNhat());
     }
 
+    @GetMapping("/gia-tien-moi-nhat")
+    public ResponseEntity<?> giaTien5SanPhamMoiNhat() {
+        return ResponseEntity.ok(service.giaTien5SanPhamMoiNhat());
+    }
+
 }
