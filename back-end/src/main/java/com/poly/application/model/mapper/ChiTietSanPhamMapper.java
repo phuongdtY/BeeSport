@@ -13,6 +13,9 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class ChiTietSanPhamMapper {
 
@@ -24,17 +27,16 @@ public class ChiTietSanPhamMapper {
         return mapper.map(chiTietSanPham, ChiTietSanPhamResponse.class);
     }
 
+    public List<ChiTietSanPhamResponse> toResponseList(List<ChiTietSanPham> chiTietSanPhams) {
+        List<ChiTietSanPhamResponse> responses = new ArrayList<>();
+        for (ChiTietSanPham chiTietSanPham : chiTietSanPhams) {
+            responses.add(convertEntityToResponse(chiTietSanPham));
+        }
+        return responses;
+    }
+
     public ChiTietSanPhamResponse convertCreateRequestToEntity(CreatedChiTietSanPhamRequest request) {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-
-        // Cấu hình ánh xạ tự động các thuộc tính id từ request vào SanPham
-//        PropertyMap<CreatedSanPhamRequest, SanPham> idMapping = new PropertyMap<CreatedSanPhamRequest, SanPham>() {
-//            protected void configure() {
-//                map().getThuongHieu().setId(source.getThuongHieu().getId());
-//            }
-//        };
-//        mapper.addMappings(idMapping);
-
         return mapper.map(request, ChiTietSanPhamResponse.class);
     }
 

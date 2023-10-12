@@ -22,8 +22,6 @@ public class ChiTietSanPhamResponse {
 
     private BigDecimal giaTien;
 
-    private String moTa;
-
     private LocalDateTime ngayTao;
 
     private LocalDateTime ngaySua;

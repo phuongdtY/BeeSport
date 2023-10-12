@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface ChiTietSanPhamService {
 
+    List<ChiTietSanPhamResponse> findByAll(Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
+
     ChiTietSanPhamResponse add(CreatedChiTietSanPhamRequest request);
 
     void delete(Long id);
