@@ -28,6 +28,6 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
     List<SanPham> get5SanPhamMoiNhat();
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien)) FROM SanPham sp JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id GROUP BY sp.id, sp.ten ORDER BY MAX(cps.ngayTao) DESC")
-    List<SanPhamMoiNhatResponse> findSanPhamMoiNhat();
+    List<SanPhamMoiNhatResponse> findAllSanPhamMoiNhat();
 
 }

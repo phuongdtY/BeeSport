@@ -149,7 +149,7 @@ public class SanPhamServiceImpl implements SanPhamService {
 
     @Override
     public List<SanPhamMoiNhatResponse> giaTien5SanPhamMoiNhat() {
-        List<SanPhamMoiNhatResponse> giaTien5SanPhamMoiNhat = repository.findSanPhamMoiNhat();
+        List<SanPhamMoiNhatResponse> giaTien5SanPhamMoiNhat = repository.findAllSanPhamMoiNhat();
 
         List<SanPhamMoiNhatResponse> chiTietSanPhamResponse = giaTien5SanPhamMoiNhat
                 .stream()

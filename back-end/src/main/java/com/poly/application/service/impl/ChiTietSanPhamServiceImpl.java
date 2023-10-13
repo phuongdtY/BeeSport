@@ -28,6 +28,12 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
     }
 
     @Override
+    public ChiTietSanPhamResponse findOne(Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan) {
+        ChiTietSanPham chiTietSanPham = repository.findOneChiTietSanPham(idSanPham, idMauSac, idLoaiDe, idKichCo, idDiaHinhSan);
+        return mapper.convertEntityToResponse(chiTietSanPham);
+    }
+
+    @Override
     public ChiTietSanPhamResponse add(CreatedChiTietSanPhamRequest request) {
         return null;
     }

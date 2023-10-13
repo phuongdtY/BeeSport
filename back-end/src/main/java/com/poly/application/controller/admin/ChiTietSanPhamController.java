@@ -29,4 +29,15 @@ public class ChiTietSanPhamController {
         return ResponseEntity.ok(service.findByAll(idSanPham, idMauSac, idKichCo, idLoaiDe, idDiaHinhSan));
     }
 
+    @GetMapping("/get-one/{id}")
+    public ResponseEntity<?> getOne(
+            @PathVariable("id") Long idSanPham,
+            @RequestParam(name = "idMauSac", defaultValue = "") Long idMauSac,
+            @RequestParam(name = "idKichCo", defaultValue = "") Long idKichCo,
+            @RequestParam(name = "idLoaiDe", defaultValue = "") Long idLoaiDe,
+            @RequestParam(name = "idDiaHinhSan", defaultValue = "") Long idDiaHinhSan
+    ) {
+        return ResponseEntity.ok(service.findByAll(idSanPham, idMauSac, idKichCo, idLoaiDe, idDiaHinhSan));
+    }
+
 }
