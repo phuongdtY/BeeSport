@@ -5,14 +5,12 @@ import com.poly.application.model.mapper.ChiTietSanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedChiTietSanPhamRequest;
 import com.poly.application.model.response.ChiTietSanPhamResponse;
-import com.poly.application.model.response.SanPhamResponse;
 import com.poly.application.repository.ChiTietSanPhamRepository;
 import com.poly.application.service.ChiTietSanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
@@ -24,8 +22,8 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
     private ChiTietSanPhamMapper mapper;
 
     @Override
-    public List<ChiTietSanPhamResponse> findByAll(Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan) {
-        List<ChiTietSanPham> list = repository.findByAll(idMauSac, idLoaiDe, idKichCo, idDiaHinhSan);
+    public List<ChiTietSanPhamResponse> findByAll(Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan) {
+        List<ChiTietSanPham> list = repository.findByAll(idSanPham, idMauSac, idLoaiDe, idKichCo, idDiaHinhSan);
         return mapper.toResponseList(list);
     }
 

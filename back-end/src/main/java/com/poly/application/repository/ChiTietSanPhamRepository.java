@@ -11,12 +11,13 @@ import java.util.List;
 public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, Long> {
 
     @Query("SELECT obj FROM ChiTietSanPham obj " +
-            "WHERE (:idMauSac IS NULL OR obj.mauSac.id = :idMauSac OR :idMauSac = '') " +
+            "WHERE (obj.sanPham.id = :idSanPham) " +
+            "AND (:idMauSac IS NULL OR obj.mauSac.id = :idMauSac OR :idMauSac = '') " +
             "AND (:idLoaiDe IS NULL OR obj.loaiDe.id = :idLoaiDe OR :idLoaiDe = '') " +
             "AND (:idKichCo IS NULL OR obj.kichCo.id = :idKichCo OR :idKichCo = '') " +
             "AND (:idDiaHinhSan IS NULL OR obj.diaHinhSan.id = :idDiaHinhSan)  " +
             "ORDER BY obj.kichCo.kichCo")
-    List<ChiTietSanPham> findByAll(Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
+    List<ChiTietSanPham> findByAll(Long idSanPham,Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
 
 
 }
