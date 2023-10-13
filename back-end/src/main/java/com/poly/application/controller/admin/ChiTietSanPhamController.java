@@ -37,7 +37,7 @@ public class ChiTietSanPhamController {
             @RequestParam(name = "idLoaiDe", defaultValue = "") Long idLoaiDe,
             @RequestParam(name = "idDiaHinhSan", defaultValue = "") Long idDiaHinhSan
     ) {
-        return ResponseEntity.ok(service.findByAll(idSanPham, idMauSac, idKichCo, idLoaiDe, idDiaHinhSan));
+        return ResponseEntity.ok(service.findOne(idSanPham, idMauSac, idKichCo, idLoaiDe, idDiaHinhSan));
     }
 
 }

@@ -23,9 +23,9 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     @Query("SELECT obj FROM ChiTietSanPham obj " +
             "WHERE (obj.sanPham.id = :idSanPham)" +
-            "AND (:idMauSac IS NULL OR obj.mauSac.id = :idMauSac OR :idMauSac = '')" +
-            "AND (:idLoaiDe IS NULL OR obj.loaiDe.id = :idLoaiDe OR :idLoaiDe = '')" +
-            "AND (:idKichCo IS NULL OR obj.kichCo.id = :idKichCo OR :idKichCo = '')" +
-            "AND (:idDiaHinhSan IS NULL OR obj.diaHinhSan.id = :idDiaHinhSan)")
+            "AND (obj.mauSac.id = :idMauSac)" +
+            "AND (obj.loaiDe.id = :idLoaiDe)" +
+            "AND (obj.kichCo.id = :idKichCo)" +
+            "AND (obj.diaHinhSan.id = :idDiaHinhSan)")
     ChiTietSanPham findOneChiTietSanPham(Long idSanPham,Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
 }
