@@ -28,10 +28,17 @@ public class GioHangChiTietServiceImpl implements GioHangChiTietService {
 
     @Override
     public GioHangChiTietResponse add(CreatedGioHangChiTietRequest request) {
-        GioHangChiTiet createdGioHangChiTiet = mapper.convertCreateRequestToEntity(request);
-        createdGioHangChiTiet.setTrangThai(1);
-        GioHangChiTiet savedGioHangChiTiet = this.repository.save(createdGioHangChiTiet);
-        return mapper.convertEntityToResponse(savedGioHangChiTiet);
+        GioHangChiTiet gioHangChiTiet = repository.existGioHangChiTiet(request.getChiTietSanPham().getId(), request.getGioHang().getId());
+        if (gioHangChiTiet != null) {
+            gioHangChiTiet.setSoLuong(gioHangChiTiet.getSoLuong() + request.getSoLuong());
+            GioHangChiTiet savedGioHangChiTiet = this.repository.save(gioHangChiTiet);
+            return mapper.convertEntityToResponse(savedGioHangChiTiet);
+        } else {
+            GioHangChiTiet createdGioHangChiTiet = mapper.convertCreateRequestToEntity(request);
+            createdGioHangChiTiet.setTrangThai(1);
+            GioHangChiTiet savedGioHangChiTiet = this.repository.save(createdGioHangChiTiet);
+            return mapper.convertEntityToResponse(savedGioHangChiTiet);
+        }
     }
 
     @Override
