@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Badge, Layout, Menu, MenuProps, theme } from "antd";
 import logo from "~/image/logo.png";
 import { Link, Outlet } from "react-router-dom";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
+import request from "~/utils/request";
 const { Header, Content, Footer } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -23,6 +24,22 @@ const getItem = (
 };
 
 const ShopLayout: React.FC = () => {
+  const [count, setCount] = useState();
+  const id = localStorage.getItem("gioHang");
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await request.get(
+          "/gio-hang-chi-tiet/detail-gio-hang/" + id
+        );
+        setCount(res.data.length);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -65,7 +82,7 @@ const ShopLayout: React.FC = () => {
           />
         </Link>
         <Link to="/gio-hang">
-          <Badge count={5}>
+          <Badge count={count}>
             <ShoppingCartOutlined style={{ fontSize: "25px" }} />
           </Badge>
         </Link>
