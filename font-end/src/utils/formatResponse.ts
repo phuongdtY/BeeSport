@@ -16,6 +16,14 @@ export function formatNgaySinh(dateString: string | undefined) {
   return `${day}/${month}/${year}`;
 }
 
+export function formatGiaTien(value: number | undefined) {
+  value = value || 0;
+  return value.toLocaleString("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
+}
+
 export function formatPhoneNumber(sdtString: string | undefined) {
   if (!sdtString) {
     return "...";
