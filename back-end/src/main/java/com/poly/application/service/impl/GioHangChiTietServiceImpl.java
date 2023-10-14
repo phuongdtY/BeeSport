@@ -69,7 +69,6 @@ public class GioHangChiTietServiceImpl implements GioHangChiTietService {
 
     @Override
     public void updateGioHang(List<UpdatedGioHangChiTietRequest> requests) {
-        System.out.println(requests.toString());
         for (UpdatedGioHangChiTietRequest gioHang: requests) {
             update(gioHang.getId(), gioHang);
         }
