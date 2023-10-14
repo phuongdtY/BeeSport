@@ -1,8 +1,6 @@
 package com.poly.application.repository;
 
 import com.poly.application.entity.ChiTietSanPham;
-import com.poly.application.model.response.ChiTietSanPhamResponse;
-import com.poly.application.model.response.SanPhamMoiNhatResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -28,4 +26,5 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "AND (obj.kichCo.id = :idKichCo)" +
             "AND (obj.diaHinhSan.id = :idDiaHinhSan)")
     ChiTietSanPham findOneChiTietSanPham(Long idSanPham,Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
+
 }

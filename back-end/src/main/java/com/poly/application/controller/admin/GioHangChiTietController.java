@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/admin/api/gio-hang-chi-tiet")
@@ -38,6 +40,12 @@ public class GioHangChiTietController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable(name = "id") Long id, @RequestBody UpdatedGioHangChiTietRequest request) {
         return ResponseEntity.ok(service.update(id, request));
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateGioHang(@RequestBody List<UpdatedGioHangChiTietRequest> request) {
+        service.updateGioHang(request);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/detail-gio-hang/{id}")

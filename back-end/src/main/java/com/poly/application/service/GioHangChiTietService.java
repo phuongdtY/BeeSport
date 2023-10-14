@@ -14,6 +14,8 @@ public interface GioHangChiTietService {
 
     GioHangChiTietResponse update(Long idGioHangChiTiet, UpdatedGioHangChiTietRequest request);
 
+    void updateGioHang(List<UpdatedGioHangChiTietRequest> requests);
+
     List<GioHangChiTietResponse> getListGioHangChiTietByGioHangId(Long idGioHang);
 
 }

@@ -62,8 +62,17 @@ public class GioHangChiTietServiceImpl implements GioHangChiTietService {
 
         GioHangChiTiet gioHangChiTiet = optional.get();
         gioHangChiTiet.setSoLuong(request.getSoLuong());
+        gioHangChiTiet.setNgayTao(gioHangChiTiet.getNgayTao());
         mapper.convertUpdateRequestToEntity(request, gioHangChiTiet);
         return mapper.convertEntityToResponse(repository.save(gioHangChiTiet));
+    }
+
+    @Override
+    public void updateGioHang(List<UpdatedGioHangChiTietRequest> requests) {
+        System.out.println(requests.toString());
+        for (UpdatedGioHangChiTietRequest gioHang: requests) {
+            update(gioHang.getId(), gioHang);
+        }
     }
 
     @Override
