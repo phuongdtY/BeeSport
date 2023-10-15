@@ -3,11 +3,13 @@ package com.poly.application.service.impl;
 import com.amazonaws.services.mq.model.NotFoundException;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.LoaiDe;
+import com.poly.application.entity.MauSac;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.model.mapper.LoaiDeMapper;
 import com.poly.application.model.request.create_request.CreatedLoaiDeRequest;
 import com.poly.application.model.request.update_request.UpdatedLoaiDeRequest;
 import com.poly.application.model.response.LoaiDeResponse;
+import com.poly.application.model.response.MauSacResponse;
 import com.poly.application.repository.LoaiDeRepository;
 import com.poly.application.service.LoaiDeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LoaiDeServiceImpl implements LoaiDeService {
@@ -103,4 +107,14 @@ public class LoaiDeServiceImpl implements LoaiDeService {
         return mapper.convertEntityToResponse(loaiDe);
     }
 
+    @Override
+    public List<LoaiDeResponse> getLoaiDeKhongLap(Long idSanPham) {
+        List<LoaiDe> listLoaiDe = repository.getLoaiDeKhongLap(idSanPham);
+
+        List<LoaiDeResponse> loaiDeResponse = listLoaiDe.stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
+
+        return loaiDeResponse;
+    }
 }

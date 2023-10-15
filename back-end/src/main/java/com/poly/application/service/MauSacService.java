@@ -15,7 +15,7 @@ public interface MauSacService {
 
     MauSacResponse update(Long id, UpdatedMauSacRequest request);
 
-    void  delete(Long id);
+    void delete(Long id);
 
     MauSacResponse findById(Long id);
 

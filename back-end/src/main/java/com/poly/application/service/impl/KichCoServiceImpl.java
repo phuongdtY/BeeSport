@@ -11,6 +11,7 @@ import com.poly.application.model.request.create_request.CreatedKichCoRequest;
 import com.poly.application.model.request.create_request.CreatedLoaiDeRequest;
 import com.poly.application.model.request.update_request.UpdatedKichCoRequest;
 import com.poly.application.model.response.KichCoResponse;
+import com.poly.application.model.response.MauSacResponse;
 import com.poly.application.repository.KichCoRepository;
 import com.poly.application.service.KichCoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class KichCoServiceImpl implements KichCoService {
@@ -104,6 +107,17 @@ public class KichCoServiceImpl implements KichCoService {
 
         KichCo kichCo = optional.get();
         return mapper.convertEntityToResponse(kichCo);
+    }
+
+    @Override
+    public List<KichCoResponse> getKichCoKhongLap(Long id) {
+        List<KichCo> listKichCo = repository.getKichCoKhongLap(id);
+
+        List<KichCoResponse> kichCoResponse = listKichCo.stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
+
+        return kichCoResponse;
     }
 
 }
