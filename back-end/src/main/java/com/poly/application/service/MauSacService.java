@@ -5,6 +5,8 @@ import com.poly.application.model.request.update_request.UpdatedMauSacRequest;
 import com.poly.application.model.response.MauSacResponse;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface MauSacService {
 
     Page<MauSacResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,String searchText,String trangThaiString);
@@ -16,5 +18,7 @@ public interface MauSacService {
     void  delete(Long id);
 
     MauSacResponse findById(Long id);
+
+    List<MauSacResponse> getMauSacKhongLap(Long idSanPham);
 
 }
