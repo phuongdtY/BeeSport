@@ -17,11 +17,14 @@ import IndexLoaiDe from "./pages/admin/loai-de/index";
 import AddLoaiDe from "./pages/admin/loai-de/add";
 import UpdateLoaiDe from "./pages/admin/loai-de/update";
 import "./App.css";
-import DetailSanPham from "./pages/shop/san-pham/detail";
 import ShopLayout from "./layouts/ShopLayout/ShopLayout";
 import Home from "./pages/shop/home/Home";
 import GioHang from "./pages/shop/gio-hang/GioHang";
 import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
+import IndexHoaDon from "./pages/admin/hoa-don";
+import IndexKichCo from "./pages/admin/kich-co/index";
+import AddKichCo from "./pages/admin/kich-co/add";
+import UpdateKichCo from "./pages/admin/kich-co/update";
 
 function App() {
   return (
@@ -30,7 +33,6 @@ function App() {
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/gio-hang" element={<GioHang />} />
-        <Route path="san-pham/detail/:id" element={<DetailSanPham />} />
       </Route>
       <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />
@@ -49,9 +51,13 @@ function App() {
         <Route path="loai-de" element={<IndexLoaiDe />} />
         <Route path="loai-de/add" element={<AddLoaiDe />} />
         <Route path="loai-de/update/:id" element={<UpdateLoaiDe />} />
+        <Route path="hoa-don" element={<IndexHoaDon />} />
+        <Route path="kich-co" element={<IndexKichCo />} />
+        <Route path="kich-co/add" element={<AddKichCo />} />
+        <Route path="kich-co/update/:id" element={<UpdateKichCo />} />
       </Route>
     </Routes>
   );
 }
-
+// s
 export default App;
