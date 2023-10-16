@@ -23,8 +23,13 @@ public class ChiTietSanPhamMapper {
     private ModelMapper mapper;
 
     public ChiTietSanPhamResponse convertEntityToResponse(ChiTietSanPham chiTietSanPham) {
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        return mapper.map(chiTietSanPham, ChiTietSanPhamResponse.class);
+        if (chiTietSanPham != null) {
+            mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+            return mapper.map(chiTietSanPham, ChiTietSanPhamResponse.class);
+        } else {
+            System.out.println("HQL null");
+            return null;
+        }
     }
 
     public List<ChiTietSanPhamResponse> toResponseList(List<ChiTietSanPham> chiTietSanPhams) {
