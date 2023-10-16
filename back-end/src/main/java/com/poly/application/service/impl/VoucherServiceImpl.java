@@ -40,7 +40,6 @@ public class VoucherServiceImpl implements VoucherService {
             sort = Sort.by("ngayTao").descending();
         }
         CommonEnum.TrangThaiVoucher trangThai;
-//
         if (trangThaiString == null || trangThaiString.equals("")) {
             trangThai = null;
         } else {

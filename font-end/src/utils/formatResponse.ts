@@ -52,15 +52,8 @@ export function calculateAge(birthDate: string) {
 }
 
 export function formatNgayTao(dateString: string | undefined) {
-  if (!dateString) {
-    return "...";
-  }
 
   const date = new Date(dateString);
-
-  if (isNaN(date.getTime())) {
-    return "...";
-  }
 
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Đảm bảo rằng ngày và tháng có đủ 2 chữ số

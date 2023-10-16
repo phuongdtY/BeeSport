@@ -2,7 +2,6 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import {
   Button,
   Card,
-  ColorPicker,
   Form,
   Input,
   Modal,
@@ -15,7 +14,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { UpdatedRequest } from "~/interfaces/mauSac.type";
 import request from "~/utils/request";
 const { confirm } = Modal;
-const UpdateMauSac: React.FC = () => {
+const UpdateVoucher: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
@@ -29,7 +28,6 @@ const UpdateMauSac: React.FC = () => {
         form.setFieldsValue({
           ma: res.data?.ma,
           ten: res.data?.ten,
-          ten: res.data?.ten,
           trangThai: trangThaiValue,
         });
       } catch (error) {
@@ -42,21 +40,21 @@ const UpdateMauSac: React.FC = () => {
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc thêm màu sắc này không?",
+      content: "Bạn có chắc thêm voucher này không?",
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
         try {
           setLoading(true);
           await request.put("mau-sac/" + id, {
-            ma: hexString,
+            ma: values.ma,
             ten: values.ten,
             trangThai: values.trangThai == true ? "ACTIVE" : "INACTIVE",
           });
 
           setLoading(false);
-          message.success("Cập nhật màu sắc thành công");
-          navigate("/admin/mau-sac");
+          message.success("Cập nhật voucher thành công");
+          navigate("/admin/voucher");
         } catch (error: any) {
           console.log(error);
           message.error(error.response.data.message);
@@ -67,7 +65,7 @@ const UpdateMauSac: React.FC = () => {
   };
   return (
     <>
-      <Card title="THÊM MÀU SẮC">
+      <Card title="THÊM VOUCHER">
         <Form
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
@@ -77,17 +75,17 @@ const UpdateMauSac: React.FC = () => {
           form={form}
         >
           <Form.Item
-            label="Mã"
             name="ma"
-            initialValue={null}
-            rules={[{ required: true, message: "Vui lòng nhập mã màu sắc!" }]}
+            label="Mã"
+            rules={[
+              {
+                whitespace: true,
+                required: true,
+                message: "Vui lòng nhập mã voucher!",
+              },
+            ]}
           >
-            <ColorPicker
-              format={"hex"}
-              onChange={setColorHex}
-              showText
-              disabledAlpha
-            />
+            <Input />
           </Form.Item>
           <Form.Item
             name="ten"
@@ -96,7 +94,7 @@ const UpdateMauSac: React.FC = () => {
               {
                 whitespace: true,
                 required: true,
-                message: "Vui lòng nhập tên màu sắc!",
+                message: "Vui lòng nhập tên voucher!",
               },
             ]}
           >
@@ -125,4 +123,4 @@ const UpdateMauSac: React.FC = () => {
   );
 };
 
-export default UpdateMauSac;
+export default UpdateVoucher;

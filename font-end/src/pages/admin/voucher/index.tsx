@@ -100,12 +100,18 @@ const index: React.FC = () => {
       render: (text) => <a>{text}</a>,
     },
     {
-      title: "Ngày tạo",
+      title: "Ngày bắt đầu",
       align: "center",
-      dataIndex: "ngayTao",
-      key: "ngayTao",
+      dataIndex: "ngayBatDau",
+      key: "ngayBatDau",
       sorter: true,
-      render: (ngayTao) => formatNgayTao(ngayTao),
+    },
+    {
+      title: "Ngày kết thúc",
+      align: "center",
+      dataIndex: "ngayKetThuc",
+      key: "ngayKetThuc",
+      sorter: true,
     },
     {
       title: "Trạng Thái",
@@ -114,13 +120,13 @@ const index: React.FC = () => {
       sorter: true,
       render: (trangThai) =>
         <div>
-          {trangThai == "ACTIVE" ? (
+          {trangThai.ten == "ACTIVE" ? (
             <Tag color="success">Đang hoạt động</Tag>
-          ) : trangThai == "EXPIRED" ? (
+          ) : trangThai.ten == "EXPIRED" ? (
             <Tag color="warning">Hết hạn</Tag>
-          ) : trangThai == "INACTIVE" ? (
+          ) : trangThai.ten == "INACTIVE" ? (
             <Tag color="error">Không hoạt động</Tag>
-          ) : trangThai == "UPCOMING" ? (
+          ) : trangThai.ten == "UPCOMING" ? (
             <Tag color="info">Sắp diễn ra</Tag>
           ) : (
             <Tag color="default">Trạng thái không xác định</Tag>

@@ -155,9 +155,9 @@ public class CommonEnum {
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum TrangThaiVoucher{
         ACTIVE("ACTIVE", "Hoạt động",""),
-        EXPIRED("ACTIVE", "Hết hạn",""),
+        EXPIRED("EXPIRED", "Hết hạn",""),
         INACTIVE("INACTIVE", "Không hoạt động",""),
-        UPCOMING("UPCOMING", "sắp tới","");
+        UPCOMING("UPCOMING", "Sắp tới","");
 
         private final String ten;
         private final String moTa;
