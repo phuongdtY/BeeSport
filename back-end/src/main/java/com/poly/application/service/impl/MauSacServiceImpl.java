@@ -17,7 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MauSacServiceImpl implements MauSacService {
@@ -100,6 +102,17 @@ public class MauSacServiceImpl implements MauSacService {
         }
 
         return mapper.convertEntityToResponse(optional.get());
+    }
+
+    @Override
+    public List<MauSacResponse> getMauSacKhongLap(Long idSanPham) {
+        List<MauSac> listMauSac = repository.getMauSacKhongLap(idSanPham);
+
+        List<MauSacResponse> mauSacResponses = listMauSac.stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
+
+        return mauSacResponses;
     }
 
 }

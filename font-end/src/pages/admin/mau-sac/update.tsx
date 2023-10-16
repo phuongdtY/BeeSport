@@ -6,6 +6,7 @@ import {
   Form,
   Input,
   Modal,
+  Skeleton,
   Space,
   Switch,
   message,
@@ -19,6 +20,7 @@ const { confirm } = Modal;
 const UpdateMauSac: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [loadingForm, setLoadingForm] = useState(false);
   const [colorHex, setColorHex] = useState<Color | string>("");
   const [form] = Form.useForm();
   const hexString = useMemo(
@@ -31,6 +33,7 @@ const UpdateMauSac: React.FC = () => {
   let { id } = useParams();
   useEffect(() => {
     const getOne = async () => {
+      setLoadingForm(true);
       try {
         const res = await request.get("mau-sac/" + id);
         const trangThaiValue =
@@ -41,8 +44,10 @@ const UpdateMauSac: React.FC = () => {
           trangThai: trangThaiValue,
         });
         setColorHex(res.data?.ma);
+        setLoadingForm(false);
       } catch (error) {
         console.log(error);
+        setLoadingForm(false);
       }
     };
     getOne();
@@ -55,21 +60,26 @@ const UpdateMauSac: React.FC = () => {
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
+        // setLoading(true);
         try {
-          setLoading(true);
-          await request.put("mau-sac/" + id, {
+          const res = await request.put("mau-sac/" + id, {
             ma: hexString,
             ten: values.ten,
             trangThai: values.trangThai == true ? "ACTIVE" : "INACTIVE",
           });
-
-          setLoading(false);
-          message.success("Cập nhật màu sắc thành công");
-          navigate("/admin/mau-sac");
+          if (res.data) {
+            message.success("Cập nhật màu sắc thành công");
+            navigate("/admin/mau-sac");
+          } else {
+            console.error("Phản hồi API không như mong đợi:", res);
+          }
         } catch (error: any) {
-          console.log(error);
-          message.error(error.response.data.message);
-          setLoading(false);
+          if (error.response && error.response.status === 400) {
+            message.error(error.response.data.message);
+          } else {
+            console.error("Lỗi không xác định:", error);
+            message.error("Cập nhật màu sắc thất bại");
+          }
         }
       },
     });
@@ -77,58 +87,60 @@ const UpdateMauSac: React.FC = () => {
   return (
     <>
       <Card title="THÊM MÀU SẮC">
-        <Form
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          style={{ maxWidth: 500 }}
-          onFinish={onFinish}
-          layout="horizontal"
-          form={form}
-        >
-          <Form.Item
-            label="Mã"
-            name="ma"
-            initialValue={null}
-            rules={[{ required: true, message: "Vui lòng nhập mã màu sắc!" }]}
+        <Skeleton loading={loadingForm}>
+          <Form
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            style={{ maxWidth: 500 }}
+            onFinish={onFinish}
+            layout="horizontal"
+            form={form}
           >
-            <ColorPicker
-              format={"hex"}
-              onChange={setColorHex}
-              showText
-              disabledAlpha
-            />
-          </Form.Item>
-          <Form.Item
-            name="ten"
-            label="Tên"
-            rules={[
-              {
-                whitespace: true,
-                required: true,
-                message: "Vui lòng nhập tên màu sắc!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="trangThai"
-            label="Trạng thái"
-            valuePropName="checked"
-          >
-            <Switch size="small" />
-          </Form.Item>
-          <Form.Item wrapperCol={{ offset: 17 }}>
-            <Space>
-              <Button type="dashed" htmlType="reset">
-                Reset
-              </Button>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                Cập nhật
-              </Button>
-            </Space>
-          </Form.Item>
-        </Form>
+            <Form.Item
+              label="Mã"
+              name="ma"
+              initialValue={null}
+              rules={[{ required: true, message: "Vui lòng nhập mã màu sắc!" }]}
+            >
+              <ColorPicker
+                format={"hex"}
+                onChange={setColorHex}
+                showText
+                disabledAlpha
+              />
+            </Form.Item>
+            <Form.Item
+              name="ten"
+              label="Tên"
+              rules={[
+                {
+                  whitespace: true,
+                  required: true,
+                  message: "Vui lòng nhập tên màu sắc!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="trangThai"
+              label="Trạng thái"
+              valuePropName="checked"
+            >
+              <Switch size="small" />
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 17 }}>
+              <Space>
+                <Button type="dashed" htmlType="reset">
+                  Reset
+                </Button>
+                <Button type="primary" htmlType="submit" loading={loading}>
+                  Cập nhật
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Skeleton>
       </Card>
     </>
   );

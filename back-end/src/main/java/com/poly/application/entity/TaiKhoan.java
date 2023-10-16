@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -54,7 +55,7 @@ import java.util.List;
         @Column(name = "so_dien_thoai",unique = true)
         private String soDienThoai;
 
-        @Column(name = "email")
+        @Column(name = "email",unique = true)
         private String email;
 
         @Column(name = "thanh_pho")
@@ -76,20 +77,28 @@ import java.util.List;
         private String matKhau;
 
         @CreationTimestamp
-        @Column(name = "ngay_tao")
+        @ColumnDefault("CURRENT_TIMESTAMP")
+        @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")
         private LocalDateTime ngayTao;
 
         @UpdateTimestamp
-        @Column(name = "ngay_sua")
+        @ColumnDefault("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+        @Column(name = "ngay_sua", columnDefinition = "TIMESTAMP")
         private LocalDateTime ngaySua;
 
         @Column(name = "trang_thai")
         private Integer trangThai;
 
-    //    @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    //    private List<DiaChi> diaChiList;
+        @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<DiaChi> diaChiList;
 
         @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        private List<TaiKhoanVaiTro> taiKhoanVaiTroList;
+        private List<HoaDon> hoaDonList;
+
+        @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<GiaoDich> giaoDichList;
+
+        @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private List<VaiTro> vaiTroList;
 
 }

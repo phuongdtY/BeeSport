@@ -3,11 +3,13 @@ package com.poly.application.service.impl;
 import com.amazonaws.services.mq.model.NotFoundException;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.DiaHinhSan;
+import com.poly.application.entity.KichCo;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.model.mapper.DiaHinhSanMapper;
 import com.poly.application.model.request.create_request.CreatedDiaHinhSanRequest;
 import com.poly.application.model.request.update_request.UpdatedDiaHinhSanRequest;
 import com.poly.application.model.response.DiaHinhSanResponse;
+import com.poly.application.model.response.KichCoResponse;
 import com.poly.application.repository.DiaHinhSanRepository;
 import com.poly.application.service.DiaHinhSanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DiaHinhSanServiceImpl implements DiaHinhSanService {
@@ -96,6 +100,17 @@ public class DiaHinhSanServiceImpl implements DiaHinhSanService {
         }
         DiaHinhSan diaHinhSan = optional.get();
         return mapper.convertEntityToResponse(diaHinhSan);
+    }
+
+    @Override
+    public List<DiaHinhSanResponse> getDiaHinhSanKhongLap(Long idSanPham) {
+        List<DiaHinhSan> listDiaHinhSan = repository.getDiaHinhSanKhongLap(idSanPham);
+
+        List<DiaHinhSanResponse> diaHinhSanResponse = listDiaHinhSan.stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
+
+        return diaHinhSanResponse;
     }
 
 }
