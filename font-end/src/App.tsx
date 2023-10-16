@@ -25,14 +25,16 @@ import IndexHoaDon from "./pages/admin/hoa-don";
 import IndexKichCo from "./pages/admin/kich-co/index";
 import AddKichCo from "./pages/admin/kich-co/add";
 import UpdateKichCo from "./pages/admin/kich-co/update";
+import DetailSanPham from "./pages/shop/san-pham/detail";
 
 function App() {
   return (
     <Routes>
-      <Route path="/thanh-toan" element={<ThanhToan />} />
       <Route path="" element={<ShopLayout />}>
+        <Route path="/thanh-toan" element={<ThanhToan />} />
         <Route path="/" element={<Home />} />
         <Route path="/gio-hang" element={<GioHang />} />
+        <Route path="/san-pham/detail/:id" element={<DetailSanPham />} />
       </Route>
       <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />

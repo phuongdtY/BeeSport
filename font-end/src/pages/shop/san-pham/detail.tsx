@@ -22,12 +22,11 @@ const { Title, Text } = Typography;
 const detailSanPham: React.FC = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<any[]>([]);
+  const [dataMauSac, setDataMauSac] = useState<DataType[]>([]);
   const [dataKichCo, setDataKichCo] = useState<any[]>([]);
   const [dataLoaiDe, setDataLoaiDe] = useState<DataType[]>([]);
   const [dataDHS, setDataDHS] = useState<any[]>([]);
   const [quantity, setQuantity] = useState(1); // Số lượng sản phẩm, mặc định là 1
-  const [product, setProduct] = useState([]);
-  const [cartID, setCartID] = useState(null);
   const { id } = useParams();
   const [selecteds, setSelecteds] = useState<DataParams>({});
   // Hàm xử lý khi bấm nút cộng
@@ -43,16 +42,16 @@ const detailSanPham: React.FC = () => {
   };
   const fetchDataMS = async () => {
     try {
-      const res = await request.get("mau-sac");
-      // setDataMauSac(res.data.content);
+      const res = await request.get("/mau-sac/detail/" + id);
+      setDataMauSac(res.data);
     } catch (error) {
       console.log(error);
     }
   };
   const fetchDataSize = async () => {
     try {
-      const res = await request.get("kich-co");
-      setDataKichCo(res.data.content);
+      const res = await request.get("/kich-co/detail/" + id);
+      setDataKichCo(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -60,16 +59,16 @@ const detailSanPham: React.FC = () => {
 
   const fetchDataLoaiDe = async () => {
     try {
-      const res = await request.get("loai-de");
-      setDataLoaiDe(res.data.content);
+      const res = await request.get("/loai-de/detail/" + id);
+      setDataLoaiDe(res.data);
     } catch (error) {
       console.log(error);
     }
   };
   const fetchDataDHS = async () => {
     try {
-      const res = await request.get("dia-hinh-san");
-      setDataDHS(res.data.content);
+      const res = await request.get("/dia-hinh-san/detail/" + id);
+      setDataDHS(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -87,14 +86,10 @@ const detailSanPham: React.FC = () => {
         },
       });
       setData(res.data);
-      console.log(res);
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    sanPham();
-  }, [selecteds]);
 
   const onFinish = async (values: any) => {
     try {
@@ -145,20 +140,30 @@ const detailSanPham: React.FC = () => {
       idKichCo: selectedValue,
     });
   };
-  const handleLoaiDe = (event) => {
-    const selectedValue = event.target.value;
-    setSelecteds({
-      ...selecteds,
-      idLoaiDe: selectedValue,
-    });
+  const [selectedValue, setSelectedValue] = useState(null);
+  const handleLoaiDe = (e) => {
+    const value = e.target.value;
+    setSelectedValue((prevValue) => (prevValue === value ? null : value));
   };
+
   const handleDiaHinhSan = (event) => {
     const selectedValue = event.target.value;
+
     setSelecteds({
       ...selecteds,
       idDiaHinhSan: selectedValue,
     });
   };
+
+  const totalQuantity = data.reduce((total, item) => total + item.so_luong, 0);
+
+  useEffect(() => {
+    sanPham();
+    fetchDataMS();
+    fetchDataLoaiDe();
+    fetchDataSize();
+    fetchDataDHS();
+  }, [selecteds]);
   return (
     <>
       <Row>
@@ -201,17 +206,22 @@ const detailSanPham: React.FC = () => {
             >
               <Radio.Group buttonStyle="solid" onChange={handleMauSac}>
                 <Row gutter={[15, 15]}>
-                  {data.map((record: any) => (
-                    <Col key={record.mauSac.id}>
-                      <Radio.Button value={record.mauSac.id}>
+                  {dataMauSac.map((record: any) => (
+                    <Col key={record.id}>
+                      <Radio.Button
+                        value={record.id}
+                        disabled={
+                          !data.some((item) => item.mauSac.id === record.id)
+                        }
+                      >
                         <Space>
                           <ColorPicker
-                            value={record.mauSac.ma}
+                            value={record.ma}
                             size="small"
                             disabled
                             style={{ marginTop: 3 }}
                           />
-                          <span>{record.mauSac.ten}</span>
+                          <span>{record.ten}</span>
                         </Space>
                       </Radio.Button>
                     </Col>
@@ -231,10 +241,15 @@ const detailSanPham: React.FC = () => {
             >
               <Radio.Group buttonStyle="solid" onChange={handleKichCo}>
                 <Row gutter={[15, 15]}>
-                  {data.map((size: any) => (
-                    <Col key={size.kichCo.id}>
-                      <Radio.Button value={size.kichCo.id}>
-                        {size.kichCo.kichCo}
+                  {dataKichCo.map((record: any) => (
+                    <Col key={record.id}>
+                      <Radio.Button
+                        value={record.id}
+                        disabled={
+                          !data.some((item) => item.kichCo.id === record.id)
+                        }
+                      >
+                        {record.kichCo}
                       </Radio.Button>
                     </Col>
                   ))}
@@ -253,16 +268,23 @@ const detailSanPham: React.FC = () => {
             >
               <Radio.Group buttonStyle="solid" onChange={handleLoaiDe}>
                 <Row gutter={[15, 15]}>
-                  {data.map((ld) => (
-                    <Col key={ld.loaiDe.id}>
-                      <Radio.Button value={ld.loaiDe.id}>
-                        {ld.loaiDe.ten}
+                  {dataLoaiDe.map((record) => (
+                    <Col key={record.id}>
+                      <Radio.Button
+                        value={record.id}
+                        disabled={
+                          !data.some((item) => item.loaiDe.id === record.id)
+                        }
+                        checked={record.id === selectedValue}
+                      >
+                        {record.ten}
                       </Radio.Button>
                     </Col>
                   ))}
                 </Row>
               </Radio.Group>
             </Form.Item>
+
             <Form.Item
               label="Địa hình sân"
               name="diaHinhSan"
@@ -275,10 +297,15 @@ const detailSanPham: React.FC = () => {
             >
               <Radio.Group buttonStyle="solid" onChange={handleDiaHinhSan}>
                 <Row gutter={[15, 15]}>
-                  {data.map((record) => (
-                    <Col key={record.diaHinhSan.id}>
-                      <Radio.Button value={record.diaHinhSan.id}>
-                        {record.diaHinhSan.ten}
+                  {dataDHS.map((record: any) => (
+                    <Col key={record.id}>
+                      <Radio.Button
+                        value={record.id}
+                        disabled={
+                          !data.some((item) => item.diaHinhSan.id === record.id)
+                        }
+                      >
+                        {record.ten}
                       </Radio.Button>
                     </Col>
                   ))}
@@ -294,6 +321,9 @@ const detailSanPham: React.FC = () => {
                   readOnly
                 />
                 <Button icon={<PlusOutlined />} onClick={handleIncrement} />
+                <span style={{ color: "#b5bdbd", marginLeft: 10 }}>
+                  {totalQuantity} sản phẩm có sẵn
+                </span>
               </Space.Compact>
             </Form.Item>
             <Form.Item>
