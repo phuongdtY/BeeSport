@@ -27,8 +27,6 @@ const detailSanPham: React.FC = () => {
   const [dataLoaiDe, setDataLoaiDe] = useState<DataType[]>([]);
   const [dataDHS, setDataDHS] = useState<any[]>([]);
   const [quantity, setQuantity] = useState(1); // Số lượng sản phẩm, mặc định là 1
-  const [product, setProduct] = useState([]);
-  const [cartID, setCartID] = useState(null);
   const { id } = useParams();
   const [selecteds, setSelecteds] = useState<DataParams>({});
   // Hàm xử lý khi bấm nút cộng
@@ -88,7 +86,6 @@ const detailSanPham: React.FC = () => {
         },
       });
       setData(res.data);
-      console.log(res);
     } catch (error) {
       console.log(error);
     }
@@ -107,8 +104,6 @@ const detailSanPham: React.FC = () => {
           },
         }
       );
-      console.log(productResponse);
-
       if (productResponse.data) {
         await request.post("/gio-hang-chi-tiet", {
           gioHang: { id: id },
@@ -145,20 +140,22 @@ const detailSanPham: React.FC = () => {
       idKichCo: selectedValue,
     });
   };
-  const handleLoaiDe = (event) => {
-    const selectedValue = event.target.value;
-    setSelecteds({
-      ...selecteds,
-      idLoaiDe: selectedValue,
-    });
+  const [selectedValue, setSelectedValue] = useState(null);
+  const handleLoaiDe = (e) => {
+    const value = e.target.value;
+    setSelectedValue((prevValue) => (prevValue === value ? null : value));
   };
+
   const handleDiaHinhSan = (event) => {
     const selectedValue = event.target.value;
+
     setSelecteds({
       ...selecteds,
       idDiaHinhSan: selectedValue,
     });
   };
+
+  const totalQuantity = data.reduce((total, item) => total + item.so_luong, 0);
 
   useEffect(() => {
     sanPham();
@@ -271,13 +268,14 @@ const detailSanPham: React.FC = () => {
             >
               <Radio.Group buttonStyle="solid" onChange={handleLoaiDe}>
                 <Row gutter={[15, 15]}>
-                  {dataLoaiDe.map((record: any) => (
+                  {dataLoaiDe.map((record) => (
                     <Col key={record.id}>
                       <Radio.Button
                         value={record.id}
                         disabled={
                           !data.some((item) => item.loaiDe.id === record.id)
                         }
+                        checked={record.id === selectedValue}
                       >
                         {record.ten}
                       </Radio.Button>
@@ -286,6 +284,7 @@ const detailSanPham: React.FC = () => {
                 </Row>
               </Radio.Group>
             </Form.Item>
+
             <Form.Item
               label="Địa hình sân"
               name="diaHinhSan"
@@ -322,6 +321,9 @@ const detailSanPham: React.FC = () => {
                   readOnly
                 />
                 <Button icon={<PlusOutlined />} onClick={handleIncrement} />
+                <span style={{ color: "#b5bdbd", marginLeft: 10 }}>
+                  {totalQuantity} sản phẩm có sẵn
+                </span>
               </Space.Compact>
             </Form.Item>
             <Form.Item>
