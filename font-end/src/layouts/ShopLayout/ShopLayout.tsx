@@ -87,8 +87,10 @@ const ShopLayout: React.FC = () => {
           </Badge>
         </Link>
       </Header>
-      <Content style={{ padding: "0 50px" }}>
-        <Outlet />
+      <Content style={{ background: "white" }}>
+        <div style={{ margin: 50 }}>
+          <Outlet />
+        </div>
       </Content>
       <Footer style={{ textAlign: "center" }}>
         Ant Design ©2023 Created by Ant UED

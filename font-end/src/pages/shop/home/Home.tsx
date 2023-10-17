@@ -19,7 +19,6 @@ const { Title, Text } = Typography;
 const { Meta } = Card;
 const Home: React.FC = () => {
   const [products, setProducts] = useState([]);
-  localStorage.setItem("cart", JSON.stringify("6"));
   useEffect(() => {
     const fetchProduct = async () => {
       try {
