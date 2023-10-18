@@ -1,6 +1,7 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.DiaHinhSan;
 import com.poly.application.entity.MauSac;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
@@ -29,6 +30,14 @@ public class MauSacServiceImpl implements MauSacService {
 
     @Autowired
     private MauSacMapper mapper;
+
+    @Override
+    public List<MauSacResponse> getMauSacByNgayTaoDESC() {
+        List<MauSac> list = repository.getMauSacByNgayTaoDESC();
+        return list.stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public Page<MauSacResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString) {

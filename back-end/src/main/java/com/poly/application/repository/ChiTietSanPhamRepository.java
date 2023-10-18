@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, Long> {
 
-    @Query("SELECT obj FROM ChiTietSanPham obj " +
+    @Query("SELECT obj, MIN(obj.giaTien) , MAX(obj.giaTien) FROM ChiTietSanPham obj " +
             "WHERE (obj.sanPham.id = :idSanPham) " +
             "AND (:idMauSac IS NULL OR obj.mauSac.id = :idMauSac OR :idMauSac = '') " +
             "AND (:idKichCo IS NULL OR obj.kichCo.id = :idKichCo OR :idKichCo = '') " +

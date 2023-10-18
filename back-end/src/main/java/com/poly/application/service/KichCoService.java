@@ -10,7 +10,8 @@ import java.util.List;
 
 public interface KichCoService {
 
-    List<KichCo> findByAll();
+    List<KichCoResponse> listKichCo();
+
     Page<KichCoResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString);
 
     KichCoResponse add(CreatedKichCoRequest request);

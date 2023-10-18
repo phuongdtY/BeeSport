@@ -40,9 +40,9 @@ public class ChiTietSanPhamMapper {
         return responses;
     }
 
-    public ChiTietSanPhamResponse convertCreateRequestToEntity(CreatedChiTietSanPhamRequest request) {
+    public ChiTietSanPham convertCreateRequestToEntity(CreatedChiTietSanPhamRequest request) {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        return mapper.map(request, ChiTietSanPhamResponse.class);
+        return mapper.map(request, ChiTietSanPham.class);
     }
 
     public void convertUpdateRequestToEntity(UpdatedChiTietSanPhamRequest request, ChiTietSanPham chiTietSanPham) {

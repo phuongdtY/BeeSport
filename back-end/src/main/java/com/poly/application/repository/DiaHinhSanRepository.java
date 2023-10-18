@@ -15,6 +15,9 @@ import java.util.List;
 @Repository
 public interface DiaHinhSanRepository extends JpaRepository<DiaHinhSan, Long> {
 
+    @Query("SELECT dhs FROM DiaHinhSan dhs ORDER BY dhs.ngayTao DESC")
+    List<DiaHinhSan> getDiaHinhSanByNgayTaoDESC();
+
     @Query("SELECT obj FROM DiaHinhSan obj WHERE (obj.ten LIKE %:searchText%) AND (:trangThai IS NULL OR obj.trangThai = :trangThai)")
     Page<DiaHinhSan> findByAll(Pageable pageable, String searchText, CommonEnum.TrangThaiThuocTinh trangThai);
 

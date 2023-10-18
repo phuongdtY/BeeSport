@@ -1,5 +1,6 @@
 package com.poly.application.service.impl;
 
+import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.ChiTietSanPham;
 import com.poly.application.model.mapper.ChiTietSanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRequest;
@@ -35,7 +36,10 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
 
     @Override
     public ChiTietSanPhamResponse add(CreatedChiTietSanPhamRequest request) {
-        return null;
+        ChiTietSanPham createdChiTietSanPham = mapper.convertCreateRequestToEntity(request);
+        createdChiTietSanPham.setTrangThai(CommonEnum.TrangThaiChiTietSanPham.ACTIVE);
+        ChiTietSanPham savedChiTietSanPham = repository.save(createdChiTietSanPham);
+        return mapper.convertEntityToResponse(savedChiTietSanPham);
     }
 
     @Override

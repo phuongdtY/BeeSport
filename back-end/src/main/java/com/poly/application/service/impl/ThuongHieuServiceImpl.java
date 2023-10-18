@@ -1,6 +1,7 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.DiaHinhSan;
 import com.poly.application.entity.ThuongHieu;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
@@ -17,7 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ThuongHieuServiceImpl implements ThuongHieuService {
@@ -27,6 +30,14 @@ public class ThuongHieuServiceImpl implements ThuongHieuService {
 
     @Autowired
     private ThuongHieuMapper mapper;
+
+    @Override
+    public List<ThuongHieuResponse> getThuongHieuByNgayTaoDESC() {
+        List<ThuongHieu> list = repository.getThuongHieuByNgayTaoDESC();
+        return list.stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public Page<ThuongHieuResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString) {

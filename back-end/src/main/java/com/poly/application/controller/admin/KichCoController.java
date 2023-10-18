@@ -39,9 +39,9 @@ public class KichCoController {
         return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, trangThaiString));
     }
 
-    @GetMapping("/all")
-    public  ResponseEntity<?> getFindAll(){
-        return ResponseEntity.ok(service.findByAll());
+    @GetMapping("/list")
+    public ResponseEntity<?> list() {
+        return ResponseEntity.ok(service.listKichCo());
     }
 
     @PostMapping()

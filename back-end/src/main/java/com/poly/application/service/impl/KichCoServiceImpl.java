@@ -30,10 +30,12 @@ public class KichCoServiceImpl implements KichCoService {
     @Autowired
     private KichCoMapper mapper;
 
-
     @Override
-    public List<KichCo> findByAll() {
-        return repository.findAllByOrderByKichCoAsc();
+    public List<KichCoResponse> listKichCo() {
+        List<KichCo> list = repository.findAllByOrderByKichCoAsc();
+        return list.stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override

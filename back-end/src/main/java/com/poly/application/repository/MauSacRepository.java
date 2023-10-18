@@ -13,6 +13,9 @@ import java.util.List;
 @Repository
 public interface MauSacRepository extends JpaRepository<MauSac, Long> {
 
+    @Query("SELECT ms FROM MauSac ms ORDER BY ms.ngayTao DESC")
+    List<MauSac> getMauSacByNgayTaoDESC();
+
     @Query("SELECT obj FROM MauSac obj WHERE (obj.ma LIKE %:searchText% OR obj.ten LIKE %:searchText%) AND (:trangThai IS NULL OR obj.trangThai = :trangThai)")
     Page<MauSac> findByAll(Pageable pageable, String searchText, CommonEnum.TrangThaiThuocTinh trangThai);
 

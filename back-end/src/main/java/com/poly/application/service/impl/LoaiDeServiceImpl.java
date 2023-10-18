@@ -2,6 +2,7 @@ package com.poly.application.service.impl;
 
 import com.amazonaws.services.mq.model.NotFoundException;
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.DiaHinhSan;
 import com.poly.application.entity.LoaiDe;
 import com.poly.application.entity.MauSac;
 import com.poly.application.exception.BadRequestException;
@@ -31,6 +32,14 @@ public class LoaiDeServiceImpl implements LoaiDeService {
 
     @Autowired
     private LoaiDeMapper mapper;
+
+    @Override
+    public List<LoaiDeResponse> getLoaiDeByNgayTaoDESC() {
+        List<LoaiDe> list = repository.getLoaiDeByNgayTaoDESC();
+        return list.stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public Page<LoaiDeResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString) {

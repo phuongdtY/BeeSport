@@ -15,6 +15,9 @@ import java.util.List;
 @Repository
 public interface LoaiDeRepository extends JpaRepository<LoaiDe, Long> {
 
+    @Query("SELECT ld FROM LoaiDe ld ORDER BY ld.ngayTao DESC")
+    List<LoaiDe> getLoaiDeByNgayTaoDESC();
+
     @Query("SELECT obj FROM LoaiDe obj WHERE (obj.ten LIKE %:searchText%) AND (:trangThai IS NULL OR obj.trangThai = :trangThai)")
     Page<LoaiDe> findByAll(Pageable pageable, String searchText, CommonEnum.TrangThaiThuocTinh trangThai);
 
