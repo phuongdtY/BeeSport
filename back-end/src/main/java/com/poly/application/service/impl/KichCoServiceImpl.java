@@ -3,15 +3,11 @@ package com.poly.application.service.impl;
 import com.amazonaws.services.mq.model.NotFoundException;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.KichCo;
-import com.poly.application.entity.LoaiDe;
-import com.poly.application.entity.MauSac;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.model.mapper.KichCoMapper;
 import com.poly.application.model.request.create_request.CreatedKichCoRequest;
-import com.poly.application.model.request.create_request.CreatedLoaiDeRequest;
 import com.poly.application.model.request.update_request.UpdatedKichCoRequest;
 import com.poly.application.model.response.KichCoResponse;
-import com.poly.application.model.response.MauSacResponse;
 import com.poly.application.repository.KichCoRepository;
 import com.poly.application.service.KichCoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +29,12 @@ public class KichCoServiceImpl implements KichCoService {
 
     @Autowired
     private KichCoMapper mapper;
+
+
+    @Override
+    public List<KichCo> findByAll() {
+        return repository.findAllByOrderByKichCoAsc();
+    }
 
     @Override
     public Page<KichCoResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString) {

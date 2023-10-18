@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface KichCoRepository extends JpaRepository<KichCo, Long> {
-
+    List<KichCo> findAllByOrderByKichCoAsc();
     @Query("SELECT obj FROM KichCo obj WHERE (CAST(obj.kichCo AS string) LIKE %:searchText%) AND (:trangThai IS NULL OR obj.trangThai = :trangThai)")
     Page<KichCo> findByAll(Pageable pageable, String searchText, CommonEnum.TrangThaiThuocTinh trangThai);
 

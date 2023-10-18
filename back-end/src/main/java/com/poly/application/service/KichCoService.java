@@ -1,5 +1,6 @@
 package com.poly.application.service;
 
+import com.poly.application.entity.KichCo;
 import com.poly.application.model.request.create_request.CreatedKichCoRequest;
 import com.poly.application.model.request.update_request.UpdatedKichCoRequest;
 import com.poly.application.model.response.KichCoResponse;
@@ -9,6 +10,7 @@ import java.util.List;
 
 public interface KichCoService {
 
+    List<KichCo> findByAll();
     Page<KichCoResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString);
 
     KichCoResponse add(CreatedKichCoRequest request);
