@@ -9,12 +9,14 @@ import com.poly.application.entity.SanPham;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@ToString
 public class CreatedChiTietSanPhamRequest {
 
     private Long id;

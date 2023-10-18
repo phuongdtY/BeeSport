@@ -46,7 +46,6 @@ public class ChiTietSanPhamMapper {
     }
 
     public void convertUpdateRequestToEntity(UpdatedChiTietSanPhamRequest request, ChiTietSanPham chiTietSanPham) {
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         mapper.map(request, chiTietSanPham);
     }
 

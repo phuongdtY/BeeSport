@@ -130,7 +130,7 @@ public class CommonEnum {
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum TrangThaiChiTietSanPham{
         ACTIVE("ACTIVE", "Hoạt động", "success"),
-        INACTIVE("INACTIVE", "Không hoạt động", "red"),
+        INACTIVE("INACTIVE", "Ngừng kinh doanh", "red"),
         OUT_OF_STOCK("OUT_OF_STOCK", "Hết hàng", "green");
 
         private final String ten;

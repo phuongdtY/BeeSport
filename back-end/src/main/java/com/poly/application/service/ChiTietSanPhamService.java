@@ -14,8 +14,10 @@ public interface ChiTietSanPhamService {
 
     ChiTietSanPhamResponse add(CreatedChiTietSanPhamRequest request);
 
+    List<ChiTietSanPhamResponse> addList(List<CreatedChiTietSanPhamRequest> requests);
+
     void delete(Long id);
 
-    ChiTietSanPhamResponse update(UpdatedChiTietSanPhamRequest request);
+    ChiTietSanPhamResponse update(Long id, UpdatedChiTietSanPhamRequest request);
 
 }
