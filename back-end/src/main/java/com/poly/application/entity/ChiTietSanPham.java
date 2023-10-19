@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -40,15 +41,14 @@ public class ChiTietSanPham {
     @Column(name = "gia_tien")
     private BigDecimal giaTien;
 
-    @Column(name = "mo_ta")
-    private String moTa;
-
     @CreationTimestamp
-    @Column(name = "ngay_tao")
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")
     private LocalDateTime ngayTao;
 
     @UpdateTimestamp
-    @Column(name = "ngay_sua")
+    @ColumnDefault("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(name = "ngay_sua", columnDefinition = "TIMESTAMP")
     private LocalDateTime ngaySua;
 
     @Column(name = "nguoi_tao")

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface MauSacRepository extends JpaRepository<MauSac, Long> {
 
@@ -16,4 +18,6 @@ public interface MauSacRepository extends JpaRepository<MauSac, Long> {
 
     boolean existsByMa (String ma);
     boolean existsByTen ( String ten);
+    @Query("SELECT DISTINCT ms FROM ChiTietSanPham ctsp JOIN MauSac ms ON ctsp.mauSac.id = ms.id  WHERE ctsp.sanPham.id = :idSanPham")
+    List<MauSac> getMauSacKhongLap(Long idSanPham);
 }

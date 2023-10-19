@@ -5,6 +5,8 @@ import com.poly.application.model.request.update_request.UpdatedLoaiDeRequest;
 import com.poly.application.model.response.LoaiDeResponse;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface LoaiDeService {
 
     Page<LoaiDeResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString);
@@ -16,5 +18,7 @@ public interface LoaiDeService {
     void delete(Long id);
 
     LoaiDeResponse findById(Long id);
+
+    List<LoaiDeResponse> getLoaiDeKhongLap(Long idSanPham);
 
 }

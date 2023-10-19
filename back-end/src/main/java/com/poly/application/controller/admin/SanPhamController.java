@@ -33,11 +33,9 @@ public class SanPhamController {
             @RequestParam(name = "sortOrder", defaultValue = "", required = false) String sortOrder,
             @RequestParam(name = "searchText", defaultValue = "") String searchText,
             @RequestParam(name = "thuongHieuId", defaultValue = "") Long thuongHieuId,
-            @RequestParam(name = "loaiDeId", defaultValue = "") Long loaiDeId,
-            @RequestParam(name = "diaHinhSanId", defaultValue = "") Long diaHinhSanId,
             @RequestParam(name = "trangThai", required = false) String trangThaiString
     ) {
-        return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, diaHinhSanId, trangThaiString));
+        return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, thuongHieuId, trangThaiString));
     }
 
     @PostMapping()
@@ -59,6 +57,16 @@ public class SanPhamController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(service.findById(id));
+    }
+
+    @GetMapping("/san-pham-moi")
+    public ResponseEntity<?> get5SanPhamMoiNhat() {
+        return ResponseEntity.ok(service.get5SanPhamMoiNhat());
+    }
+
+    @GetMapping("/gia-tien-moi-nhat")
+    public ResponseEntity<?> giaTien5SanPhamMoiNhat() {
+        return ResponseEntity.ok(service.giaTien5SanPhamMoiNhat());
     }
 
 }
