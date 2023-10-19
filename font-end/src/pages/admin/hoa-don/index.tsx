@@ -64,16 +64,16 @@ const index: React.FC = () => {
       ),
     },
     {
-        title: "Trạng Thái",
-        dataIndex: "trangThaiHoaDon",
-        key: "trangThaiHoaDon",
-        align: "center",
-        sorter: true,
-        width: "20%",
-        // render: (trangThaiHoaDon) => (
-        //   <Tag color={trangThaiHoaDon.mauSac}>{trangThaiHoaDon.moTa}</Tag>
-        // ),
-      },
+      title: "Trạng Thái",
+      dataIndex: "trangThaiHoaDon",
+      key: "trangThaiHoaDon",
+      align: "center",
+      sorter: true,
+      width: "20%",
+      // render: (trangThaiHoaDon) => (
+      //   <Tag color={trangThaiHoaDon.mauSac}>{trangThaiHoaDon.moTa}</Tag>
+      // ),
+    },
     {
       title: "Thao Tác",
       dataIndex: "id",
