@@ -129,18 +129,24 @@ const index: React.FC = () => {
         { text: "Khác", value: "OTHER" },
       ],
       render: (gioiTinh) => {
-        const genderInfo: Record<string, { icon: JSX.Element; color: string }> =
-          {
+        if (gioiTinh) {
+          const genderInfo: Record<
+            string,
+            { icon: JSX.Element; color: string }
+          > = {
             MALE: { icon: <ManOutlined />, color: gioiTinh.mauSac },
             FEMALE: { icon: <WomanOutlined />, color: gioiTinh.mauSac },
             OTHER: { icon: <UserOutlined />, color: gioiTinh.mauSac },
           };
-        const { icon, color } = genderInfo[gioiTinh.ten];
-        return (
-          <Tag bordered={false} icon={icon} color={color}>
-            {gioiTinh.moTa}
-          </Tag>
-        );
+          const { icon, color } = genderInfo[gioiTinh.ten];
+          return (
+            <Tag bordered={false} icon={icon} color={color}>
+              {gioiTinh.moTa}
+            </Tag>
+          );
+        } else {
+          return null; // Trả về giá trị mặc định hoặc thông báo lỗi tùy thuộc vào ngữ cảnh
+        }
       },
     },
     {

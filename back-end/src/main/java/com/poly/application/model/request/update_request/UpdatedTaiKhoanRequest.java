@@ -1,5 +1,6 @@
 package com.poly.application.model.request.update_request;
 
+import com.poly.application.common.CommonEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
