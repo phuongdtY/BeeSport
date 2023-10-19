@@ -27,7 +27,7 @@ public class UpdatedTaiKhoanRequest {
     private LocalDate ngaySinh;
 
     @NotNull(message = "Vui lòng chọn giới tính")
-    private Boolean gioiTinh;
+    private CommonEnum.GioiTinh gioiTinh;
 
     @NotBlank(message = "Vui lòng nhập số điện thoại")
     @Pattern(message = "Số điện thoại không hợp lệ", regexp = "^0[35789]\\d{8}$")
@@ -53,6 +53,6 @@ public class UpdatedTaiKhoanRequest {
 
     private String matKhau;
 
-    private Integer trangThai;
+    private CommonEnum.TrangThaiThuocTinh trangThai;
 
 }

@@ -22,7 +22,7 @@ public class TaiKhoanMapper {
         return modelMapper.map(taiKhoan, TaiKhoanResponse.class);
     }
 
-    public TaiKhoan convertCreateRequestToEntity(CreatedTaiKhoanRequest createTaiKhoanRequest) {
+    public TaiKhoan convertCreateRequestToEntity(CreateTaiKhoanRequest createTaiKhoanRequest) {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
 
         TypeMap<CreatedTaiKhoanRequest, TaiKhoan> typeMap = modelMapper.getTypeMap(CreatedTaiKhoanRequest.class, TaiKhoan.class);
