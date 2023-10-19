@@ -144,11 +144,37 @@ public class CommonEnum {
     public enum TrangThaiChiTietSanPham{
         ACTIVE("ACTIVE", "Hoạt động", "success"),
         INACTIVE("INACTIVE", "Không hoạt động", "red"),
-        OUT_OF_STOCK("OUT_OF_STOCK", "Hết hàng", "red");
+        OUT_OF_STOCK("OUT_OF_STOCK", "Hết hàng", "green");
 
         private final String ten;
         private final String moTa;
         private final String mauSac;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum HinhThucGiam{
+        PERCENT("PERCENT", "Phần trăm",""),
+        AMOUNT("AMOUNT", "Số lượng","");
+
+        private final String ten;
+        private final String moTa;
+        private final String voucher;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum TrangThaiVoucher{
+        ACTIVE("ACTIVE", "Hoạt động",""),
+        EXPIRED("EXPIRED", "Hết hạn",""),
+        INACTIVE("INACTIVE", "Không hoạt động",""),
+        UPCOMING("UPCOMING", "Sắp tới","");
+
+        private final String ten;
+        private final String moTa;
+        private final String voucher;
     }
 
 }

@@ -54,16 +54,17 @@ const CustomSider: React.FC<{
         getItem(<Link to="/admin/loai-de">Loại đế</Link>, "7"),
         getItem(<Link to="/admin/thuong-hieu">Thương hiệu</Link>, "8"),
         getItem(<Link to="/admin/dia-hinh-san">Địa hình sân</Link>, "9"),
+        getItem(<Link to="/admin/kich-co">Kích cỡ</Link>, "10"),
       ]),
     ]),
 
     getItem("Quản lý tài khoản", "sub2", <TeamOutlined />, [
-      getItem(<Link to="/admin/khach-hang">Khách hàng</Link>, "10"),
-      getItem(<Link to="/admin/nhan-vien">Nhân viên</Link>, "11"),
+      getItem(<Link to="/admin/khach-hang">Khách hàng</Link>, "11"),
+      getItem(<Link to="/admin/nhan-vien">Nhân viên</Link>, "12"),
     ]),
     getItem(
       <Link to="/admin/voucher">Quản lý voucher</Link>,
-      "12",
+      "13",
       <GiftOutlined />
     ),
   ];

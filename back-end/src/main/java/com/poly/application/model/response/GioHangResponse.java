@@ -31,7 +31,7 @@ public class GioHangResponse {
 
     private LocalDateTime ngaySua;
 
-    private CommonEnum.TrangThaiThuocTinh trangThai;
+    private Integer trangThai;
 
     private TaiKhoan taiKhoan;
 

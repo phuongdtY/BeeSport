@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import IndexNhanVien from "./pages/admin/nhan-vien/index";
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
 import AddNV from "./pages/admin/nhan-vien/add";
-import UpdateNhanVien from "./pages/admin/nhan-vien/update";
 import IndexMauSac from "./pages/admin/mau-sac/index";
 import AddMauSac from "./pages/admin/mau-sac/add";
 import UpdateMauSac from "./pages/admin/mau-sac/update";
@@ -22,16 +21,13 @@ import ShopLayout from "./layouts/ShopLayout/ShopLayout";
 import Home from "./pages/shop/home/Home";
 import GioHang from "./pages/shop/gio-hang/GioHang";
 import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
-import Signin from "./pages/login/sign-in/Signin";
-import Signup from "./pages/login/sign-up/Singup";
-import Forgotpassword from "./pages/login/forgot-password/Forgotpassword";
+import IndexVoucher from "./pages/admin/voucher/index";
+import AddVoucher from "./pages/admin/voucher/add";
+import UpdateVoucher from "./pages/admin/voucher/update";  
 
 function App() {
   return (
     <Routes>
-      <Route path="/sign-in" element={<Signin />} />
-      <Route path="/sign-up" element={<Signup />} />
-      <Route path="/forgot-password" element={<Forgotpassword />} />
       <Route path="/thanh-toan" element={<ThanhToan />} />
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
@@ -40,7 +36,6 @@ function App() {
       <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />
         <Route path="nhan-vien/add" element={<AddNV />} />
-        <Route path="nhan-vien/update/:id" element={<UpdateNhanVien />} />
         <Route path="mau-sac" element={<IndexMauSac />} />
         <Route path="mau-sac/add" element={<AddMauSac />} />
         <Route path="mau-sac/update/:id" element={<UpdateMauSac />} />
@@ -55,6 +50,9 @@ function App() {
         <Route path="loai-de" element={<IndexLoaiDe />} />
         <Route path="loai-de/add" element={<AddLoaiDe />} />
         <Route path="loai-de/update/:id" element={<UpdateLoaiDe />} />
+        <Route path="voucher" element={<IndexVoucher />} />
+        <Route path="voucher/add" element={<AddVoucher />} />
+        <Route path="voucher/:id" element={<UpdateVoucher />} />
       </Route>
     </Routes>
   );

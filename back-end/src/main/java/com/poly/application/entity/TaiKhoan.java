@@ -19,6 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -80,11 +81,13 @@ import java.util.List;
         private String matKhau;
 
         @CreationTimestamp
-        @Column(name = "ngay_tao")
+        @ColumnDefault("CURRENT_TIMESTAMP")
+        @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")
         private LocalDateTime ngayTao;
 
         @UpdateTimestamp
-        @Column(name = "ngay_sua")
+        @ColumnDefault("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+        @Column(name = "ngay_sua", columnDefinition = "TIMESTAMP")
         private LocalDateTime ngaySua;
 
         @Enumerated(EnumType.STRING)

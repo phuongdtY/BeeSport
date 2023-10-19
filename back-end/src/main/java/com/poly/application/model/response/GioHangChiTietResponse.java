@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 public class GioHangChiTietResponse {
 
-    private Long id;
+    private  Long id;
 
     private Integer soLuong;
 
