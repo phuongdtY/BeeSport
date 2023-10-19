@@ -51,6 +51,8 @@ public class UpdatedTaiKhoanRequest {
 
     private MultipartFile flieAnhDaiDien;
 
+    private String matKhau;
+
     private Integer trangThai;
 
 }

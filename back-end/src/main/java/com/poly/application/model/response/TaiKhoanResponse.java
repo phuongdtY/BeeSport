@@ -19,7 +19,7 @@ public class TaiKhoanResponse {
 
     private LocalDate ngaySinh;
 
-    private Integer tuoi;
+    private  Integer tuoi;
 
     private CommonEnum.GioiTinh gioiTinh;
 
@@ -37,11 +37,13 @@ public class TaiKhoanResponse {
 
     private String anhDaiDien;
 
+    private String matKhau;
+
     private LocalDateTime ngayTao;
 
     private LocalDateTime ngaySua;
 
-    private Integer trangThai;
+    private CommonEnum.TrangThaiThuocTinh trangThai;
 
 
 }

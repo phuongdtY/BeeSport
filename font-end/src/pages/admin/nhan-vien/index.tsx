@@ -165,12 +165,9 @@ const index: React.FC = () => {
       dataIndex: "trangThai",
       key: "trangThai",
       sorter: true,
-      render: (trangThai) =>
-        trangThai == 1 ? (
-          <Tag color="success">Kích hoạt</Tag>
-        ) : (
-          <Tag color="error">Ngừng kích hoạt</Tag>
-        ),
+      render: (trangThai) => (
+        <Tag color={trangThai.mauSac}>{trangThai.moTa}</Tag>
+      ),
     },
     {
       title: "Thao Tác",
@@ -375,11 +372,11 @@ const index: React.FC = () => {
           />
           <Divider style={{ margin: 0 }} />
           <DescriptionItem title="Trạng thái">
-            {contentModal?.trangThai === 1 ? (
+            {/* {contentModal?.trangThai === "Kích hoạt" ? (
               <Tag color="success">Kích hoạt</Tag>
             ) : (
               <Tag color="error">Ngừng kích hoạt</Tag>
-            )}
+            )} */}
           </DescriptionItem>
           <Divider style={{ margin: 0 }} />
         </Modal>
@@ -418,15 +415,15 @@ const index: React.FC = () => {
                   onChange={onChangeStatus}
                   options={[
                     { value: "", label: "Tất cả" },
-                    { value: "1", label: "Kích hoạt" },
-                    { value: "0", label: "Ngừng kích hoạt" },
+                    { value: "ACTIVE", label: "Kích hoạt" },
+                    { value: "INACTIVE", label: "Ngừng kích hoạt" },
                   ]}
                 />
               </Form.Item>
             </Space>
           </Col>
           <Col span={3}>
-            <Link to="/admin/nhan-vien/new">
+            <Link to="/admin/nhan-vien/add">
               <Button type="primary" icon={<UserAddOutlined />}>
                 Thêm nhân viên
               </Button>

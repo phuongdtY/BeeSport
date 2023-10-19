@@ -10,9 +10,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,6 +34,7 @@ import java.util.List;
     @Setter
     @Table(name = "tai_khoan")
     @Entity
+    @Builder
     public class TaiKhoan implements Serializable {
 
         @Id
@@ -54,7 +58,7 @@ import java.util.List;
         @Column(name = "so_dien_thoai",unique = true)
         private String soDienThoai;
 
-        @Column(name = "email",unique = true)
+        @Column(name = "email")
         private String email;
 
         @Column(name = "thanh_pho")
@@ -83,8 +87,9 @@ import java.util.List;
         @Column(name = "ngay_sua")
         private LocalDateTime ngaySua;
 
+        @Enumerated(EnumType.STRING)
         @Column(name = "trang_thai")
-        private Integer trangThai;
+        private CommonEnum.TrangThaiThuocTinh trangThai;
 
         @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private List<DiaChi> diaChiList;
@@ -95,7 +100,8 @@ import java.util.List;
         @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private List<GiaoDich> giaoDichList;
 
-        @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        private List<VaiTro> vaiTroList;
+        @ManyToOne
+        @JoinColumn(name = "vai_tro_id", referencedColumnName = "id")
+        private VaiTro vaiTro;
 
 }

@@ -35,6 +35,19 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum Ten{
+        MANAGER("MANAGER","Quản Lý",""),
+        EMPLOYEE("EMPLOYEE","Nhân Viên",""),
+        CUSTOMER("CUSTOMER","Khách Hàng","");
+
+        private final String ten;
+        private final String moTa;
+        private final String mauSac;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum LoaiHoaDon{
         ONLINE("ONLINE","Trên website",""),
         COUNTER("COUNTER","Bán hàng tại quầy",""),
