@@ -17,7 +17,6 @@ public class CreatedSanPhamRequest {
 
     private Long id;
 
-    @NotBlank(message = "Vui lòng điền mã sản phẩm")
     private String ma;
 
     @NotBlank(message = "Vui lòng điền tên sản phẩm")

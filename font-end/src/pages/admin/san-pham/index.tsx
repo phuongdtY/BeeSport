@@ -14,6 +14,7 @@ import {
   Input,
   Row,
   Select,
+  Slider,
   Space,
   Table,
   TablePaginationConfig,
@@ -198,6 +199,7 @@ const index: React.FC = () => {
           loading={loading}
           showSorterTooltip={false}
         />
+        <Slider max={1000} />
       </Card>
     </>
   );

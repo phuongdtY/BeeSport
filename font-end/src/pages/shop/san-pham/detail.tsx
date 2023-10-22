@@ -134,7 +134,7 @@ const detailSanPham: React.FC = () => {
       );
       if (productResponse.data) {
         await request.post("/gio-hang-chi-tiet", {
-          gioHang: { id: id },
+          gioHang: { id: 1 },
           soLuong: quantity, // Số lượng
           chiTietSanPham: { id: productResponse.data.id },
         });
