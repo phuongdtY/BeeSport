@@ -18,6 +18,15 @@ import java.util.List;
 @Repository
 public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
 
+//    @Query("SELECT sp FROM SanPham sp " +
+//            "JOIN ChiTietSanPham ctsp ON sp.id = ctsp.sanPham.id " +
+//            "WHERE (ctsp.loaiDe.id = :idLoaiDe OR :idLoaiDe IS NULL OR :idLoaiDe = '') " +
+//            "AND (ctsp.diaHinhSan.id = :idDiaHinhSan OR :idDiaHinhSan IS NULL OR :idDiaHinhSan = '') " +
+//            "AND (ctsp.mauSac.id = :idMauSac OR :idMauSac IS NULL OR :idMauSac = '') " +
+//            "AND (sp.thuongHieu.id = :idThuongHieu OR :idThuongHieu IS NULL OR :idThuongHieu = '') " +
+//            "AND (sp.trangThai = :trangThai OR :trangThai IS NULL)")
+//    Page<SanPham> getAll();
+
     @Query("SELECT obj FROM SanPham obj " +
             "WHERE (obj.ma LIKE %:searchText% OR obj.ten LIKE %:searchText%) " +
             "AND (:thuongHieuId IS NULL OR obj.thuongHieu.id = :thuongHieuId OR :thuongHieuId = '') " +
