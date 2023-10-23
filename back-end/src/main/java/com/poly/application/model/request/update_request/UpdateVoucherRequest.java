@@ -1,7 +1,9 @@
 package com.poly.application.model.request.update_request;
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.HinhThucGiamGia;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,8 +24,8 @@ public class UpdateVoucherRequest {
 
     private Date ngayKetThuc;
 
-    @Enumerated(EnumType.STRING)
-    private CommonEnum.HinhThucGiam hinhThucGiam;
+    @NotNull(message = "Vui lòng chọn hình thức giảm giá")
+    private HinhThucGiamGia hinhThucGiam;
 
     private BigDecimal giaToiThieu;
 
@@ -31,10 +33,7 @@ public class UpdateVoucherRequest {
 
     private BigDecimal giaTriGiamToiDa;
 
-//    private LocalDateTime ngayTao;
-//
-//    private LocalDateTime ngaySua;
-//
+    private LocalDateTime ngaySua;
 //    @Enumerated(EnumType.STRING)
 //    private CommonEnum.TrangThaiVoucher trangThai;
 }

@@ -1,7 +1,10 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.HinhThucGiamGia;
+import com.poly.application.entity.SanPham;
 import com.poly.application.entity.Voucher;
+import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.VoucherMapper;
 import com.poly.application.model.request.create_request.CreatedVoucherRequest;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class VoucherServiceImpl implements VoucherService {
@@ -30,7 +34,8 @@ public class VoucherServiceImpl implements VoucherService {
 
 
     @Override
-    public Page<VoucherResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString) {
+    public Page<VoucherResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,
+                                        String searchText, Long hinhThucGiamGiaId,String trangThaiString) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
@@ -46,18 +51,39 @@ public class VoucherServiceImpl implements VoucherService {
             trangThai = CommonEnum.TrangThaiVoucher.valueOf(trangThaiString);
         }
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<Voucher> voucherPage = repository.findByALl(pageable, searchText,trangThai);
+        Page<Voucher> voucherPage = repository.findByALl(pageable, searchText, hinhThucGiamGiaId, trangThai);
         return voucherPage.map(mapper::convertEntityToResponse);
     }
 
     @Override
     public VoucherResponse add(CreatedVoucherRequest request) {
-        Voucher voucher = mapper.convertCreateRequestToEntity(request);
-        voucher.setHinhThucGiam(CommonEnum.HinhThucGiam.PERCENT);
-        voucher.setNgayTao(LocalDateTime.now());
-        voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
-        Voucher saveVoucher = this.repository.save(voucher);
-        return mapper.convertEntityToResponse(saveVoucher);
+        Voucher createdVoucher = mapper.convertCreateRequestToEntity(request);
+
+        String defaultString  = "BeeSprot"; // Chữ cái mặc định
+        String code = defaultString;
+
+        // Tạo một mảng boolean để theo dõi các số đã sử dụng
+        boolean[] usedDigits  = new boolean[6];
+
+        // Tạo một đối tượng Random để tạo số ngẫu nhiên
+        Random random = new Random();
+
+        for (int i = 0; i <= 6; i++) {
+            int digit;
+            do {
+                digit = random.nextInt(6);
+            } while (usedDigits[digit]);
+
+            // Đánh dấu số đã sử dụng
+            usedDigits[digit] = true;
+
+            // Thêm số vào mã
+            code += digit;
+        }
+        createdVoucher.setMa(code);
+//        createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
+        Voucher savedVoucher = this.repository.save(createdVoucher);
+        return mapper.convertEntityToResponse(savedVoucher);
     }
 
     @Override
@@ -69,6 +95,7 @@ public class VoucherServiceImpl implements VoucherService {
 
         Voucher voucher = optional.get();
         voucher.setNgaySua(LocalDateTime.now());
+        voucher.setHinhThucGiamGia(request.getHinhThucGiam());
         mapper.convertUpdateRequestToEntity(request, voucher);
         return mapper.convertEntityToResponse(repository.save(voucher));
     }

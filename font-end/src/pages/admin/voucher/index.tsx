@@ -293,8 +293,12 @@ const index: React.FC = () => {
           <Divider />
           <DescriptionItem title="Ngày kết thúc" content={contentModal?.ngayKetThuc} />
           <Divider style={{ margin: 0 }} />
-          <DescriptionItem title="Ngày tạo" content={contentModal?.ngayTao} />
-          <Divider style={{ margin: 0 }} />
+          {/* <DescriptionItem title="Ngày tạo" content={contentModal?.ngayTao} />
+          <Divider style={{ margin: 0 }} /> */}
+          <DescriptionItem
+            title="Ngày tạo"
+            content={formatNgayTao(contentModal?.ngayTao)}
+          />
           {/* <DescriptionItem title="Trạng thái" />
             {(() => {
               if (trangThai == 'ACTIVE') {

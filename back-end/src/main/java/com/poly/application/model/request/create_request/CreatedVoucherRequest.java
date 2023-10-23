@@ -1,8 +1,10 @@
 package com.poly.application.model.request.create_request;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.HinhThucGiamGia;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,16 +16,10 @@ import java.util.Date;
 @Setter
 public class CreatedVoucherRequest {
 
-    private String ma;
-
     private String ten;
 
-    private Date ngayBatDau;
-
-    private Date ngayKetThuc;
-
-    @Enumerated(EnumType.STRING)
-    private CommonEnum.HinhThucGiam hinhThucGiam;
+    @NotNull(message = "Vui lòng chọn hình thức giảm giá")
+    private HinhThucGiamGia hinhThucGiam;
 
     private BigDecimal giaToiThieu;
 
@@ -31,6 +27,5 @@ public class CreatedVoucherRequest {
 
     private BigDecimal giaTriGiamToiDa;
 
-//    @Enumerated(EnumType.STRING)
 //    private CommonEnum.TrangThaiVoucher trangThai;
 }

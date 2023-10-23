@@ -1,8 +1,12 @@
 package com.poly.application.entity;
 
 import com.poly.application.common.CommonEnum;
+
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.io.Serializable;
@@ -40,9 +44,9 @@ public class Voucher implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date ngayKetThuc;
 
-    @Column(name = "hinh_thuc_giam")
-    @Enumerated(EnumType.STRING)
-    private CommonEnum.HinhThucGiam hinhThucGiam;
+    @ManyToOne
+    @JoinColumn(name = "hinh_thuc_giam_gia_id", referencedColumnName = "id")
+    private HinhThucGiamGia hinhThucGiamGia;
 
     @Column(name = "gia_toi_thieu")
     private BigDecimal giaToiThieu;

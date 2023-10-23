@@ -21,10 +21,11 @@ public class VoucherController {
             @RequestParam(name = "sortField", required = false) String sortField,
             @RequestParam(name = "sortOrder", defaultValue = "", required = false) String sortOrder,
             @RequestParam(name = "searchText", defaultValue = "") String searchText,
+            @RequestParam(name = "hinhThucGiamGiaId", defaultValue = "") Long hinhThucGiamGiaId,
             @RequestParam(name = "trangThai", required = false) String trangThaiString
 
     ) {
-        return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, trangThaiString));
+        return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, hinhThucGiamGiaId, trangThaiString));
     }
 
     @PostMapping("/add")

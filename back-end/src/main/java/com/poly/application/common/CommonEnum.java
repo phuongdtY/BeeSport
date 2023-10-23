@@ -142,12 +142,12 @@ public class CommonEnum {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum HinhThucGiam{
-        PERCENT("PERCENT", "Phần trăm",""),
-        AMOUNT("AMOUNT", "Số lượng","");
+        ACTIVE("ACTIVE", "Hoạt động",""),
+        INACTIVE("INACTIVE", "Không hoạt động","");
 
         private final String ten;
         private final String moTa;
-        private final String voucher;
+        private final String hinhThucGiamGia;
     }
 
     @AllArgsConstructor
