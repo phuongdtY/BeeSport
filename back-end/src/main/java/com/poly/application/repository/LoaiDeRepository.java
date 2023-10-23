@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface LoaiDeRepository extends JpaRepository<LoaiDe, Long> {
 
-    @Query("SELECT ld FROM LoaiDe ld ORDER BY ld.ngayTao DESC")
+    @Query("SELECT ld FROM LoaiDe ld WHERE ld.trangThai = 'ACTIVE' ORDER BY ld.ngayTao DESC")
     List<LoaiDe> getLoaiDeByNgayTaoDESC();
 
     @Query("SELECT obj FROM LoaiDe obj WHERE (obj.ten LIKE %:searchText%) AND (:trangThai IS NULL OR obj.trangThai = :trangThai)")
@@ -23,7 +23,7 @@ public interface LoaiDeRepository extends JpaRepository<LoaiDe, Long> {
 
     boolean existsByTen(String ten);
 
-    @Query("SELECT DISTINCT ld FROM ChiTietSanPham ctsp JOIN LoaiDe ld ON ctsp.loaiDe.id = ld.id  WHERE ctsp.sanPham.id = :idSanPham")
+    @Query("SELECT DISTINCT ld FROM ChiTietSanPham ctsp JOIN LoaiDe ld ON ctsp.loaiDe.id = ld.id  WHERE ctsp.sanPham.id = :idSanPham AND ld.trangThai = 'ACTIVE'")
     List<LoaiDe> getLoaiDeKhongLap(Long idSanPham);
 
 }
