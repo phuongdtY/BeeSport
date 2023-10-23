@@ -23,7 +23,10 @@ import GioHang from "./pages/shop/gio-hang/GioHang";
 import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
 import IndexVoucher from "./pages/admin/voucher/index";
 import AddVoucher from "./pages/admin/voucher/add";
-import UpdateVoucher from "./pages/admin/voucher/update";  
+import UpdateVoucher from "./pages/admin/voucher/update";
+import Signin from "./pages/login/sign-in/Signin";
+import Signup from "./pages/login/sign-up/Singup";
+import Forgotpassword from "./pages/login/forgot-password/Forgotpassword";
 
 function App() {
   return (
@@ -32,6 +35,9 @@ function App() {
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/gio-hang" element={<GioHang />} />
+        <Route path="/sign-in" element={<Signin />} />
+        <Route path="/sign-up" element={<Signup />} />
+        <Route path="/forgot-password" element={<Forgotpassword />} />
       </Route>
       <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />
