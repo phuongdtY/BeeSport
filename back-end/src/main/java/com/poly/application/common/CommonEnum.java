@@ -36,9 +36,9 @@ public class CommonEnum {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum LoaiHoaDon{
-        ONLINE("ONLINE","Trên website",""),
-        COUNTER("COUNTER","Bán hàng tại quầy",""),
-        PHONE_ORDER("PHONE_ORDER","Đặt hàng bằng điện thoại","");
+        ONLINE("ONLINE","Trên website","green"),
+        COUNTER("COUNTER","Bán hàng tại quầy","blue"),
+        PHONE_ORDER("PHONE_ORDER","Đặt hàng bằng điện thoại","cyan");
 
         private final String ten;
         private final String moTa;
@@ -50,11 +50,11 @@ public class CommonEnum {
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum TrangThaiHoaDon{
 
-        PENDING("PENDING", "Đang chờ xác nhận", "warning"),
+        PENDING("PENDING", "Chờ xác nhận", "warning"),
         CONFIRMED("CONFIRMED", "Đã xác nhận", "success"),
-        SHIPPING("SHIPPING", "Đang vận chuyển", "secondary"),
-        CANCELLED("CANCELLED", "Đã hủy", "error"),
-        APPROVED("APPROVED", "Đã hoàn thành", "primary");
+        SHIPPING("SHIPPING", "Đang vận chuyển", "geekblue"),
+        CANCELLED("CANCELLED", "Đã hủy", "volcano"),
+        APPROVED("APPROVED", "Đã hoàn thành", "magenta");
 
         private final String ten;
         private final String moTa;

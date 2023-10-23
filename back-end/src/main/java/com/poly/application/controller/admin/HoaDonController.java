@@ -3,6 +3,7 @@ package com.poly.application.controller.admin;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.model.request.create_request.CreateHoaDonRequest;
 import com.poly.application.model.request.create_request.CreateTaiKhoanRequest;
+import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
 import com.poly.application.service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,6 +47,11 @@ public class HoaDonController {
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody CreateHoaDonRequest createHoaDonRequest) {
         return new ResponseEntity<>(hoaDonService.add(createHoaDonRequest), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@RequestBody UpdatedHoaDonRequest updatedHoaDonRequest, @PathVariable(name = "id")Long id) {
+        return new ResponseEntity<>(hoaDonService.update(id,updatedHoaDonRequest), HttpStatus.UPGRADE_REQUIRED);
     }
 
 }

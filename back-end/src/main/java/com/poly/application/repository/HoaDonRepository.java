@@ -23,4 +23,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
             @Param("trangThaiHoaDon") CommonEnum.TrangThaiHoaDon trangThaiHoaDon
     );
 
+    Boolean existsByMa(String ma);
+
 }

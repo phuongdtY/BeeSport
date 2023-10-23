@@ -14,7 +14,7 @@ public interface HoaDonService {
 
     HoaDonResponse findById(Long id);
 
-    HoaDonResponse update(UpdatedHoaDonRequest updatedHoaDonRequest);
+    HoaDonResponse update(Long id,UpdatedHoaDonRequest updatedHoaDonRequest);
 
     void delete(Long id);
 

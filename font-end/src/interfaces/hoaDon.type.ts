@@ -27,6 +27,31 @@ export interface DataType {
     moTa: string;
     mauSac: string;
   };
+  taiKhoan: {
+    id: number;
+    hoVaTen: string;
+    canCuocCongDan: string;
+    ngaySinh: string | undefined;
+    gioiTinh: {
+      ten: string;
+      moTa: string;
+      mauSac: string;
+    };
+    soDienThoai: string;
+    email: string;
+    thanhPho: string;
+    quanHuyen: string;
+    phuongXa: string;
+    diaChiCuThe: string;
+    anhDaiDien: string;
+    ngayTao: string;
+    ngaySua: string;
+    trangThai: {
+      ten: string;
+      mota: string;
+      mauSac: string;
+    };
+  };
 }
 
 export interface Sorter {

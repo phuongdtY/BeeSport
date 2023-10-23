@@ -32,6 +32,7 @@ const index: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]);
   const [totalElements, setTotalElements] = useState(0);
   const [params, setParams] = useState<DataParams>({
+    trangThaiHoaDon: "PENDING",
     page: 1,
     pageSize: 10,
   });
@@ -41,7 +42,7 @@ const index: React.FC = () => {
       title: "STT",
       align: "center",
       rowScope: "row",
-      width: "10%",
+      width: "5%",
       render: (_, __, index) => (params.page - 1) * params.pageSize + index + 1,
     },
     {
@@ -50,7 +51,31 @@ const index: React.FC = () => {
       key: "ma",
       align: "center",
       sorter: true,
-      width: "30%",
+      width: "5%",
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "tongTien",
+      key: "tongTien",
+      align: "center",
+      sorter: true,
+      width: "20%",
+    },
+    {
+      title: "Số điện thoại người nhận",
+      dataIndex: "sdtNguoiNhan",
+      key: "sdtNguoiNhan",
+      align: "center",
+      sorter: true,
+      width: "20%",
+    },
+    {
+      title: "Tên người nhận",
+      dataIndex: "nguoiNhan",
+      key: "nguoiNhan",
+      align: "center",
+      sorter: true,
+      width: "20%",
     },
     {
       title: "Loại Hóa Đơn",
@@ -70,9 +95,9 @@ const index: React.FC = () => {
       align: "center",
       sorter: true,
       width: "20%",
-      // render: (trangThaiHoaDon) => (
-      //   <Tag color={trangThaiHoaDon.mauSac}>{trangThaiHoaDon.moTa}</Tag>
-      // ),
+      render: (trangThaiHoaDon) => (
+        <Tag color={trangThaiHoaDon?.mauSac}>{trangThaiHoaDon?.moTa}</Tag>
+      ),
     },
     {
       title: "Thao Tác",
@@ -114,7 +139,10 @@ const index: React.FC = () => {
       setLoading(true);
       try {
         const res = await request.get("hoa-don", {
-          params: getParams(params),
+          params: {
+            ...getParams(params),
+            trangThaiHoaDon: params.trangThaiHoaDon,
+          },
         });
         setData(res.data.content);
         setTotalElements(res.data.totalElements);
@@ -134,6 +162,8 @@ const index: React.FC = () => {
     });
     console.log(value);
   };
+  // lọc theo trạng thái
+  // lọc trạng thái là PENDING mặc hịnh hiển thị
   const onChangeStatus = (value: string) => {
     setParams({
       ...params,
@@ -141,6 +171,8 @@ const index: React.FC = () => {
     });
     console.log(value);
   };
+
+  // lọc theo loại
   const onChangeTypes = (value: string) => {
     setParams({
       ...params,
@@ -186,8 +218,8 @@ const index: React.FC = () => {
                 onChange={onChangeTypes}
                 options={[
                   { value: "", label: "Tất cả" },
-                  { value: "ONLINE", label: "ONLINE" },
-                  { value: "COUNTER", label: "COUNTER" },
+                  { value: "ONLINE", label: "Trên website" },
+                  { value: "COUNTER", label: "Tại quầy" },
                   { value: "PHONE_ORDER", label: "Đặt hàng bằng điện thoại" },
                 ]}
               />
@@ -196,27 +228,20 @@ const index: React.FC = () => {
           <Col span={4}>
             <Form.Item label="Trạng Thái" style={{ fontWeight: "bold" }}>
               <Select
-                defaultValue=""
+                defaultValue={params.trangThaiHoaDon}
                 style={{ width: 150 }}
                 onChange={onChangeStatus}
                 options={[
                   { value: "", label: "Tất cả" },
-                  { value: "PENDING", label: "PENDING" },
-                  { value: "CONFIRMED", label: "CONFIRMED" },
-                  { value: "SHIPPING", label: "SHIPPING" },
-                  { value: "CANCELLED", label: "CANCELLED" },
-                  { value: "APPROVED", label: "APPROVED" },
+                  { value: "PENDING", label: "Chờ xác nhận" },
+                  { value: "CONFIRMED", label: "Đã xác nhận" },
+                  { value: "SHIPPING", label: "Đang vận chuyển" },
+                  { value: "CANCELLED", label: "Đã hủy" },
+                  { value: "APPROVED", label: "Thành công" },
                 ]}
               />
             </Form.Item>
           </Col>
-          {/* <Col span={4}>
-            <Link to="/admin/loai-de/add">
-              <Button type="primary" icon={<PlusOutlined />}>
-                Thêm loại đế
-              </Button>
-            </Link>
-          </Col> */}
         </Row>
         <Table
           columns={columns}

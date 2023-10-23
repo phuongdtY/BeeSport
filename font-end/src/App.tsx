@@ -23,7 +23,11 @@ import GioHang from "./pages/shop/gio-hang/GioHang";
 import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
 import IndexVoucher from "./pages/admin/voucher/index";
 import AddVoucher from "./pages/admin/voucher/add";
-import UpdateVoucher from "./pages/admin/voucher/update";  
+import UpdateVoucher from "./pages/admin/voucher/update";
+import IndexHoaDon from "./pages/admin/hoa-don";
+import IndexKichCo from "./pages/admin/kich-co";
+import AddKichCo from "./pages/admin/kich-co/add";
+import UpdateKichCo from "./pages/admin/kich-co/update";
 
 function App() {
   return (
@@ -53,6 +57,10 @@ function App() {
         <Route path="voucher" element={<IndexVoucher />} />
         <Route path="voucher/add" element={<AddVoucher />} />
         <Route path="voucher/:id" element={<UpdateVoucher />} />
+        <Route path="hoa-don" element={<IndexHoaDon />} />
+        <Route path="kich-co" element={<IndexKichCo />} />
+        <Route path="kich-co/add" element={<AddKichCo />} />
+        <Route path="kich-co/:id" element={<UpdateKichCo />} />
       </Route>
     </Routes>
   );
