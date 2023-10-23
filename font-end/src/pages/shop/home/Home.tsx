@@ -36,16 +36,16 @@ const Home: React.FC = () => {
     <>
       <Carousel autoplay>
         <div>
-          <img src={banner1} width="100%" height="620px" />
+          <img src={banner1} width="100%" height="600px" />
         </div>
         <div>
-          <img src={banner2} width="100%" height="620px" />
+          <img src={banner2} width="100%" height="600px" />
         </div>
         <div>
-          <img src={banner3} width="100%" height="620px" />
+          <img src={banner3} width="100%" height="600px" />
         </div>
         <div>
-          <img src={banner4} width="100%" height="620px" />
+          <img src={banner4} width="100%" height="600px" />
         </div>
       </Carousel>
       <Divider style={{ fontSize: 25 }}>SẢN PHẨM MỚI NHẤT</Divider>

@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@ToString
 public class CreatedChiTietSanPhamRequest {
 
     private Long id;
@@ -26,8 +25,6 @@ public class CreatedChiTietSanPhamRequest {
 
     @NotNull(message = "Vui lòng nhập giá tiền")
     private BigDecimal giaTien;
-
-    private String moTa;
 
     private LocalDateTime ngayTao;
 
