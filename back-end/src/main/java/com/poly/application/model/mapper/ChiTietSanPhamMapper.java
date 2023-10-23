@@ -41,7 +41,22 @@ public class ChiTietSanPhamMapper {
     }
 
     public ChiTietSanPham convertCreateRequestToEntity(CreatedChiTietSanPhamRequest request) {
-        return mapper.map(request, ChiTietSanPham.class);
+        ChiTietSanPham chiTietSanPham = new ChiTietSanPham();
+
+        chiTietSanPham.setSoLuong(request.getSoLuong());
+        chiTietSanPham.setGiaTien(request.getGiaTien());
+        chiTietSanPham.setNgayTao(request.getNgayTao());
+        chiTietSanPham.setNgaySua(request.getNgaySua());
+        chiTietSanPham.setNguoiTao(request.getNguoiTao());
+        chiTietSanPham.setNguoiSua(request.getNguoiSua());
+        chiTietSanPham.setTrangThai(request.getTrangThai());
+        chiTietSanPham.setLoaiDe(request.getLoaiDe());
+        chiTietSanPham.setDiaHinhSan(request.getDiaHinhSan());
+        chiTietSanPham.setSanPham(request.getSanPham());
+        chiTietSanPham.setMauSac(request.getMauSac());
+        chiTietSanPham.setKichCo(request.getKichCo());
+
+        return chiTietSanPham;
     }
 
     public void convertUpdateRequestToEntity(UpdatedChiTietSanPhamRequest request, ChiTietSanPham chiTietSanPham) {

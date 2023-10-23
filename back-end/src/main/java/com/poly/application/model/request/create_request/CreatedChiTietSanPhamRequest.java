@@ -18,11 +18,23 @@ import java.time.LocalDateTime;
 @Setter
 public class CreatedChiTietSanPhamRequest {
 
+    private Long id;
+
     @NotNull(message = "Vui lòng nhập số lượng")
     private Integer soLuong;
 
     @NotNull(message = "Vui lòng nhập giá tiền")
     private BigDecimal giaTien;
+
+    private LocalDateTime ngayTao;
+
+    private LocalDateTime ngaySua;
+
+    private String nguoiTao;
+
+    private String nguoiSua;
+
+    private CommonEnum.TrangThaiChiTietSanPham trangThai;
 
     @NotNull(message = "Vui lòng chọn Loại đế")
     private LoaiDe loaiDe;
