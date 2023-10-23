@@ -11,6 +11,7 @@ import com.poly.application.model.request.update_request.UpdatedChiTietSanPhamRe
 import com.poly.application.model.response.ChiTietSanPhamResponse;
 import com.poly.application.repository.ChiTietSanPhamRepository;
 import com.poly.application.service.ChiTietSanPhamService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +48,7 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
         return mapper.convertEntityToResponse(savedChiTietSanPham);
     }
 
+    @Transactional
     @Override
     public List<ChiTietSanPhamResponse> addList(List<CreatedChiTietSanPhamRequest> requests) {
         List<ChiTietSanPhamResponse> responseList = new ArrayList<>();
