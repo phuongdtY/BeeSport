@@ -10,6 +10,7 @@ import com.poly.application.model.mapper.SanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
 import com.poly.application.model.response.ChiTietSanPhamResponse;
+import com.poly.application.model.response.SanPhamDetailResponse;
 import com.poly.application.model.response.SanPhamMoiNhatResponse;
 import com.poly.application.model.response.SanPhamResponse;
 import com.poly.application.repository.SanPhamRepository;
@@ -159,6 +160,12 @@ public class SanPhamServiceImpl implements SanPhamService {
                 .stream()
                 .limit(5)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public SanPhamDetailResponse getSanPhamDetail(Long id) {
+        SanPhamDetailResponse detail = repository.getDetailSanPham(id);
+        return detail;
     }
 
 }
