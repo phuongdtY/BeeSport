@@ -23,12 +23,7 @@ public class VoucherMapper {
 
     public Voucher convertCreateRequestToEntity(CreatedVoucherRequest createdVoucherRequest) {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        PropertyMap<CreatedVoucherRequest, Voucher> idMapping = new PropertyMap<CreatedVoucherRequest, Voucher>() {
-            protected void configure() {
-                map().getHinhThucGiamGia().setId(source.getHinhThucGiam().getId());
-            }
-        };
-        modelMapper.addMappings(idMapping);
+
         return modelMapper.map(createdVoucherRequest, Voucher.class);
     }
 

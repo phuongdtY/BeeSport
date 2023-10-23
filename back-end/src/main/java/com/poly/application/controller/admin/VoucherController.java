@@ -4,10 +4,11 @@ import com.poly.application.model.request.create_request.CreatedVoucherRequest;
 import com.poly.application.model.request.update_request.UpdateVoucherRequest;
 import com.poly.application.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("*")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/admin/api/voucher")
 public class VoucherController {
@@ -28,9 +29,9 @@ public class VoucherController {
         return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, hinhThucGiamGiaId, trangThaiString));
     }
 
-    @PostMapping("/add")
+    @PostMapping()
     public ResponseEntity<?> add(@RequestBody CreatedVoucherRequest request) {
-        return ResponseEntity.ok(service.add(request));
+        return new ResponseEntity<>(service.add(request), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/delete/{id}")

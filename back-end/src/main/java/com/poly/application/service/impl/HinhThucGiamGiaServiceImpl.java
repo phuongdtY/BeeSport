@@ -61,8 +61,7 @@ public class HinhThucGiamGiaServiceImpl implements HinhThucGiamGiaService {
 
         HinhThucGiamGia createdHinhThucGiam = mapper.convertCreateRequestToEntity(request);
         createdHinhThucGiam.setTrangThai(CommonEnum.HinhThucGiam.ACTIVE);
-        HinhThucGiamGia savedHinhThucGiam = repository.save(createdHinhThucGiam);
-        return mapper.convertEntityToResponse(savedHinhThucGiam);
+        return mapper.convertEntityToResponse(repository.save(createdHinhThucGiam));
     }
 
     @Override

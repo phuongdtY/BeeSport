@@ -81,7 +81,8 @@ public class VoucherServiceImpl implements VoucherService {
             code += digit;
         }
         createdVoucher.setMa(code);
-//        createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
+        createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
+        createdVoucher.setHinhThucGiamGia(request.getHinhThucGiam());
         Voucher savedVoucher = this.repository.save(createdVoucher);
         return mapper.convertEntityToResponse(savedVoucher);
     }

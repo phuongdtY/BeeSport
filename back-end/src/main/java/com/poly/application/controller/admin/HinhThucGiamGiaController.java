@@ -31,9 +31,9 @@ public class HinhThucGiamGiaController {
         return ResponseEntity.ok(service.getAll(page, pageSize,sortField,sortOrder, searchText, trangThaiString));
     }
 
-    @PostMapping()
+    @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody CreatedHinhThucGiamGiaRequest request) {
-        return new ResponseEntity<>(service.add(request), HttpStatus.CREATED);
+        return ResponseEntity.ok(service.add(request));
     }
 
     @DeleteMapping("/{id}")

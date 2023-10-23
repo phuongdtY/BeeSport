@@ -14,11 +14,10 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class CreatedVoucherRequest {
+public class  CreatedVoucherRequest {
 
     private String ten;
 
-    @NotNull(message = "Vui lòng chọn hình thức giảm giá")
     private HinhThucGiamGia hinhThucGiam;
 
     private BigDecimal giaToiThieu;
@@ -27,5 +26,5 @@ public class CreatedVoucherRequest {
 
     private BigDecimal giaTriGiamToiDa;
 
-//    private CommonEnum.TrangThaiVoucher trangThai;
+    private CommonEnum.TrangThaiVoucher trangThai;
 }
