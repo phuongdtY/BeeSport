@@ -1,4 +1,9 @@
-import { CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  CloseOutlined,
+  DeleteOutlined,
+  PictureOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import {
   Alert,
   Button,
@@ -31,6 +36,9 @@ import request from "~/utils/request";
 import { Color } from "antd/es/color-picker";
 import { ColumnsType } from "antd/es/table";
 import { json } from "react-router-dom";
+import { DataType } from "~/interfaces/ctsp.type";
+import TableSanPham from "./table";
+import { formatCurrency } from "~/utils/formatResponse";
 
 const AddSanPham: React.FC = () => {
   const [openThuongHieu, setOpenThuongHieu] = useState(false);
@@ -53,7 +61,6 @@ const AddSanPham: React.FC = () => {
   const [selectedDiaHinhSan, setSelectedDiaHinhSan] = useState<string[]>([]);
   const [selectedMauSac, setSelectedMauSac] = useState<string[]>([]);
   const [selectedKichCo, setSelectedKichCo] = useState<string[]>([]);
-  const [sanPhamId, setSanPhamId] = useState<number>();
 
   const handleLoaiDe = (value: string[]) => {
     setSelectedLoaiDe(value);
@@ -217,218 +224,16 @@ const AddSanPham: React.FC = () => {
     setOpenMauSac(false);
   };
 
-  const createFakeData = () => {
-    const fakeData = [];
-    selectedMauSac.forEach((mauSac) => {
-      selectedKichCo.forEach((kichCo) => {
-        const uniqueId = `${mauSac}-${kichCo}`; // Create a unique ID
-        fakeData.push({
-          key: uniqueId,
-          giaTien: 100000,
-          soLuong: 10,
-          loaiDe: {
-            id: selectedLoaiDe,
-          },
-          diaHinhSan: {
-            id: selectedDiaHinhSan,
-          },
-          sanPham: {
-            id: 18,
-          },
-          mauSac: {
-            id: mauSac,
-          },
-          kichCo: {
-            id: kichCo,
-          },
-        });
-      });
-    });
-    return fakeData;
-  };
-
-  const [fakeData, setFakeData] = useState([]);
-
-  useEffect(() => {
-    setFakeData(createFakeData());
-  }, [selectedMauSac, selectedKichCo]);
-  const deleteItemFromFakeData = (key) => {
-    const updatedData = fakeData.filter((item) => item.key !== key);
-    setFakeData(updatedData);
+  const onFinish = async (values: any) => {
     console.log(fakeData);
-  };
-  const handleEditSoLuong = (key, newSoLuong) => {
-    // Find the item in the fake data array and update the "soLuong" field
-    setFakeData((prevFakeData: any) =>
-      prevFakeData.map((item) =>
-        item.key === key ? { ...item, soLuong: newSoLuong } : item
-      )
-    );
-  };
-  const handleEditGiaTien = (key, newGiaTien) => {
-    // Find the item in the fake data array and update the "giaTien" field
-    setFakeData((prevFakeData: any) =>
-      prevFakeData.map((item) =>
-        item.key === key ? { ...item, giaTien: newGiaTien } : item
-      )
-    );
-  };
-  const groupedData = {};
 
-  fakeData.forEach((data) => {
-    if (!groupedData[data.mauSac]) {
-      groupedData[data.mauSac] = [];
-    }
-    groupedData[data.mauSac].push(data);
-  });
-  const [pageSize, setPageSize] = useState(10); // Default page size
-  const [currentPage, setCurrentPage] = useState(1); // Default current page
-
-  // Handler for page change
-  const handlePageChange = (page, size) => {
-    setCurrentPage(page);
-    setPageSize(size);
-  };
-  const tables = Object.keys(groupedData).map((mauSac) => {
-    return (
-      <div key={mauSac} style={{ marginBottom: 50 }}>
-        <Alert
-          style={{ textAlign: "center", fontWeight: "bold" }}
-          message={mauSac}
-          type="info"
-        />
-        <Table
-          dataSource={groupedData[mauSac]}
-          pagination={{
-            pageSize: pageSize,
-            current: currentPage,
-            onChange: (page, pageSize) => handlePageChange(page, pageSize),
-          }}
-          columns={[
-            {
-              title: "#",
-              rowScope: "row",
-              render: (text, record, index) =>
-                index + 1 + pageSize * (currentPage - 1),
-            },
-
-            {
-              title: "Kích Cỡ",
-              align: "center",
-              dataIndex: "kichCo",
-            },
-            {
-              title: "Số lượng",
-              align: "center",
-              dataIndex: "soLuong",
-              render: (soLuong, record) => (
-                <InputNumber
-                  value={soLuong}
-                  min={1}
-                  style={{ width: "100%" }}
-                  formatter={(value) =>
-                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
-                  parser={(value) => value.replace(/,/g, "")}
-                  onChange={(newSoLuong) =>
-                    handleEditSoLuong(record.key, newSoLuong)
-                  }
-                />
-              ),
-            },
-
-            {
-              title: "Giá tiền",
-              align: "center",
-              dataIndex: "giaTien",
-              render: (giaTien, record) => (
-                <InputNumber
-                  value={giaTien}
-                  style={{ width: "100%" }}
-                  min={0}
-                  step={1000}
-                  formatter={(value) => `${formatCurrency(value)}`}
-                  parser={(value) => value!.replace(/\D/g, "")}
-                  onChange={(newGiaTien) =>
-                    handleEditGiaTien(record.key, newGiaTien)
-                  }
-                />
-              ),
-            },
-            {
-              dataIndex: "key",
-              align: "center",
-              width: "10%",
-              render: (key) => (
-                <Button
-                  type="link"
-                  style={{ padding: 0 }}
-                  onClick={() => deleteItemFromFakeData(key)}
-                >
-                  <Tooltip title={key}>
-                    <DeleteOutlined style={{ color: "red" }} />
-                  </Tooltip>
-                </Button>
-              ),
-            },
-            {
-              title: "Ảnh",
-              key: "anh",
-              align: "center",
-              render: (key) => (
-                <Button type="link" style={{ padding: 0 }}>
-                  <Tooltip title={key}>
-                    <DeleteOutlined style={{ color: "red" }} />
-                  </Tooltip>
-                </Button>
-              ),
-            },
-          ]}
-        />
-        <Button
-          type="dashed"
-          style={{ textAlign: "center" }}
-          icon={<PlusOutlined />}
-          block
-        >
-          Thêm kích cỡ {mauSac}
-        </Button>
-      </div>
-    );
-  });
-  function formatCurrency(value: any) {
-    const formatter = new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    });
-    return formatter.format(value).replace("₫", "VNĐ");
-  }
-
-  const onFinish = async (values) => {
-    const fakeData1 = [
-      {
-        soLuong: 5,
-        giaTien: 100.0,
-        loaiDe: { id: 2 },
-        diaHinhSan: { id: 2 },
-        sanPham: { id: 19 },
-        mauSac: { id: 2 },
-        kichCo: { id: 2 },
-      },
-      {
-        soLuong: 3,
-        giaTien: 75.0,
-        loaiDe: { id: 1 },
-        diaHinhSan: { id: 1 },
-        sanPham: { id: 19 },
-        mauSac: { id: 1 },
-        kichCo: { id: 1 },
-      },
-    ];
     try {
-      const response = await request.post("chi-tiet-san-pham", {
-        fakeData1,
+      const response = await request.post("/chi-tiet-san-pham", fakeData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
       console.log("Response from server:", response.data);
       message.success("Thêm list sản phẩm thành công");
     } catch (error) {
@@ -666,8 +471,14 @@ const AddSanPham: React.FC = () => {
               }}
             />
           </Space.Compact>
-
-          <div>{tables}</div>
+          <TableSanPham
+            dataKC={dataKC}
+            dataMS={dataMS}
+            selectedDiaHinhSan={selectedDiaHinhSan}
+            selectedLoaiDe={selectedLoaiDe}
+            selectedKichCo={selectedKichCo}
+            selectedMauSac={selectedMauSac}
+          />
 
           <ModalLoaiDe
             open={openLoaiDe}
