@@ -4,7 +4,7 @@ export interface DataType {
   loaiHoaDon: {
     ten: string;
     moTa: string;
-    mauSac: String;
+    mauSac: string;
   };
   ngayThanhToan: string;
   phiShip: string;
@@ -52,6 +52,26 @@ export interface DataType {
       mauSac: string;
     };
   };
+}
+
+export interface UpdatedRequest {
+  ma: String;
+  diaChiNguoiNhan: String;
+  loaiHoaDon: {
+    ten: string;
+    moTa: string;
+    mauSac: string;
+  };
+  trangThaiHoaDon: {
+    ten: string;
+    moTa: string;
+    mauSac: string;
+  };
+  emailNguoiNhan: string;
+  nguoiNhan: string;
+  sdtNguoiNhan: string;
+  ghiChu: string;
+  
 }
 
 export interface Sorter {

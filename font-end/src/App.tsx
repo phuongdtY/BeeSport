@@ -28,6 +28,7 @@ import IndexHoaDon from "./pages/admin/hoa-don";
 import IndexKichCo from "./pages/admin/kich-co";
 import AddKichCo from "./pages/admin/kich-co/add";
 import UpdateKichCo from "./pages/admin/kich-co/update";
+import DetailHoaDon from "./pages/admin/hoa-don/detailHoaDon";
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
         <Route path="kich-co" element={<IndexKichCo />} />
         <Route path="kich-co/add" element={<AddKichCo />} />
         <Route path="kich-co/:id" element={<UpdateKichCo />} />
+        <Route path="hoa-don/:id" element={<DetailHoaDon />} />
       </Route>
     </Routes>
   );
