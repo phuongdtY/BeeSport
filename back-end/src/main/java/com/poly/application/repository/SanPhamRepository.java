@@ -35,10 +35,10 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
 
     boolean existsByTen (String ten);
 
-    @Query("SELECT sp FROM SanPham sp ORDER BY sp.ngayTao DESC")
+    @Query("SELECT sp FROM SanPham sp WHERE sp.trangThai = 'ACTIVE' ORDER BY sp.ngayTao DESC")
     List<SanPham> get5SanPhamMoiNhat();
 
-    @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien)) FROM SanPham sp JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id GROUP BY sp.id, sp.ten ORDER BY MAX(cps.ngayTao) DESC")
+    @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien)) FROM SanPham sp JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id WHERE sp.trangThai = 'ACTIVE' GROUP BY sp.id, sp.ten ORDER BY MAX(cps.ngayTao) DESC")
     List<SanPhamMoiNhatResponse> findAllSanPhamMoiNhat();
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamDetailResponse(sp.id, sp.ma, sp.ten, sp.moTa, MIN(cps.giaTien), MAX(cps.giaTien), sp.trangThai) " +

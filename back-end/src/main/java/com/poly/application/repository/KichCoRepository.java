@@ -13,13 +13,15 @@ import java.util.List;
 
 @Repository
 public interface KichCoRepository extends JpaRepository<KichCo, Long> {
-    List<KichCo> findAllByOrderByKichCoAsc();
+    @Query("SELECT kc FROM KichCo kc WHERE kc.trangThai = 'ACTIVE' ORDER BY kc.ngayTao DESC")
+    List<KichCo> getKichCoByNgayTaoDESC();
+
     @Query("SELECT obj FROM KichCo obj WHERE (CAST(obj.kichCo AS string) LIKE %:searchText%) AND (:trangThai IS NULL OR obj.trangThai = :trangThai)")
     Page<KichCo> findByAll(Pageable pageable, String searchText, CommonEnum.TrangThaiThuocTinh trangThai);
 
     boolean existsByKichCo(Float kichCo);
 
-    @Query("SELECT DISTINCT kc FROM ChiTietSanPham ctsp JOIN KichCo kc ON ctsp.kichCo.id = kc.id  WHERE ctsp.sanPham.id = :idSanPham")
+    @Query("SELECT DISTINCT kc FROM ChiTietSanPham ctsp JOIN KichCo kc ON ctsp.kichCo.id = kc.id  WHERE ctsp.sanPham.id = :idSanPham AND kc.trangThai = 'ACTIVE'")
     List<KichCo> getKichCoKhongLap(Long idSanPham);
 
 }

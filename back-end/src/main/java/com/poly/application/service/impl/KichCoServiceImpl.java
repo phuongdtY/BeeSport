@@ -32,7 +32,7 @@ public class KichCoServiceImpl implements KichCoService {
 
     @Override
     public List<KichCoResponse> listKichCo() {
-        List<KichCo> list = repository.findAllByOrderByKichCoAsc();
+        List<KichCo> list = repository.getKichCoByNgayTaoDESC();
         return list.stream()
                 .map(mapper::convertEntityToResponse)
                 .collect(Collectors.toList());

@@ -13,14 +13,17 @@ import java.util.List;
 @Repository
 public interface MauSacRepository extends JpaRepository<MauSac, Long> {
 
-    @Query("SELECT ms FROM MauSac ms ORDER BY ms.ngayTao DESC")
+    @Query("SELECT ms FROM MauSac ms WHERE ms.trangThai = 'ACTIVE' ORDER BY ms.ngayTao DESC")
     List<MauSac> getMauSacByNgayTaoDESC();
 
     @Query("SELECT obj FROM MauSac obj WHERE (obj.ma LIKE %:searchText% OR obj.ten LIKE %:searchText%) AND (:trangThai IS NULL OR obj.trangThai = :trangThai)")
     Page<MauSac> findByAll(Pageable pageable, String searchText, CommonEnum.TrangThaiThuocTinh trangThai);
 
     boolean existsByMa (String ma);
+
     boolean existsByTen ( String ten);
-    @Query("SELECT DISTINCT ms FROM ChiTietSanPham ctsp JOIN MauSac ms ON ctsp.mauSac.id = ms.id  WHERE ctsp.sanPham.id = :idSanPham")
+
+    @Query("SELECT DISTINCT ms FROM ChiTietSanPham ctsp JOIN MauSac ms ON ctsp.mauSac.id = ms.id  WHERE ctsp.sanPham.id = :idSanPham AND ms.trangThai = 'ACTIVE'")
     List<MauSac> getMauSacKhongLap(Long idSanPham);
+
 }
