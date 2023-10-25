@@ -9,7 +9,9 @@ import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.HoaDonMapper;
 import com.poly.application.model.request.create_request.CreateHoaDonRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
+import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
+import com.poly.application.repository.HoaDonChiTietRepository;
 import com.poly.application.repository.HoaDonRepository;
 import com.poly.application.repository.TaiKhoanRepository;
 import com.poly.application.service.HoaDonService;
@@ -108,6 +110,8 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setTongTien(updatedHoaDonRequest.getTongTien());
         hoaDon.setSdtNguoiNhan(updatedHoaDonRequest.getSdtNguoiNhan());
         hoaDon.setNguoiNhan(updatedHoaDonRequest.getNguoiNhan());
+        hoaDon.setDiaChiNguoiNhan(updatedHoaDonRequest.getDiaChiNguoiNhan());
+        hoaDon.setEmailNguoiNhan(updatedHoaDonRequest.getEmailNguoiNhan());
 
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
@@ -116,4 +120,5 @@ public class HoaDonServiceImpl implements HoaDonService {
     public void delete(Long id) {
 
     }
+
 }

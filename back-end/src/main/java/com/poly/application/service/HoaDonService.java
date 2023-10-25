@@ -3,6 +3,7 @@ package com.poly.application.service;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.model.request.create_request.CreateHoaDonRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
+import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
 import org.springframework.data.domain.Page;
 
@@ -17,5 +18,7 @@ public interface HoaDonService {
     HoaDonResponse update(Long id,UpdatedHoaDonRequest updatedHoaDonRequest);
 
     void delete(Long id);
+
+
 
 }

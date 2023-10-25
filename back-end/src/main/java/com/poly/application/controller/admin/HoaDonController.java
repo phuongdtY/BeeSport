@@ -1,9 +1,14 @@
 package com.poly.application.controller.admin;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.HoaDon;
+import com.poly.application.model.dto.HoaDonHoaDonChiTietListResponseDTO;
 import com.poly.application.model.request.create_request.CreateHoaDonRequest;
 import com.poly.application.model.request.create_request.CreateTaiKhoanRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
+import com.poly.application.model.response.HoaDonChiTietResponse;
+import com.poly.application.model.response.HoaDonResponse;
+import com.poly.application.service.HoaDonChiTietService;
 import com.poly.application.service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/admin/api/hoa-don")
@@ -25,6 +32,9 @@ public class HoaDonController {
 
     @Autowired
     private HoaDonService hoaDonService;
+
+    @Autowired
+    private HoaDonChiTietService hoaDonChiTietService;
 
     @GetMapping()
     public ResponseEntity<?> getAll(
@@ -51,12 +61,18 @@ public class HoaDonController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@RequestBody UpdatedHoaDonRequest updatedHoaDonRequest, @PathVariable(name = "id")Long id) {
-        return new ResponseEntity<>(hoaDonService.update(id,updatedHoaDonRequest), HttpStatus.UPGRADE_REQUIRED);
+        return ResponseEntity.ok(hoaDonService.update(id,updatedHoaDonRequest));
     }
 
     @GetMapping("/id")
     public ResponseEntity<?> detail(@PathVariable(name = "id")Long id){
-        return ResponseEntity.ok(hoaDonService.findById(id));
+        List<HoaDonChiTietResponse> hoaDonChiTietResponses = hoaDonChiTietService.findByHoaDonId(id);
+        HoaDonResponse hoaDonResponse = hoaDonService.findById(id);
+
+        HoaDonHoaDonChiTietListResponseDTO hoaDonHoaDonChiTietListResponseDTO = new HoaDonHoaDonChiTietListResponseDTO();
+        hoaDonHoaDonChiTietListResponseDTO.setHoaDonResponse(hoaDonResponse);
+        hoaDonHoaDonChiTietListResponseDTO.setHoaDonChiTietResponseList(hoaDonChiTietResponses);
+        return ResponseEntity.ok(hoaDonHoaDonChiTietListResponseDTO);
     }
 
 }

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -65,5 +66,11 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     @Override
     public void delete(Long id) {
 
+    }
+
+    @Override
+    public List<HoaDonChiTietResponse> findByHoaDonId(Long id) {
+        List<HoaDonChiTiet> hoaDonChiTietList = hoaDonChiTietRepository.findAllByHoaDonId(id);
+        return hoaDonChiTietMapper.convertListHoaDonChiTietEntityToHoaDonChiTietResponse(hoaDonChiTietList);
     }
 }

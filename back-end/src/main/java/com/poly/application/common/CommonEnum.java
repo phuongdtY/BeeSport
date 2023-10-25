@@ -37,8 +37,8 @@ public class CommonEnum {
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum LoaiHoaDon{
         ONLINE("ONLINE","Trên website","green"),
-        COUNTER("COUNTER","Bán hàng tại quầy","blue"),
-        PHONE_ORDER("PHONE_ORDER","Đặt hàng bằng điện thoại","cyan");
+        COUNTER("COUNTER","Bán hàng tại quầy","blue");
+
 
         private final String ten;
         private final String moTa;

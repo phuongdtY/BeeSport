@@ -5,6 +5,8 @@ import com.poly.application.model.request.update_request.UpdatedHoaDonChiTietReq
 import com.poly.application.model.response.HoaDonChiTietResponse;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface HoaDonChiTietService {
 
     Page<HoaDonChiTietResponse> getAll(Integer currentPage, Integer pageSize, String searchText, String sorter, String sortOrder);
@@ -16,5 +18,7 @@ public interface HoaDonChiTietService {
     HoaDonChiTietResponse update(UpdatedHoaDonChiTietRequest updatedHoaDonChiTietRequest);
 
     void delete(Long id);
+
+    List<HoaDonChiTietResponse> findByHoaDonId(Long id);
 
 }
