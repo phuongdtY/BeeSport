@@ -54,4 +54,9 @@ public class HoaDonController {
         return new ResponseEntity<>(hoaDonService.update(id,updatedHoaDonRequest), HttpStatus.UPGRADE_REQUIRED);
     }
 
+    @GetMapping("/id")
+    public ResponseEntity<?> detail(@PathVariable(name = "id")Long id){
+        return ResponseEntity.ok(hoaDonService.findById(id));
+    }
+
 }
