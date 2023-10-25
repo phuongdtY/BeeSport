@@ -24,7 +24,6 @@ public class UpdateVoucherRequest {
 
     private Date ngayKetThuc;
 
-    @NotNull(message = "Vui lòng chọn hình thức giảm giá")
     private HinhThucGiamGia hinhThucGiam;
 
     private BigDecimal giaToiThieu;
@@ -33,7 +32,6 @@ public class UpdateVoucherRequest {
 
     private BigDecimal giaTriGiamToiDa;
 
-    private LocalDateTime ngaySua;
-//    @Enumerated(EnumType.STRING)
-//    private CommonEnum.TrangThaiVoucher trangThai;
+    @Enumerated(EnumType.STRING)
+    private CommonEnum.TrangThaiVoucher trangThai;
 }

@@ -16,7 +16,19 @@ import java.util.Date;
 @Setter
 public class  CreatedVoucherRequest {
 
+    private Long id;
+
+    private String ma;
+
     private String ten;
+
+    private Date ngayBatDau;
+
+    private Date ngayKetThuc;
+
+//    private LocalDateTime ngayBatDau;
+//
+//    private LocalDateTime ngayKetThuc;
 
     private HinhThucGiamGia hinhThucGiam;
 
@@ -26,5 +38,6 @@ public class  CreatedVoucherRequest {
 
     private BigDecimal giaTriGiamToiDa;
 
+    @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;
 }

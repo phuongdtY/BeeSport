@@ -34,7 +34,7 @@ public class VoucherController {
         return new ResponseEntity<>(service.add(request), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(service.delete(id));
     }
@@ -44,7 +44,7 @@ public class VoucherController {
         return ResponseEntity.ok(service.findById(id));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable(name = "id") Long id,@RequestBody UpdateVoucherRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }

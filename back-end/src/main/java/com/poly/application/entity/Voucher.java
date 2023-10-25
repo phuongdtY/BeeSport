@@ -44,6 +44,14 @@ public class Voucher implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date ngayKetThuc;
 
+//    @Column(name = "ngay_bat_dau")
+//    @Temporal(TemporalType.TIMESTAMP)
+//    private LocalDateTime ngayBatDau;
+//
+//    @Column(name = "ngay_ket_thuc")
+//    @Temporal(TemporalType.TIMESTAMP)
+//    private LocalDateTime ngayKetThuc;
+
     @ManyToOne
     @JoinColumn(name = "hinh_thuc_giam_gia_id", referencedColumnName = "id")
     private HinhThucGiamGia hinhThucGiamGia;

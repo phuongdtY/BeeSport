@@ -80,3 +80,11 @@ export function formatNgayTao(dateString: string | undefined) {
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`; // Trả về chuỗi định dạng "dd/MM/yyyy HH:mm:ss"
 }
+
+function formatCurrency(value:any) {
+  const formatter = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
+  return formatter.format(value).replace("₫", "VNĐ");
+}

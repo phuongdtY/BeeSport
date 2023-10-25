@@ -1,10 +1,7 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
-import com.poly.application.entity.HinhThucGiamGia;
-import com.poly.application.entity.SanPham;
 import com.poly.application.entity.Voucher;
-import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.VoucherMapper;
 import com.poly.application.model.request.create_request.CreatedVoucherRequest;
@@ -12,6 +9,7 @@ import com.poly.application.model.request.update_request.UpdateVoucherRequest;
 import com.poly.application.model.response.VoucherResponse;
 import com.poly.application.repository.VoucherRepository;
 import com.poly.application.service.VoucherService;
+import com.poly.application.utils.VoucherUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,9 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class VoucherServiceImpl implements VoucherService {
@@ -31,6 +29,9 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Autowired
     private VoucherMapper mapper;
+
+    @Autowired
+    private VoucherUtils voucherUtils;
 
 
     @Override
@@ -59,30 +60,48 @@ public class VoucherServiceImpl implements VoucherService {
     public VoucherResponse add(CreatedVoucherRequest request) {
         Voucher createdVoucher = mapper.convertCreateRequestToEntity(request);
 
-        String defaultString  = "BeeSprot"; // Chữ cái mặc định
-        String code = defaultString;
+        String defaultString = "BeeSprot"; // Chữ cái mặc định
+        int length = 6; // Độ dài của chuỗi số ngẫu nhiên
 
-        // Tạo một mảng boolean để theo dõi các số đã sử dụng
-        boolean[] usedDigits  = new boolean[6];
-
-        // Tạo một đối tượng Random để tạo số ngẫu nhiên
-        Random random = new Random();
-
-        for (int i = 0; i <= 6; i++) {
-            int digit;
-            do {
-                digit = random.nextInt(6);
-            } while (usedDigits[digit]);
-
-            // Đánh dấu số đã sử dụng
-            usedDigits[digit] = true;
-
-            // Thêm số vào mã
-            code += digit;
+        // Tạo danh sách các chữ số từ 0 đến 9
+        List<Integer> digits = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            digits.add(i);
         }
+
+        // Trộn ngẫu nhiên danh sách chữ số
+        Collections.shuffle(digits);
+
+        // Lấy length chữ số đầu tiên từ danh sách đã trộn
+        List<Integer> selectedDigits = digits.subList(0, length);
+
+        // Tạo chuỗi số ngẫu nhiên không trùng lặp
+        StringBuilder randomDigits = new StringBuilder();
+        for (int digit : selectedDigits) {
+            randomDigits.append(digit);
+        }
+
+        // Kết hợp chuỗi số ngẫu nhiên với chữ cái mặc định
+        String code = defaultString + randomDigits.toString();
+
         createdVoucher.setMa(code);
-        createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
         createdVoucher.setHinhThucGiamGia(request.getHinhThucGiam());
+        String status = voucherUtils.getVoucherStatusWithInactive(
+                createdVoucher.getNgayBatDau().toLocalDate(),
+                createdVoucher.getNgayKetThuc().toLocalDate()
+        );
+
+        if (status.equals("ACTIVE")){
+            createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
+        } else if (status.equals("EXPIRED")){
+            createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
+        } else if (status.equals("INACTIVE")) {
+            createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.INACTIVE);
+        } else {
+            createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.UPCOMING);
+        }
+        System.out.println("Trạng thái: " + status);
+        createdVoucher.setNgayTao(LocalDateTime.now());
         Voucher savedVoucher = this.repository.save(createdVoucher);
         return mapper.convertEntityToResponse(savedVoucher);
     }
@@ -95,8 +114,23 @@ public class VoucherServiceImpl implements VoucherService {
         }
 
         Voucher voucher = optional.get();
-        voucher.setNgaySua(LocalDateTime.now());
         voucher.setHinhThucGiamGia(request.getHinhThucGiam());
+        String status = voucherUtils.getVoucherStatusWithInactive(
+                optional.get().getNgayBatDau().toLocalDate(),
+                optional.get().getNgayKetThuc().toLocalDate()
+        );
+
+        if (status.equals("ACTIVE")){
+            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
+        } else if (status.equals("EXPIRED")){
+            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
+        } else if (status.equals("INACTIVE")) {
+            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.INACTIVE);
+        } else {
+            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.UPCOMING);
+        }
+        System.out.println("Trạng thái: " + status);
+        voucher.setNgaySua(LocalDateTime.now());
         mapper.convertUpdateRequestToEntity(request, voucher);
         return mapper.convertEntityToResponse(repository.save(voucher));
     }
