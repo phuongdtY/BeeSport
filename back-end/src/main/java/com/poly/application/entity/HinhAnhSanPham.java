@@ -19,6 +19,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -27,7 +28,7 @@ import java.time.LocalDateTime;
 @Setter
 @Table(name = "hinh_anh_san_pham")
 @Entity
-public class HinhAnhSanPham {
+public class HinhAnhSanPham implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,10 +50,15 @@ public class HinhAnhSanPham {
 
     @Column(name = "trang_thai")
     @Enumerated(EnumType.STRING)
-    private CommonEnum.TrangThaiThuocTinh trangThai;
+    private CommonEnum.TrangThaiHinhAnh trangThai;
 
     @ManyToOne
-    @JoinColumn(name = "chi_tiet_san_pham_id", referencedColumnName = "id")
-    private ChiTietSanPham chiTietSanPham;
+    @JoinColumn(name = "san_pham_id", referencedColumnName = "id")
+    private SanPham sanPham;
+
+    @ManyToOne
+    @JoinColumn(name = "mau_sac_id", referencedColumnName = "id")
+    private MauSac mauSac;
+
 
 }
