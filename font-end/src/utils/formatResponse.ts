@@ -58,3 +58,10 @@ export function calculateAge(birthDate: string) {
   // Giảm tuổi nếu chưa đến ngày sinh trong năm hiện tại
   return isBirthdayPassed ? age : age - 1;
 }
+export function formatCurrency(value: any) {
+  const formatter = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
+  return formatter.format(value).replace("₫", "VNĐ");
+}
