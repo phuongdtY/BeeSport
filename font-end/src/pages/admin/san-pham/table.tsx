@@ -9,6 +9,7 @@ import {
   PictureOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
+import HinhAnhModal from "./HinhAnhModal";
 
 function TableSanPham({
   dataMS,
@@ -19,6 +20,7 @@ function TableSanPham({
   selectedKichCo,
 }) {
   const [fakeData, setFakeData] = useState<DataTypeSanPham[]>([]);
+  const [openModal, setOpenModal] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [soLuong, setSoLuong] = useState(1);
   const [giaTien, setGiaTien] = useState(0);
@@ -171,7 +173,12 @@ function TableSanPham({
     }
     groupedData[mauSacKey].push(data);
   });
-
+  const showModal = () => {
+    setOpenModal(true);
+  };
+  const offModal = () => {
+    setOpenModal(false);
+  };
   return Object.keys(groupedData).map((mauSacKey) => {
     const mauSacData = groupedData[mauSacKey];
     const firstMauSac = mauSacData[0].mauSac;
@@ -302,7 +309,11 @@ function TableSanPham({
                 if (index === 0) {
                   return {
                     children: (
-                      <Button type="link" style={{ padding: 0, fontSize: 30 }}>
+                      <Button
+                        type="link"
+                        style={{ padding: 0, fontSize: 30 }}
+                        onClick={showModal}
+                      >
                         <PictureOutlined />
                       </Button>
                     ),
@@ -339,6 +350,7 @@ function TableSanPham({
           onCancel={() => setKichCoModalVisible(false)}
           onAddKichCo={handleAddKichCoToFakeData}
         />
+        <HinhAnhModal openModal={openModal} closeModal={offModal} />
       </div>
     );
   });
