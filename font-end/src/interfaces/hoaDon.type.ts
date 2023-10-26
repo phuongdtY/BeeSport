@@ -71,7 +71,13 @@ export interface UpdatedRequest {
   nguoiNhan: string;
   sdtNguoiNhan: string;
   ghiChu: string;
-  
+}
+
+export interface UpdateDiaChiHoaDon {
+  thanhPho: number;
+  quanHuyen: number;
+  phuongXa: number;
+  diaChiCuThe: string;
 }
 
 export interface Sorter {

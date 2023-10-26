@@ -3,14 +3,13 @@ import {
   Button,
   Card,
   Col,
-  ColorPicker,
   Form,
   Input,
   Modal,
   Row,
+  Select,
   Skeleton,
   Space,
-  Switch,
   Table,
   Tag,
   message,
@@ -20,6 +19,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   DataType as DataTypeHoaDon,
   UpdatedRequest,
+  UpdateDiaChiHoaDon,
 } from "~/interfaces/hoaDon.type";
 import { DataType as DataTypeHoaDonChiTiet } from "~/interfaces/hoaDonChiTiet.type";
 import request from "~/utils/request";
@@ -27,18 +27,37 @@ const { confirm } = Modal;
 import generatePDF, { Options } from "react-to-pdf";
 import { ColumnsType } from "antd/es/table";
 import TextArea from "antd/es/input/TextArea";
+import axios from "axios";
+import DiaChiComponent from "./diaChiModal";
 
-const options: Options = {
+const optionPrintPDF: Options = {
   filename: "hoa-don.pdf",
   page: {
     margin: 20,
   },
 };
 
+interface Option {
+  value?: number | null;
+  label: React.ReactNode;
+  children?: Option[];
+  isLeaf?: boolean;
+}
+
 const getTargetElement = () => document.getElementById("pdfReaderHoaDon");
-const downloadPdf = () => generatePDF(getTargetElement, options);
+const downloadPdf = () => generatePDF(getTargetElement, optionPrintPDF);
 
 const detailHoaDon: React.FC = () => {
+  const [diaChiOpen, setDiaChiOpen] = useState(false);
+  const showDiaChiModal = () => {
+    setDiaChiOpen(true);
+  };
+  const handleCancel = () => {
+    setDiaChiOpen(false);
+  };
+  const [provinces, setProvinces] = useState<Option[]>([]);
+  const [districts, setDistricts] = useState<Option[]>([]);
+  const [wards, setWards] = useState<Option[]>([]);
   const navigate = useNavigate();
   const [loadingForm, setLoadingForm] = useState(false);
   const [form] = Form.useForm();
@@ -48,6 +67,8 @@ const detailHoaDon: React.FC = () => {
     DataTypeHoaDonChiTiet[] | null
   >(null);
   const [orderStatus, setOrderStatus] = useState(data?.trangThaiHoaDon);
+  const [diaChiThongTin, setDiaChiThongTin] = useState(data?.diaChiNguoiNhan);
+
   const columns: ColumnsType<DataTypeHoaDonChiTiet> = [
     {
       title: "STT",
@@ -110,6 +131,33 @@ const detailHoaDon: React.FC = () => {
     },
   ];
   const [showExportButton, setShowExportButton] = useState(true);
+  const [reload, setReload] = useState(false);
+  // API địa chỉ
+  const fetchProvinces = async () => {
+    try {
+      const provinceRes = await axios.get(
+        "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
+        {
+          headers: {
+            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
+            ContentType: "application/json",
+          },
+        }
+      );
+
+      const provinceOptions: Option[] = provinceRes.data.data.map(
+        (province: any) => ({
+          value: province.ProvinceID,
+          label: province.ProvinceName,
+          isLeaf: false,
+        })
+      );
+      setProvinces(provinceOptions);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     const fetchHoaDonData = async () => {
       setLoadingForm(true);
@@ -122,6 +170,7 @@ const detailHoaDon: React.FC = () => {
         });
         setData(res.data);
         setOrderStatus(res.data?.trangThaiHoaDon);
+        setDiaChiThongTin(res.data?.diaChiNguoiNhan);
         setListHoaDonChiTiet(res.data.hoaDonChiTietList);
         setLoadingForm(false);
       } catch (error) {
@@ -130,7 +179,67 @@ const detailHoaDon: React.FC = () => {
       }
     };
     fetchHoaDonData();
+    fetchProvinces();
   }, [id]);
+  const fetchDistricts = async (idProvince: string) => {
+    try {
+      const districtRes = await axios.get(
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/district?`,
+        {
+          params: {
+            province_id: idProvince,
+          },
+          headers: {
+            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
+            ContentType: "application/json",
+          },
+        }
+      );
+
+      const districtOptions: Option[] = districtRes.data.data.map(
+        (district: any) => ({
+          value: district.DistrictID,
+          label: district.DistrictName,
+          isLeaf: false,
+        })
+      );
+      setDistricts(districtOptions);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchWards = async (idDistrict: string) => {
+    try {
+      const wardRes = await axios.get(
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
+        {
+          params: {
+            district_id: idDistrict,
+          },
+          headers: {
+            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
+            ContentType: "application/json",
+          },
+        }
+      );
+
+      const wardOptions: Option[] = wardRes.data.data.map((ward: any) => ({
+        value: ward.WardCode,
+        label: ward.WardName,
+        isLeaf: false,
+      }));
+      setWards(wardOptions);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleProvinceChange = (provinceId: string) => {
+    fetchDistricts(provinceId);
+  };
+  const handleDistrictChange = (districtId: string) => {
+    fetchWards(districtId);
+  };
+
   const onFinish = (values: UpdatedRequest) => {
     confirm({
       title: "Xác Nhận",
@@ -162,12 +271,75 @@ const detailHoaDon: React.FC = () => {
             message.error(error.response.data.message);
           } else {
             console.error("Lỗi không xác định:", error);
-            message.error("Cập nhật loại đế thất bại");
+            message.error("Cập nhật hóa đơn thất bại");
           }
         }
       },
     });
   };
+
+  const getProvinceLabelFromId = (id: number | null | undefined) => {
+    const province = provinces.find((p) => p.value === id);
+    return province?.label;
+  };
+
+  const getDistrictLabelFromId = (id: number | null | undefined) => {
+    const district = districts.find((d) => d.value === id);
+    return district?.label;
+  };
+
+  const getWardLabelFromId = (id: number | null | undefined) => {
+    const ward = wards.find((w) => w.value === id);
+    return ward?.label;
+  };
+
+  const onUpdateDiaChi = async (value: UpdateDiaChiHoaDon) => {
+    const provinceLabel = getProvinceLabelFromId(value.thanhPho);
+    const districtLabel = getDistrictLabelFromId(value.quanHuyen);
+    const wardLabel = getWardLabelFromId(value.phuongXa);
+    try {
+      const res = await request.put("hoa-don/" + id, {
+        ma: data?.ma,
+        diaChiNguoiNhan:
+          value.diaChiCuThe +
+          ", " +
+          wardLabel +
+          ", " +
+          districtLabel +
+          ", " +
+          provinceLabel,
+        emailNguoiNhan: data?.emailNguoiNhan,
+        ghiChu: data?.ghiChu,
+        trangThaiHoaDon: data?.trangThaiHoaDon.ten,
+        loaiHoaDon: data?.loaiHoaDon.ten,
+        nguoiNhan: data?.nguoiNhan,
+        sdtNguoiNhan: data?.sdtNguoiNhan,
+        tongTien: data?.tongTien,
+      });
+      if (res.data) {
+        message.success("Cập nhật địa chỉ hóa đơn thành công");
+      } else {
+        console.error("Phản hồi API không như mong đợi:", res);
+      }
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        message.error(error.response.data.message);
+      } else {
+        console.error("Lỗi không xác định:", error);
+        message.error("Cập nhật địa chỉ hóa đơn thất bại");
+      }
+    }
+    setDiaChiThongTin(
+      value.diaChiCuThe +
+        ", " +
+        wardLabel +
+        ", " +
+        districtLabel +
+        ", " +
+        provinceLabel
+    );
+  };
+
   // hiển thị danh sách sản phẩm trong cột
   const dataSourceDanhSachSanPham = () => {
     return listHoaDonChiTiet?.map((item) => ({
@@ -225,7 +397,7 @@ const detailHoaDon: React.FC = () => {
         message.error(error.response.data.message);
       } else {
         console.error("Lỗi không xác định:", error);
-        message.error("Cập nhật loại đế thất bại");
+        message.error("Cập nhật hóa đơn thất bại");
       }
     }
   };
@@ -255,20 +427,21 @@ const detailHoaDon: React.FC = () => {
           message.error(error.response.data.message);
         } else {
           console.error("Lỗi không xác định:", error);
-          message.error("Cập nhật loại đế thất bại");
+          message.error("Cập nhật hóa đơn thất bại");
         }
       }
       downloadPdf();
       setOrderStatus(shipingStatus);
     }
   };
+
   //
   return (
     <>
       <Card title="Hóa đơn chi tiết">
         <Skeleton loading={loadingForm}>
           <Form
-            labelCol={{ span: 10 }}
+            labelCol={{ span: 11 }}
             style={{ maxWidth: 1000 }}
             onFinish={onFinish}
             layout="horizontal"
@@ -280,7 +453,7 @@ const detailHoaDon: React.FC = () => {
                 style={{ marginBottom: "5px" }}
               >
                 <Row>
-                  <Col span={12}>
+                  <Col span={10}>
                     <Form.Item name="ma" label="Mã hóa đơn">
                       <span>{data?.ma}</span>
                     </Form.Item>
@@ -305,13 +478,28 @@ const detailHoaDon: React.FC = () => {
                       <span>{data?.sdtNguoiNhan}</span>
                     </Form.Item>
                   </Col>
-                  <Col span={12}>
+                  <Col span={14}>
                     <Form.Item
                       name="diaChiNguoiNhan"
                       label="Địa chỉ người nhận"
                     >
-                      <Input />
+                      <Space direction="horizontal">
+                        <div style={{ width: "190px" }}>
+                          <span>{diaChiThongTin}</span>
+                        </div>
+                        <Button onClick={showDiaChiModal}>Tùy chỉnh</Button>
+                      </Space>
                     </Form.Item>
+                    <DiaChiComponent
+                      open={diaChiOpen}
+                      onUpdate={onUpdateDiaChi}
+                      onCancel={handleCancel}
+                      provinces={provinces}
+                      districts={districts}
+                      wards={wards}
+                      onProvinceChange={handleProvinceChange}
+                      onDistrictChange={handleDistrictChange}
+                    />
                     <Form.Item name="emailNguoiNhan" label="Email người nhận">
                       <Input />
                     </Form.Item>
