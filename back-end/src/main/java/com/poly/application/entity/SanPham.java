@@ -68,6 +68,10 @@ public class SanPham {
 
     @JsonIgnore
     @OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY)
+    private List<HinhAnhSanPham> listHinhAnhSanPham;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY)
     private List<ChiTietSanPham> listChiTietSanPham;
 
 }

@@ -137,4 +137,17 @@ public class CommonEnum {
         private final String mauSac;
     }
 
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum TrangThaiHinhAnh{
+        DEFAULT("DEFAULT", "Mặc định", "success"),
+        AVATAR("AVATAR", "Ảnh đại diện", "red"),
+        DELETED("DELETED", "Đã xóa", "green");
+
+        private final String ten;
+        private final String moTa;
+        private final String mauSac;
+    }
+
 }

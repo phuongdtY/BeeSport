@@ -38,7 +38,14 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
     @Query("SELECT sp FROM SanPham sp WHERE sp.trangThai = 'ACTIVE' ORDER BY sp.ngayTao DESC")
     List<SanPham> get5SanPhamMoiNhat();
 
-    @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien)) FROM SanPham sp JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id WHERE sp.trangThai = 'ACTIVE' GROUP BY sp.id, sp.ten ORDER BY MAX(cps.ngayTao) DESC")
+    @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien), hi.duongDan) " +
+            "FROM SanPham sp " +
+            "JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id " +
+            "JOIN HinhAnhSanPham hi ON sp.id = hi.sanPham.id " +
+            "WHERE cps.trangThai = 'ACTIVE' " +
+            "AND hi.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
+            "GROUP BY sp.id, sp.ten, hi.duongDan " +
+            "ORDER BY MAX(cps.ngayTao) DESC")
     List<SanPhamMoiNhatResponse> findAllSanPhamMoiNhat();
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamDetailResponse(sp.id, sp.ma, sp.ten, sp.moTa, MIN(cps.giaTien), MAX(cps.giaTien), sp.trangThai) " +
