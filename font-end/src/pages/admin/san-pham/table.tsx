@@ -155,7 +155,7 @@ function TableSanPham({
         soLuong: 10,
         loaiDe: { id: selectedLoaiDe },
         diaHinhSan: { id: selectedDiaHinhSan },
-        sanPham: { id: 5 },
+        sanPham: { id: 6 },
         mauSac: { id: mauSac, ten: mauSacMapping[mauSac] },
         kichCo: { id: kichCo, ten: kichCoMapping[kichCo] },
       });
@@ -190,7 +190,7 @@ function TableSanPham({
           type="info"
         />
         <Space style={{ margin: 5 }}>
-          <Button type="primary" danger size="small">
+          <Button type="primary" danger size="small" onClick={clickDelete}>
             <DeleteOutlined />
             Xóa
           </Button>

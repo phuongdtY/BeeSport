@@ -23,19 +23,20 @@ import {
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
+import { DataParams, DataType } from "~/interfaces/loaiDe.type";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import request from "~/utils/request";
 
 const index: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<DataType[]>([]);
   const [totalElements, setTotalElements] = useState(0);
-  const [params, setParams] = useState<any>({
+  const [params, setParams] = useState<DataParams>({
     page: 1,
     pageSize: 10,
   });
 
-  const columns: ColumnsType<any> = [
+  const columns: ColumnsType<DataType> = [
     {
       title: "STT",
       align: "center",
@@ -44,34 +45,12 @@ const index: React.FC = () => {
       render: (_, __, index) => (params.page - 1) * params.pageSize + index + 1,
     },
     {
-      title: "Mã",
-      dataIndex: "ma",
-      key: "ma",
-      sorter: true,
-      ellipsis: true,
-      render: (text) => <a>{text}</a>,
-    },
-    {
       title: "Tên",
       dataIndex: "ten",
       key: "ten",
       align: "center",
       sorter: true,
-      width: "20%",
-    },
-    {
-      title: "Ngày bắt đầu",
-      align: "center",
-      dataIndex: "ngayBatDau",
-      key: "ngayBatDau",
-      sorter: true,
-    },
-    {
-      title: "Ngày kết thúc",
-      align: "center",
-      dataIndex: "ngayKetThuc",
-      key: "ngayKetThuc",
-      sorter: true,
+      width: "30%",
     },
     {
       title: "Trạng Thái",
@@ -80,9 +59,10 @@ const index: React.FC = () => {
       align: "center",
       sorter: true,
       width: "20%",
-      render: (trangThai) => <Tag>{trangThai.ten}</Tag>,
+      render: (trangThai) => (
+        <Tag color={trangThai.mauSac}>{trangThai.moTa}</Tag>
+      ),
     },
-
     {
       title: "Thao Tác",
       dataIndex: "id",
@@ -97,7 +77,7 @@ const index: React.FC = () => {
             </Tooltip>
           </Button>
           <Tooltip title="Chỉnh sửa">
-            <Link to={`/admin/voucher/update/${id}`}>
+            <Link to={`/admin/loai-de/update/${id}`}>
               <Button type="link" style={{ padding: 0 }}>
                 <EditOutlined />
               </Button>
@@ -108,7 +88,7 @@ const index: React.FC = () => {
     },
   ];
 
-  const getParams = (params: any) => ({
+  const getParams = (params: DataParams) => ({
     page: data.length !== 0 ? params.page : 1,
     pageSize: params.pageSize,
     searchText: params.searchText,
@@ -124,18 +104,16 @@ const index: React.FC = () => {
         const res = await request.get("loai-de", {
           params: getParams(params),
         });
-        console.log(res);
         setData(res.data.content);
         setTotalElements(res.data.totalElements);
         setLoading(false);
       } catch (error) {
         console.log(error);
         setLoading(false);
-        message.error("Lấy dữ liệu voucher thất bại");
+        message.error("Lấy dữ liệu loại đế thất bại");
       }
     };
     fetchData();
-    data.map((ii) => console.log(ii));
   }, [params]);
   const handleSearch = (value: string) => {
     setParams({
@@ -154,7 +132,7 @@ const index: React.FC = () => {
   const onChangeTable = (
     pagination: TablePaginationConfig,
     filters: Record<string, FilterValue | null>,
-    sorter: SorterResult<any> | any
+    sorter: SorterResult<DataType> | any
   ) => {
     filters;
     const page = pagination.current !== undefined ? pagination.current : 1;
@@ -170,12 +148,12 @@ const index: React.FC = () => {
   };
   return (
     <>
-      <Card title="DANH SÁCH VOUCHER">
+      <Card title="DANH SÁCH loại đế">
         <Row>
           <Col span={8}>
             <Input
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Tìm kiếm theo Tên, Mã..."
+              placeholder="Tìm kiếm theo Tên..."
               allowClear
               prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
             />
@@ -189,18 +167,16 @@ const index: React.FC = () => {
                 onChange={onChangeStatus}
                 options={[
                   { value: "", label: "Tất cả" },
-                  { value: "ACTIVE", label: "Đang hoạt động" },
-                  { value: "EXPIRED", label: "Hết hạn" },
-                  { value: "INACTIVE", label: "Ngừng hoạt động" },
-                  { value: "UPCOMING", label: "Sắp diễn ra" },
+                  { value: "ACTIVE", label: "Hoạt động" },
+                  { value: "INACTIVE", label: "Không hoạt động" },
                 ]}
               />
             </Form.Item>
           </Col>
           <Col span={3}>
-            <Link to="/admin/voucher/add">
+            <Link to="/admin/loai-de/add">
               <Button type="primary" icon={<PlusOutlined />}>
-                Thêm voucher
+                Thêm loại đế
               </Button>
             </Link>
           </Col>
