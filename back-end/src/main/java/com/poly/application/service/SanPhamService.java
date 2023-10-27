@@ -14,6 +14,8 @@ public interface SanPhamService {
     Page<SanPhamResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText,
                                  Long thuongHieuId, String trangThaiString);
 
+    List<SanPhamResponse> getAllSanPhamNullCTSP();
+
     SanPhamResponse add(CreatedSanPhamRequest request);
 
     SanPhamResponse update(Long id, UpdatedSanPhamRequest request);
