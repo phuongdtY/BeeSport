@@ -104,6 +104,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         }
 
         hoaDon.setMa(newMa);
+        hoaDon.setPhiShip(updatedHoaDonRequest.getPhiShip());
         hoaDon.setLoaiHoaDon(updatedHoaDonRequest.getLoaiHoaDon());
         hoaDon.setNgayThanhToan(updatedHoaDonRequest.getNgayThanhToan());
         hoaDon.setTrangThaiHoaDon(updatedHoaDonRequest.getTrangThaiHoaDon());
