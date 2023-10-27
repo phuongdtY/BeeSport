@@ -168,4 +168,12 @@ public class SanPhamServiceImpl implements SanPhamService {
         return detail;
     }
 
+    @Override
+    public List<SanPhamResponse> getAllSanPhamNullCTSP() {
+        List<SanPham> listSanPham = repository.getAllSanPhamNullCTSP();
+        return listSanPham.stream()
+                .map(sanPham -> mapper.convertEntityToResponse(sanPham))
+                .collect(Collectors.toList());
+    }
+
 }

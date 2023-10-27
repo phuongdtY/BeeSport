@@ -69,4 +69,9 @@ public class SanPhamController {
         return ResponseEntity.ok(service.giaTien5SanPhamMoiNhat());
     }
 
+    @GetMapping("/null-ctsp")
+    public ResponseEntity<?> getSanPhamNullCTSP() {
+        return ResponseEntity.ok(service.getAllSanPhamNullCTSP());
+    }
+
 }
