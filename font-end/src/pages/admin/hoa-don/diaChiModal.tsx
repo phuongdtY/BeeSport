@@ -1,4 +1,4 @@
-import { Modal, Form, Select, Col, Row, Input } from "antd";
+import { Modal, Form, Select, Col, Row, Input, Space } from "antd";
 
 interface Option {
   value?: number | null;
@@ -9,6 +9,7 @@ interface Option {
 
 interface DiaChiProps {
   open: boolean;
+  fee: number;
   onUpdate: (values: any) => void;
   onCancel: () => void;
 
@@ -31,6 +32,7 @@ interface DiaChiProps {
 // ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 const DiaChiComponent: React.FC<DiaChiProps> = ({
   open,
+  fee,
   onUpdate,
   onCancel,
   provinces,
@@ -103,6 +105,7 @@ const DiaChiComponent: React.FC<DiaChiProps> = ({
         >
           <Input />
         </Form.Item>
+        <span> Phí Ship: {fee}</span>
       </Form>
     </Modal>
   );

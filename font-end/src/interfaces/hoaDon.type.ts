@@ -8,7 +8,7 @@ export interface DataType {
   };
   ngayThanhToan: string;
   phiShip: string;
-  tongTien: string;
+  tongTien: number;
   tongTienKhiGiam: string;
   ghiChu: string;
   nguoiNhan: string;

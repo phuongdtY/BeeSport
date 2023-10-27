@@ -14,7 +14,7 @@ import {
   Tag,
   message,
 } from "antd";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   DataType as DataTypeHoaDon,
@@ -44,6 +44,10 @@ interface Option {
   isLeaf?: boolean;
 }
 
+const initialState = {
+  total: 0,
+};
+
 const getTargetElement = () => document.getElementById("pdfReaderHoaDon");
 const downloadPdf = () => generatePDF(getTargetElement, optionPrintPDF);
 
@@ -68,7 +72,8 @@ const detailHoaDon: React.FC = () => {
   >(null);
   const [orderStatus, setOrderStatus] = useState(data?.trangThaiHoaDon);
   const [diaChiThongTin, setDiaChiThongTin] = useState(data?.diaChiNguoiNhan);
-
+  const [phiShipThongTin, setphiShipThongTin] = useState(data?.phiShip);
+  const [totalMoney, setTotalMoney] = useState(0);
   const columns: ColumnsType<DataTypeHoaDonChiTiet> = [
     {
       title: "STT",
@@ -131,7 +136,6 @@ const detailHoaDon: React.FC = () => {
     },
   ];
   const [showExportButton, setShowExportButton] = useState(true);
-  const [reload, setReload] = useState(false);
   // API địa chỉ
   const fetchProvinces = async () => {
     try {
@@ -171,7 +175,9 @@ const detailHoaDon: React.FC = () => {
         setData(res.data);
         setOrderStatus(res.data?.trangThaiHoaDon);
         setDiaChiThongTin(res.data?.diaChiNguoiNhan);
+        setphiShipThongTin(res.data?.phiShip);
         setListHoaDonChiTiet(res.data.hoaDonChiTietList);
+        setTotalMoney(res.data?.tongTien);
         setLoadingForm(false);
       } catch (error) {
         console.log(error);
@@ -233,6 +239,7 @@ const detailHoaDon: React.FC = () => {
       console.error(error);
     }
   };
+
   const handleProvinceChange = (provinceId: string) => {
     fetchDistricts(provinceId);
   };
@@ -298,6 +305,28 @@ const detailHoaDon: React.FC = () => {
     const districtLabel = getDistrictLabelFromId(value.quanHuyen);
     const wardLabel = getWardLabelFromId(value.phuongXa);
     try {
+      const feeRes = await axios.get(
+        `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee`,
+        {
+          params: {
+            service_type_id: "2",
+            to_district_id: value.quanHuyen,
+            to_ward_code: value.phuongXa,
+            height: "9",
+            length: "29",
+            weight: "300",
+            width: "18",
+          },
+          headers: {
+            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
+            shop_id: "4611572",
+            ContentType: "application/json",
+          },
+        }
+      );
+
+      const feeResponse = feeRes.data.data.total;
+
       const res = await request.put("hoa-don/" + id, {
         ma: data?.ma,
         diaChiNguoiNhan:
@@ -308,6 +337,7 @@ const detailHoaDon: React.FC = () => {
           districtLabel +
           ", " +
           provinceLabel,
+        phiShip: feeResponse,
         emailNguoiNhan: data?.emailNguoiNhan,
         ghiChu: data?.ghiChu,
         trangThaiHoaDon: data?.trangThaiHoaDon.ten,
@@ -316,6 +346,16 @@ const detailHoaDon: React.FC = () => {
         sdtNguoiNhan: data?.sdtNguoiNhan,
         tongTien: data?.tongTien,
       });
+      setDiaChiThongTin(
+        value.diaChiCuThe +
+          ", " +
+          wardLabel +
+          ", " +
+          districtLabel +
+          ", " +
+          provinceLabel
+      );
+      setphiShipThongTin(feeResponse);
       if (res.data) {
         message.success("Cập nhật địa chỉ hóa đơn thành công");
       } else {
@@ -329,15 +369,6 @@ const detailHoaDon: React.FC = () => {
         message.error("Cập nhật địa chỉ hóa đơn thất bại");
       }
     }
-    setDiaChiThongTin(
-      value.diaChiCuThe +
-        ", " +
-        wardLabel +
-        ", " +
-        districtLabel +
-        ", " +
-        provinceLabel
-    );
   };
 
   // hiển thị danh sách sản phẩm trong cột
@@ -350,14 +381,6 @@ const detailHoaDon: React.FC = () => {
     }));
   };
   // tính tổng tiền của hóa đơn đó cần trả
-  const phiShip = Number(data?.phiShip);
-  let total = 0;
-  total += phiShip;
-  listHoaDonChiTiet?.forEach((item) => {
-    const thanhTien = Number(item.soLuong) * Number(item.donGia);
-    total += thanhTien;
-  });
-  //
 
   // trạng thái của hóa đơn xử lý button
   const confirmedStatus = {
@@ -499,12 +522,18 @@ const detailHoaDon: React.FC = () => {
                       wards={wards}
                       onProvinceChange={handleProvinceChange}
                       onDistrictChange={handleDistrictChange}
+                      fee={Number(phiShipThongTin)}
                     />
                     <Form.Item name="emailNguoiNhan" label="Email người nhận">
                       <Input />
                     </Form.Item>
                     <Form.Item name="ghiChu" label="Ghi chú">
                       <TextArea />
+                    </Form.Item>
+                    <Form.Item name="phiShip" label="Phí ship">
+                      <div style={{ width: "190px" }}>
+                        <span>{phiShipThongTin}</span>
+                      </div>
                     </Form.Item>
                     <Form.Item>
                       <Space>
@@ -540,7 +569,7 @@ const detailHoaDon: React.FC = () => {
                   columns={columns}
                   dataSource={dataSourceDanhSachSanPham()}
                 />
-                <span>Tổng tiền: {total}</span>
+                <span>Tổng tiền: {totalMoney} </span>
               </Card>
             </div>
           </Form>
