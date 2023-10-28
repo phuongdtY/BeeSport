@@ -23,10 +23,12 @@ import GioHang from "./pages/shop/gio-hang/GioHang";
 import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
 import IndexVoucher from "./pages/admin/voucher/index";
 import AddVoucher from "./pages/admin/voucher/add";
-import UpdateVoucher from "./pages/admin/voucher/test";
+import UpdateVoucher from "./pages/admin/voucher/update";
 import IndexHinhThucGiamGia from "./pages/admin/hinh-thuc-giam-gia/index";
 import AddHinhThucGiamGia from "./pages/admin/hinh-thuc-giam-gia/add";
 import UpdateHinhThucGiamGia from "./pages/admin/hinh-thuc-giam-gia/update";
+
+import AddVoucherTest from "./pages/admin/voucher/add copy";
 
 function App() {
   return (
@@ -58,7 +60,9 @@ function App() {
         <Route path="voucher/update/:id" element={<UpdateVoucher />} />
         <Route path="hinh-thuc-giam-gia" element={<IndexHinhThucGiamGia />} />
         <Route path="hinh-thuc-giam-gia/add" element={<AddHinhThucGiamGia />} />
-        <Route path="hinh-thuc-giam-gia/:id" element={<UpdateHinhThucGiamGia />} />
+        <Route path="hinh-thuc-giam-gia/update/:id" element={<UpdateHinhThucGiamGia />} />
+
+        <Route path="voucher/addTest" element={<AddVoucherTest />} />
       </Route>
     </Routes>
   );

@@ -26,8 +26,6 @@ import { Link } from "react-router-dom";
 import { DataParams, DataType } from "~/interfaces/voucher.type";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import request from "~/utils/request";
-import './index.css';
-
 const index: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<DataType[]>([]);
@@ -82,20 +80,9 @@ const index: React.FC = () => {
       align: "center",
       sorter: true,
       width: "20%",
-      render: (trangThai) => <Tag>{trangThai.ten}</Tag>,
-      // render: (trangThai) => {
-      //   if (trangThai.ten == 'ACTIVE') {
-      //     return <Tag className="success">Kích hoạt</Tag>
-      //   } else if (trangThai.ten == 'EXPIRED') {
-      //     return <Tag className="warning">Hết hạn</Tag>
-      //   } else if (trangThai.ten == 'INACTIVE') {
-      //     return <Tag className="info">Không hoạt động</Tag>
-      //   } else if (trangThai.ten == 'UPCOMING') {
-      //     return <Tag className="error">Ngừng kích hoạt</Tag>
-      //   } else {
-      //     return <Tag className="default">Unknown</Tag>
-      //   }
-      // }
+      render: (trangThai) => (
+        <Tag color={trangThai?.mauSac}>{trangThai?.moTa}</Tag>
+      ),
     },
     {
       title: "Thao Tác",

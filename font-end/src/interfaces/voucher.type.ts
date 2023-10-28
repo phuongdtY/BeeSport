@@ -18,7 +18,7 @@ export interface DataType {
     trangThai: {
       ten: string;
       mota: string;
-      voucher: string;
+      mauSac: string;
     };
   }
 
@@ -42,18 +42,19 @@ export interface DataType {
     giaToiThieu : string;
     giaTriGiam : string;
     giaTriGiamToiDa : string;
-    // ngayTao: string;
-    // trangThai: string;
   }
   export interface UpdatedRequest {
+    id: number;
+    ma: string;
     ten: string;
     ngayBatDau: string;
     ngayKetThuc: string;
+    ngayTao: string;
     hinhThucGiam : string;
     giaToiThieu : string;
     giaTriGiam : string;
     giaTriGiamToiDa : string;
-    trangThai: string;
+    // trangThai: boolean;
   }
 
   

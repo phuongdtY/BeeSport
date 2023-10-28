@@ -4,6 +4,7 @@ import { Button, Card, Col, DatePicker, Form, Input, Modal, Row, Space, message,
 import request from "~/utils/request";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { CreatedRequest } from "~/interfaces/voucher.type";
+const { Option } = Select;
 
 const AddVoucher: React.FC = () => {
   const [form] = Form.useForm();
@@ -11,6 +12,22 @@ const AddVoucher: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { confirm } = Modal;
+
+  const [selectedOption, setSelectedOption] = useState('');
+  const [input1, setInput1] = useState('');
+  const [input2, setInput2] = useState('');
+
+  const handleSelectChange = (value) => {
+    setSelectedOption(value);
+  };
+
+  const handleInputChange1 = (value) => {
+    setInput1(value);
+  };
+
+  const handleInputChange2 = (value) => {
+    setInput2(value);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,70 +83,79 @@ const AddVoucher: React.FC = () => {
             <Form.Item
               name="ten"
               label="Tên voucher"
-              rules={[
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Vui lòng nhập tên voucher!",
-                },
-              ]}
-            >
+              rules={[{ required: true, whitespace: true, message: "Vui lòng nhập tên voucher!" }]}>
               <Input />
             </Form.Item>
             <Form.Item
               name="ngayBatDau"
               label="Ngày Bắt Đầu"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng Chọn ngày và giờ bắt đầu!"
-                }
-              ]}>
-              {/* <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ bắt đầu" /> */}
-              <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ bắt đầu" />
+              rules={[{ required: true, message: "Vui lòng Chọn ngày và giờ bắt đầu!" }]}>
+              <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ bắt đầu" style={{ width: "100%" }} />
             </Form.Item>
-            <Form.Item name="ngayKetThuc"
+            <Form.Item
+              name="ngayKetThuc"
               label="Ngày Kết Thúc"
               rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc!" }]}>
-              {/* <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ kết thúc" /> */}
-              <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ kết thúc" />
+              <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ kết thúc" style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item
               name="hinhThucGiam"
               label="Hình thức giảm giá"
               initialValue="Chọn hình thức giảm giá"
-              rules={[{ required: true, message: "Vui lòng chọn hình thức giảm giá" }]}>
-              <Select>
-                {options.map((option: any) => (
-                  <Select.Option key={option.id} value={option.id}>
-                    {option.ten}
-                  </Select.Option>
-                ))}
+              rules={[{ required: true, message: 'Vui lòng chọn hình thức giảm giá' }]}
+            >
+              <Select value={selectedOption} onChange={handleSelectChange}>
+                <Option value="1">Phần Trăm</Option>
+                <Option value="2">Giá tiền</Option>
               </Select>
-            </Form.Item>
-            <Form.Item
-              name="giaToiThieu"
-              label="Giá tối thiểu"
-              rules={[{ required: true, message: "Vui lòng nhập giá tối thiểu!" }]}>
-              <InputNumber style={{ width: "100%" }} step={1000}
-                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-              />
-            </Form.Item>
-            <Form.Item
-              name="giaTriGiam"
-              label="Giá trị giảm"
-              rules={[{ required: true, message: "Vui lòng nhập giá trị giảm!" }]}>
-              <InputNumber style={{ width: "100%" }} step={1000}
-                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-              />
-            </Form.Item>
-            <Form.Item
-              name="giaTriGiamToiDa"
-              label="Giá trị giảm tối đa"
-              rules={[{ required: true, message: "Vui lòng nhập giá trị giảm tối đa!" }]}>
-              <InputNumber style={{ width: "100%" }} step={1000}
-                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-              />
+
+              {selectedOption === '1' && (
+                <Form.Item style={{ marginTop: '25px' }}
+                  name="giaTriGiam"
+                  label="Giá trị giảm"
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập giá trị giảm!' },
+                    {
+                      validator: (_, value) => {
+                        if (value > 100) {
+                          return Promise.reject(new Error('Chỉ giảm tối đa 100%'));
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                >
+                  <InputNumber min={0} max={1000} formatter={(value) => `${value}%`.replace('%', '')} />
+                </Form.Item>
+              )}
+
+              {selectedOption === '2' && (
+                <>
+                  <Form.Item style={{ marginTop: '25px' }}
+                    name="giaToiThieu"
+                    label="Giá tối thiểu"
+                    rules={[{ required: true, message: 'Vui lòng nhập giá tối thiểu!' }]}>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      step={1000}
+                      value={input1}
+                      onChange={handleInputChange1}
+                      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    />
+                  </Form.Item>
+                  <Form.Item name="giaTriGiamToiDa"
+                    label="Giá trị giảm tối đa"
+                    rules={[{ required: true, message: 'Vui lòng nhập giá trị giảm tối đa!' }]}>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      step={1000}
+                      value={input2}
+                      onChange={handleInputChange2}
+                      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    />
+                  </Form.Item>
+                </>
+              )}
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
               <Space>
