@@ -1,11 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import {
-  EditOutlined,
-  EyeOutlined,
-  PlusOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
