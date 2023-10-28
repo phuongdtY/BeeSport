@@ -1,126 +1,205 @@
-import { Button, Card, Col, Divider, Input, Row, Switch } from "antd";
+import { Button, Card, Col, Divider, Input, Row, Select, Switch } from "antd";
 import React, { useState, useEffect } from "react";
 import { Table } from "antd";
 import type { ColumnsType, TableProps } from "antd/es/table";
 import request from "~/utils/request";
 import ThongTinGiaoHang from "./ThongTinGiaoHang";
-
-interface DataGioHang {
-  key: React.Key;
-  ten: string;
-}
-
-interface DataKhachHang {
-  key: React.Key;
-  ten: string;
-  email: string;
-  soDienThoai: string;
-}
-
-const tableGioHang: ColumnsType<DataGioHang> = [
-  {
-    title: "#",
-    dataIndex: "rowIndex",
-    render: (text, record, index) => index + 1,
-  },
-  {
-    title: "Name",
-    dataIndex: "ten",
-  },
-];
-
-const tableKhachHang: ColumnsType<DataKhachHang> = [
-  {
-    title: "#",
-    dataIndex: "rowIndex",
-    render: (text, record, index) => index + 1,
-  },
-  {
-    title: "Name",
-    dataIndex: "ten",
-  },
-];
+import TextArea from "antd/es/input/TextArea";
+import TableSanPham from "./TableSanPham";
 
 const GioHangTaiQuay: React.FC = () => {
-  const [dataGioHang, setDataGioHang] = useState([]);
-  const [dataKhachHang, setDataKhachHang] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [checked, setChecked] = useState(false);
-
-  const getDataGioHang = async () => {
-    try {
-      const response = await request.get("loai-de");
-      setDataGioHang(response.data.content);
-
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-  useEffect(() => {
-    getDataGioHang(); // Gọi API khi component được tạo
-  }, []);
-
-  const getDataKhachHang = async () => {
-    try {
-      const response = await request.get("thuong-hieu");
-      setDataKhachHang(response.data.content);
-
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-  useEffect(() => {
-    getDataKhachHang(); // Gọi API khi component được tạo
-  }, []);
+  const [selectKhachHang, setSelectKhachHang] = useState<string | undefined>(
+    undefined
+  );
 
   const onChangeGiaoHang = (checked: boolean) => {
     setChecked(checked);
   };
 
+  const onChange = (value: string) => {
+    setSelectKhachHang(value);
+  };
+
+  const onSearch = (value: string) => {
+    console.log("search:", value);
+  };
+
+  // Filter `option.label` match the user type `input`
+  const filterOption = (
+    input: string,
+    option?: { label: string; value: string }
+  ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+
   return (
     <>
-      <Button type="primary" style={{ marginBottom: 10, marginLeft: 1000 }}>
-        Thêm sản phẩm
-      </Button>
-
-      <Card title="Giỏ hàng">
-        <Table columns={tableGioHang} dataSource={dataGioHang} />
-      </Card>
-      <br />
-      <Card title="Thông tin khách hàng">
-        <Row gutter={[16, 16]}>
-          <Col span={8}></Col>
-          <Col span={6}></Col>
-          <Col span={6}>
-            <Input.Search placeholder="Tìm kiếm khách hàng ..." enterButton />
-          </Col>
-          <Col span={4}>
-            <Button type="primary">Thêm khách hàng mới</Button>
-          </Col>
-        </Row>
-        <Divider />
-        <Table columns={tableKhachHang} dataSource={dataKhachHang} />
-      </Card>
-      <br />
-      <Card title="Thanh toán">
-        <Row>
-          <Col span={12}>
+      <Row>
+        <Col span={12}>
+          <Card title="Thông tin khách hàng" style={{ marginRight: 10 }}>
+            <Row>
+              <Col span={15} style={{ marginRight: 22 }}>
+                <Select
+                  style={{ width: "100%" }}
+                  allowClear
+                  showSearch
+                  placeholder="Tìm kiếm Khách hàng ..."
+                  optionFilterProp="children"
+                  onChange={onChange}
+                  onSearch={onSearch}
+                  filterOption={filterOption}
+                  options={[
+                    {
+                      value: "1",
+                      label: "0346544561",
+                    },
+                    {
+                      value: "2",
+                      label: "0374783335",
+                    },
+                    {
+                      value: "3",
+                      label: "0383329231",
+                    },
+                  ]}
+                />
+              </Col>
+              <Col span={2}>
+                <Button type="primary">Thêm khách hàng mới</Button>
+              </Col>
+            </Row>
+            <Divider />
+            {/* Tên khách hàng */}
+            {selectKhachHang ? (
+              <>
+                <Row>
+                  <Col span={5}>Tên khách hàng:</Col>
+                  <span style={{ fontWeight: "bold" }}>Dương Văn Cảnh</span>
+                </Row>
+                <br />
+                <Row>
+                  <Col span={5}>Số điện thoại:</Col>
+                  <span style={{ fontWeight: "bold" }}>0346544561</span>
+                </Row>
+                <br />
+                <Row>
+                  <Col span={5}>Email:</Col>
+                  <span style={{ fontWeight: "bold" }}>
+                    canhdv281@gmail.com
+                  </span>
+                </Row>
+                <br />
+              </>
+            ) : (
+              <>
+                <Row>
+                  <Col span={5}>Tên khách hàng:</Col>
+                  <span style={{ fontWeight: "bold" }}>Khách hàng lẻ</span>
+                </Row>
+                <br />
+              </>
+            )}
+            <Divider />
+            <TableSanPham />
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card>
+            <Switch defaultChecked={checked} onChange={onChangeGiaoHang} /> Giao
+            hàng
+            <Divider />
             {checked ? (
-              <Card style={{ marginRight: 10 }}>
-                <ThongTinGiaoHang />
-              </Card>
+              <>
+                <Card title="Thông tin nhận hàng" style={{ marginRight: 10 }}>
+                  <ThongTinGiaoHang />
+                </Card>
+                <Divider />
+              </>
             ) : null}
-          </Col>
-          <Col span={12}>
-            <Card>
-              <Switch defaultChecked={checked} onChange={onChangeGiaoHang} />{" "}
-              Giao hàng
-            </Card>
-          </Col>
-        </Row>
-      </Card>
+            {/* Voucher */}
+            <Row>
+              <Col span={24}>
+                <p>Voucher: </p>
+                <Select
+                  style={{ width: "100%" }}
+                  allowClear
+                  showSearch
+                  placeholder="Tìm kiếm Voucher"
+                  optionFilterProp="children"
+                  onChange={onChange}
+                  onSearch={onSearch}
+                  filterOption={filterOption}
+                  options={[
+                    {
+                      value: "1",
+                      label: "Giảm giá Tết Dương Lịch",
+                    },
+                    {
+                      value: "2",
+                      label: "Giảm giá Tết Nguyên Đán",
+                    },
+                    {
+                      value: "3",
+                      label: "Giảm giá Sinh nhật",
+                    },
+                  ]}
+                />
+              </Col>
+            </Row>
+            {/* Tạm tính */}
+            <Row>
+              <Col span={3}>
+                <p>Tạm tính: </p>
+              </Col>
+              <Col span={18}></Col>
+              <Col span={3}>
+                <p>500.000</p>
+              </Col>
+            </Row>
+            {/* Phí vận chuyển */}
+            <Row>
+              <Col span={5}>
+                <p>Phí vận chuyển: </p>
+              </Col>
+              <Col span={16}></Col>
+              <Col span={3}>
+                <p>50.000</p>
+              </Col>
+            </Row>
+            {/* Giảm giá */}
+            <Row>
+              <Col span={5}>
+                <p>Giảm giá: </p>
+              </Col>
+              <Col span={16}></Col>
+              <Col span={3}>
+                <p>34.000</p>
+              </Col>
+            </Row>
+            {/* Tổng tiền */}
+            <Row>
+              <Col span={5}>
+                <p>Tổng tiền: </p>
+              </Col>
+              <Col span={16}></Col>
+              <Col span={3}>
+                <p>516.000</p>
+              </Col>
+            </Row>
+            <p>Ghi chú: </p>
+            <TextArea rows={4} />
+            <Row>
+              <Col span={24}>
+                <Button
+                  type="primary"
+                  style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
+                >
+                  Lưu hóa đơn
+                </Button>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+      </Row>
     </>
   );
 };

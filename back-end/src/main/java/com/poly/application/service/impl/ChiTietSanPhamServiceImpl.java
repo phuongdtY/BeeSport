@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
@@ -32,6 +33,13 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
     public List<ChiTietSanPhamResponse> findByAll(Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan) {
         List<ChiTietSanPham> list = repository.findByAll(idSanPham, idMauSac, idLoaiDe, idKichCo, idDiaHinhSan);
         return mapper.toResponseList(list);
+    }
+
+    @Override
+    public List<ChiTietSanPhamResponse> getListChiTietSanPham() {
+        List<ChiTietSanPham> list = repository.findAll();
+        return list.stream().map(sanPham -> mapper.convertEntityToResponse(sanPham))
+                .collect(Collectors.toList());
     }
 
     @Override

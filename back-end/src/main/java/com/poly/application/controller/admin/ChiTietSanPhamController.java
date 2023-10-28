@@ -29,6 +29,11 @@ public class ChiTietSanPhamController {
         return ResponseEntity.ok(service.findByAll(idSanPham, idMauSac, idKichCo, idLoaiDe, idDiaHinhSan));
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<?> getList() {
+        return ResponseEntity.ok(service.getListChiTietSanPham());
+    }
+
     @GetMapping("/get-one/{id}")
     public ResponseEntity<?> getOne(
             @PathVariable("id") Long idSanPham,
