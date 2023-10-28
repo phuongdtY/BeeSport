@@ -14,7 +14,7 @@ import {
   Tag,
   message,
 } from "antd";
-import { useState, useEffect, useReducer } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   DataType as DataTypeHoaDon,
@@ -44,10 +44,6 @@ interface Option {
   isLeaf?: boolean;
 }
 
-const initialState = {
-  total: 0,
-};
-
 const getTargetElement = () => document.getElementById("pdfReaderHoaDon");
 const downloadPdf = () => generatePDF(getTargetElement, optionPrintPDF);
 
@@ -73,7 +69,7 @@ const detailHoaDon: React.FC = () => {
   const [orderStatus, setOrderStatus] = useState(data?.trangThaiHoaDon);
   const [diaChiThongTin, setDiaChiThongTin] = useState(data?.diaChiNguoiNhan);
   const [phiShipThongTin, setphiShipThongTin] = useState(data?.phiShip);
-  const [totalMoney, setTotalMoney] = useState(0);
+  const [tongTien, setTongTien] = useState(data?.tongTien);
   const columns: ColumnsType<DataTypeHoaDonChiTiet> = [
     {
       title: "STT",
@@ -170,6 +166,7 @@ const detailHoaDon: React.FC = () => {
         form.setFieldsValue({
           diaChiNguoiNhan: res.data?.diaChiNguoiNhan,
           emailNguoiNhan: res.data?.emailNguoiNhan,
+          sdtNguoiNhan: res.data?.sdtNguoiNhan,
           ghiChu: res.data?.ghiChu,
         });
         setData(res.data);
@@ -177,8 +174,8 @@ const detailHoaDon: React.FC = () => {
         setDiaChiThongTin(res.data?.diaChiNguoiNhan);
         setphiShipThongTin(res.data?.phiShip);
         setListHoaDonChiTiet(res.data.hoaDonChiTietList);
-        setTotalMoney(res.data?.tongTien);
         setLoadingForm(false);
+        setTongTien(res.data?.tongTien);
       } catch (error) {
         console.log(error);
         setLoadingForm(false);
@@ -344,7 +341,7 @@ const detailHoaDon: React.FC = () => {
         loaiHoaDon: data?.loaiHoaDon.ten,
         nguoiNhan: data?.nguoiNhan,
         sdtNguoiNhan: data?.sdtNguoiNhan,
-        tongTien: data?.tongTien,
+        tongTien: tinhTongTien(feeResponse),
       });
       setDiaChiThongTin(
         value.diaChiCuThe +
@@ -356,6 +353,7 @@ const detailHoaDon: React.FC = () => {
           provinceLabel
       );
       setphiShipThongTin(feeResponse);
+      setTongTien(tinhTongTien(feeResponse));
       if (res.data) {
         message.success("Cập nhật địa chỉ hóa đơn thành công");
       } else {
@@ -381,6 +379,16 @@ const detailHoaDon: React.FC = () => {
     }));
   };
   // tính tổng tiền của hóa đơn đó cần trả
+  const tinhTongTien = (tienShip: number) => {
+    return (
+      (listHoaDonChiTiet || [])
+        .map((item) => ({
+          ...item,
+          thanhTien: Number(item.soLuong) * Number(item.donGia),
+        }))
+        .reduce((sum, item) => sum + item.thanhTien, 0) + tienShip
+    );
+  };
 
   // trạng thái của hóa đơn xử lý button
   const confirmedStatus = {
@@ -498,7 +506,7 @@ const detailHoaDon: React.FC = () => {
                       name="sdtNguoiNhan"
                       label="Số điện thoại người nhận"
                     >
-                      <span>{data?.sdtNguoiNhan}</span>
+                      <Input />
                     </Form.Item>
                   </Col>
                   <Col span={14}>
@@ -535,6 +543,11 @@ const detailHoaDon: React.FC = () => {
                         <span>{phiShipThongTin}</span>
                       </div>
                     </Form.Item>
+                    <Form.Item name="tongTien" label="Tổng tiền">
+                      <div style={{ width: "190px" }}>
+                        <span>{tongTien}</span>
+                      </div>
+                    </Form.Item>
                     <Form.Item>
                       <Space>
                         {orderStatus?.ten === "PENDING" && (
@@ -569,7 +582,6 @@ const detailHoaDon: React.FC = () => {
                   columns={columns}
                   dataSource={dataSourceDanhSachSanPham()}
                 />
-                <span>Tổng tiền: {totalMoney} </span>
               </Card>
             </div>
           </Form>
