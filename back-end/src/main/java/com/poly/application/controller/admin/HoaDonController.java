@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,14 +65,20 @@ public class HoaDonController {
         return ResponseEntity.ok(hoaDonService.update(id,updatedHoaDonRequest));
     }
 
-    @GetMapping("/id")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable(name = "id")Long id ){
+        hoaDonChiTietService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/test-hoa-don/{id}")
     public ResponseEntity<?> detail(@PathVariable(name = "id")Long id){
         List<HoaDonChiTietResponse> hoaDonChiTietResponses = hoaDonChiTietService.findByHoaDonId(id);
         HoaDonResponse hoaDonResponse = hoaDonService.findById(id);
 
         HoaDonHoaDonChiTietListResponseDTO hoaDonHoaDonChiTietListResponseDTO = new HoaDonHoaDonChiTietListResponseDTO();
         hoaDonHoaDonChiTietListResponseDTO.setHoaDonResponse(hoaDonResponse);
-        hoaDonHoaDonChiTietListResponseDTO.setHoaDonChiTietResponseList(hoaDonChiTietResponses);
+//        hoaDonHoaDonChiTietListResponseDTO.setHoaDonChiTietResponseList(hoaDonChiTietResponses);
         return ResponseEntity.ok(hoaDonHoaDonChiTietListResponseDTO);
     }
 

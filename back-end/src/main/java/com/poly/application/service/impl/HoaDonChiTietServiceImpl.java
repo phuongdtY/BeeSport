@@ -65,6 +65,15 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
 
     @Override
     public void delete(Long id) {
+        Optional<HoaDonChiTiet> optional = hoaDonChiTietRepository.findById(id);
+
+        if (optional.isEmpty()) {
+            throw new com.amazonaws.services.mq.model.NotFoundException("hóa đơn chi tiết không tồn tại");
+        }
+
+        HoaDonChiTiet donChiTiet = optional.get();
+
+        hoaDonChiTietRepository.delete(donChiTiet);
 
     }
 
