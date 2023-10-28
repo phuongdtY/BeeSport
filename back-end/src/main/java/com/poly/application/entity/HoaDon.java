@@ -1,5 +1,6 @@
 package com.poly.application.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.poly.application.common.CommonEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -110,6 +111,7 @@ public class HoaDon {
     @OneToMany(mappedBy = "hoaDon",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<GiaoDich> giaoDichList;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "hoaDon",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HoaDonChiTiet> hoaDonChiTietList;
 

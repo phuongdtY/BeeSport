@@ -1,5 +1,8 @@
 package com.poly.application.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.poly.application.common.CommonEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -68,5 +71,9 @@ public class HoaDonChiTiet {
     @ManyToOne
     @JoinColumn(name = "hoa_don_id",referencedColumnName = "id")
     private HoaDon hoaDon;
+
+    @ManyToOne
+    @JoinColumn(name = "chi_tiet_san_pham_id",referencedColumnName = "id")
+    private ChiTietSanPham chiTietSanPham;
 
 }
