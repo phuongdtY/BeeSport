@@ -1,4 +1,4 @@
-import { ExclamationCircleFilled } from "@ant-design/icons";
+import { DeleteOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -12,16 +12,20 @@ import {
   Space,
   Table,
   Tag,
+  Tooltip,
   message,
 } from "antd";
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   DataType as DataTypeHoaDon,
   UpdatedRequest,
   UpdateDiaChiHoaDon,
 } from "~/interfaces/hoaDon.type";
-import { DataType as DataTypeHoaDonChiTiet } from "~/interfaces/hoaDonChiTiet.type";
+import {
+  DataType as DataTypeHoaDonChiTiet,
+  DataParams,
+} from "~/interfaces/hoaDonChiTiet.type";
 import request from "~/utils/request";
 const { confirm } = Modal;
 import generatePDF, { Options } from "react-to-pdf";
@@ -64,8 +68,8 @@ const detailHoaDon: React.FC = () => {
   let { id } = useParams();
   const [data, setData] = useState<DataTypeHoaDon | null>(null);
   const [listHoaDonChiTiet, setListHoaDonChiTiet] = useState<
-    DataTypeHoaDonChiTiet[] | null
-  >(null);
+    DataTypeHoaDonChiTiet[]
+  >([]);
   const [orderStatus, setOrderStatus] = useState(data?.trangThaiHoaDon);
   const [diaChiThongTin, setDiaChiThongTin] = useState(data?.diaChiNguoiNhan);
   const [phiShipThongTin, setphiShipThongTin] = useState(data?.phiShip);
@@ -130,6 +134,26 @@ const detailHoaDon: React.FC = () => {
       sorter: true,
       width: "20%",
     },
+    {
+      title: "Xóa",
+      dataIndex: "id",
+      key: "id",
+      align: "center",
+      sorter: true,
+      width: "20%",
+      render: (id) => (
+        <Space>
+          <Tooltip title="Xóa">
+            <Button type="link" style={{ padding: 0 }}>
+              <DeleteOutlined
+                onClick={() => handleClickDelete(id)}
+                style={{ color: "red" }}
+              />
+            </Button>
+          </Tooltip>
+        </Space>
+      ),
+    },
   ];
   const [showExportButton, setShowExportButton] = useState(true);
   // API địa chỉ
@@ -158,32 +182,77 @@ const detailHoaDon: React.FC = () => {
     }
   };
 
+  const getParams = (params: DataParams) => ({
+    page: listHoaDonChiTiet.length !== 0 ? params.page : 1,
+    pageSize: params.pageSize,
+    searchText: params.searchText,
+    loaiHoaDon: params.loaiHoaDon,
+    trangThaiHoaDon: params.trangThaiHoaDon,
+    sortField: params.sortField,
+    sortOrder: params.sortOrder,
+  });
+
+  const deleteRequest = async (id: number) => {
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc xóa sản phẩm này không?",
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          setLoadingForm(true);
+          const res = await request.delete(`hoa-don/${id}`);
+          setLoadingForm(false);
+          fetchHoaDonData();
+          if (res.data) {
+            message.success("Xóa sản phẩm thành công");
+          } else {
+            console.error("Phản hồi API không như mong đợi:", res);
+          }
+        } catch (error: any) {
+          if (error.response && error.response.status === 400) {
+            message.error(error.response.data.message);
+          } else {
+            console.error("Lỗi không xác định:", error);
+            message.error("Xóa sản phẩm thất bại");
+          }
+        }
+      },
+    });
+  };
+
+  const handleClickDelete = async (id: number) => {
+    deleteRequest(id);
+  };
+
+  const fetchHoaDonData = async () => {
+    setLoadingForm(true);
+    try {
+      const res = await request.get("hoa-don/" + id);
+      form.setFieldsValue({
+        diaChiNguoiNhan: res.data?.diaChiNguoiNhan,
+        emailNguoiNhan: res.data?.emailNguoiNhan,
+        sdtNguoiNhan: res.data?.sdtNguoiNhan,
+        ghiChu: res.data?.ghiChu,
+      });
+      setData(res.data);
+      setOrderStatus(res.data?.trangThaiHoaDon);
+      setDiaChiThongTin(res.data?.diaChiNguoiNhan);
+      setphiShipThongTin(res.data?.phiShip);
+      setListHoaDonChiTiet(res.data.hoaDonChiTietList);
+      setLoadingForm(false);
+      setTongTien(res.data?.tongTien);
+    } catch (error) {
+      console.log(error);
+      setLoadingForm(false);
+    }
+  };
   useEffect(() => {
-    const fetchHoaDonData = async () => {
-      setLoadingForm(true);
-      try {
-        const res = await request.get("hoa-don/" + id);
-        form.setFieldsValue({
-          diaChiNguoiNhan: res.data?.diaChiNguoiNhan,
-          emailNguoiNhan: res.data?.emailNguoiNhan,
-          sdtNguoiNhan: res.data?.sdtNguoiNhan,
-          ghiChu: res.data?.ghiChu,
-        });
-        setData(res.data);
-        setOrderStatus(res.data?.trangThaiHoaDon);
-        setDiaChiThongTin(res.data?.diaChiNguoiNhan);
-        setphiShipThongTin(res.data?.phiShip);
-        setListHoaDonChiTiet(res.data.hoaDonChiTietList);
-        setLoadingForm(false);
-        setTongTien(res.data?.tongTien);
-      } catch (error) {
-        console.log(error);
-        setLoadingForm(false);
-      }
-    };
     fetchHoaDonData();
     fetchProvinces();
   }, [id]);
+
   const fetchDistricts = async (idProvince: string) => {
     try {
       const districtRes = await axios.get(
@@ -262,6 +331,7 @@ const detailHoaDon: React.FC = () => {
             loaiHoaDon: data?.loaiHoaDon.ten,
             nguoiNhan: data?.nguoiNhan,
             sdtNguoiNhan: data?.sdtNguoiNhan,
+            phiShip: data?.phiShip,
             tongTien: data?.tongTien,
           });
           if (res.data) {
@@ -405,32 +475,42 @@ const detailHoaDon: React.FC = () => {
 
   // xử lý button xác nhận
   const handleConfirm = async (values: UpdatedRequest) => {
-    setOrderStatus(confirmedStatus);
-    try {
-      const res = await request.put("hoa-don/" + id, {
-        ma: data?.ma,
-        diaChiNguoiNhan: values.diaChiNguoiNhan,
-        emailNguoiNhan: values.emailNguoiNhan,
-        ghiChu: values.ghiChu,
-        trangThaiHoaDon: "CONFIRMED",
-        loaiHoaDon: data?.loaiHoaDon.ten,
-        nguoiNhan: data?.nguoiNhan,
-        sdtNguoiNhan: data?.sdtNguoiNhan,
-        tongTien: data?.tongTien,
-      });
-      if (res.data) {
-        message.success("Cập nhật hóa đơn thành công");
-      } else {
-        console.error("Phản hồi API không như mong đợi:", res);
-      }
-    } catch (error: any) {
-      if (error.response && error.response.status === 400) {
-        message.error(error.response.data.message);
-      } else {
-        console.error("Lỗi không xác định:", error);
-        message.error("Cập nhật hóa đơn thất bại");
-      }
-    }
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc cập nhật hóa đơn này không?",
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        setOrderStatus(confirmedStatus);
+        try {
+          const res = await request.put("hoa-don/" + id, {
+            ma: data?.ma,
+            diaChiNguoiNhan: values.diaChiNguoiNhan,
+            emailNguoiNhan: values.emailNguoiNhan,
+            ghiChu: values.ghiChu,
+            trangThaiHoaDon: "CONFIRMED",
+            loaiHoaDon: data?.loaiHoaDon.ten,
+            nguoiNhan: data?.nguoiNhan,
+            sdtNguoiNhan: data?.sdtNguoiNhan,
+            phiShip: data?.phiShip,
+            tongTien: data?.tongTien,
+          });
+          if (res.data) {
+            message.success("Cập nhật hóa đơn thành công");
+          } else {
+            console.error("Phản hồi API không như mong đợi:", res);
+          }
+        } catch (error: any) {
+          if (error.response && error.response.status === 400) {
+            message.error(error.response.data.message);
+          } else {
+            console.error("Lỗi không xác định:", error);
+            message.error("Cập nhật hóa đơn thất bại");
+          }
+        }
+      },
+    });
   };
 
   const handleDeliver = async (values: UpdatedRequest) => {
@@ -446,6 +526,7 @@ const detailHoaDon: React.FC = () => {
           loaiHoaDon: data?.loaiHoaDon.ten,
           nguoiNhan: data?.nguoiNhan,
           sdtNguoiNhan: data?.sdtNguoiNhan,
+          phiShip: data?.phiShip,
           tongTien: data?.tongTien,
         });
         if (res.data) {
@@ -550,18 +631,18 @@ const detailHoaDon: React.FC = () => {
                     </Form.Item>
                     <Form.Item>
                       <Space>
-                        {orderStatus?.ten === "PENDING" && (
-                          <Button
-                            type="primary"
-                            onClick={async () => {
-                              await handleConfirm(form.getFieldsValue());
-                            }}
-                          >
-                            Xác nhận
-                          </Button>
-                        )}
+                        {/* {orderStatus?.ten === "PENDING" && ( */}
+                        <Button
+                          type="primary"
+                          onClick={async () => {
+                            await handleConfirm(form.getFieldsValue());
+                          }}
+                        >
+                          Xác nhận
+                        </Button>
+                        {/* )} */}
 
-                        {orderStatus?.ten === "CONFIRMED" &&
+                        {/* {orderStatus?.ten === "CONFIRMED" &&
                           showExportButton && (
                             <Button
                               type="primary"
@@ -571,7 +652,7 @@ const detailHoaDon: React.FC = () => {
                             >
                               Export PDF
                             </Button>
-                          )}
+                          )} */}
                       </Space>
                     </Form.Item>
                   </Col>
