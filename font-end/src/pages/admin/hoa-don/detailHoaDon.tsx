@@ -7,7 +7,6 @@ import {
   Input,
   Modal,
   Row,
-  Select,
   Skeleton,
   Space,
   Table,
@@ -16,7 +15,7 @@ import {
   message,
 } from "antd";
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   DataType as DataTypeHoaDon,
   UpdatedRequest,
@@ -631,7 +630,7 @@ const detailHoaDon: React.FC = () => {
                     </Form.Item>
                     <Form.Item>
                       <Space>
-                        {/* {orderStatus?.ten === "PENDING" && ( */}
+                        {orderStatus?.ten === "PENDING" && (
                         <Button
                           type="primary"
                           onClick={async () => {
@@ -640,9 +639,9 @@ const detailHoaDon: React.FC = () => {
                         >
                           Xác nhận
                         </Button>
-                        {/* )} */}
+                        )}
 
-                        {/* {orderStatus?.ten === "CONFIRMED" &&
+                        {orderStatus?.ten === "CONFIRMED" &&
                           showExportButton && (
                             <Button
                               type="primary"
@@ -652,7 +651,7 @@ const detailHoaDon: React.FC = () => {
                             >
                               Export PDF
                             </Button>
-                          )} */}
+                          )}
                       </Space>
                     </Form.Item>
                   </Col>
