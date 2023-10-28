@@ -17,13 +17,13 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, Lo
 
     List<HoaDonChiTiet> findAllByHoaDonId(Long id);
 
-    @Query("SELECT hd FROM HoaDon hd " +
-            "WHERE (hd.ma LIKE %:searchText%) " +
-            "AND (:loaiHoaDon IS NULL OR hd.loaiHoaDon = :loaiHoaDon ) " +
-            "AND (:trangThaiHoaDon IS NULL OR hd.trangThaiHoaDon = :trangThaiHoaDon)")
+    @Query("SELECT hdct FROM HoaDonChiTiet hdct " +
+            "WHERE (hdct.chiTietSanPham.sanPham.ten LIKE %:searchText%) " +
+            "AND (hdct.hoaDon.id = :idHoaDon)")
     Page<HoaDonChiTiet> findPageHoaDonChiTiet(
             Pageable pageable,
-            @Param("searchText") String searchText
+            @Param("searchText") String searchText,
+            @Param("idHoaDon")Long id
     );
 
 
