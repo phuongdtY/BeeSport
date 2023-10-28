@@ -109,6 +109,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setNgayThanhToan(updatedHoaDonRequest.getNgayThanhToan());
         hoaDon.setTrangThaiHoaDon(updatedHoaDonRequest.getTrangThaiHoaDon());
         hoaDon.setTongTien(updatedHoaDonRequest.getTongTien());
+        hoaDon.setTongTienKhiGiam(updatedHoaDonRequest.getTongTienKhiGiam());
         hoaDon.setSdtNguoiNhan(updatedHoaDonRequest.getSdtNguoiNhan());
         hoaDon.setNguoiNhan(updatedHoaDonRequest.getNguoiNhan());
         hoaDon.setDiaChiNguoiNhan(updatedHoaDonRequest.getDiaChiNguoiNhan());
