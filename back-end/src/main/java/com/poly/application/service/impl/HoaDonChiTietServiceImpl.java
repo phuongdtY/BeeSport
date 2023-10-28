@@ -65,6 +65,15 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
 
     @Override
     public void delete(Long id) {
+        Optional<HoaDonChiTiet> optional = hoaDonChiTietRepository.findById(id);
+
+        if (optional.isEmpty()) {
+            throw new com.amazonaws.services.mq.model.NotFoundException("hóa đơn chi tiết không tồn tại");
+        }
+
+        HoaDonChiTiet donChiTiet = optional.get();
+
+        hoaDonChiTietRepository.delete(donChiTiet);
 
     }
 
@@ -72,5 +81,20 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     public List<HoaDonChiTietResponse> findByHoaDonId(Long id) {
         List<HoaDonChiTiet> hoaDonChiTietList = hoaDonChiTietRepository.findAllByHoaDonId(id);
         return hoaDonChiTietMapper.convertListHoaDonChiTietEntityToHoaDonChiTietResponse(hoaDonChiTietList);
+    }
+
+    @Override
+    public Page<HoaDonChiTietResponse> getPageAllByIdHoaDon(Integer currentPage, Integer pageSize, String searchText, String sorter, String sortOrder, Long id) {
+        Sort sort;
+        if ("ascend".equals(sortOrder)) {
+            sort = Sort.by(sorter).ascending();
+        } else if ("descend".equals(sortOrder)) {
+            sort = Sort.by(sorter).descending();
+        } else {
+            sort = Sort.by("ngayTao").descending();
+        }
+        Pageable pageable = PageRequest.of(currentPage - 1, pageSize, sort);
+        Page<HoaDonChiTiet> hoaDonChiTietPage = hoaDonChiTietRepository.findPageHoaDonChiTiet(pageable,searchText,id);
+        return hoaDonChiTietPage.map(hoaDonChiTietMapper::convertHoaDonChiTietEntityToHoaDonChiTietResponse);
     }
 }

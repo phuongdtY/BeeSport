@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -19,5 +20,5 @@ public class HoaDonHoaDonChiTietListResponseDTO {
 
     private HoaDonResponse hoaDonResponse;
 
-    private List<HoaDonChiTietResponse> hoaDonChiTietResponseList;
+    private Page<HoaDonChiTietResponse> hoaDonChiTietResponseList;
 }

@@ -1,6 +1,7 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.common.GenCode;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.HoaDonChiTiet;
 import com.poly.application.entity.TaiKhoan;
@@ -79,6 +80,7 @@ public class HoaDonServiceImpl implements HoaDonService {
             createHoaDon.setTaiKhoan(taiKhoan);
         }
 
+        createHoaDon.setMa(GenCode.generateHoaDonCode());
         HoaDon savedHoaDon = hoaDonRepository.save(createHoaDon);
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(savedHoaDon);
     }
@@ -109,6 +111,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setNgayThanhToan(updatedHoaDonRequest.getNgayThanhToan());
         hoaDon.setTrangThaiHoaDon(updatedHoaDonRequest.getTrangThaiHoaDon());
         hoaDon.setTongTien(updatedHoaDonRequest.getTongTien());
+        hoaDon.setTongTienKhiGiam(updatedHoaDonRequest.getTongTienKhiGiam());
         hoaDon.setSdtNguoiNhan(updatedHoaDonRequest.getSdtNguoiNhan());
         hoaDon.setNguoiNhan(updatedHoaDonRequest.getNguoiNhan());
         hoaDon.setDiaChiNguoiNhan(updatedHoaDonRequest.getDiaChiNguoiNhan());

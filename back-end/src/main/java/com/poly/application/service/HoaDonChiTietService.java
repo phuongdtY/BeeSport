@@ -21,4 +21,6 @@ public interface HoaDonChiTietService {
 
     List<HoaDonChiTietResponse> findByHoaDonId(Long id);
 
+    Page<HoaDonChiTietResponse> getPageAllByIdHoaDon(Integer currentPage, Integer pageSize, String searchText, String sorter, String sortOrder, Long id);
+
 }
