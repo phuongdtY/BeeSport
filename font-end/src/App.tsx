@@ -26,6 +26,7 @@ import IndexKichCo from "./pages/admin/kich-co/index";
 import AddKichCo from "./pages/admin/kich-co/add";
 import UpdateKichCo from "./pages/admin/kich-co/update";
 import DetailSanPham from "./pages/shop/san-pham/detail";
+import BanHangTaiQuay from "./pages/admin/ban-hang-tai-quay/BanHangTaiQuay.tsx"
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
       </Route>
       <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />
+        <Route path="ban-hang-tai-quay" element={<BanHangTaiQuay />} />
         <Route path="nhan-vien/add" element={<AddNV />} />
         <Route path="mau-sac" element={<IndexMauSac />} />
         <Route path="mau-sac/add" element={<AddMauSac />} />
