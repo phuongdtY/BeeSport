@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,7 +15,9 @@ public class CreatedHinhThucGiamGiaRequest {
     @NotBlank(message = "Vui lòng điền tên thương hiệu")
     private String ten;
 
-    private LocalDate ngayTao;
+    private LocalDateTime ngayTao;
+
+    private LocalDateTime ngaySua;
 
     private CommonEnum.HinhThucGiam trangThai;
 

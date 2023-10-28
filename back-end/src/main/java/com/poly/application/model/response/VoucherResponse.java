@@ -21,6 +21,10 @@ public class VoucherResponse {
 
     private String ten;
 
+    private LocalDateTime ngayTao;
+
+    private LocalDateTime ngaySua;
+
     private Date ngayBatDau;
 
     private Date ngayKetThuc;

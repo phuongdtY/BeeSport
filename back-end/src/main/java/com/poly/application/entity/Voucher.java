@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.io.Serializable;
@@ -44,14 +45,6 @@ public class Voucher implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date ngayKetThuc;
 
-//    @Column(name = "ngay_bat_dau")
-//    @Temporal(TemporalType.TIMESTAMP)
-//    private LocalDateTime ngayBatDau;
-//
-//    @Column(name = "ngay_ket_thuc")
-//    @Temporal(TemporalType.TIMESTAMP)
-//    private LocalDateTime ngayKetThuc;
-
     @ManyToOne
     @JoinColumn(name = "hinh_thuc_giam_gia_id", referencedColumnName = "id")
     private HinhThucGiamGia hinhThucGiamGia;
@@ -66,11 +59,13 @@ public class Voucher implements Serializable {
     private BigDecimal giaTriGiamToiDa;
 
     @CreationTimestamp
-    @Column(name = "ngay_tao")
+    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")
     private LocalDateTime ngayTao;
 
     @UpdateTimestamp
-    @Column(name = "ngay_sua")
+    @ColumnDefault("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(name = "ngay_sua", columnDefinition = "TIMESTAMP")
     private LocalDateTime ngaySua;
 
     @Column(name = "trang_thai")

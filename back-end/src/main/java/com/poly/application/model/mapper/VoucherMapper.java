@@ -23,7 +23,6 @@ public class VoucherMapper {
 
     public Voucher convertCreateRequestToEntity(CreatedVoucherRequest createdVoucherRequest) {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-
         return modelMapper.map(createdVoucherRequest, Voucher.class);
     }
 

@@ -102,6 +102,7 @@ public class VoucherServiceImpl implements VoucherService {
         }
         System.out.println("Trạng thái: " + status);
         createdVoucher.setNgayTao(LocalDateTime.now());
+        System.out.println(createdVoucher.getNgayTao());
         Voucher savedVoucher = this.repository.save(createdVoucher);
         return mapper.convertEntityToResponse(savedVoucher);
     }
@@ -114,15 +115,17 @@ public class VoucherServiceImpl implements VoucherService {
         }
 
         Voucher voucher = optional.get();
-        voucher.setHinhThucGiamGia(request.getHinhThucGiam());
+        voucher.setNgaySua(LocalDateTime.now());
+
+        mapper.convertUpdateRequestToEntity(request, voucher);
         String status = voucherUtils.getVoucherStatusWithInactive(
-                optional.get().getNgayBatDau().toLocalDate(),
-                optional.get().getNgayKetThuc().toLocalDate()
+                voucher.getNgayBatDau().toLocalDate(),
+                voucher.getNgayKetThuc().toLocalDate()
         );
 
-        if (status.equals("ACTIVE")){
+        if (status.equals("ACTIVE")) {
             voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
-        } else if (status.equals("EXPIRED")){
+        } else if (status.equals("EXPIRED")) {
             voucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
         } else if (status.equals("INACTIVE")) {
             voucher.setTrangThai(CommonEnum.TrangThaiVoucher.INACTIVE);
@@ -130,9 +133,9 @@ public class VoucherServiceImpl implements VoucherService {
             voucher.setTrangThai(CommonEnum.TrangThaiVoucher.UPCOMING);
         }
         System.out.println("Trạng thái: " + status);
-        voucher.setNgaySua(LocalDateTime.now());
-        mapper.convertUpdateRequestToEntity(request, voucher);
-        return mapper.convertEntityToResponse(repository.save(voucher));
+        System.out.println(voucher.getTrangThai());
+        Voucher updatedVoucher = repository.save(voucher);
+        return mapper.convertEntityToResponse(updatedVoucher);
     }
 
     @Override

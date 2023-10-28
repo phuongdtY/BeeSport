@@ -47,7 +47,4 @@ public class HinhThucGiamGia implements Serializable {
     @Enumerated(EnumType.STRING)
     private CommonEnum.HinhThucGiam trangThai;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "hinhThucGiamGia", fetch = FetchType.LAZY)
-    private List<Voucher> listVoucher;
 }

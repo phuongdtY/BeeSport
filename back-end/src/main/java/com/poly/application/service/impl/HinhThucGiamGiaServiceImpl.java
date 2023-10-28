@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -81,10 +82,8 @@ public class HinhThucGiamGiaServiceImpl implements HinhThucGiamGiaService {
         if (optional.isEmpty()) {
             throw new NotFoundException("Hình thức giảm giá không tồn tại");
         }
-        if (!request.getTen().equals(optional.get().getTen()) && repository.existsByTen(request.getTen())) {
-            throw new BadRequestException("Tên hình thức giảm giá đã tồn tại trong hệ thống!");
-        }
         HinhThucGiamGia hinhThucGiamGia = optional.get();
+        hinhThucGiamGia.setNgaySua(LocalDateTime.now());
         mapper.convertUpdateRequestToEntity(request, hinhThucGiamGia);
         return mapper.convertEntityToResponse(repository.save(hinhThucGiamGia));
     }

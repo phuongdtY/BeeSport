@@ -4,7 +4,6 @@ import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HinhThucGiamGia;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,10 +25,6 @@ public class  CreatedVoucherRequest {
 
     private Date ngayKetThuc;
 
-//    private LocalDateTime ngayBatDau;
-//
-//    private LocalDateTime ngayKetThuc;
-
     private HinhThucGiamGia hinhThucGiam;
 
     private BigDecimal giaToiThieu;
@@ -37,6 +32,10 @@ public class  CreatedVoucherRequest {
     private BigDecimal giaTriGiam;
 
     private BigDecimal giaTriGiamToiDa;
+
+    private LocalDateTime ngayTao;
+
+    private LocalDateTime ngaySua;
 
     @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;
