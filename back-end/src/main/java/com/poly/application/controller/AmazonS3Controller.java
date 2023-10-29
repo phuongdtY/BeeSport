@@ -1,4 +1,4 @@
-package com.poly.niek.rest;
+package com.poly.application.controller;
 
 
 import com.poly.application.service.impl.AmazonS3Service;
@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/file")
+@RequestMapping("/admin/api/file")
 public class AmazonS3Controller {
 
     @Autowired
