@@ -4,6 +4,7 @@ import com.poly.application.model.request.create_request.CreatedTaiKhoanRequest;
 import com.poly.application.model.request.create_request.CreatedVaiTroRequest;
 import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
 import com.poly.application.model.request.update_request.UpdatedVaiTroRequest;
+import com.poly.application.model.response.TaiKhoanResponse;
 import com.poly.application.service.TaiKhoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,5 +61,20 @@ public class TaiKhoanController {
     public ResponseEntity<?> update(@PathVariable(name = "id") Long id,@RequestBody UpdatedTaiKhoanRequest request) {
         return ResponseEntity.ok(taiKhoanService.update(id, request));
     }
+
+    @PostMapping ("/dang-nhap/{email}/{matKhau}")
+    public ResponseEntity<?> findByTaiKhoanEmail(
+            @PathVariable(name = "email") String email,
+            @PathVariable(name = "matKhau") String matKhau
+    ) {
+        TaiKhoanResponse response = taiKhoanService.findByEmail(email, matKhau);
+
+        if (response != null) {
+            return ResponseEntity.ok(response); // Trả về kết quả thành công
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email hoặc mật khẩu không đúng"); // Trả về lỗi 401 Unauthorized nếu không thành công
+        }
+    }
+
 
 }

@@ -42,7 +42,7 @@ public class TaiKhoanMapper {
 
 
     public void convertUpdateRequestToEntity(UpdatedTaiKhoanRequest updateRequest, TaiKhoan detail) {
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         modelMapper.map(updateRequest, detail);
     }
 
