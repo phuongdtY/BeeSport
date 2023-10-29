@@ -27,6 +27,17 @@ public class ChiTietSanPhamController {
             @RequestParam(name = "idDiaHinhSan", defaultValue = "") Long idDiaHinhSan
     ) {
         return ResponseEntity.ok(service.findByAll(idSanPham, idMauSac, idKichCo, idLoaiDe, idDiaHinhSan));
+    }@GetMapping("/list-page")
+    public ResponseEntity<?> getAllPage(
+            @RequestParam(name = "page", defaultValue = "1") Integer page,
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(name = "idSanPham", defaultValue = "") Long idSanPham,
+            @RequestParam(name = "idMauSac", defaultValue = "") Long idMauSac,
+            @RequestParam(name = "idKichCo", defaultValue = "") Long idKichCo,
+            @RequestParam(name = "idLoaiDe", defaultValue = "") Long idLoaiDe,
+            @RequestParam(name = "idDiaHinhSan", defaultValue = "") Long idDiaHinhSan
+    ) {
+        return ResponseEntity.ok(service.findByAllPage(page,pageSize,idSanPham, idMauSac, idKichCo, idLoaiDe, idDiaHinhSan));
     }
 
     @GetMapping("/list")
