@@ -20,7 +20,35 @@ export interface DataType {
   anhDaiDien: string;
   ngayTao: string;
   ngaySua: string;
-  trangThai: number;
+  trangThai: {
+    ten: string;
+    mota: string;
+    mauSac: string;
+  };
+}
+export interface UpdatedRequest {
+  hoVaTen: string;
+  canCuocCongDan: string;
+  ngaySinh: string | undefined;
+  gioiTinh: {
+    ten: string;
+    moTa: string;
+    mauSac: string;
+  };
+  soDienThoai: string;
+  email: string;
+  thanhPho: string;
+  quanHuyen: string;
+  phuongXa: string;
+  diaChiCuThe: string;
+  anhDaiDien: string;
+  ngayTao: string;
+  ngaySua: string;
+  trangThai: {
+    ten: string;
+    mota: string;
+    mauSac: string;
+  };
 }
 export interface ResponseNhanVien {
   taiKhoan: DataType;

@@ -12,6 +12,8 @@ public interface ChiTietSanPhamService {
     List<ChiTietSanPhamResponse> findByAll(Long idSanPham,Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
     Page<ChiTietSanPhamResponse> findByAllPage(Integer page, Integer pageSize,Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
 
+    List<ChiTietSanPhamResponse> getListChiTietSanPham();
+
     ChiTietSanPhamResponse findOne(Long idSanPham,Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
 
     ChiTietSanPhamResponse add(CreatedChiTietSanPhamRequest request);

@@ -37,7 +37,7 @@ const CustomSider: React.FC<{
   const items: MenuItem[] = [
     getItem(<Link to="/admin">Trang chủ</Link>, "1", <HomeOutlined />),
     getItem(
-      <Link to="/admin/ban-hang">Bán hàng tại quầy</Link>,
+      <Link to="/admin/ban-hang-tai-quay">Bán hàng tại quầy</Link>,
       "2",
       <ShopOutlined />
     ),
