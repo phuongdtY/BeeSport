@@ -9,7 +9,7 @@ const { confirm } = Modal;
 const add: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const onFinish = (values: CreatedRequest) => {
+  const onFinish = async (values: CreatedRequest) => {
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,

@@ -19,7 +19,6 @@ const { Title, Text } = Typography;
 const { Meta } = Card;
 const Home: React.FC = () => {
   const [products, setProducts] = useState([]);
-  localStorage.setItem("cart", JSON.stringify("6"));
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -37,16 +36,16 @@ const Home: React.FC = () => {
     <>
       <Carousel autoplay>
         <div>
-          <img src={banner1} width="100%" height="620px" />
+          <img src={banner1} width="100%" height="600px" />
         </div>
         <div>
-          <img src={banner2} width="100%" height="620px" />
+          <img src={banner2} width="100%" height="600px" />
         </div>
         <div>
-          <img src={banner3} width="100%" height="620px" />
+          <img src={banner3} width="100%" height="600px" />
         </div>
         <div>
-          <img src={banner4} width="100%" height="620px" />
+          <img src={banner4} width="100%" height="600px" />
         </div>
       </Carousel>
       <Divider style={{ fontSize: 25 }}>SẢN PHẨM MỚI NHẤT</Divider>
@@ -57,7 +56,7 @@ const Home: React.FC = () => {
               <img
                 style={{ padding: 30, height: 240 }}
                 alt="example"
-                src="https://product.hstatic.net/1000061481/product/anh_sp_add_web_ballak02-01-01-01-01_4c838d0badfb4548a229c88407fb6c2f_1024x1024.jpg"
+                src= {product.duongDan}
               />
               <div style={{ textAlign: "left" }}>
                 <Link

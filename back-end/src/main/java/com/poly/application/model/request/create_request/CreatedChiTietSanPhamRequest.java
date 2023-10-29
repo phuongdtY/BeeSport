@@ -9,6 +9,7 @@ import com.poly.application.entity.SanPham;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,8 +25,6 @@ public class CreatedChiTietSanPhamRequest {
 
     @NotNull(message = "Vui lòng nhập giá tiền")
     private BigDecimal giaTien;
-
-    private String moTa;
 
     private LocalDateTime ngayTao;
 

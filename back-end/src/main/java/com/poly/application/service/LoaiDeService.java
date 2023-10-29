@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface LoaiDeService {
 
+    List<LoaiDeResponse> getLoaiDeByNgayTaoDESC();
+
     Page<LoaiDeResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString);
 
     LoaiDeResponse add(CreatedLoaiDeRequest request);

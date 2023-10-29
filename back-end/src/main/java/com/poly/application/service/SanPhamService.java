@@ -2,6 +2,7 @@ package com.poly.application.service;
 
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
+import com.poly.application.model.response.SanPhamDetailResponse;
 import com.poly.application.model.response.SanPhamMoiNhatResponse;
 import com.poly.application.model.response.SanPhamResponse;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,8 @@ public interface SanPhamService {
 
     Page<SanPhamResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText,
                                  Long thuongHieuId, String trangThaiString);
+
+    List<SanPhamResponse> getAllSanPhamNullCTSP();
 
     SanPhamResponse add(CreatedSanPhamRequest request);
 
@@ -24,5 +27,7 @@ public interface SanPhamService {
     List<SanPhamResponse> get5SanPhamMoiNhat();
 
     List<SanPhamMoiNhatResponse> giaTien5SanPhamMoiNhat();
+
+    SanPhamDetailResponse getSanPhamDetail(Long id);
 
 }

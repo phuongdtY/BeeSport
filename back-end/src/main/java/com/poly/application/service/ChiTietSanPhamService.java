@@ -10,12 +10,16 @@ public interface ChiTietSanPhamService {
 
     List<ChiTietSanPhamResponse> findByAll(Long idSanPham,Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
 
+    List<ChiTietSanPhamResponse> getListChiTietSanPham();
+
     ChiTietSanPhamResponse findOne(Long idSanPham,Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
 
     ChiTietSanPhamResponse add(CreatedChiTietSanPhamRequest request);
 
+    List<ChiTietSanPhamResponse> addList(List<CreatedChiTietSanPhamRequest> requests);
+
     void delete(Long id);
 
-    ChiTietSanPhamResponse update(UpdatedChiTietSanPhamRequest request);
+    ChiTietSanPhamResponse update(Long id, UpdatedChiTietSanPhamRequest request);
 
 }

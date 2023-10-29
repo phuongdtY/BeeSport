@@ -5,6 +5,7 @@ import com.poly.application.entity.GioHang;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.GioHangMapper;
 import com.poly.application.model.request.create_request.CreatedGioHangRequest;
+import com.poly.application.model.request.update_request.UpdatedGioHangRequest;
 import com.poly.application.model.response.GioHangResponse;
 import com.poly.application.repository.GioHangRepository;
 import com.poly.application.service.GioHangService;
@@ -63,6 +64,17 @@ public class GioHangServiceImpl implements GioHangService {
             throw new NotFoundException("Giỏ hàng không tồn tại");
         }
         return mapper.convertEntityToResponse(optional.get());
+    }
+
+    @Override
+    public GioHangResponse update(Long id, UpdatedGioHangRequest request) {
+        Optional<GioHang> optional = repository.findById(id);
+        if (optional.isEmpty()) {
+            throw new NotFoundException(("Giỏ hàng không tồn tại"));
+        }
+        GioHang gioHang = optional.get();
+        mapper.convertUpdateRequestToEntity(request, gioHang);
+        return mapper.convertEntityToResponse(repository.save(gioHang));
     }
 
 }

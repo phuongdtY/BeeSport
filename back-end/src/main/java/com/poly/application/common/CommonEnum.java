@@ -23,9 +23,8 @@ public class CommonEnum {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum TrangThaiSanPham{
-        ACTIVE("ACTIVE", "Hoạt động", ""),
-        INACTIVE("INACTIVE", "Không hoạt động", ""),
-        DISCONTINUED("DISCONTINUED", "Ngừng sản xuất", "");
+        ACTIVE("ACTIVE", "Đang bán", "success"),
+        INACTIVE("INACTIVE", "Ngừng kinh doanh", "default");
 
         private final String ten;
         private final String moTa;
@@ -130,8 +129,21 @@ public class CommonEnum {
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum TrangThaiChiTietSanPham{
         ACTIVE("ACTIVE", "Hoạt động", "success"),
-        INACTIVE("INACTIVE", "Không hoạt động", "red"),
+        INACTIVE("INACTIVE", "Ngừng kinh doanh", "red"),
         OUT_OF_STOCK("OUT_OF_STOCK", "Hết hàng", "green");
+
+        private final String ten;
+        private final String moTa;
+        private final String mauSac;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum TrangThaiHinhAnh{
+        DEFAULT("DEFAULT", "Mặc định", "success"),
+        AVATAR("AVATAR", "Ảnh đại diện", "red"),
+        DELETED("DELETED", "Đã xóa", "green");
 
         private final String ten;
         private final String moTa;

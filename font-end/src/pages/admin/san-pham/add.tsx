@@ -1,22 +1,30 @@
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import {
+  CloseOutlined,
+  DeleteOutlined,
+  PictureOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import {
+  Alert,
   Button,
   Card,
   Col,
   ColorPicker,
+  Divider,
   Form,
   Input,
   InputNumber,
   Modal,
-  Radio,
   Row,
   Select,
   Space,
   Table,
-  Typography,
+  Tag,
+  Tooltip,
   message,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import type { CustomTagProps } from "rc-select/lib/BaseSelect";
 import * as React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { DataType as DataTypeTH } from "~/interfaces/thuongHieu.type";
@@ -26,6 +34,11 @@ import { DataType as DataTypeDHS } from "~/interfaces/diaHinhSan.type";
 import { DataType as DataTypeMS } from "~/interfaces/mauSac.type";
 import request from "~/utils/request";
 import { Color } from "antd/es/color-picker";
+import { ColumnsType } from "antd/es/table";
+import { json } from "react-router-dom";
+import { DataType } from "~/interfaces/ctsp.type";
+import TableSanPham from "./table";
+import { formatCurrency } from "~/utils/formatResponse";
 
 const AddSanPham: React.FC = () => {
   const [openThuongHieu, setOpenThuongHieu] = useState(false);
@@ -44,6 +57,23 @@ const AddSanPham: React.FC = () => {
   const [selectedKC, setSelectedKC] = useState<string | undefined>(undefined);
   const [selectedDHS, setSelectedDHS] = useState<string | undefined>(undefined);
   const [selectedMS, setSelectedMS] = useState<string | undefined>(undefined);
+  const [selectedLoaiDe, setSelectedLoaiDe] = useState<string[]>([]);
+  const [selectedDiaHinhSan, setSelectedDiaHinhSan] = useState<string[]>([]);
+  const [selectedMauSac, setSelectedMauSac] = useState<string[]>([]);
+  const [selectedKichCo, setSelectedKichCo] = useState<string[]>([]);
+
+  const handleLoaiDe = (value: string[]) => {
+    setSelectedLoaiDe(value);
+  };
+  const handleDiaHinhSan = (value: string[]) => {
+    setSelectedDiaHinhSan(value);
+  };
+  const handleMauSac = (values: string[]) => {
+    setSelectedMauSac(values);
+  };
+  const handleKichCo = (values: string[]) => {
+    setSelectedKichCo(values);
+  };
 
   // api gọi thương hiệu
   const fetchDataTH = async () => {
@@ -67,8 +97,8 @@ const AddSanPham: React.FC = () => {
   // api gọi kích cỡ
   const fetchDataKC = async () => {
     try {
-      const res = await request.get("kich-co");
-      setDataKC(res.data.content);
+      const res = await request.get("kich-co/list");
+      setDataKC(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -194,14 +224,37 @@ const AddSanPham: React.FC = () => {
     setOpenMauSac(false);
   };
 
+  const onFinish = async (values: any) => {
+    console.log(fakeData);
+
+    try {
+      const response = await request.post("/chi-tiet-san-pham", fakeData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Response from server:", response.data);
+      message.success("Thêm list sản phẩm thành công");
+    } catch (error) {
+      message.error("Thêm list sản phẩm thất bại");
+      console.error(error);
+    }
+  };
+
   return (
     <>
       {/* Sản phẩm */}
-      <Card title="THÊM SẢN PHẨM">
-        <Row>
-          <Col span={4}></Col>
-          <Col span={14}>
-            <Form labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} form={form}>
+      <Form
+        onFinish={onFinish}
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 20 }}
+        form={form}
+      >
+        <Card title="THÊM SẢN PHẨM">
+          <Row>
+            <Col span={4}></Col>
+            <Col span={14}>
               <Form.Item
                 name="ten"
                 label="Tên sản phẩm"
@@ -215,9 +268,7 @@ const AddSanPham: React.FC = () => {
               >
                 <Input />
               </Form.Item>
-              <Form.Item name="moTa" label="Mô tả">
-                <TextArea />
-              </Form.Item>
+
               {/* Thương hiệu combobox */}
               <Space.Compact block>
                 <Form.Item
@@ -258,67 +309,23 @@ const AddSanPham: React.FC = () => {
                   }}
                 />
               </Space.Compact>
-
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                  Xong
-                </Button>
+              <Form.Item name="moTa" label="Mô tả">
+                <TextArea />
               </Form.Item>
-            </Form>
-          </Col>
-          <Col span={4}></Col>
-        </Row>
-        <ModalThuongHieu
-          open={openThuongHieu}
-          onCreate={onCreateTH}
-          onCancel={() => {
-            setOpenThuongHieu(false);
-          }}
-        />
-      </Card>
-      {/* chi tiết sản phẩm */}
-      <Card title="Chi tiết sản phẩm">
-        <Form
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 18 }}
-          form={form}
-          name="dynamic_form_complex"
-          style={{ maxWidth: 600 }}
-          autoComplete="off"
-          initialValues={{ items: [{}] }}
-        >
-          <Form.List name="items">
-            {(fields, { add, remove }) => (
-              <div
-                style={{ display: "flex", rowGap: 16, flexDirection: "column" }}
-              >
-                {fields.map((field) => (
-                  <Card
-                    size="small"
-                    title={`Item ${field.name + 1}`}
-                    key={field.key}
-                    extra={
-                      <CloseOutlined
-                        onClick={() => {
-                          remove(field.name);
-                        }}
-                      />
-                    }
-                  >
-                    <Form.Item name={[field.name, "name"]}>
-                      <Table
-                        // components={components}
-                        rowClassName={() => "editable-row"}
-                        bordered
-                        // dataSource={dataSource}
-                        // columns={columns as ColumnTypes}
-                      />
-                    </Form.Item>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </Form.List>
+            </Col>
+            <Col span={4}></Col>
+          </Row>
+          <ModalThuongHieu
+            open={openThuongHieu}
+            onCreate={onCreateTH}
+            onCancel={() => {
+              setOpenThuongHieu(false);
+            }}
+          />
+        </Card>
+
+        {/* chi tiết sản phẩm */}
+        <Card title="Chi tiết sản phẩm">
           {/* loại đế */}
           <Space.Compact block>
             <Form.Item
@@ -334,18 +341,14 @@ const AddSanPham: React.FC = () => {
             >
               <Select
                 allowClear
+                onChange={handleLoaiDe}
                 showSearch
                 placeholder="Chọn loại đế"
                 optionFilterProp="children"
                 filterOption={(input, option) =>
-                  (option?.label ?? "").includes(input)
+                  (option?.label ?? "").toLowerCase().includes(input)
                 }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? "")
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? "").toLowerCase())
-                }
-                options={dataLD.map((values: DataTypeLD) => ({
+                options={dataLD.map((values: DataTypeTH) => ({
                   label: values.ten,
                   value: values.id,
                 }))}
@@ -373,19 +376,15 @@ const AddSanPham: React.FC = () => {
               ]}
             >
               <Select
+                placeholder="Chọn địa hình sân"
+                onChange={handleDiaHinhSan}
                 allowClear
                 showSearch
-                placeholder="Chọn địa hình sân"
                 optionFilterProp="children"
                 filterOption={(input, option) =>
-                  (option?.label ?? "").includes(input)
+                  (option?.label ?? "").toLowerCase().includes(input)
                 }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? "")
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? "").toLowerCase())
-                }
-                options={dataDHS.map((values: DataTypeDHS) => ({
+                options={dataDHS.map((values: DataTypeTH) => ({
                   label: values.ten,
                   value: values.id,
                 }))}
@@ -396,6 +395,42 @@ const AddSanPham: React.FC = () => {
               icon={<PlusOutlined />}
               onClick={() => {
                 setOpenDiaHinhSan(true);
+              }}
+            />
+          </Space.Compact>
+          {/* màu sắc */}
+          <Space.Compact block>
+            <Form.Item
+              style={{ width: "100%" }}
+              name="mauSac"
+              label="Màu sắc"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn màu sắc !",
+                },
+              ]}
+            >
+              <Select
+                mode="multiple"
+                placeholder="Chọn màu sắc"
+                allowClear
+                showSearch
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input)
+                }
+                options={dataMS.map((values: DataTypeTH) => ({
+                  label: values.ten,
+                  value: values.id,
+                }))}
+                onChange={handleMauSac}
+              />
+            </Form.Item>
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setOpenMauSac(true);
               }}
             />
           </Space.Compact>
@@ -414,20 +449,18 @@ const AddSanPham: React.FC = () => {
               ]}
             >
               <Select
+                mode="multiple"
+                placeholder="Chọn kích cỡ"
                 allowClear
                 showSearch
-                placeholder="Chọn kích cỡ"
-                optionFilterProp="children"
                 filterOption={(input, option) =>
-                  (String(option?.kichCo) ?? "").includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  optionA.kichCo - optionB.kichCo
+                  (option?.label ?? "").toLowerCase().includes(input)
                 }
                 options={dataKC.map((values: DataTypeKC) => ({
-                  kichCo: values.kichCo,
-                  value: values.kichCo,
+                  label: values.kichCo,
+                  value: values.id,
                 }))}
+                onChange={handleKichCo}
               />
             </Form.Item>
             <Button
@@ -438,77 +471,50 @@ const AddSanPham: React.FC = () => {
               }}
             />
           </Space.Compact>
+          <TableSanPham
+            dataKC={dataKC}
+            dataMS={dataMS}
+            selectedDiaHinhSan={selectedDiaHinhSan}
+            selectedLoaiDe={selectedLoaiDe}
+            selectedKichCo={selectedKichCo}
+            selectedMauSac={selectedMauSac}
+          />
 
-          {/* màu sắc */}
-          <Space.Compact block>
-            <Form.Item
-              style={{ width: "100%" }}
-              name="mauSac"
-              label="Màu sắc"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn màu sắc !",
-                },
-              ]}
-            >
-              <Select
-                allowClear
-                showSearch
-                placeholder="Chọn màu sắc"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? "").includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? "")
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? "").toLowerCase())
-                }
-                options={dataMS.map((values: DataTypeMS) => ({
-                  label: values.ten,
-                  value: values.id,
-                }))}
-              />
-            </Form.Item>
-            <Button
-              type="dashed"
-              icon={<PlusOutlined />}
-              onClick={() => {
-                setOpenMauSac(true);
-              }}
-            />
-          </Space.Compact>
-        </Form>
-        <ModalLoaiDe
-          open={openLoaiDe}
-          onCreate={onCreateLD}
-          onCancel={() => {
-            setOpenLoaiDe(false);
-          }}
-        />
-        <ModalKichCo
-          open={openKichCo}
-          onCreate={onCreateKC}
-          onCancel={() => {
-            setOpenKichCo(false);
-          }}
-        />
-        <ModalDiaHinhSan
-          open={openDiaHinhSan}
-          onCreate={onCreateDHS}
-          onCancel={() => {
-            setOpenDiaHinhSan(false);
-          }}
-        />
-        <ModalMauSac
-          open={openMauSac}
-          onCreate={onCreateMS}
-          onCancel={() => {
-            setOpenMauSac(false);
-          }}
-        />
-      </Card>
+          <ModalLoaiDe
+            open={openLoaiDe}
+            onCreate={onCreateLD}
+            onCancel={() => {
+              setOpenLoaiDe(false);
+            }}
+          />
+          <ModalKichCo
+            open={openKichCo}
+            onCreate={onCreateKC}
+            onCancel={() => {
+              setOpenKichCo(false);
+            }}
+          />
+          <ModalDiaHinhSan
+            open={openDiaHinhSan}
+            onCreate={onCreateDHS}
+            onCancel={() => {
+              setOpenDiaHinhSan(false);
+            }}
+          />
+          <ModalMauSac
+            open={openMauSac}
+            onCreate={onCreateMS}
+            onCancel={() => {
+              setOpenMauSac(false);
+            }}
+          />
+        </Card>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Xong
+          </Button>
+        </Form.Item>
+      </Form>
     </>
   );
 };

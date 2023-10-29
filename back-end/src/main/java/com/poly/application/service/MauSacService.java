@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface MauSacService {
 
+    List<MauSacResponse> getMauSacByNgayTaoDESC();
+
     Page<MauSacResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,String searchText,String trangThaiString);
 
     MauSacResponse add(CreatedMauSacRequest request);

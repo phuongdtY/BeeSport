@@ -1,14 +1,14 @@
 package com.poly.application.controller.admin;
 
+import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRequest;
+import com.poly.application.model.request.update_request.UpdatedChiTietSanPhamRequest;
 import com.poly.application.service.ChiTietSanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin("*")
 @RestController
@@ -29,6 +29,11 @@ public class ChiTietSanPhamController {
         return ResponseEntity.ok(service.findByAll(idSanPham, idMauSac, idKichCo, idLoaiDe, idDiaHinhSan));
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<?> getList() {
+        return ResponseEntity.ok(service.getListChiTietSanPham());
+    }
+
     @GetMapping("/get-one/{id}")
     public ResponseEntity<?> getOne(
             @PathVariable("id") Long idSanPham,
@@ -38,6 +43,23 @@ public class ChiTietSanPhamController {
             @RequestParam(name = "idDiaHinhSan", defaultValue = "") Long idDiaHinhSan
     ) {
         return ResponseEntity.ok(service.findOne(idSanPham, idMauSac, idKichCo, idLoaiDe, idDiaHinhSan));
+    }
+
+    @PostMapping()
+    public ResponseEntity<?> add(@RequestBody List<CreatedChiTietSanPhamRequest> request) {
+        System.out.println(request);
+        return new ResponseEntity<>(service.addList(request), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable(name = "id") Long id, @RequestBody UpdatedChiTietSanPhamRequest request) {
+        return ResponseEntity.ok(service.update(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable(name = "id") Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

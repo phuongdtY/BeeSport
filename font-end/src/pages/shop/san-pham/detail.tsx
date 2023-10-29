@@ -1,6 +1,7 @@
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
+  Card,
   Col,
   ColorPicker,
   Form,
@@ -17,21 +18,27 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { DataParams } from "~/interfaces/gioHang.type";
 import { DataType } from "~/interfaces/loaiDe.type";
+import { formatGiaTien } from "~/utils/formatResponse";
 import request from "~/utils/request";
 const { Title, Text } = Typography;
 const detailSanPham: React.FC = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<any[]>([]);
+  const [dataSanPham, setDataSanPham] = useState<any[]>([]);
   const [dataMauSac, setDataMauSac] = useState<DataType[]>([]);
   const [dataKichCo, setDataKichCo] = useState<any[]>([]);
   const [dataLoaiDe, setDataLoaiDe] = useState<DataType[]>([]);
   const [dataDHS, setDataDHS] = useState<any[]>([]);
+  const [giaTienMin, setGiaTienMin] = useState(0);
+  const [giaTienMax, setGiaTienMax] = useState(0);
   const [quantity, setQuantity] = useState(1); // Số lượng sản phẩm, mặc định là 1
   const { id } = useParams();
   const [selecteds, setSelecteds] = useState<DataParams>({});
   // Hàm xử lý khi bấm nút cộng
   const handleIncrement = () => {
-    setQuantity(quantity + 1);
+    if (quantity < totalQuantity) {
+      setQuantity(quantity + 1);
+    }
   };
 
   // Hàm xử lý khi bấm nút trừ
@@ -77,6 +84,14 @@ const detailSanPham: React.FC = () => {
 
   const sanPham = async () => {
     try {
+      const res = await request.get("/san-pham-detail/" + id);
+      setDataSanPham(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const sanPhamChiTiet = async () => {
+    try {
       const res = await request.get("/chi-tiet-san-pham/" + id, {
         params: {
           idMauSac: selecteds.idMauSac,
@@ -85,11 +100,24 @@ const detailSanPham: React.FC = () => {
           idDiaHinhSan: selecteds.idDiaHinhSan,
         },
       });
-      setData(res.data);
+      const sanPhamList = res.data;
+      setData(sanPhamList);
+
+      const giaTienMin = sanPhamList.reduce((min, sanPham) => {
+        return sanPham.giaTien < min ? sanPham.giaTien : min;
+      }, sanPhamList[0].giaTien);
+
+      const giaTienMax = sanPhamList.reduce((max, sanPham) => {
+        return sanPham.giaTien > max ? sanPham.giaTien : max;
+      }, sanPhamList[0].giaTien);
+
+      setGiaTienMin(giaTienMin);
+      setGiaTienMax(giaTienMax);
     } catch (error) {
       console.log(error);
     }
   };
+  const totalQuantity = data.reduce((total, item) => total + item.soLuong, 0);
 
   const onFinish = async (values: any) => {
     try {
@@ -106,7 +134,7 @@ const detailSanPham: React.FC = () => {
       );
       if (productResponse.data) {
         await request.post("/gio-hang-chi-tiet", {
-          gioHang: { id: id },
+          gioHang: { id: 1 },
           soLuong: quantity, // Số lượng
           chiTietSanPham: { id: productResponse.data.id },
         });
@@ -119,14 +147,8 @@ const detailSanPham: React.FC = () => {
     }
   };
 
-  const uniqueColors = new Set();
-  const uniqueSizes = new Set();
-  data.forEach((record) => {
-    uniqueColors.add(record.mauSac.id);
-    uniqueSizes.add(record.kichCo.kichCo);
-  });
-
   const handleMauSac = (event) => {
+    setQuantity(1);
     const selectedValue = event.target.value;
     setSelecteds({
       ...selecteds,
@@ -134,6 +156,7 @@ const detailSanPham: React.FC = () => {
     });
   };
   const handleKichCo = (event) => {
+    setQuantity(1);
     const selectedValue = event.target.value;
     setSelecteds({
       ...selecteds,
@@ -142,11 +165,13 @@ const detailSanPham: React.FC = () => {
   };
   const [selectedValue, setSelectedValue] = useState(null);
   const handleLoaiDe = (e) => {
+    setQuantity(1);
     const value = e.target.value;
     setSelectedValue((prevValue) => (prevValue === value ? null : value));
   };
 
   const handleDiaHinhSan = (event) => {
+    setQuantity(1);
     const selectedValue = event.target.value;
 
     setSelecteds({
@@ -155,10 +180,9 @@ const detailSanPham: React.FC = () => {
     });
   };
 
-  const totalQuantity = data.reduce((total, item) => total + item.so_luong, 0);
-
   useEffect(() => {
     sanPham();
+    sanPhamChiTiet();
     fetchDataMS();
     fetchDataLoaiDe();
     fetchDataSize();
@@ -168,22 +192,27 @@ const detailSanPham: React.FC = () => {
     <>
       <Row>
         <Col span={2}></Col>
-        <Col span={6}>
+        <Col span={9}>
           <Image
-            width={400}
-            height={400}
-            src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+            width={500}
+            height={500}
+            src="https://product.hstatic.net/1000061481/product/7e1178b4f9d64788a9cfafdcab4fbd42_e1416ce4bfdc48e5bed9e6a1b76d24b7_1024x1024.jpeg"
           />
         </Col>
-        <Col span={2}></Col>
-        <Col span={10}>
-          <Title level={5}>MIZUNO MORELIA NEO IV PRO TF AURUM</Title>
-          <Title level={4} style={{ color: "red" }}>
-            100.000đ
+        <Col span={8}>
+          <Title level={4} style={{ margin: 0 }}>
+            {dataSanPham.ten}
           </Title>
-          <Text>Nhà cung cấp: MIZUNO</Text>
+          <Title level={3} style={{ color: "red", margin: 10 }}>
+            {giaTienMin === giaTienMax
+              ? `${formatGiaTien(giaTienMax)}`
+              : `${formatGiaTien(giaTienMin)} - ${formatGiaTien(giaTienMax)}`}
+          </Title>
+          <Text>Mã sản phẩm: {dataSanPham.ma}</Text>
           <br />
-          <Text>SKU: P1GD233450-39</Text>
+          <Text>
+            Nhà cung cấp: {dataSanPham.thuongHieu && dataSanPham.thuongHieu.ten}
+          </Text>
           <Title level={4} style={{ color: "red" }}>
             CAM KẾT SẢN PHẨM CHÍNH HÃNG 100%. ĐƯỢC BỒI HOÀN GẤP 10 LẦN NẾU KHÔNG
             PHẢI CHÍNH HÃNG
@@ -275,7 +304,7 @@ const detailSanPham: React.FC = () => {
                         disabled={
                           !data.some((item) => item.loaiDe.id === record.id)
                         }
-                        checked={record.id === selectedValue}
+                        checked={record.id === selectedValue} // Đánh dấu radio button đã chọn
                       >
                         {record.ten}
                       </Radio.Button>
@@ -313,18 +342,20 @@ const detailSanPham: React.FC = () => {
               </Radio.Group>
             </Form.Item>
             <Form.Item label="Số lượng">
-              <Space.Compact block>
-                <Button icon={<MinusOutlined />} onClick={handleDecrement} />
-                <Input
-                  style={{ textAlign: "center", width: 40 }}
-                  value={quantity}
-                  readOnly
-                />
-                <Button icon={<PlusOutlined />} onClick={handleIncrement} />
-                <span style={{ color: "#b5bdbd", marginLeft: 10 }}>
+              <Space>
+                <Space.Compact block>
+                  <Button icon={<MinusOutlined />} onClick={handleDecrement} />
+                  <Input
+                    style={{ textAlign: "center", width: 40 }}
+                    value={quantity}
+                    readOnly
+                  />
+                  <Button icon={<PlusOutlined />} onClick={handleIncrement} />
+                </Space.Compact>
+                <Text style={{ color: "red" }}>
                   {totalQuantity} sản phẩm có sẵn
-                </span>
-              </Space.Compact>
+                </Text>
+              </Space>
             </Form.Item>
             <Form.Item>
               <Space>
