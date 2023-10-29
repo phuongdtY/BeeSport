@@ -181,8 +181,17 @@ const detailHoaDon: React.FC = () => {
     }
   };
 
-  const getParams = (params: DataParams) => ({
+  const getParamsHoaDonChiTiet = (params: DataParams) => ({
     page: listHoaDonChiTiet.length !== 0 ? params.page : 1,
+    pageSize: params.pageSize,
+    searchText: params.searchText,
+    loaiHoaDon: params.loaiHoaDon,
+    trangThaiHoaDon: params.trangThaiHoaDon,
+    sortField: params.sortField,
+    sortOrder: params.sortOrder,
+  });
+
+  const getParamsChiTietSanPham = (params: DataParams) => ({
     pageSize: params.pageSize,
     searchText: params.searchText,
     loaiHoaDon: params.loaiHoaDon,
@@ -224,6 +233,24 @@ const detailHoaDon: React.FC = () => {
   const handleClickDelete = async (id: number) => {
     deleteRequest(id);
   };
+
+  // const fetchChiTietSanPhamData = async () => {
+  //   setLoadingForm(true);
+  //   try {
+  //     const res = await request.get("hoa-don", {
+  //       params: {
+  //         ...getParamsChiTietSanPham(params),
+  //         trangThaiHoaDon: params.trangThaiHoaDon,
+  //       },
+  //     });
+  //     setData(res.data.content);
+  //     setLoadingForm(false);
+  //   } catch (error) {
+  //     console.log(error);
+  //     setLoadingForm(false);
+  //     message.error("Lấy dữ liệu hóa đơn thất bại");
+  //   }
+  // };
 
   const fetchHoaDonData = async () => {
     setLoadingForm(true);

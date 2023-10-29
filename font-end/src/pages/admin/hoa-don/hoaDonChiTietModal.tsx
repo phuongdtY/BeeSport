@@ -2,7 +2,7 @@ import { Modal, Form, Select, Col, Row, Input, Space, Table } from "antd";
 interface HoaDonChiTietProps {
   open: boolean;
   columnsHoaDonChiTiet: [];
-  dataSourceHoaDonChiTiet: [];
+  dataSourceHoaDonChiTiet: () => [];
   onUpdate: (values: any) => void;
   onCancel: () => void;
   onChangeTable: (pagination: any, filters: any, sorter: any) => void;
@@ -12,8 +12,6 @@ const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
   columnsHoaDonChiTiet,
   dataSourceHoaDonChiTiet,
   open,
-  totalElements,
-  onChangeTable,
   onCancel,
 }) => {
   const [form] = Form.useForm();
@@ -35,16 +33,11 @@ const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
     >
       <Table
         columns={columnsHoaDonChiTiet}
-        pagination={{
-          pageSizeOptions: ["1", "5", "10"],
-          showSizeChanger: true,
-          total: totalElements,
-          showTotal: (total, range) =>
-            `${range[0]}-${range[1]} of ${total} items`,
-        }}
-        dataSource={dataSourceHoaDonChiTiet}
-        onChange={onChangeTable}
+        dataSource={dataSourceHoaDonChiTiet()}
+        pagination={false}
         showSorterTooltip={false}
+        scroll={{ x: 2000, y: 0 }}
+        bordered
       />
     </Modal>
   );
