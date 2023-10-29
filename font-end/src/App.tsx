@@ -30,7 +30,7 @@ import AddKichCo from "./pages/admin/kich-co/add";
 import UpdateKichCo from "./pages/admin/kich-co/update";
 import DetailHoaDon from "./pages/admin/hoa-don/detailHoaDon";
 import DetailSanPham from "./pages/shop/san-pham/detail";
-import BanHangTaiQuay from "./pages/admin/ban-hang-tai-quay/BanHangTaiQuay.tsx"
+import BanHangTaiQuay from "./pages/admin/ban-hang-tai-quay/BanHangTaiQuay.tsx";
 
 function App() {
   return (
