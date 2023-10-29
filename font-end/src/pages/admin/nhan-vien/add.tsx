@@ -13,6 +13,7 @@ import {
   Row,
   Space,
   message,
+  Select,
 } from "antd";
 
 import request from "~/utils/request";
@@ -28,6 +29,7 @@ interface Option {
   children?: Option[];
   isLeaf?: boolean;
 }
+
 const AddNV: React.FC = () => {
   const [form] = Form.useForm();
   const [provinces, setProvinces] = useState<Option[]>([]);
@@ -35,6 +37,8 @@ const AddNV: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { confirm } = Modal;
+  const [wards, setWards] = useState<Option[]>([]);
+  const [districts, setDistricts] = useState<Option[]>([]);
   const onSubmit = async (values: any) => {
     confirm({
       title: "Xác Nhận",
@@ -42,19 +46,90 @@ const AddNV: React.FC = () => {
       content: "Bạn có chắc thêm nhân viên không?",
       okText: "OK",
       cancelText: "Hủy",
+      // onOk: async () => {
+      //   try {
+      //     setLoading(true);
+      //     const response = await request.post("nhan-vien", values);
+      //     setLoading(false);
+      //     message.success("Thêm nhân viên thành công");
+      //     navigate("/admin/nhan-vien");
+      //   } catch (error: any) {
+      //     message.error(error.response.data.message);
+      //     setLoading(false);
+      //   }
+      // },
       onOk: async () => {
+        console.log(values);
         try {
           setLoading(true);
-          const response = await request.post("nhan-vien", values);
+          const response = await request.post("nhan-vien/add", values);
+          console.log("Response from API:", response); // In dữ liệu từ API
           setLoading(false);
           message.success("Thêm nhân viên thành công");
           navigate("/admin/nhan-vien");
         } catch (error: any) {
-          message.error(error.response.data.message);
+          console.log("Error:", error); // In lỗi ra để xác định lý do
+          if (error.response && error.response.data) {
+            message.error(error.response.data.message);
+          } else {
+            message.error("Có lỗi xảy ra khi thêm nhân viên.");
+          }
           setLoading(false);
         }
       },
     });
+  };
+  const fetchDistricts = async (idProvince: string) => {
+    try {
+      const districtRes = await axios.get(
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/district?`,
+        {
+          params: {
+            province_id: idProvince,
+          },
+          headers: {
+            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
+            ContentType: "application/json",
+          },
+        }
+      );
+
+      const districtOptions: Option[] = districtRes.data.data.map(
+        (district: any) => ({
+          value: district.DistrictID,
+          label: district.DistrictName,
+          isLeaf: false,
+        })
+      );
+      setDistricts(districtOptions);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchWards = async (idDistrict: string) => {
+    try {
+      const wardRes = await axios.get(
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
+        {
+          params: {
+            district_id: idDistrict,
+          },
+          headers: {
+            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
+            ContentType: "application/json",
+          },
+        }
+      );
+
+      const wardOptions: Option[] = wardRes.data.data.map((ward: any) => ({
+        value: ward.WardCode,
+        label: ward.WardName,
+        isLeaf: false,
+      }));
+      setWards(wardOptions);
+    } catch (error) {
+      console.error(error);
+    }
   };
   const formItemLayout = {
     labelCol: {
@@ -281,22 +356,70 @@ const AddNV: React.FC = () => {
               <Input />
             </Form.Item>
             <Form.Item
-              name="diaChi"
-              label="Địa chỉ:"
+              name="thanhPho"
+              label="Tỉnh / Thành"
               rules={[
                 {
                   required: true,
-                  message: "Bạn chưa điền địa chỉ!",
+                  message: "Bạn chưa điền Tỉnh / Thành !",
                 },
               ]}
             >
-              <Cascader
+              <Select
                 options={provinces}
-                loadData={loadData}
-                onChange={onChange}
-                placeholder="Tỉnh/ Thành Phố, Quận/ Huyện, Phường/ Xã"
-                changeOnSelect
+                placeholder="Tỉnh/ Thành Phố"
+                onChange={(value) => {
+                  form.setFieldsValue({
+                    quanHuyen: undefined,
+                    phuongXa: undefined,
+                  });
+                  fetchDistricts(value);
+                }}
               />
+            </Form.Item>
+            <Form.Item
+              name="quanHuyen"
+              label="Quận / Huyện:"
+              rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa điền Quận / Huyện!",
+                },
+              ]}
+            >
+              <Select
+                options={districts}
+                placeholder="Quận / Huyện"
+                onChange={(value) => {
+                  form.setFieldsValue({ phuongXa: undefined });
+                  fetchWards(value);
+                }}
+              />
+            </Form.Item>
+            <Form.Item
+              name="phuongXa"
+              label="Phường / Xã"
+              rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa điền Phường / Xã !",
+                },
+              ]}
+            >
+              <Select options={wards} placeholder="Phường / Xã" />
+            </Form.Item>
+            <Form.Item
+              name="diaChi"
+              label="Địa chỉ cụ thể"
+              rules={[
+                {
+                  required: true,
+                  whitespace: true,
+                  message: "Bạn chưa điền đia chỉ!",
+                },
+              ]}
+            >
+              <Input />
             </Form.Item>
             <Form.Item {...tailLayout}>
               <Space>

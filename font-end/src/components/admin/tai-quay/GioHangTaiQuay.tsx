@@ -1,4 +1,14 @@
-import { Button, Card, Col, Divider, Input, Row, Select, Switch } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  Divider,
+  Input,
+  Row,
+  Select,
+  Space,
+  Switch,
+} from "antd";
 import React, { useState, useEffect } from "react";
 import { Table } from "antd";
 import type { ColumnsType, TableProps } from "antd/es/table";
@@ -6,6 +16,7 @@ import request from "~/utils/request";
 import ThongTinGiaoHang from "./ThongTinGiaoHang";
 import TextArea from "antd/es/input/TextArea";
 import TableSanPham from "./TableSanPham";
+import { PlusOutlined } from "@ant-design/icons";
 
 const GioHangTaiQuay: React.FC = () => {
   const [checked, setChecked] = useState(false);
@@ -13,19 +24,26 @@ const GioHangTaiQuay: React.FC = () => {
     undefined
   );
 
+  const [selectVoucher, setSelectVoucher] = useState<string | undefined>(
+    undefined
+  );
+
   const onChangeGiaoHang = (checked: boolean) => {
     setChecked(checked);
   };
 
-  const onChange = (value: string) => {
+  const onChangeKhachHang = (value: string) => {
     setSelectKhachHang(value);
+  };
+
+  const onChangeVoucher = (value: string) => {
+    setSelectVoucher(value);
   };
 
   const onSearch = (value: string) => {
     console.log("search:", value);
   };
 
-  // Filter `option.label` match the user type `input`
   const filterOption = (
     input: string,
     option?: { label: string; value: string }
@@ -36,37 +54,33 @@ const GioHangTaiQuay: React.FC = () => {
       <Row>
         <Col span={12}>
           <Card title="Thông tin khách hàng" style={{ marginRight: 10 }}>
-            <Row>
-              <Col span={15} style={{ marginRight: 22 }}>
-                <Select
-                  style={{ width: "100%" }}
-                  allowClear
-                  showSearch
-                  placeholder="Tìm kiếm Khách hàng ..."
-                  optionFilterProp="children"
-                  onChange={onChange}
-                  onSearch={onSearch}
-                  filterOption={filterOption}
-                  options={[
-                    {
-                      value: "1",
-                      label: "0346544561",
-                    },
-                    {
-                      value: "2",
-                      label: "0374783335",
-                    },
-                    {
-                      value: "3",
-                      label: "0383329231",
-                    },
-                  ]}
-                />
-              </Col>
-              <Col span={2}>
-                <Button type="primary">Thêm khách hàng mới</Button>
-              </Col>
-            </Row>
+            <Space.Compact block>
+              <Select
+                style={{ width: "100%" }}
+                allowClear
+                showSearch
+                placeholder="Tìm kiếm Khách hàng ..."
+                optionFilterProp="children"
+                onChange={onChangeKhachHang}
+                onSearch={onSearch}
+                filterOption={filterOption}
+                options={[
+                  {
+                    value: "1",
+                    label: "0346544561",
+                  },
+                  {
+                    value: "2",
+                    label: "0374783335",
+                  },
+                  {
+                    value: "3",
+                    label: "0383329231",
+                  },
+                ]}
+              />
+              <Button type="dashed" icon={<PlusOutlined />} />
+            </Space.Compact>
             <Divider />
             {/* Tên khách hàng */}
             {selectKhachHang ? (
@@ -125,7 +139,7 @@ const GioHangTaiQuay: React.FC = () => {
                   showSearch
                   placeholder="Tìm kiếm Voucher"
                   optionFilterProp="children"
-                  onChange={onChange}
+                  onChange={onChangeVoucher}
                   onSearch={onSearch}
                   filterOption={filterOption}
                   options={[

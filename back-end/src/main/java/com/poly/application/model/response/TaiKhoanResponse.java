@@ -1,6 +1,7 @@
 package com.poly.application.model.response;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.VaiTro;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +20,7 @@ public class TaiKhoanResponse {
 
     private LocalDate ngaySinh;
 
-    private Integer tuoi;
+    private  Integer tuoi;
 
     private CommonEnum.GioiTinh gioiTinh;
 
@@ -37,11 +38,16 @@ public class TaiKhoanResponse {
 
     private String anhDaiDien;
 
+    private String matKhau;
+
     private LocalDateTime ngayTao;
 
     private LocalDateTime ngaySua;
 
-    private Integer trangThai;
+    private CommonEnum.TrangThaiThuocTinh trangThai;
+
+    private VaiTro vaiTro;
+
 
 
 }

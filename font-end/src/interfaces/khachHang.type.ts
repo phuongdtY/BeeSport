@@ -4,27 +4,9 @@ import type { FilterValue } from "antd/es/table/interface";
 export interface DataType {
   id: number;
   hoVaTen: string;
-  canCuocCongDan: string;
-  ngaySinh: string | undefined;
-  gioiTinh: {
-    ten: string;
-    moTa: string;
-    mauSac: string;
-  };
   soDienThoai: string;
   email: string;
-  thanhPho: string;
-  quanHuyen: string;
-  phuongXa: string;
-  diaChiCuThe: string;
-  anhDaiDien: string;
-  ngayTao: string;
-  ngaySua: string;
-  trangThai: {
-    ten: string;
-    mota: string;
-    mauSac: string;
-  };
+  matKhau: string;
 }
 export interface UpdatedRequest {
   hoVaTen: string;
@@ -50,7 +32,7 @@ export interface UpdatedRequest {
     mauSac: string;
   };
 }
-export interface ResponseNhanVien {
+export interface ResponseKhachHang {
   taiKhoan: DataType;
 }
 
@@ -82,4 +64,10 @@ export interface DescriptionItemProps {
   title?: string;
   content?: React.ReactNode;
   children?: React.ReactNode;
+}
+export interface KhachHangRequest {
+  hoVaTen: String;
+  email: String;
+  soDienThoai: String;
+  matKhau: String;
 }

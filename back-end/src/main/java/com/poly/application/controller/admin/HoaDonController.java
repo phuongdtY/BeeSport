@@ -1,11 +1,7 @@
 package com.poly.application.controller.admin;
 
-import com.poly.application.common.CommonEnum;
-import com.poly.application.entity.HoaDon;
-import com.poly.application.entity.HoaDonChiTiet;
 import com.poly.application.model.dto.HoaDonHoaDonChiTietListResponseDTO;
 import com.poly.application.model.request.create_request.CreateHoaDonRequest;
-import com.poly.application.model.request.create_request.CreateTaiKhoanRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
@@ -15,18 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController

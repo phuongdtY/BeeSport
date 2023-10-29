@@ -1,11 +1,14 @@
 package com.poly.application.model.request.create_request;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.ThuongHieu;
+import com.poly.application.entity.VaiTro;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +17,8 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class CreateTaiKhoanRequest {
+@Builder
+public class CreatedTaiKhoanRequest {
 
     @NotBlank(message = "Vui lòng nhập họ và tên")
     @Pattern(message = "Họ và tên không hợp lệ", regexp = "^[\\p{L}\\s]+$")
@@ -51,5 +55,13 @@ public class CreateTaiKhoanRequest {
     private String diaChiCuThe;
 
     private MultipartFile flieAnhDaiDien;
+
+    private String matKhau;
+
+    private CommonEnum.TrangThaiThuocTinh trangThai;
+
+    private VaiTro vaiTro;
+
+
 
 }
