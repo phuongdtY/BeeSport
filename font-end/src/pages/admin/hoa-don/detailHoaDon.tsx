@@ -559,10 +559,12 @@ const detailHoaDon: React.FC = () => {
             form={form}
           >
             <div id="pdfReaderHoaDon">
-              <Card
-                title={"Thông tin người mua"}
-                style={{ marginBottom: "5px" }}
-              >
+              <Card style={{ marginBottom: "5px" }}>
+                <Row>
+                  <Col span={12}>
+                    <h3>Thông tin người mua</h3>
+                  </Col>
+                </Row>
                 <Row>
                   <Col span={10}>
                     <Form.Item name="ma" label="Mã hóa đơn">
@@ -601,17 +603,6 @@ const detailHoaDon: React.FC = () => {
                         <Button onClick={showDiaChiModal}>Tùy chỉnh</Button>
                       </Space>
                     </Form.Item>
-                    <DiaChiComponent
-                      open={diaChiOpen}
-                      onUpdate={onUpdateDiaChi}
-                      onCancel={handleCancel}
-                      provinces={provinces}
-                      districts={districts}
-                      wards={wards}
-                      onProvinceChange={handleProvinceChange}
-                      onDistrictChange={handleDistrictChange}
-                      fee={Number(phiShipThongTin)}
-                    />
                     <Form.Item name="emailNguoiNhan" label="Email người nhận">
                       <Input />
                     </Form.Item>
@@ -631,14 +622,14 @@ const detailHoaDon: React.FC = () => {
                     <Form.Item>
                       <Space>
                         {orderStatus?.ten === "PENDING" && (
-                        <Button
-                          type="primary"
-                          onClick={async () => {
-                            await handleConfirm(form.getFieldsValue());
-                          }}
-                        >
-                          Xác nhận
-                        </Button>
+                          <Button
+                            type="primary"
+                            onClick={async () => {
+                              await handleConfirm(form.getFieldsValue());
+                            }}
+                          >
+                            Xác nhận
+                          </Button>
                         )}
 
                         {orderStatus?.ten === "CONFIRMED" &&
@@ -657,7 +648,17 @@ const detailHoaDon: React.FC = () => {
                   </Col>
                 </Row>
               </Card>
-              <Card title={"Danh sách sản phẩm"}>
+              <Card>
+                <Row>
+                  <Space direction="horizontal">
+                    <Col span={12} style={{ width: "790px" }}>
+                      <h3>Danh sách sản phẩm</h3>
+                    </Col>
+                    <Col span={12}>
+                      <Button onClick={showDiaChiModal}>Thêm sản phẩm</Button>
+                    </Col>
+                  </Space>
+                </Row>
                 <Table
                   columns={columns}
                   dataSource={dataSourceDanhSachSanPham()}
@@ -667,6 +668,18 @@ const detailHoaDon: React.FC = () => {
           </Form>
         </Skeleton>
       </Card>
+      {/* Chỗ để modal */}
+      <DiaChiComponent
+        open={diaChiOpen}
+        onUpdate={onUpdateDiaChi}
+        onCancel={handleCancel}
+        provinces={provinces}
+        districts={districts}
+        wards={wards}
+        onProvinceChange={handleProvinceChange}
+        onDistrictChange={handleDistrictChange}
+        fee={Number(phiShipThongTin)}
+      />
     </>
   );
 };
