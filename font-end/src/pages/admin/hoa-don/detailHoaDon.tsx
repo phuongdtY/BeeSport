@@ -21,10 +21,7 @@ import {
   UpdatedRequest,
   UpdateDiaChiHoaDon,
 } from "~/interfaces/hoaDon.type";
-import {
-  DataType as DataTypeHoaDonChiTiet,
-  DataParams,
-} from "~/interfaces/hoaDonChiTiet.type";
+import { DataType as DataTypeHoaDonChiTiet } from "~/interfaces/hoaDonChiTiet.type";
 import request from "~/utils/request";
 const { confirm } = Modal;
 import generatePDF, { Options } from "react-to-pdf";
@@ -52,12 +49,6 @@ const downloadPdf = () => generatePDF(getTargetElement, optionPrintPDF);
 
 const detailHoaDon: React.FC = () => {
   const [diaChiOpen, setDiaChiOpen] = useState(false);
-  const showDiaChiModal = () => {
-    setDiaChiOpen(true);
-  };
-  const handleCancel = () => {
-    setDiaChiOpen(false);
-  };
   const [provinces, setProvinces] = useState<Option[]>([]);
   const [districts, setDistricts] = useState<Option[]>([]);
   const [wards, setWards] = useState<Option[]>([]);
@@ -155,6 +146,7 @@ const detailHoaDon: React.FC = () => {
     },
   ];
   const [showExportButton, setShowExportButton] = useState(true);
+
   // API địa chỉ
   const fetchProvinces = async () => {
     try {
@@ -180,105 +172,6 @@ const detailHoaDon: React.FC = () => {
       console.error(error);
     }
   };
-
-  const getParamsHoaDonChiTiet = (params: DataParams) => ({
-    page: listHoaDonChiTiet.length !== 0 ? params.page : 1,
-    pageSize: params.pageSize,
-    searchText: params.searchText,
-    loaiHoaDon: params.loaiHoaDon,
-    trangThaiHoaDon: params.trangThaiHoaDon,
-    sortField: params.sortField,
-    sortOrder: params.sortOrder,
-  });
-
-  const getParamsChiTietSanPham = (params: DataParams) => ({
-    pageSize: params.pageSize,
-    searchText: params.searchText,
-    loaiHoaDon: params.loaiHoaDon,
-    trangThaiHoaDon: params.trangThaiHoaDon,
-    sortField: params.sortField,
-    sortOrder: params.sortOrder,
-  });
-
-  const deleteRequest = async (id: number) => {
-    confirm({
-      title: "Xác Nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc xóa sản phẩm này không?",
-      okText: "OK",
-      cancelText: "Hủy",
-      onOk: async () => {
-        try {
-          setLoadingForm(true);
-          const res = await request.delete(`hoa-don/${id}`);
-          setLoadingForm(false);
-          fetchHoaDonData();
-          if (res.data) {
-            message.success("Xóa sản phẩm thành công");
-          } else {
-            console.error("Phản hồi API không như mong đợi:", res);
-          }
-        } catch (error: any) {
-          if (error.response && error.response.status === 400) {
-            message.error(error.response.data.message);
-          } else {
-            console.error("Lỗi không xác định:", error);
-            message.error("Xóa sản phẩm thất bại");
-          }
-        }
-      },
-    });
-  };
-
-  const handleClickDelete = async (id: number) => {
-    deleteRequest(id);
-  };
-
-  // const fetchChiTietSanPhamData = async () => {
-  //   setLoadingForm(true);
-  //   try {
-  //     const res = await request.get("hoa-don", {
-  //       params: {
-  //         ...getParamsChiTietSanPham(params),
-  //         trangThaiHoaDon: params.trangThaiHoaDon,
-  //       },
-  //     });
-  //     setData(res.data.content);
-  //     setLoadingForm(false);
-  //   } catch (error) {
-  //     console.log(error);
-  //     setLoadingForm(false);
-  //     message.error("Lấy dữ liệu hóa đơn thất bại");
-  //   }
-  // };
-
-  const fetchHoaDonData = async () => {
-    setLoadingForm(true);
-    try {
-      const res = await request.get("hoa-don/" + id);
-      form.setFieldsValue({
-        diaChiNguoiNhan: res.data?.diaChiNguoiNhan,
-        emailNguoiNhan: res.data?.emailNguoiNhan,
-        sdtNguoiNhan: res.data?.sdtNguoiNhan,
-        ghiChu: res.data?.ghiChu,
-      });
-      setData(res.data);
-      setOrderStatus(res.data?.trangThaiHoaDon);
-      setDiaChiThongTin(res.data?.diaChiNguoiNhan);
-      setphiShipThongTin(res.data?.phiShip);
-      setListHoaDonChiTiet(res.data.hoaDonChiTietList);
-      setLoadingForm(false);
-      setTongTien(res.data?.tongTien);
-    } catch (error) {
-      console.log(error);
-      setLoadingForm(false);
-    }
-  };
-  useEffect(() => {
-    fetchHoaDonData();
-    fetchProvinces();
-  }, [id]);
-
   const fetchDistricts = async (idProvince: string) => {
     try {
       const districtRes = await axios.get(
@@ -331,14 +224,81 @@ const detailHoaDon: React.FC = () => {
       console.error(error);
     }
   };
-
+  // API hóa đơn theo đối tượng
+  const fetchHoaDonData = async () => {
+    setLoadingForm(true);
+    try {
+      const res = await request.get("hoa-don/" + id);
+      form.setFieldsValue({
+        diaChiNguoiNhan: res.data?.diaChiNguoiNhan,
+        emailNguoiNhan: res.data?.emailNguoiNhan,
+        sdtNguoiNhan: res.data?.sdtNguoiNhan,
+        ghiChu: res.data?.ghiChu,
+      });
+      setData(res.data);
+      setOrderStatus(res.data?.trangThaiHoaDon);
+      setDiaChiThongTin(res.data?.diaChiNguoiNhan);
+      setphiShipThongTin(res.data?.phiShip);
+      setListHoaDonChiTiet(res.data.hoaDonChiTietList);
+      setLoadingForm(false);
+      setTongTien(res.data?.tongTien);
+    } catch (error) {
+      console.log(error);
+      setLoadingForm(false);
+    }
+  };
+  // đóng mở modal địa chỉ hóa đơn
+  const showDiaChiModal = () => {
+    setDiaChiOpen(true);
+  };
+  const handleCancel = () => {
+    setDiaChiOpen(false);
+  };
+  // xử lý theo handle
+  const deleteRequest = async (id: number) => {
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc xóa sản phẩm này không?",
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          setLoadingForm(true);
+          const res = await request.delete(`hoa-don/${id}`);
+          setLoadingForm(false);
+          fetchHoaDonData();
+          if (res.data) {
+            message.success("Xóa sản phẩm thành công");
+          } else {
+            console.error("Phản hồi API không như mong đợi:", res);
+          }
+        } catch (error: any) {
+          if (error.response && error.response.status === 400) {
+            message.error(error.response.data.message);
+          } else {
+            console.error("Lỗi không xác định:", error);
+            message.error("Xóa sản phẩm thất bại");
+          }
+        }
+      },
+    });
+  };
+  const handleClickDelete = async (id: number) => {
+    deleteRequest(id);
+  };
   const handleProvinceChange = (provinceId: string) => {
     fetchDistricts(provinceId);
   };
   const handleDistrictChange = (districtId: string) => {
     fetchWards(districtId);
   };
-
+  // load dữ liệu useEffect
+  useEffect(() => {
+    fetchHoaDonData();
+    fetchProvinces();
+  }, [id]);
+  // cập nhật hóa đơn
   const onFinish = (values: UpdatedRequest) => {
     confirm({
       title: "Xác Nhận",
@@ -377,22 +337,19 @@ const detailHoaDon: React.FC = () => {
       },
     });
   };
-
+  // lấy tên của địa chỉ và cập nhật địa chỉ
   const getProvinceLabelFromId = (id: number | null | undefined) => {
     const province = provinces.find((p) => p.value === id);
     return province?.label;
   };
-
   const getDistrictLabelFromId = (id: number | null | undefined) => {
     const district = districts.find((d) => d.value === id);
     return district?.label;
   };
-
   const getWardLabelFromId = (id: number | null | undefined) => {
     const ward = wards.find((w) => w.value === id);
     return ward?.label;
   };
-
   const onUpdateDiaChi = async (value: UpdateDiaChiHoaDon) => {
     const provinceLabel = getProvinceLabelFromId(value.thanhPho);
     const districtLabel = getDistrictLabelFromId(value.quanHuyen);
@@ -464,7 +421,6 @@ const detailHoaDon: React.FC = () => {
       }
     }
   };
-
   // hiển thị danh sách sản phẩm trong cột
   const dataSourceDanhSachSanPham = () => {
     return listHoaDonChiTiet?.map((item) => ({
@@ -485,21 +441,18 @@ const detailHoaDon: React.FC = () => {
         .reduce((sum, item) => sum + item.thanhTien, 0) + tienShip
     );
   };
-
   // trạng thái của hóa đơn xử lý button
   const confirmedStatus = {
     ten: "CONFIRMED",
     moTa: "Đã xác nhận",
     mauSac: "success",
   };
-
   const shipingStatus = {
     ten: "SHIPPING",
     moTa: "Đang vận chuyển",
     mauSac: "geekblue",
   };
-
-  // xử lý button xác nhận
+  // xử lý button xác nhận và vận chuyển
   const handleConfirm = async (values: UpdatedRequest) => {
     confirm({
       title: "Xác Nhận",
@@ -538,7 +491,6 @@ const detailHoaDon: React.FC = () => {
       },
     });
   };
-
   const handleDeliver = async (values: UpdatedRequest) => {
     if (orderStatus?.ten === "CONFIRMED") {
       setShowExportButton(false);
@@ -572,8 +524,6 @@ const detailHoaDon: React.FC = () => {
       setOrderStatus(shipingStatus);
     }
   };
-
-  //
   return (
     <>
       <Card title="Hóa đơn chi tiết">
@@ -682,7 +632,7 @@ const detailHoaDon: React.FC = () => {
                       <h3>Danh sách sản phẩm</h3>
                     </Col>
                     <Col span={12}>
-                      <Button onClick={showDiaChiModal}>Thêm sản phẩm</Button>
+                      <Button>Thêm sản phẩm</Button>
                     </Col>
                   </Space>
                 </Row>

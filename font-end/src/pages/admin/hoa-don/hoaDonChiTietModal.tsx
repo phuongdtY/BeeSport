@@ -1,16 +1,18 @@
-import { Modal, Form, Select, Col, Row, Input, Space, Table } from "antd";
+import { Modal, Form, Table } from "antd";
+import { DataType as DataTypeCtsp } from "~/interfaces/ctsp.type";
+import { ColumnsType } from "antd/es/table";
+
+type ColumnsTypeHoaDonChiTiet = ColumnsType<DataTypeCtsp>; 
+
 interface HoaDonChiTietProps {
   open: boolean;
-  columnsHoaDonChiTiet: [];
-  dataSourceHoaDonChiTiet: () => [];
-  onUpdate: (values: any) => void;
+  columnsHoaDonChiTiet: ColumnsTypeHoaDonChiTiet;
+  dataSourceDanhSachChiTietSanPham: () => DataTypeCtsp[];
   onCancel: () => void;
-  onChangeTable: (pagination: any, filters: any, sorter: any) => void;
-  totalElements: number;
 }
 const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
   columnsHoaDonChiTiet,
-  dataSourceHoaDonChiTiet,
+  dataSourceDanhSachChiTietSanPham,
   open,
   onCancel,
 }) => {
@@ -20,20 +22,10 @@ const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
       title={"Thêm sản phẩm"}
       open={open}
       onCancel={onCancel}
-      //   onOk={() => {
-      //     form
-      //       .validateFields()
-      //       .then((values) => {
-      //         onUpdate(values);
-      //       })
-      //       .catch((info) => {
-      //         console.log("Validate Failed:", info);
-      //       });
-      //   }}
     >
       <Table
         columns={columnsHoaDonChiTiet}
-        dataSource={dataSourceHoaDonChiTiet()}
+        dataSource={dataSourceDanhSachChiTietSanPham()}
         pagination={false}
         showSorterTooltip={false}
         scroll={{ x: 2000, y: 0 }}
