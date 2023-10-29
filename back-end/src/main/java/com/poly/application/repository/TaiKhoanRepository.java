@@ -24,6 +24,8 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
             @Param("gioiTinh") CommonEnum.GioiTinh gioiTinh
     );
 
+    TaiKhoan findBySoDienThoai1(String sdt);
+
 
     TaiKhoan findBySoDienThoai(String sdt);
 
