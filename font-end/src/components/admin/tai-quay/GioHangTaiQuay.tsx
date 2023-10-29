@@ -44,7 +44,6 @@ const GioHangTaiQuay: React.FC = () => {
     console.log("search:", value);
   };
 
-  // Filter `option.label` match the user type `input`
   const filterOption = (
     input: string,
     option?: { label: string; value: string }
