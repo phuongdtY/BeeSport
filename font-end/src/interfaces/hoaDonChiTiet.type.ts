@@ -160,8 +160,6 @@ export interface DataParams {
   page: number;
   pageSize: number;
   searchText?: string;
-  loaiHoaDon?: string;
-  trangThaiHoaDon?: string;
   sortField?: string;
   sortOrder?: string;
 }
