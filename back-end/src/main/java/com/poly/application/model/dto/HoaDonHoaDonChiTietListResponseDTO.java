@@ -20,5 +20,5 @@ public class HoaDonHoaDonChiTietListResponseDTO {
 
     private HoaDonResponse hoaDonResponse;
 
-    private Page<HoaDonChiTietResponse> hoaDonChiTietResponseList;
+    private Page<HoaDonChiTietResponse> hoaDonChiTietResponsePage;
 }

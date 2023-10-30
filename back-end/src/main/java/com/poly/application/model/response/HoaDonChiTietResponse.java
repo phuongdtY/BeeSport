@@ -1,6 +1,8 @@
 package com.poly.application.model.response;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.ChiTietSanPham;
+import com.poly.application.entity.HoaDon;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,5 +30,10 @@ public class HoaDonChiTietResponse {
     private String nguoiSua;
 
     private CommonEnum.TrangThaiHoaDonChiTiet trangThaiHoaDonChiTiet;
+
+    private HoaDon hoaDon;
+
+    private ChiTietSanPham chiTietSanPham;
+
 
 }
