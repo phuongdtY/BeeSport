@@ -1,6 +1,7 @@
 package com.poly.application.controller.admin;
 
 import com.poly.application.model.dto.HoaDonHoaDonChiTietListResponseDTO;
+import com.poly.application.model.request.create_request.CreateHoaDonChiTietRequest;
 import com.poly.application.model.request.create_request.CreateHoaDonRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
@@ -47,6 +48,11 @@ public class HoaDonController {
         return new ResponseEntity<>(hoaDonService.add(createHoaDonRequest), HttpStatus.CREATED);
     }
 
+    @PostMapping("/add-san-pham")
+    public ResponseEntity<?> addHoaDonChiTiet(@RequestBody CreateHoaDonChiTietRequest createHoaDonChiTietRequest) {
+        return  new ResponseEntity<>(hoaDonChiTietService.add(createHoaDonChiTietRequest), HttpStatus.CREATED);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@RequestBody UpdatedHoaDonRequest updatedHoaDonRequest, @PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(hoaDonService.update(id, updatedHoaDonRequest));
@@ -74,7 +80,7 @@ public class HoaDonController {
 
         HoaDonHoaDonChiTietListResponseDTO hoaDonHoaDonChiTietListResponseDTO = new HoaDonHoaDonChiTietListResponseDTO();
         hoaDonHoaDonChiTietListResponseDTO.setHoaDonResponse(hoaDonResponse);
-        hoaDonHoaDonChiTietListResponseDTO.setHoaDonChiTietResponseList(hoaDonChiTietResponses);
+        hoaDonHoaDonChiTietListResponseDTO.setHoaDonChiTietResponsePage(hoaDonChiTietResponses);
         return ResponseEntity.ok(hoaDonHoaDonChiTietListResponseDTO);
     }
 
