@@ -2,7 +2,6 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
-import { formatNgaySinh, formatPhoneNumber } from "~/utils/formatResponse";
 import axios from "axios";
 import {
   Button,
@@ -22,20 +21,17 @@ import {
 } from "antd";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { UpdatedRequest,DataType } from "~/interfaces/nhanVien.type";
+import { UpdatedRequest } from "~/interfaces/khachHang.type";
 interface Option {
   value?: number | null;
   label: React.ReactNode;
   children?: Option[];
   isLeaf?: boolean;
 }
-
 import request from "~/utils/request";
-
 const { confirm } = Modal;
-const UpdateNhanVien: React.FC = () => {
+const UpdateKhachHang: React.FC = () => {
   const [test, setTest] = useState(false);
-  const [data, setData] = useState<DataType|null>(null);
   const [provinces, setProvinces] = useState<Option[]>([]);
   const [districts, setDistricts] = useState<Option[]>([]);
   const [wards, setWards] = useState<Option[]>([]);
@@ -43,31 +39,41 @@ const UpdateNhanVien: React.FC = () => {
   const [loadingForm, setLoadingForm] = useState(false);
   const [form] = Form.useForm();
   let { id } = useParams();
-  const fetchProvinces = async () => {
-    try {
-      const provinceRes = await axios.get(
-        "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
-        {
-          headers: {
-            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
-            ContentType: "application/json",
-          },
-        }
-      );
+  useEffect(() => {
+    const getOne = async () => {
+      setLoadingForm(true);
+      try {
+        const res = await request.get("khach-hang/edit/" + id);
+        const trangThaiValue = res.data?.trangThai.ten === "ACTIVE";
+          const gioiTinhValue = res.data?.gioiTinh?.ten || "OTHER";
+          const ngaySinhValue = dayjs(res.data?.ngaySinh);
+        // const provinceLabel = getProvinceLabelFromId(res.data?.thanhPho);
+        //   const districtLabel = getDistrictLabelFromId(res.data?.quanHuyen);
+        //   const wardLabel = getWardLabelFromId(res.data?.phuongXa);
+        form.setFieldsValue({
+            hoVaTen: res.data?.hoVaTen,
+            canCuocCongDan: res.data?.canCuocCongDan,
+            ngaySinh: ngaySinhValue,
+            gioiTinh: gioiTinhValue,
+            soDienThoai: res.data?.soDienThoai,
+            email: res.data?.email,
+            thanhPho: res.data?.thanhPho,
+            quanHuyen: res.data?.quanHuyen,
+            phuongXa: res.data?.phuongXa,
+            diaChiCuThe: res.data?.diaChiCuThe,
+            matKhau:res.data?.matKhau,
+            trangThai: trangThaiValue, // Convert to boolean
 
-      const provinceOptions: Option[] = provinceRes.data.data.map(
-        (province: any) => ({
-          value: province.ProvinceID,
-          label: province.ProvinceName,
-          isLeaf: false,
-        })
-      );
-      setProvinces(provinceOptions);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const fetchDistricts = async (idProvince: number|undefined) => {
+        });
+        setLoadingForm(false);
+      } catch (error) {
+        console.log(error);
+        setLoadingForm(false);
+      }
+    };
+    getOne();
+  }, [id]);
+  const fetchDistricts = async (idProvince: string) => {
     try {
       const districtRes = await axios.get(
         `https://online-gateway.ghn.vn/shiip/public-api/master-data/district?`,
@@ -94,13 +100,13 @@ const UpdateNhanVien: React.FC = () => {
       console.error(error);
     }
   };
-  const fetchWards = async (idDistrict: number|undefined) => {
+  const fetchWards = async (idDistrict: string) => {
     try {
       const wardRes = await axios.get(
-        `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id`,
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
         {
           params: {
-            district_id: 3440,
+            district_id: idDistrict,
           },
           headers: {
             token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
@@ -110,7 +116,7 @@ const UpdateNhanVien: React.FC = () => {
       );
 
       const wardOptions: Option[] = wardRes.data.data.map((ward: any) => ({
-        value: ward.WardName,
+        value: ward.WardCode,
         label: ward.WardName,
         isLeaf: false,
       }));
@@ -119,55 +125,24 @@ const UpdateNhanVien: React.FC = () => {
       console.error(error);
     }
   };
-  useEffect(() => {
-    const getOne = async () => {
-      
-      setLoadingForm(true);
-      try {
-        const res = await request.get("nhan-vien/edit/" + id);
-        const trangThaiValue = res.data?.trangThai.ten === "ACTIVE";
-          const gioiTinhValue = res.data?.gioiTinh?.ten || "OTHER";
-          const ngaySinhValue = dayjs(res.data?.ngaySinh);
-        form.setFieldsValue({
-            hoVaTen: res.data?.hoVaTen,
-            canCuocCongDan: res.data?.canCuocCongDan,
-            ngaySinh: ngaySinhValue,
-            gioiTinh: gioiTinhValue,
-            soDienThoai: res.data?.soDienThoai,
-            email: res.data?.email,
-            thanhPho: Number(res.data?.thanhPho) ,
-            quanHuyen: Number(res.data?.quanHuyen),
-            phuongXa: Number(res.data?.phuongXa),
-            diaChiCuThe: res.data?.diaChiCuThe,
-            matKhau:res.data?.matKhau,
-            trangThai: trangThaiValue, // Convert to boolean
-        })
-        ;
-        setData(res.data);
-        setLoadingForm(false);
-      } catch (error) {
-        console.log(error);
-        setLoadingForm(false);
-      }
-    };
-    fetchProvinces();
-    fetchDistricts(data?.thanhPho);
-    fetchWards(data?.quanHuyen);
-    getOne();
-  }, [id]);
-  
+  // const handleProvinceChange = (provinceId: string) => {
+  //   fetchDistricts(provinceId);
+  // };
+  // const handleDistrictChange = (districtId: string) => {
+  //   fetchWards(districtId);
+  // };
   const onFinish = (values: UpdatedRequest) => {
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc cập nhật nhân viên này không?",
+      content: "Bạn có chắc cập nhật khách hàng này không?",
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
         try {
           const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
           
-          const res = await request.put("nhan-vien/update/" + id, {
+          const res = await request.put("khach-hang/update/" + id, {
             hoVaTen: values.hoVaTen,
             canCuocCongDan: values.canCuocCongDan,
             ngaySinh: values.ngaySinh,
@@ -182,8 +157,8 @@ const UpdateNhanVien: React.FC = () => {
             trangThai: trangThai,
           });
           if (res.data) {
-            message.success("Cập nhật nhân viên thành công");
-            navigate("/admin/nhan-vien");
+            message.success("Cập nhật khách hàng thành công");
+            navigate("/admin/khach-hang");
             console.log(values.trangThai)
           } else {
             console.error("Phản hồi API không như mong đợi:", res);
@@ -193,7 +168,7 @@ const UpdateNhanVien: React.FC = () => {
             message.error(error.response.data.message);
           } else {
             console.error("Lỗi không xác định:", error);
-            message.error("Cập nhật nhân viên thất bại");
+            message.error("Cập nhật khách hàng thất bại");
           }
         }
       },
@@ -210,6 +185,36 @@ const UpdateNhanVien: React.FC = () => {
       sm: { span: 16 },
     },
   };
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      try {
+        const res = await axios.get(
+          "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
+          {
+            headers: {
+              token: "49e20eea-4a6c-11ee-af43-6ead57e9219a",
+              ContentType: "application/json",
+            },
+          }
+        );
+
+        const provinceOptions: Option[] = res.data.data.map(
+          (province: any) => ({
+            value: province.ProvinceID,
+            label: province.ProvinceName,
+            isLeaf: false,
+          })
+        );
+        setProvinces(provinceOptions);
+        setTest(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchProvinces();
+  }, []);
+
   const loadData = async (selectedOptions: Option[]) => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
 
@@ -276,23 +281,21 @@ const UpdateNhanVien: React.FC = () => {
   const getProvinceLabelFromId = (id: number) => {
     const province = provinces.find((p) => p.value === id);
     return province ? province.label : "";
-  }
-
-  // Tạo hàm để lấy tên của quận/huyện từ ID
+  };
+  
   const getDistrictLabelFromId = (id: number) => {
     const district = districts.find((d) => d.value === id);
     return district ? district.label : "";
-  }
-
-  // Tạo hàm để lấy tên của phường/xã từ ID
+  };
+  
   const getWardLabelFromId = (id: number) => {
     const ward = wards.find((w) => w.value === id);
     return ward ? ward.label : "";
-  }
+  };
   
   return (
     <>
-      <Card title="CẬP NHẬT NHÂN VIÊN">
+      <Card title="CẬP NHẬT KHÁCH HÀNG">
         <Skeleton loading={loadingForm}>
           <Form
             labelCol={{ span: 8 }}
@@ -308,7 +311,7 @@ const UpdateNhanVien: React.FC = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập tên nhân viên!",
+                  message: "Vui lòng nhập tên khách hàng!",
                 },
               ]}
             >
@@ -330,7 +333,6 @@ const UpdateNhanVien: React.FC = () => {
             <Form.Item
               name="ngaySinh"
              label="Ngày Sinh:"
-
               rules={[
                     {
                     required: true,
@@ -424,12 +426,12 @@ const UpdateNhanVien: React.FC = () => {
                 },
               ]}
             >
-              <Select options={wards}
-              placeholder="Phường / Xã" />
+              <Select options={wards} placeholder="Phường / Xã" />
             </Form.Item>
             <Form.Item
               name="diaChiCuThe"
               label="Địa chỉ cụ thể"
+              
               >
             <Input/>
             </Form.Item>
@@ -463,4 +465,4 @@ const UpdateNhanVien: React.FC = () => {
   );
 };
 
-export default UpdateNhanVien;
+export default UpdateKhachHang;
