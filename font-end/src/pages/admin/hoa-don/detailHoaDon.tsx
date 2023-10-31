@@ -596,8 +596,7 @@ const detailHoaDon: React.FC = () => {
       setOrderStatus(shipingStatus);
     }
   };
-  const someFunction = () => {
-    // Đây là nơi bạn viết mã cho hàm của mình.
+  const someFunction = () => {4
     console.log("Button clicked!");
   };
   return (
@@ -746,7 +745,7 @@ const detailHoaDon: React.FC = () => {
         open={sanPhamOpen}
         onCancel={handleCancelSanPham}
       />
-      <ExportHoaDonPDF open={hoaDonOpen} onCancel={handleCancelExportHoaDon} />
+      <ExportHoaDonPDF open={hoaDonOpen} onCancel={handleCancelExportHoaDon} id={data?.id} />
     </>
   );
 };
