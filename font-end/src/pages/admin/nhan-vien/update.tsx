@@ -97,7 +97,7 @@ const UpdateNhanVien: React.FC = () => {
   const fetchWards = async (idDistrict: number|undefined) => {
     try {
       const wardRes = await axios.get(
-        `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id`,
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
         {
           params: {
             district_id: 3440,
@@ -110,7 +110,7 @@ const UpdateNhanVien: React.FC = () => {
       );
 
       const wardOptions: Option[] = wardRes.data.data.map((ward: any) => ({
-        value: ward.WardName,
+        value: ward.WardCode,
         label: ward.WardName,
         isLeaf: false,
       }));
