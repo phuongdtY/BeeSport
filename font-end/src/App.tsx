@@ -1,7 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 import IndexNhanVien from "./pages/admin/nhan-vien/index";
+import IndexKhachHang from "./pages/admin/khach-hang/index";
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
 import AddNV from "./pages/admin/nhan-vien/add";
+import UpdateNhanVien from "./pages/admin/nhan-vien/update";
 import IndexMauSac from "./pages/admin/mau-sac/index";
 import AddMauSac from "./pages/admin/mau-sac/add";
 import UpdateMauSac from "./pages/admin/mau-sac/update";
@@ -27,6 +29,7 @@ import UpdateVoucher from "./pages/admin/voucher/update";
 import Signin from "./pages/login/sign-in/Signin";
 import Signup from "./pages/login/sign-up/Singup";
 import Forgotpassword from "./pages/login/forgot-password/Forgotpassword";
+import AddKH from "./pages/admin/khach-hang/add";
 
 function App() {
   return (
@@ -42,6 +45,7 @@ function App() {
       <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />
         <Route path="nhan-vien/add" element={<AddNV />} />
+        <Route path="nhan-vien/edit/:id" element={<UpdateNhanVien />} />
         <Route path="mau-sac" element={<IndexMauSac />} />
         <Route path="mau-sac/add" element={<AddMauSac />} />
         <Route path="mau-sac/update/:id" element={<UpdateMauSac />} />
@@ -59,6 +63,8 @@ function App() {
         <Route path="voucher" element={<IndexVoucher />} />
         <Route path="voucher/add" element={<AddVoucher />} />
         <Route path="voucher/:id" element={<UpdateVoucher />} />
+        <Route path="khach-hang" element={<IndexKhachHang />} />
+        <Route path="khach-hang/add" element={<AddKH />} />
       </Route>
     </Routes>
   );

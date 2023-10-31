@@ -214,11 +214,9 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
             }
         }
 
+
         TaiKhoan detail = optional.get();
         taiKhoanMapper.convertUpdateRequestToEntity(request, detail);
-        System.out.println(detail.getId());
-        System.out.println(detail.getGioiTinh());
-//        System.out.println(detail.getTrangThai().getTen());
         return taiKhoanMapper.convertEntityToResponse(taiKhoanRepository.save(detail));
     }
 

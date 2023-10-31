@@ -84,16 +84,16 @@ const index: React.FC = () => {
       width: 60,
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
     },
-    {
-      title: "Ảnh",
-      key: "stt",
-      fixed: "left",
-      align: "center",
-      width: 80,
-      render: () => (
-        <Avatar src="" shape="square" size="large" icon={<UserOutlined />} />
-      ),
-    },
+    // {
+    //   title: "Ảnh",
+    //   key: "stt",
+    //   fixed: "left",
+    //   align: "center",
+    //   width: 80,
+    //   render: () => (
+    //     <Avatar src="" shape="square" size="large" icon={<UserOutlined />} />
+    //   ),
+    // },
     {
       title: "Họ và Tên",
       dataIndex: "hoVaTen",
@@ -109,14 +109,14 @@ const index: React.FC = () => {
       key: "canCuocCongDan",
       sorter: true,
     },
-    {
-      title: "Ngày Sinh",
-      align: "center",
-      dataIndex: "ngaySinh",
-      key: "ngaySinh",
-      sorter: true,
-      render: (ngaySinh) => formatNgaySinh(ngaySinh),
-    },
+    // {
+    //   title: "Ngày Sinh",
+    //   align: "center",
+    //   dataIndex: "ngaySinh",
+    //   key: "ngaySinh",
+    //   sorter: true,
+    //   render: (ngaySinh) => formatNgaySinh(ngaySinh),
+    // },
     {
       title: "Giới Tính",
       dataIndex: "gioiTinh",
@@ -170,9 +170,11 @@ const index: React.FC = () => {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
+      align: "center",
       sorter: true,
+      width: "20%",
       render: (trangThai) => (
-        <Tag color={trangThai.mauSac}>{trangThai.moTa}</Tag>
+        <Tag color={trangThai?.mauSac}>{trangThai?.moTa}</Tag>
       ),
     },
     {
@@ -186,7 +188,7 @@ const index: React.FC = () => {
         const showModal = () => {
           setModal1Open(true);
           request
-            .get("nhan-vien/" + id)
+            .get("nhan-vien/edit/" + id)
             .then((res) => setContentModal(res.data))
             .catch((err) => console.log(err));
         };
@@ -378,11 +380,11 @@ const index: React.FC = () => {
           />
           <Divider style={{ margin: 0 }} />
           <DescriptionItem title="Trạng thái">
-            {/* {contentModal?.trangThai === "Kích hoạt" ? (
+            {contentModal?.trangThai.ten==="ACTIVE" ? (
               <Tag color="success">Kích hoạt</Tag>
             ) : (
               <Tag color="error">Ngừng kích hoạt</Tag>
-            )} */}
+            )}
           </DescriptionItem>
           <Divider style={{ margin: 0 }} />
         </Modal>

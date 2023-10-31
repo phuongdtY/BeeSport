@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { FaHome, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -16,7 +17,7 @@ import {
   Select,
 } from "antd";
 
-import request from "~/utils/request";
+import {requestTimMatKhau} from "~/utils/request";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import axios from "axios";
 import { Option } from "antd/es/mentions";
@@ -46,23 +47,10 @@ const AddNV: React.FC = () => {
       content: "Bạn có chắc thêm nhân viên không?",
       okText: "OK",
       cancelText: "Hủy",
-      // onOk: async () => {
-      //   try {
-      //     setLoading(true);
-      //     const response = await request.post("nhan-vien", values);
-      //     setLoading(false);
-      //     message.success("Thêm nhân viên thành công");
-      //     navigate("/admin/nhan-vien");
-      //   } catch (error: any) {
-      //     message.error(error.response.data.message);
-      //     setLoading(false);
-      //   }
-      // },
       onOk: async () => {
-        console.log(values);
         try {
           setLoading(true);
-          const response = await request.post("nhan-vien/add", values);
+          const response = await requestTimMatKhau.post("nhan-vien/add", values);
           console.log("Response from API:", response); // In dữ liệu từ API
           setLoading(false);
           message.success("Thêm nhân viên thành công");
@@ -233,6 +221,20 @@ const AddNV: React.FC = () => {
         console.error(error);
       }
     }
+  };
+  const getProvinceLabelFromId = (id: number | null | undefined) => {
+    const province = provinces.find((p) => p.value === id);
+    return province?.label;
+  };
+
+  const getDistrictLabelFromId = (id: number | null | undefined) => {
+    const district = districts.find((d) => d.value === id);
+    return district?.label;
+  };
+
+  const getWardLabelFromId = (id: number | null | undefined) => {
+    const ward = wards.find((w) => w.value === id);
+    return ward?.label;
   };
   const onChange = (value: (string | number)[], selectedOptions: Option[]) => {
     console.log(value, selectedOptions);
@@ -409,7 +411,7 @@ const AddNV: React.FC = () => {
               <Select options={wards} placeholder="Phường / Xã" />
             </Form.Item>
             <Form.Item
-              name="diaChi"
+              name="diaChiCuThe"
               label="Địa chỉ cụ thể"
               rules={[
                 {

@@ -16,7 +16,7 @@ import {
   Select,
 } from "antd";
 
-import request from "~/utils/request";
+import {requestTimMatKhau} from "~/utils/request";
 import {
   ExclamationCircleFilled,
   UserOutlined,
@@ -47,72 +47,29 @@ const dangKiKhachHang: React.FC = () => {
   const [wards, setWards] = useState<Option[]>([]);
   const [districts, setDistricts] = useState<Option[]>([]);
   const onSubmit = async (values: KhachHangRequest) => {
-    // confirm({
-    //   title: "Xác Nhận",
-    //   icon: <ExclamationCircleFilled />,
-    //   content: "Bạn có chắc đăng kí tài khoản không?",
-    //   okText: "OK",
-    //   cancelText: "Hủy",
-    //   onOk: async () => {
-    //     console.log(values);
-    //     try {
-    //       setLoading(true);
-    //       const response = await request.post("khach-hang/add", {
-    //         hoVaTen: values.hoVaTen,
-    //         soDienThoai: values.soDienThoai,
-    //         email: values.email,
-    //         matKhau: values.matKhau,
-    //       });
-    //       console.log("Response from API:", response); // In dữ liệu từ API
-    //       message.success("Tạo tài khoản thành công.Bạn hãy check mail");
-    //       // navigate("/admin/nhan-vien");
-    //     } catch (error: any) {
-    //       console.log("Error:", error); // In lỗi ra để xác định lý do
-    //       // message.error("Có lỗi xảy ra khi tạo tài khoản.");
-    //       setLoading(false);
-    //     }
-    //   },
-    // });
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
       content: "Bạn có chắc đăng kí tài khoản không?",
       okText: "OK",
       cancelText: "Hủy",
-      // onOk: async () => {
-      //   try {
-      //     setLoading(true);
-      //     const response = await request.post("khach-hang/add", {
-      //       hoVaTen: values.hoVaTen,
-      //       soDienThoai: values.soDienThoai,
-      //       email: values.email,
-      //       matKhau: values.matKhau,
-      //     });
-      //     message.success("Tạo tài khoản thành công.Bạn hãy check mail");
-      //     console.log("Response from API:", response); // In dữ liệu từ API
-
-      //     // navigate("/admin/nhan-vien");
-      //   } catch (error) {
-      //     console.log("Error:", error); // In lỗi ra để xác định lý do
-      //     message.error("Có lỗi xảy ra khi tạo tài khoản.");
-      //   } finally {
-      //     setLoading(false);
-      //   }
-      // },
       onOk: async () => {
-        console.log(values);
         try {
           setLoading(true);
-          const response = await request.post("khach-hang/add", {
+          const response = await requestTimMatKhau.post("khach-hang/dang-ki", {
             hoVaTen: values.hoVaTen,
             soDienThoai: values.soDienThoai,
             email: values.email,
             matKhau: values.matKhau,
           });
-          console.log("Response from API:", response); // In dữ liệu từ API
-          setLoading(false);
-          message.success("Tạo tài khoản thành công.Bạn hãy check mail");
-          // navigate("/admin/nhan-vien");
+          if (response.status === 201) {
+            // Nếu mã trạng thái HTTP là 200, thực hiện các hành động thành công.
+            message.success("Tạo tài khoản thành công. Bạn hãy check mail");
+            navigate("/sign-in");
+          } else {
+            // Nếu mã trạng thái HTTP không phải 200, hiển thị thông báo lỗi từ server.
+            message.error("Có lỗi xảy ra khi tạo tài khoản.");
+          }
         } catch (error: any) {
           console.log("Error:", error); // In lỗi ra để xác định lý do
           if (error.response && error.response.data) {
@@ -120,11 +77,13 @@ const dangKiKhachHang: React.FC = () => {
           } else {
             message.error("Có lỗi xảy ra khi tạo tài khoản.");
           }
+        } finally {
           setLoading(false);
         }
       },
     });
   };
+  
 
   const formItemLayout = {
     labelCol: {
