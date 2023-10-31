@@ -2,8 +2,6 @@ package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.ChiTietSanPham;
-import com.poly.application.entity.SanPham;
-import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.ChiTietSanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRequest;
@@ -13,6 +11,9 @@ import com.poly.application.repository.ChiTietSanPhamRepository;
 import com.poly.application.service.ChiTietSanPhamService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,6 +34,11 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
     public List<ChiTietSanPhamResponse> findByAll(Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan) {
         List<ChiTietSanPham> list = repository.findByAll(idSanPham, idMauSac, idLoaiDe, idKichCo, idDiaHinhSan);
         return mapper.toResponseList(list);
+    }
+
+    @Override
+    public Page<ChiTietSanPhamResponse> findByAllPage(Integer page, Integer pageSize, Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan) {
+        return null;
     }
 
     @Override
@@ -81,6 +87,14 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
         }
 
         return responseList;
+    }
+
+    @Override
+    public List<ChiTietSanPhamResponse> getListSanPhamAndMauSac(Long idSanPham, Long idMauSac) {
+
+        List<ChiTietSanPham> list = repository.getListSanPhamAndMauSac(idSanPham, idMauSac);
+        return list.stream().map(sanPham -> mapper.convertEntityToResponse(sanPham))
+                .collect(Collectors.toList());
     }
 
     @Override

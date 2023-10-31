@@ -20,6 +20,8 @@ public interface ChiTietSanPhamService {
 
     List<ChiTietSanPhamResponse> addList(List<CreatedChiTietSanPhamRequest> requests);
 
+    List<ChiTietSanPhamResponse> getListSanPhamAndMauSac(Long idSanPham,Long idMauSac);
+
     void delete(Long id);
 
     ChiTietSanPhamResponse update(Long id, UpdatedChiTietSanPhamRequest request);

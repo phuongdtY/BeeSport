@@ -143,7 +143,8 @@ public class CommonEnum {
     public enum TrangThaiChiTietSanPham{
         ACTIVE("ACTIVE", "Hoạt động", "success"),
         INACTIVE("INACTIVE", "Ngừng kinh doanh", "red"),
-        OUT_OF_STOCK("OUT_OF_STOCK", "Hết hàng", "green");
+        OUT_OF_STOCK("OUT_OF_STOCK", "Hết hàng", "green"),
+        DELETED("DELETED", "Xóa", "");
 
         private final String ten;
         private final String moTa;
