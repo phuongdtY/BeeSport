@@ -30,6 +30,7 @@ import Signin from "./pages/login/sign-in/Signin";
 import Signup from "./pages/login/sign-up/Singup";
 import Forgotpassword from "./pages/login/forgot-password/Forgotpassword";
 import AddKH from "./pages/admin/khach-hang/add";
+import UpdateKhachHang from "./pages/admin/khach-hang/update";
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
         <Route path="voucher/:id" element={<UpdateVoucher />} />
         <Route path="khach-hang" element={<IndexKhachHang />} />
         <Route path="khach-hang/add" element={<AddKH />} />
+        <Route path="khach-hang/edit/:id" element={<UpdateKhachHang />} />
       </Route>
     </Routes>
   );

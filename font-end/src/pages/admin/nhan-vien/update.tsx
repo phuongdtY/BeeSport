@@ -1,5 +1,8 @@
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
+import { formatNgaySinh, formatPhoneNumber } from "~/utils/formatResponse";
 import axios from "axios";
 import {
   Button,
@@ -44,14 +47,14 @@ const UpdateNhanVien: React.FC = () => {
         const res = await request.get("nhan-vien/edit/" + id);
         const trangThaiValue = res.data?.trangThai.ten === "ACTIVE";
           const gioiTinhValue = res.data?.gioiTinh?.ten || "OTHER";
-        // const ngaySinhValue = dayjs(res.data?.ngaySinh).format('YYYY-MM-DD');
+          const ngaySinhValue = dayjs(res.data?.ngaySinh);
         // const provinceLabel = getProvinceLabelFromId(res.data?.thanhPho);
         //   const districtLabel = getDistrictLabelFromId(res.data?.quanHuyen);
         //   const wardLabel = getWardLabelFromId(res.data?.phuongXa);
         form.setFieldsValue({
             hoVaTen: res.data?.hoVaTen,
             canCuocCongDan: res.data?.canCuocCongDan,
-            // ngaySinh: res.data?.ngaySinh,
+            ngaySinh: ngaySinhValue,
             gioiTinh: gioiTinhValue,
             soDienThoai: res.data?.soDienThoai,
             email: res.data?.email,
@@ -143,13 +146,13 @@ const UpdateNhanVien: React.FC = () => {
           const res = await request.put("nhan-vien/update/" + id, {
             hoVaTen: values.hoVaTen,
             canCuocCongDan: values.canCuocCongDan,
-            // ngaySinh: values.ngaySinh,
+            ngaySinh: values.ngaySinh,
             gioiTinh: values.gioiTinh,
             soDienThoai: values.soDienThoai,
             email: values.email,
             thanhPho: values.thanhPho,
-            quanHuyen: values.thanhPho,
-            phuongXa: values.thanhPho,
+            quanHuyen: values.quanHuyen,
+            phuongXa: values.phuongXa,
             diaChiCuThe: values.diaChiCuThe,
             matKhau: values.matKhau,
             trangThai: trangThai,
@@ -331,6 +334,7 @@ const UpdateNhanVien: React.FC = () => {
             <Form.Item
               name="ngaySinh"
              label="Ngày Sinh:"
+
               rules={[
                     {
                     required: true,
@@ -338,7 +342,7 @@ const UpdateNhanVien: React.FC = () => {
                     },
                   ]   }
                   >
-          <DatePicker placeholder="Chọn ngày sinh" />
+          <DatePicker format={"DD/MM/YYYY"} placeholder="Chọn ngày sinh" />
           </Form.Item>
 
           <Form.Item
@@ -391,7 +395,7 @@ const UpdateNhanVien: React.FC = () => {
                     quanHuyen: undefined,
                     phuongXa: undefined,
                   });
-                  fetchDistricts(value.label);
+                  fetchDistricts(value);
                 }}
               />
             </Form.Item>
@@ -410,7 +414,7 @@ const UpdateNhanVien: React.FC = () => {
                 placeholder="Quận / Huyện"
                 onChange={(value) => {
                   form.setFieldsValue({ phuongXa: undefined });
-                  fetchWards(value.label);
+                  fetchWards(value);
                 }}
               />
             </Form.Item>
