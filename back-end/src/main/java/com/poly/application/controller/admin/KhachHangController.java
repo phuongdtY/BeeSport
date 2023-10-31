@@ -1,6 +1,8 @@
 package com.poly.application.controller.admin;
 
 import com.poly.application.model.request.create_request.CreatedTaiKhoanRequest;
+import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
+import com.poly.application.model.response.TaiKhoanResponse;
 import com.poly.application.service.TaiKhoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,5 +44,16 @@ public class KhachHangController {
     public ResponseEntity<?> add(@RequestBody CreatedTaiKhoanRequest createTaiKhoanRequest) {
         return new ResponseEntity<>(taiKhoanService.khachHangCreat(createTaiKhoanRequest), HttpStatus.CREATED);
     }
-    //a
+
+
+    @GetMapping("/edit/{id}")
+    public ResponseEntity<?> getOne(@PathVariable("id")Long id){
+        return ResponseEntity.ok(taiKhoanService.findById(id));
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody UpdatedTaiKhoanRequest request) {
+        TaiKhoanResponse taiKhoan = taiKhoanService.update(id, request);
+        return ResponseEntity.ok(taiKhoan);
+    }
 }

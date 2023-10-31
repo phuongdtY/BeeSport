@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { FaHome, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -31,7 +30,7 @@ interface Option {
   isLeaf?: boolean;
 }
 
-const AddNV: React.FC = () => {
+const AddKH: React.FC = () => {
   const [form] = Form.useForm();
   const [provinces, setProvinces] = useState<Option[]>([]);
   const [test, setTest] = useState(false);
@@ -44,23 +43,24 @@ const AddNV: React.FC = () => {
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc thêm nhân viên không?",
+      content: "Bạn có chắc thêm khách hàng không?",
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
+        console.log(values);
         try {
           setLoading(true);
-          const response = await requestTimMatKhau.post("nhan-vien/add", values);
+          const response = await requestTimMatKhau.post("khach-hang/add", values);
           console.log("Response from API:", response); // In dữ liệu từ API
           setLoading(false);
-          message.success("Thêm nhân viên thành công");
-          navigate("/admin/nhan-vien");
+          message.success("Thêm khách hàng thành công");
+          navigate("/admin/khach-hang");
         } catch (error: any) {
           console.log("Error:", error); // In lỗi ra để xác định lý do
           if (error.response && error.response.data) {
             message.error(error.response.data.message);
           } else {
-            message.error("Có lỗi xảy ra khi thêm nhân viên.");
+            message.error("Có lỗi xảy ra khi thêm khách hàng.");
           }
           setLoading(false);
         }
@@ -240,7 +240,7 @@ const AddNV: React.FC = () => {
     console.log(value, selectedOptions);
   };
   return (
-    <Card title="THÊM NHÂN VIÊN">
+    <Card title="THÊM KHÁCH HÀNG">
       <Row>
         <Col span={16}>
           <Form form={form} onFinish={onSubmit} {...formItemLayout}>
@@ -264,57 +264,18 @@ const AddNV: React.FC = () => {
             <Form.Item
               name="canCuocCongDan"
               label="CCCD/Mã định danh:"
-              rules={[
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Vui lòng nhập CMT/CCCD!",
-                },
-                {
-                  pattern: /^\d{9}$|^\d{12}$/,
-                  message: "CMT/CCCD không hợp lệ!",
-                },
-              ]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               name="ngaySinh"
               label="Ngày Sinh:"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn ngày sinh!",
-                },
-                {
-                  async validator(_, value) {
-                    const currentDate = new Date();
-                    const selectedDate = new Date(value);
-                    if (value !== undefined) {
-                      if (selectedDate < currentDate) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error("Ngày sinh không được là ngày tương lai!")
-                      );
-                    }
-                    return Promise.resolve();
-                  },
-                },
-              ]}
             >
               <DatePicker format={"DD/MM/YYYY"} placeholder="chọn ngày sinh" />
             </Form.Item>
             <Form.Item
               name="gioiTinh"
               label="Giới tính"
-              initialValue="MALE"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn giới tính",
-                },
-              ]}
             >
               <Radio.Group>
                 <Radio value="MALE">Nam</Radio>
@@ -360,12 +321,6 @@ const AddNV: React.FC = () => {
             <Form.Item
               name="thanhPho"
               label="Tỉnh / Thành"
-              rules={[
-                {
-                  required: true,
-                  message: "Bạn chưa điền Tỉnh / Thành !",
-                },
-              ]}
             >
               <Select
                 options={provinces}
@@ -382,12 +337,6 @@ const AddNV: React.FC = () => {
             <Form.Item
               name="quanHuyen"
               label="Quận / Huyện:"
-              rules={[
-                {
-                  required: true,
-                  message: "Bạn chưa điền Quận / Huyện!",
-                },
-              ]}
             >
               <Select
                 options={districts}
@@ -401,25 +350,12 @@ const AddNV: React.FC = () => {
             <Form.Item
               name="phuongXa"
               label="Phường / Xã"
-              rules={[
-                {
-                  required: true,
-                  message: "Bạn chưa điền Phường / Xã !",
-                },
-              ]}
             >
               <Select options={wards} placeholder="Phường / Xã" />
             </Form.Item>
             <Form.Item
               name="diaChiCuThe"
               label="Địa chỉ cụ thể"
-              rules={[
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Bạn chưa điền đia chỉ!",
-                },
-              ]}
             >
               <Input />
             </Form.Item>
@@ -445,4 +381,4 @@ const AddNV: React.FC = () => {
   );
 };
 
-export default AddNV;
+export default AddKH;
