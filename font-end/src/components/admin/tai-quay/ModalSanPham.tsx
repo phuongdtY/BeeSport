@@ -45,33 +45,81 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
 
   const columns = [
     {
-      title: "Mã",
-      dataIndex: "sanPham",
-      key: "ma",
-      render: (item) => {
-        return item.ma;
+      title: "#",
+      dataIndex: "rowIndex",
+      render: (text, record, index) => index + 1,
+    },
+    {
+      title: "Hình ảnh",
+      dataIndex: "hinhAnh",
+      key: "moTa",
+      render: (item, record) => {
+        const images = record.images;
+        console.log(images);
+
+        if (!images || images.length === 0) {
+          return "Chưa có ảnh";
+        }
+
+        const firstImage = images[0];
+
+        return (
+          <img
+            src={firstImage.duongDan}
+            alt="Hình ảnh"
+            style={{ maxWidth: "100px" }}
+          />
+        );
       },
     },
     {
-      title: "Tên",
+      title: "Sản phẩm",
       dataIndex: "sanPham",
       key: "ten",
-      render: (item) => {
-        return item.ten;
+      render: (item, record) => {
+        return (
+          item.ten +
+          " / " +
+          " [" +
+          record.mauSac.ten +
+          " - " +
+          record.kichCo.kichCo +
+          "]"
+        );
       },
     },
     {
-      title: "Mô tả",
-      dataIndex: "sanPham",
+      title: "Số lượng",
+      dataIndex: "soLuong",
       key: "moTa",
-      render: (item) => {
-        return item.moTa;
+      render: (item, record) => {
+        return record.soLuong;
+      },
+    },
+    {
+      title: "Giá tiền",
+      dataIndex: "giaTien",
+      key: "moTa",
+      render: (item, record) => {
+        return record.giaTien;
       },
     },
   ];
 
   const handleCancel = () => {
     setIsModalVisible(false);
+  };
+
+  const fetchImages = async (idSanPham, idMauSac) => {
+    try {
+      const response = await request.get("hinh-anh-san-pham", {
+        params: { idSanPham: idSanPham, idMauSac: idMauSac },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching images:", error);
+      return [];
+    }
   };
 
   const resetFilter = () => {
@@ -108,9 +156,23 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
         setThuongHieuOptions(response.data);
       });
       // Call API List SanPham
-      request.get("chi-tiet-san-pham/list").then((response) => {
-        setDataSanPham(response.data);
-        console.log(response.data);
+      request.get("chi-tiet-san-pham/list").then(async (response) => {
+        const sanPhamData = response.data;
+
+        // Fetch images for all sanPham in parallel
+        const imagePromises = sanPhamData.map((item) =>
+          fetchImages(item.sanPham.id, item.mauSac.id)
+        );
+
+        const images = await Promise.all(imagePromises);
+
+        const updatedSanPhamData = sanPhamData.map((sanPham, index) => ({
+          ...sanPham,
+          images: images[index],
+        }));
+        console.log(updatedSanPhamData);
+
+        setDataSanPham(updatedSanPhamData);
       });
     }
   }, [isModalVisible]);
@@ -120,7 +182,7 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
       <Modal
         width={1050}
         title="Danh sách Sản phẩm"
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
       >

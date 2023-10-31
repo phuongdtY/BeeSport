@@ -13,6 +13,7 @@ import com.poly.application.repository.ChiTietSanPhamRepository;
 import com.poly.application.service.ChiTietSanPhamService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,6 +34,11 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
     public List<ChiTietSanPhamResponse> findByAll(Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan) {
         List<ChiTietSanPham> list = repository.findByAll(idSanPham, idMauSac, idLoaiDe, idKichCo, idDiaHinhSan);
         return mapper.toResponseList(list);
+    }
+
+    @Override
+    public Page<ChiTietSanPhamResponse> findByAllPage(Integer page, Integer pageSize, Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan) {
+        return null;
     }
 
     @Override
