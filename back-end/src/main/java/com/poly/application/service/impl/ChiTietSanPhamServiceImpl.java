@@ -2,6 +2,7 @@ package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.ChiTietSanPham;
+import com.poly.application.entity.LoaiDe;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.ChiTietSanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRequest;
@@ -126,6 +127,18 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
         chiTietSanPham.setSanPham(request.getSanPham());
         chiTietSanPham.setTrangThai(request.getTrangThai());
         return mapper.convertEntityToResponse(repository.save(chiTietSanPham));
+    }
+
+    @Override
+    public ChiTietSanPhamResponse getOneCtspById(Long id) {
+        Optional<ChiTietSanPham> optional = repository.findById(id);
+
+        if (optional.isEmpty()) {
+            throw new com.amazonaws.services.mq.model.NotFoundException("Chi tiết sản phẩm không tồn tại");
+        }
+
+        ChiTietSanPham chiTietSanPham = optional.get();
+        return mapper.convertEntityToResponse(chiTietSanPham);
     }
 
 }

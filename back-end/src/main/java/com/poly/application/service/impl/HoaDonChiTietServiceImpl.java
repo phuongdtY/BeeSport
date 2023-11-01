@@ -1,13 +1,17 @@
 package com.poly.application.service.impl;
 
+import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.HoaDonChiTiet;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.HoaDonChiTietMapper;
+import com.poly.application.model.mapper.HoaDonMapper;
 import com.poly.application.model.request.create_request.CreateHoaDonChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonChiTietRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
+import com.poly.application.model.response.HoaDonResponse;
 import com.poly.application.repository.HoaDonChiTietRepository;
 import com.poly.application.service.HoaDonChiTietService;
+import com.poly.application.service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +31,12 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     @Autowired
     private HoaDonChiTietRepository hoaDonChiTietRepository;
 
+    @Autowired
+    private HoaDonService hoaDonService;
+
+    @Autowired
+    private HoaDonMapper hoaDonMapper;
+
     @Override
     public Page<HoaDonChiTietResponse> getAll(Integer currentPage, Integer pageSize, String searchText, String sorter, String sortOrder) {
         Sort sort;
@@ -43,8 +53,11 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     }
 
     @Override
-    public HoaDonChiTietResponse add(CreateHoaDonChiTietRequest createHoaDonChiTietRequest) {
+    public HoaDonChiTietResponse add(CreateHoaDonChiTietRequest createHoaDonChiTietRequest, Long id) {
         HoaDonChiTiet createHoaDonChiTiet = hoaDonChiTietMapper.convertCreateHoaDonChiTietRequestToHoaDonChiTietEntity(createHoaDonChiTietRequest);
+        HoaDonResponse hoaDonResponse = hoaDonService.findById(id);
+        HoaDon hoaDon = hoaDonMapper.convertHoaDonResponseToEntity(hoaDonResponse);
+        createHoaDonChiTiet.setHoaDon(hoaDon);
         HoaDonChiTiet savedHoaDonChiTiet = hoaDonChiTietRepository.save(createHoaDonChiTiet);
         return hoaDonChiTietMapper.convertHoaDonChiTietEntityToHoaDonChiTietResponse(savedHoaDonChiTiet);
     }
