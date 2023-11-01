@@ -56,7 +56,7 @@ const Home: React.FC = () => {
               <img
                 style={{ padding: 30, height: 240 }}
                 alt="example"
-                src= {product.duongDan}
+                src={`http://localhost:8080/admin/api/file/view/${product.duongDan}`}
               />
               <div style={{ textAlign: "left" }}>
                 <Link

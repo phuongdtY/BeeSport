@@ -77,10 +77,10 @@ public class ChiTietSanPhamController {
         service.update(request);
         return ResponseEntity.noContent().build();
     }
-    @PutMapping("/update-status/{id}")
-    public ResponseEntity<?> updateStatus(@PathVariable(name = "id") Long id, @RequestBody UpdatedChiTietSanPhamRequest request) {
-        return ResponseEntity.ok(service.update(id, request));
-    }
+//    @PutMapping("/update-status/{id}")
+//    public ResponseEntity<?> updateStatus(@PathVariable(name = "id") Long id, @RequestBody UpdatedChiTietSanPhamRequest request) {
+//        return ResponseEntity.ok(service.update(id, request));
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(name = "id") Long id) {

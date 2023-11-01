@@ -47,6 +47,7 @@ function App() {
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/gio-hang" element={<GioHang />} />
+        <Route path="/san-pham/detail/:id" element={<DetailSanPham />} />
       </Route>
       <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />

@@ -84,7 +84,7 @@ const detailSanPham: React.FC = () => {
 
   const sanPham = async () => {
     try {
-      const res = await request.get("/san-pham-detail/" + id);
+      const res = await request.get("/san-pham/" + id);
       setDataSanPham(res.data);
     } catch (error) {
       console.log(error);

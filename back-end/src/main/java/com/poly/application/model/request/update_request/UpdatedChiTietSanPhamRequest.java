@@ -25,10 +25,6 @@ public class UpdatedChiTietSanPhamRequest {
     @NotNull(message = "Vui lòng nhập giá tiền")
     private BigDecimal giaTien;
 
-    private LocalDateTime ngayTao;
-
-    private LocalDateTime ngaySua;
-
     private String nguoiTao;
 
     private String nguoiSua;

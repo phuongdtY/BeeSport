@@ -211,6 +211,8 @@ const AddSanPham: React.FC = () => {
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
+        console.log(fakeData);
+
         try {
           await request.post("/chi-tiet-san-pham", fakeData, {
             headers: {
