@@ -19,7 +19,7 @@ import {
 } from "antd";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { UpdatedRequest,DataType } from "~/interfaces/nhanVien.type";
+import { UpdatedRequest,DataType } from "~/interfaces/khachHang.type";
 interface Option {
   value?: number | null;
   label: React.ReactNode;
@@ -30,7 +30,7 @@ interface Option {
 import request from "~/utils/request";
 
 const { confirm } = Modal;
-const UpdateNhanVien: React.FC = () => {
+const UpdateKhachHang: React.FC = () => {
   
   const [data, setData] = useState<DataType|null>(null);
   const [wardCode1, setWardCode1] = useState(data?.phuongXa);
@@ -68,7 +68,7 @@ const UpdateNhanVien: React.FC = () => {
   const fetchDistricts = async (idProvince: number|undefined) => {
     try {
       const districtRes = await axios.get(
-        `https://online-gateway.ghn.vn/shiip/public-api/master-data/district`,
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/district?`,
         {
           params: {
             province_id: idProvince,
@@ -79,6 +79,7 @@ const UpdateNhanVien: React.FC = () => {
           },
         }
       );
+
       const districtOptions: Option[] = districtRes.data.data.map(
         (district: any) => ({
           value: district.DistrictID,
@@ -105,6 +106,7 @@ const UpdateNhanVien: React.FC = () => {
           },
         }
       );
+
       const wardOptions: Option[] = wardRes.data.data.map((ward: any) => ({
         value: ward.WardCode,
         label: ward.WardName,
@@ -120,7 +122,8 @@ const UpdateNhanVien: React.FC = () => {
       
       setLoadingForm(true);
       try {
-        const res = await request.get("nhan-vien/edit/" + id);
+        const res = await request.get("khach-hang/edit/" + id);
+        //fix
         fetchProvinces();
         fetchDistricts(res.data?.thanhPho);
         fetchWards(res.data?.quanHuyen);
@@ -149,7 +152,6 @@ const UpdateNhanVien: React.FC = () => {
         setLoadingForm(false);
       }
     };
-    
     getOne();
   }, [id]);
   
@@ -157,14 +159,14 @@ const UpdateNhanVien: React.FC = () => {
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc cập nhật nhân viên này không?",
+      content: "Bạn có chắc cập nhật khách hàng này không?",
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
         try {
           const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
           
-          const res = await request.put("nhan-vien/update/" + id, {
+          const res = await request.put("khach-hang/update/" + id, {
             hoVaTen: values.hoVaTen,
             canCuocCongDan: values.canCuocCongDan,
             ngaySinh: values.ngaySinh,
@@ -179,8 +181,8 @@ const UpdateNhanVien: React.FC = () => {
             trangThai: trangThai,
           });
           if (res.data) {
-            message.success("Cập nhật nhân viên thành công");
-            navigate("/admin/nhan-vien");
+            message.success("Cập nhật khách hàng thành công");
+            navigate("/admin/khach-hang");
             console.log(values.trangThai)
           } else {
             console.error("Phản hồi API không như mong đợi:", res);
@@ -190,7 +192,7 @@ const UpdateNhanVien: React.FC = () => {
             message.error(error.response.data.message);
           } else {
             console.error("Lỗi không xác định:", error);
-            message.error("Cập nhật nhân viên thất bại");
+            message.error("Cập nhật khách hàng thất bại");
           }
         }
       },
@@ -199,7 +201,7 @@ const UpdateNhanVien: React.FC = () => {
   
   return (
     <>
-      <Card title="CẬP NHẬT NHÂN VIÊN">
+      <Card title="CẬP NHẬT KHÁCH HÀNG">
         <Skeleton loading={loadingForm}>
           <Form
             labelCol={{ span: 8 }}
@@ -215,7 +217,7 @@ const UpdateNhanVien: React.FC = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập tên nhân viên!",
+                  message: "Vui lòng nhập tên khách hàng!",
                 },
               ]}
             >
@@ -370,4 +372,4 @@ const UpdateNhanVien: React.FC = () => {
   );
 };
 
-export default UpdateNhanVien;
+export default UpdateKhachHang;

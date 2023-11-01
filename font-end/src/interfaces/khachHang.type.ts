@@ -1,6 +1,6 @@
 import type { TablePaginationConfig } from "antd/es/table";
 import type { FilterValue } from "antd/es/table/interface";
-
+//
 export interface DataType {
   id: number;
   hoVaTen: string;
@@ -13,8 +13,8 @@ export interface DataType {
   };
   soDienThoai: string;
   email: string;
-  thanhPho: string;
-  quanHuyen: string;
+  thanhPho: number;
+  quanHuyen: number;
   phuongXa: string;
   diaChiCuThe: string;
   anhDaiDien: string;

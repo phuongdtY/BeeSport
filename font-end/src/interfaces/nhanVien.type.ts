@@ -13,8 +13,8 @@ export interface DataType {
   };
   soDienThoai: string;
   email: string;
-  thanhPho: string;
-  quanHuyen: string;
+  thanhPho: number;
+  quanHuyen: number;
   phuongXa: string;
   diaChiCuThe: string;
   anhDaiDien: string;
