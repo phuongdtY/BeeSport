@@ -240,8 +240,10 @@ const AddNV: React.FC = () => {
     console.log(value, selectedOptions);
   };
   return (
+    
     <Card title="THÊM NHÂN VIÊN">
       <Row>
+        
         <Col span={16}>
           <Form form={form} onFinish={onSubmit} {...formItemLayout}>
             <Form.Item
