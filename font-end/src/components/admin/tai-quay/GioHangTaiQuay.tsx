@@ -1,18 +1,5 @@
-import {
-  Button,
-  Card,
-  Col,
-  Divider,
-  Input,
-  Row,
-  Select,
-  Space,
-  Switch,
-} from "antd";
+import { Button, Card, Col, Divider, Row, Select, Space, Switch } from "antd";
 import React, { useState, useEffect } from "react";
-import { Table } from "antd";
-import type { ColumnsType, TableProps } from "antd/es/table";
-import request from "~/utils/request";
 import ThongTinGiaoHang from "./ThongTinGiaoHang";
 import TextArea from "antd/es/input/TextArea";
 import TableSanPham from "./TableSanPham";
