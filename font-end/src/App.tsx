@@ -26,11 +26,11 @@ import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
 import IndexVoucher from "./pages/admin/voucher/index";
 import AddVoucher from "./pages/admin/voucher/add";
 import UpdateVoucher from "./pages/admin/voucher/update";
-import Signin from "./pages/login/sign-in/Signin";
-import Signup from "./pages/login/sign-up/Singup";
-import Forgotpassword from "./pages/login/forgot-password/Forgotpassword";
+// import Signin from "./pages/login/sign-in/Signin";
+// import Signup from "./pages/login/sign-up/Singup";
+// import Forgotpassword from "./pages/login/forgot-password/Forgotpassword";
 import AddKH from "./pages/admin/khach-hang/add";
-import UpdateKhachHang from "./pages/admin/khach-hang/update";
+// import UpdateKhachHang from "./pages/admin/khach-hang/update";
 import IndexHoaDon from "./pages/admin/hoa-don";
 import IndexKichCo from "./pages/admin/kich-co";
 import AddKichCo from "./pages/admin/kich-co/add";
@@ -76,7 +76,7 @@ function App() {
         <Route path="hoa-don/:id" element={<DetailHoaDon />} />
         <Route path="khach-hang" element={<IndexKhachHang />} />
         <Route path="khach-hang/add" element={<AddKH />} />
-        <Route path="khach-hang/edit/:id" element={<UpdateKhachHang />} />
+        {/* <Route path="khach-hang/edit/:id" element={<UpdateKhachHang />} /> */}
       </Route>
     </Routes>
   );

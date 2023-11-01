@@ -101,8 +101,40 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
       dataIndex: "giaTien",
       key: "moTa",
       render: (item, record) => {
-        return record.giaTien;
+        // Định dạng giá tiền theo định dạng tiền tệ của Việt Nam
+        const formattedPrice = new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(record.giaTien);
+
+        return formattedPrice;
       },
+    },
+    {
+      title: "Loại đế",
+      dataIndex: "loaiDe",
+      key: "loaiDe",
+      render: (item, record) => {
+        return record.loaiDe.ten;
+      },
+    },
+    {
+      title: "Địa hình sân",
+      dataIndex: "diaHinhSan",
+      key: "diaHinhSan",
+      render: (item, record) => {
+        return record.diaHinhSan.ten;
+      },
+    },
+    {
+      title: "Hành động",
+      dataIndex: "",
+      key: "",
+      render: (item, record) => (
+        <Button type="primary" onClick={() => {}}>
+          Chọn
+        </Button>
+      ),
     },
   ];
 

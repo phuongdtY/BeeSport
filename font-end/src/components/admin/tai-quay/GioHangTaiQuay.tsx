@@ -23,9 +23,7 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-
-  useEffect(() => {
-    // Call your API to fetch the list of khach hang options
+  const loadSelectKhachHang = () => {
     request
       .get("khach-hang/list")
       .then((response) => {
@@ -33,6 +31,10 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
         setSelectKhachHangOptions(data);
       })
       .catch((error) => console.error(error));
+  };
+  useEffect(() => {
+    // Call your API to fetch the list of khach hang options
+    loadSelectKhachHang();
   }, []);
 
   const onChangeGiaoHang = (checked: boolean) => {
@@ -87,6 +89,7 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
                 onClick={showModal}
               />
               <ModalAddKhachHang
+                loadData={loadSelectKhachHang}
                 open={isModalVisible}
                 onCancel={handleCancel}
               />

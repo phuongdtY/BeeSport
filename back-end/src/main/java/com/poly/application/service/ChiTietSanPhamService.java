@@ -22,6 +22,6 @@ public interface ChiTietSanPhamService {
 
     void delete(Long id);
 
-    ChiTietSanPhamResponse update(Long id, UpdatedChiTietSanPhamRequest request);
+    void update(List<UpdatedChiTietSanPhamRequest> request);
 
 }
