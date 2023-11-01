@@ -6,7 +6,7 @@ import request from "~/utils/request";
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
 const initialItems = [
-  { label: "HD01", children: <GioHangTaiQuay />, key: "1" },
+  { label: "HD01", children: <GioHangTaiQuay id={44} />, key: "1" },
 ];
 
 const TaiQuay: React.FC = () => {
@@ -31,7 +31,7 @@ const TaiQuay: React.FC = () => {
       const newPanes = [...items];
       newPanes.push({
         label: response.data.ma,
-        children: <GioHangTaiQuay />,
+        children: <GioHangTaiQuay id={response.data.id} />,
         key: newActiveKey,
       });
       setItems(newPanes);

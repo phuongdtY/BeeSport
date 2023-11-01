@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import request from "~/utils/request";
-import { fetchData } from "~/api/apiNhanVien";
+import { fetchData } from "~/api/apiKhachHang";
 import {
   Space,
   Card,
@@ -37,7 +37,7 @@ import {
   DataType,
   TableParams,
   DescriptionItemProps,
-} from "~/interfaces/nhanVien.type";
+} from "~/interfaces/khachHang.type";
 
 const DescriptionItem: React.FC<DescriptionItemProps> = ({
   title,
@@ -103,12 +103,12 @@ const index: React.FC = () => {
       ellipsis: true,
       // render: (text) => <a>{text}</a>,
     },
-    {
-      title: "CMT/CCCD",
-      dataIndex: "canCuocCongDan",
-      key: "canCuocCongDan",
-      sorter: true,
-    },
+    // {
+    //   title: "CMT/CCCD",
+    //   dataIndex: "canCuocCongDan",
+    //   key: "canCuocCongDan",
+    //   sorter: true,
+    // },
     // {
     //   title: "Ngày Sinh",
     //   align: "center",
@@ -188,7 +188,7 @@ const index: React.FC = () => {
         const showModal = () => {
           setModal1Open(true);
           request
-            .get("nhan-vien/edit/" + id)
+            .get("khach-hang/edit/" + id)
             .then((res) => setContentModal(res.data))
             .catch((err) => console.log(err));
         };
@@ -211,7 +211,7 @@ const index: React.FC = () => {
           },
           {
             icon: <EditOutlined />,
-            label: <Link to={`/admin/nhan-vien/edit/${id}`}>Chỉnh sửa</Link>,
+            label: <Link to={`/admin/khach-hang/edit/${id}`}>Chỉnh sửa</Link>,
             key: "1",
           },
           {
@@ -221,7 +221,7 @@ const index: React.FC = () => {
             icon: <DeleteOutlined />,
             danger: true,
             label: (
-              <Link to={`/admin/nhan-vien/status/${id}`}>Ngưng kích hoạt</Link>
+              <Link to={`/admin/khach-hang/status/${id}`}>Ngưng kích hoạt</Link>
             ),
             key: "3",
           },
@@ -328,9 +328,9 @@ const index: React.FC = () => {
   };
   return (
     <>
-      <Card title="DANH SÁCH NHÂN VIÊN" bordered={true}>
+      <Card title="DANH SÁCH KHÁCH HÀNG" bordered={true}>
         <Modal
-          title="Chi Tiết Nhân Viên"
+          title="Chi Tiết Khách Hàng"
           style={{ top: 20 }}
           open={modal1Open}
           onOk={() => setModal1Open(false)}
@@ -431,9 +431,9 @@ const index: React.FC = () => {
             </Space>
           </Col>
           <Col span={3}>
-            <Link to="/admin/nhan-vien/add">
+            <Link to="/admin/khach-hang/add">
               <Button type="primary" icon={<UserAddOutlined />}>
-                Thêm nhân viên
+                Thêm khách hàng
               </Button>
             </Link>
           </Col>

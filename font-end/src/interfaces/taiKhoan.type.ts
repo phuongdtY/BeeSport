@@ -59,3 +59,7 @@ export interface DescriptionItemProps {
 export interface QuenMatKhauRequest {
   email: String;
 }
+export interface DangNhapRequest {
+  email: String;
+  matKhau:String;
+}

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -110,22 +111,37 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
     }
 
     @Override
-    public ChiTietSanPhamResponse update(Long id, UpdatedChiTietSanPhamRequest request) {
-        Optional<ChiTietSanPham> optional = repository.findById(id);
-        if (optional.isEmpty()) {
-            throw new NotFoundException("Chi tiết sản phẩm không tồn tại!");
+    public void update(List<UpdatedChiTietSanPhamRequest> request) {
+        for (UpdatedChiTietSanPhamRequest item : request) {
+            if (item.getId() == null) {
+                CreatedChiTietSanPhamRequest created = new CreatedChiTietSanPhamRequest();
+                created.setSoLuong(item.getSoLuong());
+                created.setGiaTien(item.getGiaTien());
+                created.setLoaiDe(item.getLoaiDe());
+                created.setDiaHinhSan(item.getDiaHinhSan());
+                created.setMauSac(item.getMauSac());
+                created.setKichCo(item.getKichCo());
+                created.setSanPham(item.getSanPham());
+                created.setTrangThai(CommonEnum.TrangThaiChiTietSanPham.ACTIVE);
+                ChiTietSanPham sanPham = mapper.convertCreateRequestToEntity(created);
+                repository.save(sanPham);
+            } else {
+                Optional<ChiTietSanPham> optional = repository.findById(item.getId());
+                if (optional.isEmpty()) {
+                    throw new NotFoundException("Chi tiết sản phẩm không tồn tại!");
+                }
+                ChiTietSanPham chiTietSanPham = optional.get();
+                chiTietSanPham.setSoLuong(item.getSoLuong());
+                chiTietSanPham.setGiaTien(item.getGiaTien());
+                chiTietSanPham.setLoaiDe(item.getLoaiDe());
+                chiTietSanPham.setDiaHinhSan(item.getDiaHinhSan());
+                chiTietSanPham.setMauSac(item.getMauSac());
+                chiTietSanPham.setKichCo(item.getKichCo());
+                chiTietSanPham.setSanPham(item.getSanPham());
+                chiTietSanPham.setTrangThai(item.getTrangThai());
+                mapper.convertEntityToResponse(repository.save(chiTietSanPham));
+            }
         }
-
-        ChiTietSanPham chiTietSanPham = optional.get();
-        chiTietSanPham.setSoLuong(request.getSoLuong());
-        chiTietSanPham.setGiaTien(request.getGiaTien());
-        chiTietSanPham.setLoaiDe(request.getLoaiDe());
-        chiTietSanPham.setDiaHinhSan(request.getDiaHinhSan());
-        chiTietSanPham.setMauSac(request.getMauSac());
-        chiTietSanPham.setKichCo(request.getKichCo());
-        chiTietSanPham.setSanPham(request.getSanPham());
-        chiTietSanPham.setTrangThai(request.getTrangThai());
-        return mapper.convertEntityToResponse(repository.save(chiTietSanPham));
     }
 
 }

@@ -15,7 +15,7 @@ import * as React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { QuenMatKhauRequest, DataType } from "~/interfaces/taiKhoan.type";
-import request from "~/utils/request";
+import {requestTimMatKhau} from "~/utils/request";
 const { confirm } = Modal;
 const add: React.FC = () => {
   const navigate = useNavigate();
@@ -30,12 +30,12 @@ const add: React.FC = () => {
       onOk: async () => {
         try {
           setLoading(true);
-          const response = await request.post("forgot-password", {
+          const response = await requestTimMatKhau.post("forgot-password", {
             email: values.email,
           });
           console.log("Response from API:", response); // In dữ liệu từ API
           message.success("Tìm lại mật khẩu thành công.Bạn hãy check mail");
-          // navigate("/admin/nhan-vien");
+          navigate("/sign-in");
         } catch (error) {
           console.log("Error:", error); // In lỗi ra để xác định lý do
           message.error("Có lỗi xảy ra khi tìm mật khẩu");

@@ -4,23 +4,50 @@ import ThongTinGiaoHang from "./ThongTinGiaoHang";
 import TextArea from "antd/es/input/TextArea";
 import TableSanPham from "./TableSanPham";
 import { PlusOutlined } from "@ant-design/icons";
+import request from "~/utils/request";
+import ModalAddKhachHang from "./ModalAddKhachHang";
 
-const GioHangTaiQuay: React.FC = () => {
+const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
   const [checked, setChecked] = useState(false);
-  const [selectKhachHang, setSelectKhachHang] = useState<string | undefined>(
-    undefined
-  );
-
+  const [selectKhachHangOptions, setSelectKhachHangOptions] = useState([]);
+  const [selectKhachHang, setSelectKhachHang] = useState<any>(null);
   const [selectVoucher, setSelectVoucher] = useState<string | undefined>(
     undefined
   );
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+  const loadSelectKhachHang = () => {
+    request
+      .get("khach-hang/list")
+      .then((response) => {
+        const data = response.data;
+        setSelectKhachHangOptions(data);
+      })
+      .catch((error) => console.error(error));
+  };
+  useEffect(() => {
+    // Call your API to fetch the list of khach hang options
+    loadSelectKhachHang();
+  }, []);
 
   const onChangeGiaoHang = (checked: boolean) => {
     setChecked(checked);
   };
 
   const onChangeKhachHang = (value: string) => {
-    setSelectKhachHang(value);
+    // Find the selected khachHang object from selectKhachHangOptions based on the value
+    const selectedKhachHang = selectKhachHangOptions.find(
+      (khachHang) => khachHang.id === value
+    );
+
+    setSelectKhachHang(selectedKhachHang);
   };
 
   const onChangeVoucher = (value: string) => {
@@ -39,7 +66,7 @@ const GioHangTaiQuay: React.FC = () => {
   return (
     <>
       <Row>
-        <Col span={12}>
+        <Col span={14}>
           <Card title="Thông tin khách hàng" style={{ marginRight: 10 }}>
             <Space.Compact block>
               <Select
@@ -51,22 +78,21 @@ const GioHangTaiQuay: React.FC = () => {
                 onChange={onChangeKhachHang}
                 onSearch={onSearch}
                 filterOption={filterOption}
-                options={[
-                  {
-                    value: "1",
-                    label: "0346544561",
-                  },
-                  {
-                    value: "2",
-                    label: "0374783335",
-                  },
-                  {
-                    value: "3",
-                    label: "0383329231",
-                  },
-                ]}
+                options={selectKhachHangOptions.map((khachHang) => ({
+                  value: khachHang.id,
+                  label: `${khachHang.hoVaTen} - ${khachHang.soDienThoai}`,
+                }))}
               />
-              <Button type="dashed" icon={<PlusOutlined />} />
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                onClick={showModal}
+              />
+              <ModalAddKhachHang
+                loadData={loadSelectKhachHang}
+                open={isModalVisible}
+                onCancel={handleCancel}
+              />
             </Space.Compact>
             <Divider />
             {/* Tên khách hàng */}
@@ -74,18 +100,22 @@ const GioHangTaiQuay: React.FC = () => {
               <>
                 <Row>
                   <Col span={5}>Tên khách hàng:</Col>
-                  <span style={{ fontWeight: "bold" }}>Dương Văn Cảnh</span>
+                  <span style={{ fontWeight: "bold" }}>
+                    {selectKhachHang.hoVaTen}
+                  </span>
                 </Row>
                 <br />
                 <Row>
                   <Col span={5}>Số điện thoại:</Col>
-                  <span style={{ fontWeight: "bold" }}>0346544561</span>
+                  <span style={{ fontWeight: "bold" }}>
+                    {selectKhachHang.soDienThoai}
+                  </span>
                 </Row>
                 <br />
                 <Row>
                   <Col span={5}>Email:</Col>
                   <span style={{ fontWeight: "bold" }}>
-                    canhdv281@gmail.com
+                    {selectKhachHang.email}
                   </span>
                 </Row>
                 <br />
@@ -100,17 +130,17 @@ const GioHangTaiQuay: React.FC = () => {
               </>
             )}
             <Divider />
-            <TableSanPham />
+            <TableSanPham id={id} />
           </Card>
         </Col>
-        <Col span={12}>
+        <Col span={10}>
           <Card>
             <Switch defaultChecked={checked} onChange={onChangeGiaoHang} /> Giao
             hàng
             <Divider />
             {checked ? (
               <>
-                <Card title="Thông tin nhận hàng" style={{ marginRight: 10 }}>
+                <Card title="Thông tin nhận hàng">
                   <ThongTinGiaoHang />
                 </Card>
                 <Divider />
@@ -148,20 +178,20 @@ const GioHangTaiQuay: React.FC = () => {
             </Row>
             {/* Tạm tính */}
             <Row>
-              <Col span={3}>
+              <Col span={5}>
                 <p>Tạm tính: </p>
               </Col>
-              <Col span={18}></Col>
+              <Col span={16}></Col>
               <Col span={3}>
                 <p>500.000</p>
               </Col>
             </Row>
             {/* Phí vận chuyển */}
             <Row>
-              <Col span={5}>
+              <Col span={7}>
                 <p>Phí vận chuyển: </p>
               </Col>
-              <Col span={16}></Col>
+              <Col span={14}></Col>
               <Col span={3}>
                 <p>50.000</p>
               </Col>
