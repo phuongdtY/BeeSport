@@ -295,7 +295,7 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
                       Tổng thành tiền
                     </Table.Summary.Cell>
                     <Table.Summary.Cell index={2}>
-                      {tongTien}
+                      {formatGiaTien(tongTien)}
                     </Table.Summary.Cell>
                   </Table.Summary.Row>
                   <Table.Summary.Row style={{ textAlign: "center" }}>
@@ -305,7 +305,7 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
                     ></Table.Summary.Cell>
                     <Table.Summary.Cell index={1}>Tiền ship</Table.Summary.Cell>
                     <Table.Summary.Cell index={2}>
-                      {tienShip}
+                      {formatGiaTien(tienShip)}
                     </Table.Summary.Cell>
                   </Table.Summary.Row>
                   <Table.Summary.Row style={{ textAlign: "center" }}>
@@ -315,7 +315,7 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
                     ></Table.Summary.Cell>
                     <Table.Summary.Cell index={1}>Tổng tiền</Table.Summary.Cell>
                     <Table.Summary.Cell index={2}>
-                      {tongTien + tienShip}
+                      {formatGiaTien(tongTien + tienShip)}
                     </Table.Summary.Cell>
                   </Table.Summary.Row>
                 </>
