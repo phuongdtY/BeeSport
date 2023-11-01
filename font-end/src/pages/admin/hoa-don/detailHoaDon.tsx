@@ -40,6 +40,7 @@ import DiaChiComponent from "./diaChiModal";
 import HoaDonChiTietComponent from "./hoaDonChiTietModal";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import ExportHoaDonPDF from "./exportHoaDonPDF";
+import { formatGiaTien } from "~/utils/formatResponse";
 
 const optionPrintPDF: Options = {
   filename: "hoa-don.pdf",
@@ -78,6 +79,7 @@ const detailHoaDon: React.FC = () => {
   const [diaChiThongTin, setDiaChiThongTin] = useState(data?.diaChiNguoiNhan);
   const [phiShipThongTin, setphiShipThongTin] = useState(data?.phiShip);
   const [tongTien, setTongTien] = useState(data?.tongTien);
+  const [idHoaDonTamThoi, setIdHoaDonTamThoi] = useState(data?.id);
   const columns: ColumnsType<DataTypeHoaDonChiTiet> = [
     {
       title: "STT",
@@ -116,7 +118,7 @@ const detailHoaDon: React.FC = () => {
     },
     {
       title: "Đơn giá",
-      dataIndex: "donGia",
+      dataIndex: "donGiaFromat",
       key: "donGia",
       align: "center",
       sorter: true,
@@ -273,6 +275,7 @@ const detailHoaDon: React.FC = () => {
       setListHoaDonChiTiet(res.data?.hoaDonChiTietResponsePage.content);
       setLoadingTable(false);
       setTongTien(res.data?.hoaDonResponse.tongTien);
+      setIdHoaDonTamThoi(res.data.hoaDonResponse.id);
     } catch (error) {
       console.log(error);
 
@@ -498,7 +501,8 @@ const detailHoaDon: React.FC = () => {
       ...item,
       maMauSac: item.chiTietSanPham.mauSac.ma,
       soKichCo: item.chiTietSanPham.kichCo.kichCo,
-      thanhTien: Number(item.soLuong) * Number(item.donGia),
+      donGiaFromat: formatGiaTien(item.donGia),
+      thanhTien: formatGiaTien(Number(item.soLuong) * Number(item.donGia)),
     }));
   };
   // tính tổng tiền của hóa đơn đó cần trả
@@ -599,6 +603,9 @@ const detailHoaDon: React.FC = () => {
   const someFunction = () => {4
     console.log("Button clicked!");
   };
+  const onSuccess = () => {
+    setLoadingTable(false);
+  };
   return (
     <>
       <Card title="Hóa đơn chi tiết">
@@ -663,12 +670,12 @@ const detailHoaDon: React.FC = () => {
                     </Form.Item>
                     <Form.Item name="phiShip" label="Phí ship">
                       <div style={{ width: "190px" }}>
-                        <span>{phiShipThongTin}</span>
+                        <span>{formatGiaTien(Number(phiShipThongTin))}</span>
                       </div>
                     </Form.Item>
                     <Form.Item name="tongTien" label="Tổng tiền">
                       <div style={{ width: "190px" }}>
-                        <span>{tongTien}</span>
+                        <span>{formatGiaTien(tongTien)}</span>
                       </div>
                     </Form.Item>
                     <Form.Item>
@@ -744,6 +751,9 @@ const detailHoaDon: React.FC = () => {
       <HoaDonChiTietComponent
         open={sanPhamOpen}
         onCancel={handleCancelSanPham}
+        idHoaDon={idHoaDonTamThoi}
+        setLoading={setLoadingTable}
+        onSuccess={onSuccess}
       />
       <ExportHoaDonPDF open={hoaDonOpen} onCancel={handleCancelExportHoaDon} id={data?.id} />
     </>

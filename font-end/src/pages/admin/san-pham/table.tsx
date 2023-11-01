@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Alert, Button, InputNumber, Space, Table, Tooltip } from "antd";
 import type { TableRowSelection } from "antd/es/table/interface";
-import { formatCurrency } from "~/utils/formatResponse";
+import { formatGiaTienVND } from "~/utils/formatResponse";
 import KichCoModal from "./KichCoModal";
 import {
   BgColorsOutlined,
@@ -213,7 +213,7 @@ function TableSanPham({
             style={{ width: "100%" }}
             min={0}
             step={1000}
-            formatter={(value) => `${formatCurrency(value)}`}
+            formatter={(value) => `${formatGiaTienVND(value)}`}
             parser={(value) => value!.replace(/\D/g, "")}
             onChange={(value) => setGiaTien(value)}
           />
@@ -276,7 +276,7 @@ function TableSanPham({
                   style={{ width: "100%" }}
                   min={0}
                   step={1000}
-                  formatter={(value) => `${formatCurrency(value)}`}
+                  formatter={(value) => `${formatGiaTienVND(value)}`}
                   parser={(value) => value!.replace(/\D/g, "")}
                   onChange={(newGiaTien) =>
                     handleEditGiaTien(record.key, newGiaTien)
