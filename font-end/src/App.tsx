@@ -31,6 +31,7 @@ import UpdateKichCo from "./pages/admin/kich-co/update";
 import DetailHoaDon from "./pages/admin/hoa-don/detailHoaDon";
 import DetailSanPham from "./pages/shop/san-pham/detail";
 import BanHangTaiQuay from "./pages/admin/ban-hang-tai-quay/BanHangTaiQuay.tsx";
+import UpdateSanPham from "./pages/admin/san-pham/UpdateSanPham.tsx";
 
 function App() {
   return (
@@ -49,9 +50,10 @@ function App() {
         <Route path="mau-sac/update/:id" element={<UpdateMauSac />} />
         <Route path="san-pham" element={<IndexSanPham />} />
         <Route path="san-pham/add" element={<AddSanPham />} />
+        <Route path="san-pham/update/:id" element={<UpdateSanPham />} />
         <Route path="thuong-hieu" element={<IndexThuongHieu />} />
         <Route path="thuong-hieu/add" element={<AddThuongHieu />} />
-        <Route path="thuong-hieu/update/:id" element={<UpdateThuongHieu />} />
+        <Route path="thuong-hieu/update/:id" element={<UpdateSanPham />} />
         <Route path="dia-hinh-san" element={<IndexDiaHinhSan />} />
         <Route path="dia-hinh-san/add" element={<AddDiaHinhSan />} />
         <Route path="dia-hinh-san/update/:id" element={<UpdateDiaHinhSan />} />

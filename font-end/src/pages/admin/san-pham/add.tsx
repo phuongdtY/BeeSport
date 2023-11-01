@@ -1,30 +1,15 @@
+import { ExclamationCircleFilled, PlusOutlined } from "@ant-design/icons";
 import {
-  CloseOutlined,
-  DeleteOutlined,
-  PictureOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
-import {
-  Alert,
   Button,
   Card,
-  Col,
   ColorPicker,
-  Divider,
   Form,
   Input,
-  InputNumber,
   Modal,
-  Row,
   Select,
   Space,
-  Table,
-  Tag,
-  Tooltip,
   message,
 } from "antd";
-import TextArea from "antd/es/input/TextArea";
-import type { CustomTagProps } from "rc-select/lib/BaseSelect";
 import * as React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { DataType as DataTypeTH } from "~/interfaces/thuongHieu.type";
@@ -34,34 +19,49 @@ import { DataType as DataTypeDHS } from "~/interfaces/diaHinhSan.type";
 import { DataType as DataTypeMS } from "~/interfaces/mauSac.type";
 import request from "~/utils/request";
 import { Color } from "antd/es/color-picker";
-import { ColumnsType } from "antd/es/table";
-import { json } from "react-router-dom";
-import { DataType } from "~/interfaces/ctsp.type";
-import TableSanPham from "./table";
-import { formatCurrency } from "~/utils/formatResponse";
+
+import TableSanPham from "./TableAddSanPham";
+import { DataTypeSanPham } from "~/interfaces/sanPham.type";
+import ModalAddSanPham from "./ModalAddSanPham";
 
 const AddSanPham: React.FC = () => {
   const [openThuongHieu, setOpenThuongHieu] = useState(false);
   const [openLoaiDe, setOpenLoaiDe] = useState(false);
+  const [openModalSP, setOpenModalSP] = useState(false);
   const [openKichCo, setOpenKichCo] = useState(false);
   const [openMauSac, setOpenMauSac] = useState(false);
   const [openDiaHinhSan, setOpenDiaHinhSan] = useState(false);
   const [form] = Form.useForm();
-  const [dataTH, setDataTH] = useState<DataTypeTH[]>([]);
+  const [dataSP, setDataSP] = useState<DataTypeTH[]>([]);
   const [dataLD, setDataLD] = useState<DataTypeLD[]>([]);
   const [dataKC, setDataKC] = useState<DataTypeKC[]>([]);
   const [dataDHS, setDataDHS] = useState<DataTypeDHS[]>([]);
   const [dataMS, setDataMS] = useState<DataTypeMS[]>([]);
-  const [selectedTH, setSelectedTH] = useState<string | undefined>(undefined);
+  const [selectedSP, setSelectedSP] = useState<string | undefined>(undefined);
   const [selectedLD, setSelectedLD] = useState<string | undefined>(undefined);
   const [selectedKC, setSelectedKC] = useState<string | undefined>(undefined);
   const [selectedDHS, setSelectedDHS] = useState<string | undefined>(undefined);
   const [selectedMS, setSelectedMS] = useState<string | undefined>(undefined);
+  const [selectedSanPham, setSelectedSanPham] = useState<number>();
   const [selectedLoaiDe, setSelectedLoaiDe] = useState<string[]>([]);
   const [selectedDiaHinhSan, setSelectedDiaHinhSan] = useState<string[]>([]);
   const [selectedMauSac, setSelectedMauSac] = useState<string[]>([]);
   const [selectedKichCo, setSelectedKichCo] = useState<string[]>([]);
+  const [fakeData, setFakeData] = useState<DataTypeSanPham[]>([]);
+  const { confirm } = Modal;
 
+  const addSanPham = (newData) => {
+    fetchDataSP();
+    form.setFieldsValue({
+      sanPham: newData.id,
+    });
+  };
+  const offModalSP = () => {
+    setOpenModalSP(false);
+  };
+  const handledSanPham = (value: number) => {
+    setSelectedSanPham(value);
+  };
   const handleLoaiDe = (value: string[]) => {
     setSelectedLoaiDe(value);
   };
@@ -76,10 +76,10 @@ const AddSanPham: React.FC = () => {
   };
 
   // api gọi thương hiệu
-  const fetchDataTH = async () => {
+  const fetchDataSP = async () => {
     try {
-      const res = await request.get("thuong-hieu");
-      setDataTH(res.data.content);
+      const res = await request.get("san-pham/null-ctsp");
+      setDataSP(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -125,45 +125,22 @@ const AddSanPham: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchDataTH();
-    form.setFieldsValue({
-      thuongHieu: selectedTH,
-    });
-  }, [selectedTH]);
-
-  useEffect(() => {
+    fetchDataSP();
+    fetchDataMS();
+    fetchDataKC();
+    fetchDataDHS();
     fetchDataLD();
     form.setFieldsValue({
       loaiDe: selectedLD,
-    });
-  }, [selectedLD]);
-
-  useEffect(() => {
-    fetchDataDHS();
-    form.setFieldsValue({
       diaHinhSan: selectedDHS,
     });
-  }, [selectedDHS]);
-
-  useEffect(() => {
-    fetchDataKC();
-    form.setFieldsValue({
-      kichCo: selectedKC,
-    });
-  }, [selectedKC]);
-
-  useEffect(() => {
-    fetchDataMS();
-    form.setFieldsValue({
-      mauSac: selectedMS,
-    });
-  }, [selectedMS]);
+  }, [selectedLD, selectedDHS]);
 
   const onCreateTH = async (values: any) => {
     try {
       const res = await request.post("thuong-hieu", values);
-      fetchDataTH();
-      setSelectedTH(res.data.id);
+      // fetchDataTH();
+      setSelectedSP(res.data.id);
       message.success("Thêm thương hiệu thành công");
     } catch (error) {
       console.log(error);
@@ -223,23 +200,30 @@ const AddSanPham: React.FC = () => {
     }
     setOpenMauSac(false);
   };
-
+  const handleFakeDataChange = (newFakeData) => {
+    setFakeData(newFakeData);
+  };
   const onFinish = async (values: any) => {
-    console.log(fakeData);
-
-    try {
-      const response = await request.post("/chi-tiet-san-pham", fakeData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      console.log("Response from server:", response.data);
-      message.success("Thêm list sản phẩm thành công");
-    } catch (error) {
-      message.error("Thêm list sản phẩm thất bại");
-      console.error(error);
-    }
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc thêm sản phẩm này không?",
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          await request.post("/chi-tiet-san-pham", fakeData, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          message.success("Thêm list sản phẩm thành công");
+        } catch (error) {
+          message.error("Thêm list sản phẩm thất bại");
+          console.log(error);
+        }
+      },
+    });
   };
 
   return (
@@ -252,69 +236,42 @@ const AddSanPham: React.FC = () => {
         form={form}
       >
         <Card title="THÊM SẢN PHẨM">
-          <Row>
-            <Col span={4}></Col>
-            <Col span={14}>
-              <Form.Item
-                name="ten"
-                label="Tên sản phẩm"
-                rules={[
-                  {
-                    required: true,
-                    whitespace: true,
-                    message: "Vui lòng nhập tên sản phẩm!",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-
-              {/* Thương hiệu combobox */}
-              <Space.Compact block>
-                <Form.Item
-                  style={{ width: "100%" }}
-                  name="thuongHieu"
-                  label="Thương hiệu"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn thương hiệu!",
-                    },
-                  ]}
-                >
-                  <Select
-                    allowClear
-                    showSearch
-                    placeholder="Chọn thương hiệu"
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      (option?.label ?? "").toLowerCase().includes(input)
-                    }
-                    filterSort={(optionA, optionB) =>
-                      (optionA?.label ?? "")
-                        .toLowerCase()
-                        .localeCompare((optionB?.label ?? "").toLowerCase())
-                    }
-                    options={dataTH.map((values: DataTypeTH) => ({
-                      label: values.ten,
-                      value: values.id,
-                    }))}
-                  />
-                </Form.Item>
-                <Button
-                  type="dashed"
-                  icon={<PlusOutlined />}
-                  onClick={() => {
-                    setOpenThuongHieu(true);
-                  }}
-                />
-              </Space.Compact>
-              <Form.Item name="moTa" label="Mô tả">
-                <TextArea />
-              </Form.Item>
-            </Col>
-            <Col span={4}></Col>
-          </Row>
+          {/* Thương hiệu combobox */}
+          <Space.Compact block>
+            <Form.Item
+              style={{ width: "100%" }}
+              name="sanPham"
+              label="Tên Sản Phẩm"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn tên sản phẩm!",
+                },
+              ]}
+            >
+              <Select
+                allowClear
+                showSearch
+                onChange={handledSanPham}
+                placeholder="Chọn sản phẩm..."
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input)
+                }
+                options={dataSP.map((values: DataTypeTH) => ({
+                  label: values.ten,
+                  value: values.id,
+                }))}
+              />
+            </Form.Item>
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setOpenModalSP(true);
+              }}
+            />
+          </Space.Compact>
           <ModalThuongHieu
             open={openThuongHieu}
             onCreate={onCreateTH}
@@ -322,10 +279,7 @@ const AddSanPham: React.FC = () => {
               setOpenThuongHieu(false);
             }}
           />
-        </Card>
 
-        {/* chi tiết sản phẩm */}
-        <Card title="Chi tiết sản phẩm">
           {/* loại đế */}
           <Space.Compact block>
             <Form.Item
@@ -472,8 +426,10 @@ const AddSanPham: React.FC = () => {
             />
           </Space.Compact>
           <TableSanPham
+            onFakeDataChange={handleFakeDataChange}
             dataKC={dataKC}
             dataMS={dataMS}
+            selectedSanPham={selectedSanPham}
             selectedDiaHinhSan={selectedDiaHinhSan}
             selectedLoaiDe={selectedLoaiDe}
             selectedKichCo={selectedKichCo}
@@ -515,6 +471,11 @@ const AddSanPham: React.FC = () => {
           </Button>
         </Form.Item>
       </Form>
+      <ModalAddSanPham
+        addSanPham={addSanPham}
+        openModal={openModalSP}
+        closeModal={offModalSP}
+      />
     </>
   );
 };
