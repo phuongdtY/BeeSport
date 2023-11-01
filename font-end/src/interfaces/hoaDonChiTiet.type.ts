@@ -1,7 +1,7 @@
 export interface DataType {
   id: number;
   soLuong: string;
-  donGia: string;
+  donGia: number;
   ghiChu: string;
   ngayTao: string;
   ngaySua: string;
@@ -160,8 +160,6 @@ export interface DataParams {
   page: number;
   pageSize: number;
   searchText?: string;
-  loaiHoaDon?: string;
-  trangThaiHoaDon?: string;
   sortField?: string;
   sortOrder?: string;
 }

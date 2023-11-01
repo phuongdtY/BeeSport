@@ -1,4 +1,8 @@
-import { DeleteOutlined, ExclamationCircleFilled } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  ExclamationCircleFilled,
+  SearchOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -7,16 +11,16 @@ import {
   Input,
   Modal,
   Row,
-  Select,
   Skeleton,
   Space,
   Table,
+  TablePaginationConfig,
   Tag,
   Tooltip,
   message,
 } from "antd";
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   DataType as DataTypeHoaDon,
   UpdatedRequest,
@@ -33,6 +37,9 @@ import { ColumnsType } from "antd/es/table";
 import TextArea from "antd/es/input/TextArea";
 import axios from "axios";
 import DiaChiComponent from "./diaChiModal";
+import HoaDonChiTietComponent from "./hoaDonChiTietModal";
+import { FilterValue, SorterResult } from "antd/es/table/interface";
+import ExportHoaDonPDF from "./exportHoaDonPDF";
 
 const optionPrintPDF: Options = {
   filename: "hoa-don.pdf",
@@ -53,17 +60,14 @@ const downloadPdf = () => generatePDF(getTargetElement, optionPrintPDF);
 
 const detailHoaDon: React.FC = () => {
   const [diaChiOpen, setDiaChiOpen] = useState(false);
-  const showDiaChiModal = () => {
-    setDiaChiOpen(true);
-  };
-  const handleCancel = () => {
-    setDiaChiOpen(false);
-  };
+  const [sanPhamOpen, setSanPhamOpen] = useState(false);
+  const [hoaDonOpen, setHoaDonOpen] = useState(false);
   const [provinces, setProvinces] = useState<Option[]>([]);
   const [districts, setDistricts] = useState<Option[]>([]);
   const [wards, setWards] = useState<Option[]>([]);
   const navigate = useNavigate();
   const [loadingForm, setLoadingForm] = useState(false);
+  const [loadingTable, setLoadingTable] = useState(false);
   const [form] = Form.useForm();
   let { id } = useParams();
   const [data, setData] = useState<DataTypeHoaDon | null>(null);
@@ -156,6 +160,12 @@ const detailHoaDon: React.FC = () => {
     },
   ];
   const [showExportButton, setShowExportButton] = useState(true);
+  const [totalElements, setTotalElements] = useState(0);
+  const [params, setParams] = useState<DataParams>({
+    page: 1,
+    pageSize: 10,
+  });
+
   // API địa chỉ
   const fetchProvinces = async () => {
     try {
@@ -181,78 +191,6 @@ const detailHoaDon: React.FC = () => {
       console.error(error);
     }
   };
-
-  const getParams = (params: DataParams) => ({
-    page: listHoaDonChiTiet.length !== 0 ? params.page : 1,
-    pageSize: params.pageSize,
-    searchText: params.searchText,
-    loaiHoaDon: params.loaiHoaDon,
-    trangThaiHoaDon: params.trangThaiHoaDon,
-    sortField: params.sortField,
-    sortOrder: params.sortOrder,
-  });
-
-  const deleteRequest = async (id: number) => {
-    confirm({
-      title: "Xác Nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc xóa sản phẩm này không?",
-      okText: "OK",
-      cancelText: "Hủy",
-      onOk: async () => {
-        try {
-          setLoadingForm(true);
-          const res = await request.delete(`hoa-don/${id}`);
-          setLoadingForm(false);
-          fetchHoaDonData();
-          if (res.data) {
-            message.success("Xóa sản phẩm thành công");
-          } else {
-            console.error("Phản hồi API không như mong đợi:", res);
-          }
-        } catch (error: any) {
-          if (error.response && error.response.status === 400) {
-            message.error(error.response.data.message);
-          } else {
-            console.error("Lỗi không xác định:", error);
-            message.error("Xóa sản phẩm thất bại");
-          }
-        }
-      },
-    });
-  };
-
-  const handleClickDelete = async (id: number) => {
-    deleteRequest(id);
-  };
-
-  const fetchHoaDonData = async () => {
-    setLoadingForm(true);
-    try {
-      const res = await request.get("hoa-don/" + id);
-      form.setFieldsValue({
-        diaChiNguoiNhan: res.data?.diaChiNguoiNhan,
-        emailNguoiNhan: res.data?.emailNguoiNhan,
-        sdtNguoiNhan: res.data?.sdtNguoiNhan,
-        ghiChu: res.data?.ghiChu,
-      });
-      setData(res.data);
-      setOrderStatus(res.data?.trangThaiHoaDon);
-      setDiaChiThongTin(res.data?.diaChiNguoiNhan);
-      setphiShipThongTin(res.data?.phiShip);
-      setListHoaDonChiTiet(res.data.hoaDonChiTietList);
-      setLoadingForm(false);
-      setTongTien(res.data?.tongTien);
-    } catch (error) {
-      console.log(error);
-      setLoadingForm(false);
-    }
-  };
-  useEffect(() => {
-    fetchHoaDonData();
-    fetchProvinces();
-  }, [id]);
-
   const fetchDistricts = async (idProvince: string) => {
     try {
       const districtRes = await axios.get(
@@ -305,14 +243,133 @@ const detailHoaDon: React.FC = () => {
       console.error(error);
     }
   };
+  // API hóa đơn theo đối tượng
+  const getParams = (params: DataParams) => ({
+    page: listHoaDonChiTiet.length !== 0 ? params.page : 1,
+    pageSize: params.pageSize,
+    searchText: params.searchText,
+    sortField: params.sortField,
+    sortOrder: params.sortOrder,
+  });
+  const fetchHoaDonData = async () => {
+    setLoadingTable(true);
+    try {
+      const res = await request.get("hoa-don/test-hoa-don/" + id, {
+        params: {
+          ...getParams(params),
+        },
+      });
+      form.setFieldsValue({
+        diaChiNguoiNhan: res.data?.hoaDonResponse.diaChiNguoiNhan,
+        emailNguoiNhan: res.data?.hoaDonResponse.emailNguoiNhan,
+        sdtNguoiNhan: res.data?.hoaDonResponse.sdtNguoiNhan,
+        ghiChu: res.data?.hoaDonResponse.ghiChu,
+      });
+      setTotalElements(res.data?.hoaDonChiTietResponsePage.totalElements);
+      setData(res.data?.hoaDonResponse);
+      setOrderStatus(res.data?.hoaDonResponse.trangThaiHoaDon);
+      setDiaChiThongTin(res.data?.hoaDonResponse.diaChiNguoiNhan);
+      setphiShipThongTin(res.data?.hoaDonResponse.phiShip);
+      setListHoaDonChiTiet(res.data?.hoaDonChiTietResponsePage.content);
+      setLoadingTable(false);
+      setTongTien(res.data?.hoaDonResponse.tongTien);
+    } catch (error) {
+      console.log(error);
 
+      setLoadingTable(false);
+    }
+  };
+  const handleSearch = (value: string) => {
+    setParams({
+      ...params,
+      searchText: value,
+    });
+    console.log(value);
+  };
+
+  const onChangeTable = (
+    pagination: TablePaginationConfig,
+    filters: Record<string, FilterValue | null>,
+    sorter: SorterResult<DataTypeHoaDonChiTiet> | any
+  ) => {
+    filters;
+    const page = pagination.current !== undefined ? pagination.current : 1;
+    const pageSize =
+      pagination.pageSize !== undefined ? pagination.pageSize : 10;
+    setParams({
+      ...params,
+      page: page,
+      pageSize: pageSize,
+      sortField: sorter.field,
+      sortOrder: sorter.order,
+    });
+  };
+  // đóng mở modal địa chỉ hóa đơn
+  const showDiaChiModal = () => {
+    setDiaChiOpen(true);
+  };
+  const handleCancel = () => {
+    setDiaChiOpen(false);
+  };
+  // đóng mở modal thêm sản phẩm
+  const showSanPhamModal = () => {
+    setSanPhamOpen(true);
+  };
+  const handleCancelSanPham = () => {
+    setSanPhamOpen(false);
+  };
+  // đóng mở modal export hóa đơn
+  const showExportHoaDonModal = () => {
+    setHoaDonOpen(true);
+  };
+  const handleCancelExportHoaDon = () => {
+    setHoaDonOpen(false);
+  };
+  // xử lý theo handle
+  const deleteRequest = async (id: number) => {
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc xóa sản phẩm này không?",
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          setLoadingTable(true);
+          const res = await request.delete(`hoa-don/${id}`);
+          setLoadingTable(false);
+          fetchHoaDonData();
+          if (res.data) {
+            message.success("Xóa sản phẩm thành công");
+          } else {
+            console.error("Phản hồi API không như mong đợi:", res);
+          }
+        } catch (error: any) {
+          if (error.response && error.response.status === 400) {
+            message.error(error.response.data.message);
+          } else {
+            console.error("Lỗi không xác định:", error);
+            message.error("Xóa sản phẩm thất bại");
+          }
+        }
+      },
+    });
+  };
+  const handleClickDelete = async (id: number) => {
+    deleteRequest(id);
+  };
   const handleProvinceChange = (provinceId: string) => {
     fetchDistricts(provinceId);
   };
   const handleDistrictChange = (districtId: string) => {
     fetchWards(districtId);
   };
-
+  // load dữ liệu useEffect
+  useEffect(() => {
+    fetchHoaDonData();
+    fetchProvinces();
+  }, [params]);
+  // cập nhật hóa đơn
   const onFinish = (values: UpdatedRequest) => {
     confirm({
       title: "Xác Nhận",
@@ -351,22 +408,19 @@ const detailHoaDon: React.FC = () => {
       },
     });
   };
-
+  // lấy tên của địa chỉ và cập nhật địa chỉ
   const getProvinceLabelFromId = (id: number | null | undefined) => {
     const province = provinces.find((p) => p.value === id);
     return province?.label;
   };
-
   const getDistrictLabelFromId = (id: number | null | undefined) => {
     const district = districts.find((d) => d.value === id);
     return district?.label;
   };
-
   const getWardLabelFromId = (id: number | null | undefined) => {
     const ward = wards.find((w) => w.value === id);
     return ward?.label;
   };
-
   const onUpdateDiaChi = async (value: UpdateDiaChiHoaDon) => {
     const provinceLabel = getProvinceLabelFromId(value.thanhPho);
     const districtLabel = getDistrictLabelFromId(value.quanHuyen);
@@ -438,7 +492,6 @@ const detailHoaDon: React.FC = () => {
       }
     }
   };
-
   // hiển thị danh sách sản phẩm trong cột
   const dataSourceDanhSachSanPham = () => {
     return listHoaDonChiTiet?.map((item) => ({
@@ -459,21 +512,18 @@ const detailHoaDon: React.FC = () => {
         .reduce((sum, item) => sum + item.thanhTien, 0) + tienShip
     );
   };
-
   // trạng thái của hóa đơn xử lý button
   const confirmedStatus = {
     ten: "CONFIRMED",
     moTa: "Đã xác nhận",
     mauSac: "success",
   };
-
   const shipingStatus = {
     ten: "SHIPPING",
     moTa: "Đang vận chuyển",
     mauSac: "geekblue",
   };
-
-  // xử lý button xác nhận
+  // xử lý button xác nhận và vận chuyển
   const handleConfirm = async (values: UpdatedRequest) => {
     confirm({
       title: "Xác Nhận",
@@ -486,16 +536,17 @@ const detailHoaDon: React.FC = () => {
         try {
           const res = await request.put("hoa-don/" + id, {
             ma: data?.ma,
-            diaChiNguoiNhan: values.diaChiNguoiNhan,
+            diaChiNguoiNhan: data?.diaChiNguoiNhan,
             emailNguoiNhan: values.emailNguoiNhan,
             ghiChu: values.ghiChu,
             trangThaiHoaDon: "CONFIRMED",
             loaiHoaDon: data?.loaiHoaDon.ten,
             nguoiNhan: data?.nguoiNhan,
-            sdtNguoiNhan: data?.sdtNguoiNhan,
+            sdtNguoiNhan: values.sdtNguoiNhan,
             phiShip: data?.phiShip,
             tongTien: data?.tongTien,
           });
+          setLoadingForm(false);
           if (res.data) {
             message.success("Cập nhật hóa đơn thành công");
           } else {
@@ -512,7 +563,6 @@ const detailHoaDon: React.FC = () => {
       },
     });
   };
-
   const handleDeliver = async (values: UpdatedRequest) => {
     if (orderStatus?.ten === "CONFIRMED") {
       setShowExportButton(false);
@@ -542,12 +592,13 @@ const detailHoaDon: React.FC = () => {
           message.error("Cập nhật hóa đơn thất bại");
         }
       }
-      downloadPdf();
+      // downloadPdf();
       setOrderStatus(shipingStatus);
     }
   };
-
-  //
+  const someFunction = () => {4
+    console.log("Button clicked!");
+  };
   return (
     <>
       <Card title="Hóa đơn chi tiết">
@@ -559,11 +610,13 @@ const detailHoaDon: React.FC = () => {
             layout="horizontal"
             form={form}
           >
-            <div id="pdfReaderHoaDon">
-              <Card
-                title={"Thông tin người mua"}
-                style={{ marginBottom: "5px" }}
-              >
+            <div>
+              <Card style={{ marginBottom: "5px" }}>
+                <Row>
+                  <Col span={12}>
+                    <h3>Thông tin người mua</h3>
+                  </Col>
+                </Row>
                 <Row>
                   <Col span={10}>
                     <Form.Item name="ma" label="Mã hóa đơn">
@@ -602,17 +655,6 @@ const detailHoaDon: React.FC = () => {
                         <Button onClick={showDiaChiModal}>Tùy chỉnh</Button>
                       </Space>
                     </Form.Item>
-                    <DiaChiComponent
-                      open={diaChiOpen}
-                      onUpdate={onUpdateDiaChi}
-                      onCancel={handleCancel}
-                      provinces={provinces}
-                      districts={districts}
-                      wards={wards}
-                      onProvinceChange={handleProvinceChange}
-                      onDistrictChange={handleDistrictChange}
-                      fee={Number(phiShipThongTin)}
-                    />
                     <Form.Item name="emailNguoiNhan" label="Email người nhận">
                       <Input />
                     </Form.Item>
@@ -643,31 +685,67 @@ const detailHoaDon: React.FC = () => {
                         {/* )} */}
 
                         {/* {orderStatus?.ten === "CONFIRMED" &&
-                          showExportButton && (
-                            <Button
-                              type="primary"
-                              onClick={async () => {
-                                await handleDeliver(form.getFieldsValue());
-                              }}
-                            >
-                              Export PDF
-                            </Button>
-                          )} */}
+                          showExportButton && ( */}
+                        <Button type="primary" onClick={showExportHoaDonModal}>
+                          Export PDF
+                        </Button>
+
+                        {/* )} */}
                       </Space>
                     </Form.Item>
                   </Col>
                 </Row>
               </Card>
-              <Card title={"Danh sách sản phẩm"}>
+              <Card>
+                <Row>
+                  <Space direction="horizontal">
+                    <h3 style={{ width: "200px" }}>Danh sách sản phẩm</h3>
+                    <Input
+                      onChange={(e) => handleSearch(e.target.value)}
+                      placeholder="Tìm kiếm theo Tên..."
+                      style={{ width: "200px" }}
+                      allowClear
+                      prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
+                    />
+                    <Button onClick={showSanPhamModal}>Thêm sản phẩm</Button>
+                  </Space>
+                </Row>
                 <Table
+                  pagination={{
+                    pageSizeOptions: ["1", "5", "10"],
+                    showSizeChanger: true,
+                    total: totalElements,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} of ${total} items`,
+                  }}
                   columns={columns}
                   dataSource={dataSourceDanhSachSanPham()}
+                  onChange={onChangeTable}
+                  loading={loadingTable}
+                  showSorterTooltip={false}
                 />
               </Card>
             </div>
           </Form>
         </Skeleton>
       </Card>
+      {/* Chỗ để modal */}
+      <DiaChiComponent
+        open={diaChiOpen}
+        onUpdate={onUpdateDiaChi}
+        onCancel={handleCancel}
+        provinces={provinces}
+        districts={districts}
+        wards={wards}
+        onProvinceChange={handleProvinceChange}
+        onDistrictChange={handleDistrictChange}
+        fee={Number(phiShipThongTin)}
+      />
+      <HoaDonChiTietComponent
+        open={sanPhamOpen}
+        onCancel={handleCancelSanPham}
+      />
+      <ExportHoaDonPDF open={hoaDonOpen} onCancel={handleCancelExportHoaDon} id={data?.id} />
     </>
   );
 };

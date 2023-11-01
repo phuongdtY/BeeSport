@@ -1,50 +1,70 @@
-import { Modal, Form, Select, Col, Row, Input, Space } from "antd";
+import { Modal, Table, message } from "antd";
+import { DataType as DataTypeCtsp } from "~/interfaces/ctsp.type";
+import { ColumnsType } from "antd/es/table";
+import request from "~/utils/request";
+import { useEffect, useState } from "react";
 
-
-interface DiaChiProps {
+interface HoaDonChiTietProps {
   open: boolean;
-  fee: number;
-  onUpdate: (values: any) => void;
-  onCancel: () => void;
-
-  onProvinceChange: (value: string) => void;
-  onDistrictChange: (value: string) => void;
+  onCancel: (value: boolean) => void;
 }
-// const onChange = (value: string) => {
-//   console.log(`selected ${value}`);
-// };
-// const onSearch = (value: string) => {
-//   console.log("search:", value);
-// };
-// const filterOption = (
-//   input: string,
-//   option?: { label: string; value: string }
-// ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
-const DiaChiComponent: React.FC<DiaChiProps> = ({
+const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
   open,
-  onUpdate,
   onCancel,
 }) => {
-  const [form] = Form.useForm();
+  const [dataSanPham, setDataSanPham] = useState([]);
+
+  const columns: ColumnsType<DataTypeCtsp> = [
+    {
+      title: "Số lượng",
+      dataIndex: "soLuong",
+      key: "soLuong",
+      align: "center",
+      sorter: true,
+      width: "5%",
+    },
+    {
+      title: "Giá tiền",
+      dataIndex: "giaTien",
+      key: "giaTien",
+      align: "center",
+      sorter: true,
+      width: "5%",
+    },
+  ];
+  // lấy API của sản phẩm
+  const fetchDataChiTietSanPham = async () => {
+    try {
+      const res = await request.get("chi-tiet-san-pham/list");
+      setDataSanPham(res.data);
+      console.log(dataSanPham);
+    } catch (error) {
+      console.log(error);
+      message.error("Lấy dữ liệu sản phẩm thất bại");
+    }
+  };
+
+  // sử dụng useEffect
+  useEffect(() => {
+    if (open) {
+      fetchDataChiTietSanPham();
+    }
+  }, [open]);
+
+  const handleCancel = () => {
+    onCancel(false);
+  };
   return (
-    <Modal
-      title={"Thêm sản phẩm"}
-      open={open}
-      onCancel={onCancel}
-      onOk={() => {
-        form
-          .validateFields()
-          .then((values) => {
-            onUpdate(values);
-          })
-          .catch((info) => {
-            console.log("Validate Failed:", info);
-          });
-      }}
-    >
-      
+    <Modal width={1050} footer={null} title={"Thêm sản phẩm"} open={open} onCancel={handleCancel}>
+      <Table
+        pagination={false}
+        showSorterTooltip={false}
+        dataSource={dataSanPham}
+        columns={columns}
+        bordered
+      />
     </Modal>
   );
 };
 
-export default DiaChiComponent;
+export default HoaDonChiTietComponent;
