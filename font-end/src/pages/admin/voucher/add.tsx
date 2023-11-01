@@ -1,334 +1,165 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  Modal,
-  Radio,
-  Row,
-  Space,
-  message,
-} from "antd";
-
+import { Button, Card, Col, DatePicker, Form, Input, Modal, Row, Space, message, InputNumber, Select } from "antd";
 import request from "~/utils/request";
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import axios from "axios";
-import { Option } from "antd/es/mentions";
-const tailLayout = {
-  wrapperCol: { offset: 19, span: 16 },
-};
-interface Option {
-  value?: number | null;
-  label: React.ReactNode;
-  children?: Option[];
-  isLeaf?: boolean;
-}
+import { CreatedRequest } from "~/interfaces/voucher.type";
+const { Option } = Select;
+
 const AddVoucher: React.FC = () => {
   const [form] = Form.useForm();
-  const [provinces, setProvinces] = useState<Option[]>([]);
-  const [test, setTest] = useState(false);
-  const navigate = useNavigate();
+  const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const { confirm } = Modal;
-  const onSubmit = async (values: any) => {
+
+  const [selectedOption, setSelectedOption] = useState('');
+  const [input1, setInput1] = useState('');
+  const [input2, setInput2] = useState('');
+
+  const handleSelectChange = (value) => {
+    setSelectedOption(value);
+  };
+
+  const handleInputChange1 = (value) => {
+    setInput1(value);
+  };
+
+  const handleInputChange2 = (value) => {
+    setInput2(value);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await request.get("hinh-thuc-giam-gia");
+        setOptions(res.data.content);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const onFinish = (values: CreatedRequest) => {
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc voucher không?",
+      content: "Bạn có chắc thêm voucher này không?",
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
         try {
           setLoading(true);
-          const response = await request.post("voucher/add", values);
+          await request.post("voucher", {
+            ten: values.ten,
+            ngayBatDau: values.ngayBatDau,
+            ngayKetThuc: values.ngayKetThuc,
+            hinhThucGiam: { id: values.hinhThucGiam },
+            giaToiThieu: values.giaToiThieu,
+            giaTriGiam: values.giaTriGiam,
+            giaTriGiamToiDa: values.giaTriGiamToiDa,
+          });
+          console.log(values.hinhThucGiam);
           setLoading(false);
           message.success("Thêm voucher thành công");
           navigate("/admin/voucher");
         } catch (error: any) {
+          console.log(values.hinhThucGiam);
+          // console.log(error);
           message.error(error.response.data.message);
           setLoading(false);
         }
       },
     });
   };
-  const formItemLayout = {
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 8 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 16 },
-    },
-  };
-  useEffect(() => {
-    const fetchProvinces = async () => {
-      try {
-        const res = await axios.get(
-          "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
-          {
-            headers: {
-              token: "49e20eea-4a6c-11ee-af43-6ead57e9219a",
-              ContentType: "application/json",
-            },
-          }
-        );
 
-        const provinceOptions: Option[] = res.data.data.map(
-          (province: any) => ({
-            value: province.ProvinceID,
-            label: province.ProvinceName,
-            isLeaf: false,
-          })
-        );
-        setProvinces(provinceOptions);
-        setTest(false);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchProvinces();
-  },[]);
-
-  const loadData = async (selectedOptions: Option[]) => {
-    const targetOption = selectedOptions[selectedOptions.length - 1];
-
-    if (targetOption && typeof targetOption.value === "number") {
-      const id = targetOption.value;
-      setTest(false);
-
-      try {
-        if (!targetOption.isLeaf && test === false) {
-          // Load districts when selecting a province
-          const res = await axios.get(
-            "https://online-gateway.ghn.vn/shiip/public-api/master-data/district",
-            {
-              params: {
-                province_id: id,
-              },
-              headers: {
-                token: "49e20eea-4a6c-11ee-af43-6ead57e9219a",
-                ContentType: "application/json",
-              },
-            }
-          );
-
-          const data = res.data.data.map((item: any) => ({
-            value: item.DistrictID,
-            label: item.DistrictName,
-            isLeaf: false,
-          }));
-
-          targetOption.children = data;
-          setProvinces([...provinces]);
-          setTest(true);
-        } else {
-          console.log(id);
-
-          // Load wards when selecting a district
-          const res = await axios.get(
-            `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
-            {
-              params: {
-                district_id: id,
-              },
-              headers: {
-                token: "49e20eea-4a6c-11ee-af43-6ead57e9219a",
-                ContentType: "application/json",
-              },
-            }
-          );
-
-          const data = res.data.data.map((item: any) => ({
-            value: item.DistrictID,
-            label: item.WardName,
-            isLeaf: true,
-          }));
-
-          targetOption.children = data;
-          setProvinces([...provinces]);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-  const onChange = (value: (string | number)[], selectedOptions: Option[]) => {
-    console.log(value, selectedOptions);
-  };
   return (
     <Card title="THÊM VOUCHER">
       <Row>
         <Col span={16}>
-          <Form form={form} onFinish={onSubmit} {...formItemLayout}>
-          <Form.Item
-              name="ma"
-              label="Mã:"
-              rules={[
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Vui lòng nhập mã!",
-                },
-                {
-                  // pattern: /^[a-z0-9]{8,12}$/i,
-                  message: "Mã không hợp lệ!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
+          <Form form={form} onFinish={onFinish} labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
             <Form.Item
               name="ten"
-              label="Tên:"
-              rules={[
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Vui lòng nhập tên voucher!",
-                },
-                {
-                  pattern: /^[\p{L}\s']+$/u,
-                  message: "Tên không hợp lệ!",
-                },
-              ]}
-            >
+              label="Tên voucher"
+              rules={[{ required: true, whitespace: true, message: "Vui lòng nhập tên voucher!" }]}>
               <Input />
             </Form.Item>
             <Form.Item
               name="ngayBatDau"
-              label="Ngày Bắt Đầu:"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn ngày bắt đầu!",
-                },
-                {
-                  async validator(_, value) {
-                    const currentDate = new Date();
-                    const selectedDate = new Date(value);
-                    if (value !== undefined) {
-                      if (selectedDate > currentDate ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error("Ngày bắt đầu không thể là ngày trong quá khứ!")
-                      );
-                    }
-                    return Promise.resolve();
-                  },
-                },
-              ]}
-            >
-              <DatePicker format={"DD/MM/YYYY"} placeholder="chọn ngày" />
+              label="Ngày Bắt Đầu"
+              rules={[{ required: true, message: "Vui lòng Chọn ngày và giờ bắt đầu!" }]}>
+              <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ bắt đầu" style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item
               name="ngayKetThuc"
-              label="Ngày Kết Thúc:"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn ngày kết thúc!",
-                },
-                {
-                  async validator(_, value) {
-                    const currentDate = new Date();
-                    const selectedDate = new Date(value);
-                    if (value !== undefined) {
-                      if (selectedDate > currentDate) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error("Ngày kết thúc không thể là ngày trong quá khứ!")
-                      );
-                    }
-                    return Promise.resolve();
-                  },
-                },
-              ]}
-            >
-              <DatePicker format={"DD/MM/YYYY"} placeholder="chọn ngày" />
+              label="Ngày Kết Thúc"
+              rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc!" }]}>
+              <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ kết thúc" style={{ width: "100%" }} />
             </Form.Item>
-
             <Form.Item
-              name="hinhThucGiamGia"
+              name="hinhThucGiam"
               label="Hình thức giảm giá"
-              initialValue="PERCENT"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn hình thức giảm giá",
-                },
-              ]}
+              initialValue="Chọn hình thức giảm giá"
+              rules={[{ required: true, message: 'Vui lòng chọn hình thức giảm giá' }]}
             >
-              <Radio.Group>
-                <Radio value="PERCENT">Phần trăm</Radio>
-                <Radio value="AMOUNT">Số lượng</Radio>
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item
-              name="giaToiThieu"
-              label="Giá tối thiểu:"
-              rules={[
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Bạn chưa điền giá tối thiểu!",
-                },
-                {
-                  pattern: /^(?!0*(\.0{1,2})?$)\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?$/,
-                  message: "Giá tối thiểu không hợp lệ!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="giaTriGiam"
-              label="Giá trị giảm:"
-              rules={[
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Bạn chưa điền giá trị giảm!",
-                },
-                {
-                  pattern: /^(?!0*(\.0{1,2})?$)\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?$/,
-                  message: "Giá trị giảm không hợp lệ!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="giaTriGiamToiDa"
-              label="Giá trị giảm tối đa:"
-              rules={[
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Bạn chưa điền giá trị giảm tối đa!",
-                },
-                {
-                  pattern: /^(?!0*(\.0{1,2})?$)\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?$/,
-                  message: "Giá trị giảm tối đa không hợp lệ!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item {...tailLayout}>
-              <Space>
-                <Button
-                  type="dashed"
-                  htmlType="reset"
-                  style={{ margin: "0 12px" }}
+              <Select value={selectedOption} onChange={handleSelectChange}>
+                <Option value="1">Phần Trăm</Option>
+                <Option value="2">Giá tiền</Option>
+              </Select>
+
+              {selectedOption === '1' && (
+                <Form.Item style={{ marginTop: '25px' }}
+                  name="giaTriGiam"
+                  label="Giá trị giảm"
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập giá trị giảm!' },
+                    {
+                      validator: (_, value) => {
+                        if (value > 100) {
+                          return Promise.reject(new Error('Chỉ giảm tối đa 100%'));
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
                 >
+                  <InputNumber min={0} max={1000} formatter={(value) => `${value}%`.replace('%', '')} />
+                </Form.Item>
+              )}
+
+              {selectedOption === '2' && (
+                <>
+                  <Form.Item style={{ marginTop: '25px' }}
+                    name="giaToiThieu"
+                    label="Giá tối thiểu"
+                    rules={[{ required: true, message: 'Vui lòng nhập giá tối thiểu!' }]}>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      step={1000}
+                      value={input1}
+                      onChange={handleInputChange1}
+                      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    />
+                  </Form.Item>
+                  <Form.Item name="giaTriGiamToiDa"
+                    label="Giá trị giảm tối đa"
+                    rules={[{ required: true, message: 'Vui lòng nhập giá trị giảm tối đa!' }]}>
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      step={1000}
+                      value={input2}
+                      onChange={handleInputChange2}
+                      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    />
+                  </Form.Item>
+                </>
+              )}
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+              <Space>
+                <Button type="dashed" htmlType="reset" style={{ margin: "0 12px" }}>
                   Reset
                 </Button>
                 <Button type="primary" htmlType="submit" loading={loading}>

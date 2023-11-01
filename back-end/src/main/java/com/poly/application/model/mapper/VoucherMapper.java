@@ -5,6 +5,7 @@ import com.poly.application.model.request.create_request.CreatedVoucherRequest;
 import com.poly.application.model.request.update_request.UpdateVoucherRequest;
 import com.poly.application.model.response.VoucherResponse;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,11 +15,6 @@ public class VoucherMapper {
 
     @Autowired
     private ModelMapper modelMapper;
-
-    public Voucher convertResponseToEntity(VoucherResponse voucherResponse) {
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        return modelMapper.map(voucherResponse, Voucher.class);
-    }
 
     public VoucherResponse convertEntityToResponse(Voucher voucher) {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
