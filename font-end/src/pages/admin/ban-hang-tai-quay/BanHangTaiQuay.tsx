@@ -13,7 +13,7 @@ const BanHangTaiQuay: React.FC = () => {
 
   return (
     <Card title="BÁN HÀNG TẠI QUẦY">
-      <Tabs defaultActiveKey="1" items={items} />
+      <Tabs items={items} />
     </Card>
   );
 };

@@ -72,10 +72,15 @@ public class ChiTietSanPhamController {
         return new ResponseEntity<>(service.addList(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable(name = "id") Long id, @RequestBody UpdatedChiTietSanPhamRequest request) {
-        return ResponseEntity.ok(service.update(id, request));
+    @PutMapping()
+    public ResponseEntity<?> update( @RequestBody List<UpdatedChiTietSanPhamRequest> request) {
+        service.update(request);
+        return ResponseEntity.noContent().build();
     }
+//    @PutMapping("/update-status/{id}")
+//    public ResponseEntity<?> updateStatus(@PathVariable(name = "id") Long id, @RequestBody UpdatedChiTietSanPhamRequest request) {
+//        return ResponseEntity.ok(service.update(id, request));
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(name = "id") Long id) {

@@ -37,11 +37,12 @@ export interface UpdatedRequest {
   };
   soDienThoai: string;
   email: string;
-  thanhPho: string;
-  quanHuyen: string;
-  phuongXa: string;
+  thanhPho: number;
+  quanHuyen: number;
+  phuongXa: number;
   diaChiCuThe: string;
   anhDaiDien: string;
+  matKhau: string;
   ngayTao: string;
   ngaySua: string;
   trangThai: {

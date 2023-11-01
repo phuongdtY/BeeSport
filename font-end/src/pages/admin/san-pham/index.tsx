@@ -5,6 +5,7 @@ import {
   EyeOutlined,
   PlusOutlined,
   SearchOutlined,
+  TwitterOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -46,12 +47,34 @@ const index: React.FC = () => {
       render: (_, __, index) => (params.page - 1) * params.pageSize + index + 1,
     },
     {
-      title: "Tên",
-      dataIndex: "ten",
-      key: "ten",
+      title: "Mã Sản Phẩm",
+      dataIndex: "ma",
+      key: "ma",
       align: "center",
       sorter: true,
       width: "30%",
+    },
+    {
+      title: "Tên Sản Phẩm",
+      dataIndex: "ten",
+      key: "ten",
+      // align: "center",
+      sorter: true,
+    },
+
+    {
+      key: "thuongHieu",
+      title: "Thương Hiệu",
+      dataIndex: "thuongHieu",
+      sorter: true,
+      render: (thuongHieu) => <span>{thuongHieu.ten}</span>,
+    },
+    {
+      title: "Số Lượng Tồn",
+      dataIndex: "soLuong",
+      key: "ten",
+      align: "center",
+      sorter: true,
     },
     {
       title: "Trạng Thái",
@@ -59,7 +82,6 @@ const index: React.FC = () => {
       key: "trangThai",
       align: "center",
       sorter: true,
-      width: "20%",
       render: (trangThai) => (
         <Tag color={trangThai.mauSac}>{trangThai.moTa}</Tag>
       ),
@@ -107,6 +129,8 @@ const index: React.FC = () => {
         });
         setData(res.data.content);
         setTotalElements(res.data.totalElements);
+        console.log(res.data.content);
+
         setLoading(false);
       } catch (error) {
         console.log(error);

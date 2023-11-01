@@ -17,6 +17,7 @@
     "antd": "^5.9.0",
     "antd-img-crop": "^4.13.0",
     "axios": "^1.5.0",
+    "dayjs": "^1.11.10",
     "react": "^18.2.0",
     "react-datepicker": "^4.18.0",
     "react-dom": "^18.2.0",

@@ -57,6 +57,8 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
 
     TaiKhoan findTaiKhoanByEmail(String email);
 
+    TaiKhoan findTaiKhoanByMatKhau(String matKhau);
+
 
 
 }

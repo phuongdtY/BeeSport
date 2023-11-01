@@ -164,7 +164,7 @@ const ThongTinGiaoHang: React.FC = () => {
             <Form.Item
               name="thanhPho"
               label="Tỉnh / Thành phố"
-              style={{ marginRight: 10 }}
+              style={{ marginRight: 3 }}
               rules={[
                 {
                   required: true,
@@ -188,7 +188,7 @@ const ThongTinGiaoHang: React.FC = () => {
           <Col span={8}>
             <Form.Item
               name="quanHuyen"
-              style={{ marginRight: 10 }}
+              style={{ marginRight: 3 }}
               label="Quận / Huyện:"
               rules={[
                 {
