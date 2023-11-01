@@ -1,10 +1,20 @@
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import { Button, Card, Form, Input, Modal, Space, message } from "antd";
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  Modal,
+  Space,
+  message,
+  DatePicker,
+} from "antd";
 import * as React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreatedRequest } from "~/interfaces/loaiDe.type";
 import request from "~/utils/request";
+const { RangePicker } = DatePicker;
 const { confirm } = Modal;
 const add: React.FC = () => {
   const navigate = useNavigate();
@@ -17,10 +27,13 @@ const add: React.FC = () => {
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
+        console.log(values.ten);
+
         try {
           setLoading(true);
-          await request.post("loai-de", {
-            ten: values.ten,
+          await request.post("voucher/add", {
+            ten: "doanh",
+            ngayBatDau: values.ten,
           });
           setLoading(false);
           message.success("Thêm loại đế thành công");
@@ -46,15 +59,15 @@ const add: React.FC = () => {
           <Form.Item
             name="ten"
             label="Tên"
-            rules={[
-              {
-                whitespace: true,
-                required: true,
-                message: "Vui lòng nhập tên loại đế!",
-              },
-            ]}
+            // rules={[
+            //   {
+            //     whitespace: true,
+            //     required: true,
+            //     message: "Vui lòng nhập tên loại đế!",
+            //   },
+            // ]}
           >
-            <Input />
+            <DatePicker showTime />
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 17 }}>
             <Space>

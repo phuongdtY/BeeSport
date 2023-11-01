@@ -58,7 +58,9 @@ function HinhAnhModal({ openModal, closeModal, mauSac, sanPham }) {
         sanPham: {
           id: sanPham,
         },
-        mauSac: mauSac,
+        mauSac: {
+          id: mauSac.id,
+        },
         duongDan: item.response,
       }));
 
@@ -116,23 +118,23 @@ function HinhAnhModal({ openModal, closeModal, mauSac, sanPham }) {
     }
   };
   return (
-    <Modal
-      title={`HÌNH ẢNH SẢN PHẨM MÀU ${
-        mauSac !== null ? mauSac.ten.toUpperCase() : null
-      }`}
-      open={openModal}
-      onCancel={closeModal}
-      okText={
-        <span>
-          <PictureOutlined style={{ marginRight: 5 }} />
-          THÊM ẢNH
-        </span>
-      }
-      cancelText="Hủy"
-      onOk={okModal}
-      width={600}
-    >
-      <Spin spinning={loading}>
+    <Spin spinning={loading}>
+      <Modal
+        title={`HÌNH ẢNH SẢN PHẨM MÀU ${
+          mauSac !== undefined ? mauSac.ten.toUpperCase() : null
+        }`}
+        open={openModal}
+        onCancel={closeModal}
+        okText={
+          <span>
+            <PictureOutlined style={{ marginRight: 5 }} />
+            THÊM ẢNH
+          </span>
+        }
+        cancelText="Hủy"
+        onOk={okModal}
+        width={600}
+      >
         <ImgCrop rotationSlider>
           <Upload
             action="http://localhost:8080/admin/api/file/upload"
@@ -150,18 +152,18 @@ function HinhAnhModal({ openModal, closeModal, mauSac, sanPham }) {
             )}
           </Upload>
         </ImgCrop>
-      </Spin>
-      <Modal
-        width={617}
-        style={{ top: 20 }}
-        open={previewOpen}
-        title={previewTitle}
-        footer={null}
-        onCancel={handleCancel}
-      >
-        <img alt="example" style={{ width: "100%" }} src={previewImage} />
+        <Modal
+          width={617}
+          style={{ top: 20 }}
+          open={previewOpen}
+          title={previewTitle}
+          footer={null}
+          onCancel={handleCancel}
+        >
+          <img alt="example" style={{ width: "100%" }} src={previewImage} />
+        </Modal>
       </Modal>
-    </Modal>
+    </Spin>
   );
 }
 export default HinhAnhModal;
