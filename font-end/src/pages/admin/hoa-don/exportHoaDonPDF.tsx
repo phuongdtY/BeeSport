@@ -12,7 +12,7 @@ import {
   DataType as DataTypeHoaDonChiTiet,
   DataParams,
 } from "~/interfaces/hoaDonChiTiet.type";
-import { Button, Card, Col, Form, Image, Modal, Row, Space, Table} from "antd";
+import { Button, Card, Col, Form, Image, Modal, Row, Space, Table } from "antd";
 import request from "~/utils/request";
 import { Container } from "@mui/material";
 import logoShop from "~/image/logo.jpg";
@@ -198,7 +198,7 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
   };
 
   const tongTien = tinhTongTien();
-  const tienShip = data?.phiShip || 0;
+  const tienShip = Number(data?.phiShip) || 0;
   return (
     <Modal
       width={1050}
@@ -281,11 +281,47 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
             columns={columns}
             dataSource={dataSourceDanhSachSanPham()}
             pagination={false}
+            bordered
             showSorterTooltip={false}
-            summary={() => {}}
-          >
-            
-          </Table>
+            summary={() => {
+              return (
+                <>
+                  <Table.Summary.Row style={{ textAlign: "center" }}>
+                    <Table.Summary.Cell
+                      index={0}
+                      colSpan={3}
+                    ></Table.Summary.Cell>
+                    <Table.Summary.Cell index={1}>
+                      Tổng thành tiền
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell index={2}>
+                      {tongTien}
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row>
+                  <Table.Summary.Row style={{ textAlign: "center" }}>
+                    <Table.Summary.Cell
+                      index={0}
+                      colSpan={3}
+                    ></Table.Summary.Cell>
+                    <Table.Summary.Cell index={1}>Tiền ship</Table.Summary.Cell>
+                    <Table.Summary.Cell index={2}>
+                      {tienShip}
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row>
+                  <Table.Summary.Row style={{ textAlign: "center" }}>
+                    <Table.Summary.Cell
+                      index={0}
+                      colSpan={3}
+                    ></Table.Summary.Cell>
+                    <Table.Summary.Cell index={1}>Tổng tiền</Table.Summary.Cell>
+                    <Table.Summary.Cell index={2}>
+                      {tongTien + tienShip}
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row>
+                </>
+              );
+            }}
+          />
         </div>
       </Container>
     </Modal>
