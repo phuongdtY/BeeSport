@@ -6,6 +6,7 @@ import com.poly.application.model.request.create_request.CreateHoaDonRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
+import com.poly.application.service.ChiTietSanPhamService;
 import com.poly.application.service.HoaDonChiTietService;
 import com.poly.application.service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class HoaDonController {
     @Autowired
     private HoaDonChiTietService hoaDonChiTietService;
 
+    @Autowired
+    private ChiTietSanPhamService chiTietSanPhamService;
+
     @GetMapping()
     public ResponseEntity<?> getAll(
             @RequestParam(value = "currentPage", defaultValue = "1") Integer page,
@@ -43,14 +47,15 @@ public class HoaDonController {
         return ResponseEntity.ok(hoaDonService.findById(id));
     }
 
+
     @PostMapping()
     public ResponseEntity<?> add(@RequestBody CreateHoaDonRequest createHoaDonRequest) {
         return new ResponseEntity<>(hoaDonService.add(createHoaDonRequest), HttpStatus.CREATED);
     }
 
-    @PostMapping("/add-san-pham")
-    public ResponseEntity<?> addHoaDonChiTiet(@RequestBody CreateHoaDonChiTietRequest createHoaDonChiTietRequest) {
-        return  new ResponseEntity<>(hoaDonChiTietService.add(createHoaDonChiTietRequest), HttpStatus.CREATED);
+    @PostMapping("/add-san-pham/{id}")
+    public ResponseEntity<?> addHoaDonChiTiet(@PathVariable(name = "id")Long id,@RequestBody CreateHoaDonChiTietRequest createHoaDonChiTietRequest) {
+        return  new ResponseEntity<>(hoaDonChiTietService.add(createHoaDonChiTietRequest, id), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -82,6 +87,11 @@ public class HoaDonController {
         hoaDonHoaDonChiTietListResponseDTO.setHoaDonResponse(hoaDonResponse);
         hoaDonHoaDonChiTietListResponseDTO.setHoaDonChiTietResponsePage(hoaDonChiTietResponses);
         return ResponseEntity.ok(hoaDonHoaDonChiTietListResponseDTO);
+    }
+
+    @GetMapping("/ctsp/{id}")
+    public ResponseEntity<?> getOneCtsp(@PathVariable(name = "id")Long id){
+        return ResponseEntity.ok(chiTietSanPhamService.getOneCtspById(id));
     }
 
 }

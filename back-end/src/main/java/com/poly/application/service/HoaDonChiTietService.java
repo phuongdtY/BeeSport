@@ -11,7 +11,7 @@ public interface HoaDonChiTietService {
 
     Page<HoaDonChiTietResponse> getAll(Integer currentPage, Integer pageSize, String searchText, String sorter, String sortOrder);
 
-    HoaDonChiTietResponse add(CreateHoaDonChiTietRequest createHoaDonChiTietRequest);
+    HoaDonChiTietResponse add(CreateHoaDonChiTietRequest createHoaDonChiTietRequest, Long id);
 
     HoaDonChiTietResponse findById(Long id);
 

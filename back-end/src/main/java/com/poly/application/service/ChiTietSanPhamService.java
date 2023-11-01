@@ -26,4 +26,5 @@ public interface ChiTietSanPhamService {
 
     void update(List<UpdatedChiTietSanPhamRequest> request);
 
+    ChiTietSanPhamResponse getOneCtspById(Long id);
 }
