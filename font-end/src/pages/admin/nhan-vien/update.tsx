@@ -2,7 +2,6 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
-import { formatNgaySinh, formatPhoneNumber } from "~/utils/formatResponse";
 import axios from "axios";
 import {
   Button,
@@ -13,8 +12,6 @@ import {
   Radio,
   Skeleton,
   Space,
-  Row,
-  Col,
   Select,
   Switch,
   DatePicker,
@@ -34,8 +31,9 @@ import request from "~/utils/request";
 
 const { confirm } = Modal;
 const UpdateNhanVien: React.FC = () => {
-  const [test, setTest] = useState(false);
+  
   const [data, setData] = useState<DataType|null>(null);
+  const [wardCode1, setWardCode1] = useState(data?.phuongXa);
   const [provinces, setProvinces] = useState<Option[]>([]);
   const [districts, setDistricts] = useState<Option[]>([]);
   const [wards, setWards] = useState<Option[]>([]);
@@ -70,7 +68,7 @@ const UpdateNhanVien: React.FC = () => {
   const fetchDistricts = async (idProvince: number|undefined) => {
     try {
       const districtRes = await axios.get(
-        `https://online-gateway.ghn.vn/shiip/public-api/master-data/district?`,
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/district`,
         {
           params: {
             province_id: idProvince,
@@ -81,7 +79,6 @@ const UpdateNhanVien: React.FC = () => {
           },
         }
       );
-
       const districtOptions: Option[] = districtRes.data.data.map(
         (district: any) => ({
           value: district.DistrictID,
@@ -100,7 +97,7 @@ const UpdateNhanVien: React.FC = () => {
         `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
         {
           params: {
-            district_id: 3440,
+            district_id: idDistrict,
           },
           headers: {
             token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
@@ -108,7 +105,6 @@ const UpdateNhanVien: React.FC = () => {
           },
         }
       );
-
       const wardOptions: Option[] = wardRes.data.data.map((ward: any) => ({
         value: ward.WardCode,
         label: ward.WardName,
@@ -125,6 +121,9 @@ const UpdateNhanVien: React.FC = () => {
       setLoadingForm(true);
       try {
         const res = await request.get("nhan-vien/edit/" + id);
+        fetchProvinces();
+        fetchDistricts(res.data?.thanhPho);
+        fetchWards(res.data?.quanHuyen);
         const trangThaiValue = res.data?.trangThai.ten === "ACTIVE";
           const gioiTinhValue = res.data?.gioiTinh?.ten || "OTHER";
           const ngaySinhValue = dayjs(res.data?.ngaySinh);
@@ -137,7 +136,7 @@ const UpdateNhanVien: React.FC = () => {
             email: res.data?.email,
             thanhPho: Number(res.data?.thanhPho) ,
             quanHuyen: Number(res.data?.quanHuyen),
-            phuongXa: Number(res.data?.phuongXa),
+            phuongXa: res.data?.phuongXa,
             diaChiCuThe: res.data?.diaChiCuThe,
             matKhau:res.data?.matKhau,
             trangThai: trangThaiValue, // Convert to boolean
@@ -150,9 +149,7 @@ const UpdateNhanVien: React.FC = () => {
         setLoadingForm(false);
       }
     };
-    fetchProvinces();
-    fetchDistricts(data?.thanhPho);
-    fetchWards(data?.quanHuyen);
+    
     getOne();
   }, [id]);
   
@@ -199,96 +196,6 @@ const UpdateNhanVien: React.FC = () => {
       },
     });
   };
-  
-  const formItemLayout = {
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 8 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 16 },
-    },
-  };
-  const loadData = async (selectedOptions: Option[]) => {
-    const targetOption = selectedOptions[selectedOptions.length - 1];
-
-    if (targetOption && typeof targetOption.value === "number") {
-      const id = targetOption.value;
-      setTest(false);
-
-      try {
-        if (!targetOption.isLeaf && test === false) {
-          // Load districts when selecting a province
-          const res = await axios.get(
-            "https://online-gateway.ghn.vn/shiip/public-api/master-data/district",
-            {
-              params: {
-                province_id: id,
-              },
-              headers: {
-                token: "49e20eea-4a6c-11ee-af43-6ead57e9219a",
-                ContentType: "application/json",
-              },
-            }
-          );
-
-          const data = res.data.data.map((item: any) => ({
-            value: item.DistrictID,
-            label: item.DistrictName,
-            isLeaf: false,
-          }));
-
-          targetOption.children = data;
-          setProvinces([...provinces]);
-          setTest(true);
-        } else {
-          console.log(id);
-
-          // Load wards when selecting a district
-          const res = await axios.get(
-            `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
-            {
-              params: {
-                district_id: id,
-              },
-              headers: {
-                token: "49e20eea-4a6c-11ee-af43-6ead57e9219a",
-                ContentType: "application/json",
-              },
-            }
-          );
-
-          const data = res.data.data.map((item: any) => ({
-            value: item.DistrictID,
-            label: item.WardName,
-            isLeaf: true,
-          }));
-
-          targetOption.children = data;
-          setProvinces([...provinces]);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-  const getProvinceLabelFromId = (id: number) => {
-    const province = provinces.find((p) => p.value === id);
-    return province ? province.label : "";
-  }
-
-  // Tạo hàm để lấy tên của quận/huyện từ ID
-  const getDistrictLabelFromId = (id: number) => {
-    const district = districts.find((d) => d.value === id);
-    return district ? district.label : "";
-  }
-
-  // Tạo hàm để lấy tên của phường/xã từ ID
-  const getWardLabelFromId = (id: number) => {
-    const ward = wards.find((w) => w.value === id);
-    return ward ? ward.label : "";
-  }
   
   return (
     <>

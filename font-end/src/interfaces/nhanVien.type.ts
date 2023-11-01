@@ -15,7 +15,7 @@ export interface DataType {
   email: string;
   thanhPho: number;
   quanHuyen: number;
-  phuongXa: number;
+  phuongXa: string;
   diaChiCuThe: string;
   anhDaiDien: string;
   ngayTao: string;
