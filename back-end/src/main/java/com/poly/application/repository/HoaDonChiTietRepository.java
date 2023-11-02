@@ -26,5 +26,8 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet, Lo
             @Param("idHoaDon")Long id
     );
 
+    Boolean existsHoaDonChiTietByChiTietSanPhamIdAndHoaDonId(Long chiTietSanPhamId, Long hoaDonId);
+
+    HoaDonChiTiet findHoaDonChiTietByChiTietSanPhamIdAndHoaDonId(Long chiTietSanPhamId, Long hoaDonI);
 
 }

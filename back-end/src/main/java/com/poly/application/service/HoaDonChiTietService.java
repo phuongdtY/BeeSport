@@ -15,7 +15,7 @@ public interface HoaDonChiTietService {
 
     HoaDonChiTietResponse findById(Long id);
 
-    HoaDonChiTietResponse update(UpdatedHoaDonChiTietRequest updatedHoaDonChiTietRequest);
+    HoaDonChiTietResponse update(Long id,UpdatedHoaDonChiTietRequest updatedHoaDonChiTietRequest);
 
     void delete(Long id);
 

@@ -2,6 +2,7 @@ package com.poly.application.service.impl;
 
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.HoaDonChiTiet;
+import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.HoaDonChiTietMapper;
 import com.poly.application.model.mapper.HoaDonMapper;
@@ -54,6 +55,11 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
 
     @Override
     public HoaDonChiTietResponse add(CreateHoaDonChiTietRequest createHoaDonChiTietRequest, Long id) {
+        if (hoaDonChiTietRepository.existsHoaDonChiTietByChiTietSanPhamIdAndHoaDonId(createHoaDonChiTietRequest.getChiTietSanPham().getId(), id)) {
+        HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findHoaDonChiTietByChiTietSanPhamIdAndHoaDonId(createHoaDonChiTietRequest.getChiTietSanPham().getId(),id);
+        hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + 1);
+        return hoaDonChiTietMapper.convertHoaDonChiTietEntityToHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
+        }
         HoaDonChiTiet createHoaDonChiTiet = hoaDonChiTietMapper.convertCreateHoaDonChiTietRequestToHoaDonChiTietEntity(createHoaDonChiTietRequest);
         HoaDonResponse hoaDonResponse = hoaDonService.findById(id);
         HoaDon hoaDon = hoaDonMapper.convertHoaDonResponseToEntity(hoaDonResponse);
@@ -65,15 +71,27 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     @Override
     public HoaDonChiTietResponse findById(Long id) {
         Optional<HoaDonChiTiet> hoaDonChiTiet = hoaDonChiTietRepository.findById(id);
-        if (hoaDonChiTiet.isEmpty()){
+        if (hoaDonChiTiet.isEmpty()) {
             throw new NotFoundException("Hóa đơn chi tiết không tồn tại");
         }
         return hoaDonChiTietMapper.convertHoaDonChiTietEntityToHoaDonChiTietResponse(hoaDonChiTiet.get());
     }
 
     @Override
-    public HoaDonChiTietResponse update(UpdatedHoaDonChiTietRequest updatedHoaDonChiTietRequest) {
-        return null;
+    public HoaDonChiTietResponse update(Long id, UpdatedHoaDonChiTietRequest updatedHoaDonChiTietRequest) {
+        HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Hóa đơn chi tiết không tồn tại"));
+
+        hoaDonChiTiet.setSoLuong(updatedHoaDonChiTietRequest.getSoLuong());
+        hoaDonChiTiet.setDonGia(updatedHoaDonChiTietRequest.getDonGia());
+        hoaDonChiTiet.setTrangThaiHoaDonChiTiet(updatedHoaDonChiTietRequest.getTrangThaiHoaDonChiTiet());
+        hoaDonChiTiet.setChiTietSanPham(updatedHoaDonChiTietRequest.getChiTietSanPham());
+        hoaDonChiTiet.setHoaDon(updatedHoaDonChiTietRequest.getHoaDon());
+        hoaDonChiTiet.setGhiChu(updatedHoaDonChiTietRequest.getGhiChu());
+//        hoaDonChiTiet.setNguoiTao(updatedHoaDonChiTietRequest.getNguoiTao());
+//        hoaDonChiTiet.setNguoiSua(updatedHoaDonChiTietRequest.getNguoiSua());
+
+        return hoaDonChiTietMapper.convertHoaDonChiTietEntityToHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
     }
 
     @Override
@@ -107,7 +125,7 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
             sort = Sort.by("ngayTao").descending();
         }
         Pageable pageable = PageRequest.of(currentPage - 1, pageSize, sort);
-        Page<HoaDonChiTiet> hoaDonChiTietPage = hoaDonChiTietRepository.findPageHoaDonChiTiet(pageable,searchText,id);
+        Page<HoaDonChiTiet> hoaDonChiTietPage = hoaDonChiTietRepository.findPageHoaDonChiTiet(pageable, searchText, id);
         return hoaDonChiTietPage.map(hoaDonChiTietMapper::convertHoaDonChiTietEntityToHoaDonChiTietResponse);
     }
 }
