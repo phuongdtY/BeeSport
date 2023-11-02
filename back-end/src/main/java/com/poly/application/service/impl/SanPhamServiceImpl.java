@@ -1,15 +1,12 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
-import com.poly.application.entity.ChiTietSanPham;
-import com.poly.application.entity.MauSac;
 import com.poly.application.entity.SanPham;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.SanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
-import com.poly.application.model.response.ChiTietSanPhamResponse;
 import com.poly.application.model.response.SanPhamDetailResponse;
 import com.poly.application.model.response.SanPhamMoiNhatResponse;
 import com.poly.application.model.response.SanPhamResponse;
@@ -102,7 +99,7 @@ public class SanPhamServiceImpl implements SanPhamService {
         if (optional.isEmpty()) {
             throw new NotFoundException("Sản phẩm không tồn tại!");
         }
-        if (!request.getTen().equals(optional.get().getTen())&&repository.existsByTen(request.getTen())) {
+        if (!request.getTen().equals(optional.get().getTen()) && repository.existsByTen(request.getTen())) {
             throw new BadRequestException("Tên sản phẩm đã tồn tại trong hệ thống!");
         }
 

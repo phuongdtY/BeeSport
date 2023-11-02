@@ -93,7 +93,6 @@ const detailHoaDon: React.FC = () => {
       title: "Sản phẩm",
       dataIndex: "chiTietSanPham",
       key: "chiTietSanPham",
-      align: "center",
       sorter: true,
       width: "40%",
       render: (chiTietSanPham) => (
@@ -600,7 +599,8 @@ const detailHoaDon: React.FC = () => {
       setOrderStatus(shipingStatus);
     }
   };
-  const someFunction = () => {4
+  const someFunction = () => {
+    4;
     console.log("Button clicked!");
   };
   const onSuccess = () => {
@@ -749,13 +749,18 @@ const detailHoaDon: React.FC = () => {
         fee={Number(phiShipThongTin)}
       />
       <HoaDonChiTietComponent
+        loadTable={fetchHoaDonData}
         open={sanPhamOpen}
         onCancel={handleCancelSanPham}
         idHoaDon={idHoaDonTamThoi}
         setLoading={setLoadingTable}
         onSuccess={onSuccess}
       />
-      <ExportHoaDonPDF open={hoaDonOpen} onCancel={handleCancelExportHoaDon} id={data?.id} />
+      <ExportHoaDonPDF
+        open={hoaDonOpen}
+        onCancel={handleCancelExportHoaDon}
+        id={data?.id}
+      />
     </>
   );
 };

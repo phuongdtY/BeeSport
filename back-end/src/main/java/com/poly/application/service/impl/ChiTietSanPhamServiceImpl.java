@@ -67,28 +67,13 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
     @Transactional
     @Override
     public List<ChiTietSanPhamResponse> addList(List<CreatedChiTietSanPhamRequest> requests) {
-        List<ChiTietSanPhamResponse> responseList = new ArrayList<>();
-
-        if (requests.size() == 1) {
-            // Trường hợp chỉ có 1 sản phẩm, không cần sử dụng list và vòng lặp
-            CreatedChiTietSanPhamRequest chiTietSanPhamRequest = requests.get(0);
-            ChiTietSanPham createdChiTietSanPham = mapper.convertCreateRequestToEntity(chiTietSanPhamRequest);
-            createdChiTietSanPham.setTrangThai(CommonEnum.TrangThaiChiTietSanPham.ACTIVE);
-            ChiTietSanPham savedChiTietSanPham = repository.save(createdChiTietSanPham);
-            ChiTietSanPhamResponse response = mapper.convertEntityToResponse(savedChiTietSanPham);
-            responseList.add(response);
-        } else {
-            // Trường hợp có nhiều sản phẩm, sử dụng list và vòng lặp
-            for (CreatedChiTietSanPhamRequest chiTietSanPhamRequest : requests) {
-                ChiTietSanPham createdChiTietSanPham = mapper.convertCreateRequestToEntity(chiTietSanPhamRequest);
-                createdChiTietSanPham.setTrangThai(CommonEnum.TrangThaiChiTietSanPham.ACTIVE);
-                ChiTietSanPham savedChiTietSanPham = repository.save(createdChiTietSanPham);
-                ChiTietSanPhamResponse response = mapper.convertEntityToResponse(savedChiTietSanPham);
-                responseList.add(response);
-            }
+        List<ChiTietSanPham> list = new ArrayList<>();
+        for (CreatedChiTietSanPhamRequest request :requests){
+            ChiTietSanPham sanPham = mapper.convertCreateRequestToEntity(request);
+            list.add(sanPham);
         }
-
-        return responseList;
+        repository.saveAll(list);
+        return null;
     }
 
     @Override
@@ -113,36 +98,36 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
 
     @Override
     public void update(List<UpdatedChiTietSanPhamRequest> request) {
-        for (UpdatedChiTietSanPhamRequest item : request) {
-            if (item.getId() == null) {
-                CreatedChiTietSanPhamRequest created = new CreatedChiTietSanPhamRequest();
-                created.setSoLuong(item.getSoLuong());
-                created.setGiaTien(item.getGiaTien());
-                created.setLoaiDe(item.getLoaiDe());
-                created.setDiaHinhSan(item.getDiaHinhSan());
-                created.setMauSac(item.getMauSac());
-                created.setKichCo(item.getKichCo());
-                created.setSanPham(item.getSanPham());
-                created.setTrangThai(CommonEnum.TrangThaiChiTietSanPham.ACTIVE);
-                ChiTietSanPham sanPham = mapper.convertCreateRequestToEntity(created);
-                repository.save(sanPham);
-            } else {
-                Optional<ChiTietSanPham> optional = repository.findById(item.getId());
-                if (optional.isEmpty()) {
-                    throw new NotFoundException("Chi tiết sản phẩm không tồn tại!");
+        List<ChiTietSanPham> newProducts = new ArrayList<>();
+        List<ChiTietSanPham> updateProducts = new ArrayList<>();
+
+        for (UpdatedChiTietSanPhamRequest dto : request) {
+            if (dto.getId() != null) {
+                // If the DTO has an ID, it means it's an update
+                Optional<ChiTietSanPham> optional = repository.findById(dto.getId());
+                if (optional.isPresent()) {
+                    ChiTietSanPham existingProduct = optional.get();
+                    dto.setId(existingProduct.getId());
+                    mapper.convertUpdateRequestToEntity(dto,existingProduct);
+                    updateProducts.add(existingProduct);
                 }
-                ChiTietSanPham chiTietSanPham = optional.get();
-                chiTietSanPham.setSoLuong(item.getSoLuong());
-                chiTietSanPham.setGiaTien(item.getGiaTien());
-                chiTietSanPham.setLoaiDe(item.getLoaiDe());
-                chiTietSanPham.setDiaHinhSan(item.getDiaHinhSan());
-                chiTietSanPham.setMauSac(item.getMauSac());
-                chiTietSanPham.setKichCo(item.getKichCo());
-                chiTietSanPham.setSanPham(item.getSanPham());
-                chiTietSanPham.setTrangThai(item.getTrangThai());
-                mapper.convertEntityToResponse(repository.save(chiTietSanPham));
+            } else if(dto.getId() == null){
+                ChiTietSanPham newProduct = new ChiTietSanPham();
+                mapper.convertUpdateRequestToEntity(dto, newProduct);
+                newProducts.add(newProduct);
             }
         }
+
+        // Thêm đối tượng mới vào cơ sở dữ liệu
+        if (!newProducts.isEmpty()) {
+            repository.saveAll(newProducts);
+        }
+
+        // Cập nhật đối tượng đã tồn tại trong cơ sở dữ liệu
+        if (!updateProducts.isEmpty()) {
+            repository.saveAll(updateProducts);
+        }
+
     }
 
     @Override

@@ -18,6 +18,7 @@ import { formatGiaTien } from "~/utils/formatResponse";
 import { ExclamationCircleFilled, PlusCircleOutlined } from "@ant-design/icons";
 const { confirm } = Modal;
 interface HoaDonChiTietProps {
+  loadTable: () => void;
   open: boolean;
   onCancel: (value: boolean) => void;
   idHoaDon: number | undefined;
@@ -25,6 +26,7 @@ interface HoaDonChiTietProps {
   onSuccess: () => void;
 }
 const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
+  loadTable,
   open,
   onCancel,
   idHoaDon,
@@ -220,7 +222,6 @@ const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
       cancelText: "Hủy",
       onOk: async () => {
         try {
-          setLoading(true);
           const res = await request.post("hoa-don/add-san-pham/" + idHoaDon, {
             soLuong: 1,
             donGia: ctsp.giaTien,
@@ -231,7 +232,7 @@ const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
           });
           if (res.data) {
             message.success("Thêm sản phẩm thành công");
-            onSuccess();
+            loadTable();
           } else {
             console.error("Phản hồi API không như mong đợi:", res);
           }
