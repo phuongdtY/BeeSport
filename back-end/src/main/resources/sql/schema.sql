@@ -167,7 +167,7 @@ CREATE TABLE voucher
     ten                    	NVARCHAR(50),
     ngay_bat_dau           	TIMESTAMP,
     ngay_ket_thuc          	TIMESTAMP,
-    hinh_thuc_giam          ENUM('PERCENT', 'AMOUNT'),
+    hinh_thuc_giam          ENUM('PERCENT', 'PERCENT'),
     gia_toi_thieu			DECIMAL(18, 2),
     gia_tri_giam           	DECIMAL(18, 2),
     gia_tri_giam_toi_da    	DECIMAL(18, 2),

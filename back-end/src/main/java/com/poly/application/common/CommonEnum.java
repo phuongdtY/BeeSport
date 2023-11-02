@@ -168,26 +168,26 @@ public class CommonEnum {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum HinhThucGiam{
-        PERCENT("PERCENT", "Phần trăm",""),
-        AMOUNT("AMOUNT", "Số lượng","");
+        ACTIVE("ACTIVE", "Hoạt động","success"),
+        INACTIVE("INACTIVE", "Không hoạt động","error");
 
         private final String ten;
         private final String moTa;
-        private final String voucher;
+        private final String mauSac;
     }
 
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum TrangThaiVoucher{
-        ACTIVE("ACTIVE", "Hoạt động",""),
-        EXPIRED("EXPIRED", "Hết hạn",""),
-        INACTIVE("INACTIVE", "Không hoạt động",""),
-        UPCOMING("UPCOMING", "Sắp tới","");
+        ACTIVE("ACTIVE", "Hoạt động","success"),
+        EXPIRED("EXPIRED", "Hết hạn","error"),
+        INACTIVE("INACTIVE", "Không hoạt động","warning"),
+        UPCOMING("UPCOMING", "Sắp tới","blue");
 
         private final String ten;
         private final String moTa;
-        private final String voucher;
+        private final String mauSac;
     }
 
 }

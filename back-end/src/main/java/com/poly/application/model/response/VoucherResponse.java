@@ -1,6 +1,7 @@
 package com.poly.application.model.response;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.HinhThucGiamGia;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
@@ -20,11 +21,15 @@ public class VoucherResponse {
 
     private String ten;
 
+    private LocalDateTime ngayTao;
+
+    private LocalDateTime ngaySua;
+
     private Date ngayBatDau;
 
     private Date ngayKetThuc;
 
-    private CommonEnum.HinhThucGiam hinhThucGiam;
+    private HinhThucGiamGia hinhThucGiam;
 
     private BigDecimal giaToiThieu;
 
@@ -32,6 +37,7 @@ public class VoucherResponse {
 
     private BigDecimal giaTriGiamToiDa;
 
+//    @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;
 
 }
