@@ -79,10 +79,27 @@ const UpdateSanPham: React.FC = () => {
       thuongHieu: newData.id,
     });
   };
+  const onFinish = async (data) => {
+    try {
+      await request.put(`san-pham/${id}`, {
+        ten: data.ten,
+        moTa: data.moTa,
+        thuongHieu: {
+          id: data.ThuongHieu,
+        },
+        trangThai: "ACTIVE",
+      });
+      message.success("sửa sản phẩm thành công");
+    } catch (error) {
+      console.log(error);
+      message.error("Sửa sản phẩm thất bại");
+    }
+  };
   return (
     <>
       <Card title="Thông Tin Sản Phẩm">
         <Form
+          onFinish={onFinish}
           style={{ marginLeft: 100, maxWidth: 900 }}
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 20 }}
