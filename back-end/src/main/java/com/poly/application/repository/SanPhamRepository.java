@@ -2,10 +2,8 @@ package com.poly.application.repository;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.SanPham;
-import com.poly.application.model.response.ChiTietSanPhamResponse;
 import com.poly.application.model.response.SanPhamDetailResponse;
 import com.poly.application.model.response.SanPhamMoiNhatResponse;
-import com.poly.application.model.response.SanPhamResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,13 +19,18 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
     @Query("SELECT sp FROM SanPham sp LEFT JOIN ChiTietSanPham ctsp ON sp.id = ctsp.sanPham.id WHERE ctsp.id IS NULL ORDER BY sp.ngayTao DESC")
     List<SanPham> getAllSanPhamNullCTSP();
 
-    @Query("SELECT obj FROM SanPham obj " +
+    @Query("SELECT DISTINCT obj FROM SanPham obj " +
+            "INNER JOIN obj.listChiTietSanPham ctsp " +
             "WHERE (obj.ma LIKE %:searchText% OR obj.ten LIKE %:searchText%) " +
             "AND (:thuongHieuId IS NULL OR obj.thuongHieu.id = :thuongHieuId OR :thuongHieuId = '') " +
-            "AND (:trangThai IS NULL OR obj.trangThai = :trangThai)")
+            "AND (:trangThai IS NULL OR obj.trangThai = :trangThai) "+
+            "ORDER BY obj.ngayTao DESC")
     Page<SanPham> findByAll(Pageable pageable, String searchText, Long thuongHieuId, CommonEnum.TrangThaiSanPham trangThai);
 
-    boolean existsByTen (String ten);
+
+
+
+    boolean existsByTen(String ten);
 
     @Query("SELECT sp FROM SanPham sp WHERE sp.trangThai = 'ACTIVE' ORDER BY sp.ngayTao DESC")
     List<SanPham> get5SanPhamMoiNhat();

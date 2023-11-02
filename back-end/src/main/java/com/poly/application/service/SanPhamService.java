@@ -1,5 +1,6 @@
 package com.poly.application.service;
 
+import com.poly.application.entity.SanPham;
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
 import com.poly.application.model.response.SanPhamDetailResponse;

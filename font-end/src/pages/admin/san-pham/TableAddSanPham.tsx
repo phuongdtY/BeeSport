@@ -9,7 +9,11 @@ import {
   message,
 } from "antd";
 import type { TableRowSelection } from "antd/es/table/interface";
-import { formatGiaTien } from "~/utils/formatResponse";
+import {
+  formatGiaTien,
+  formatGiaTienVND,
+  formatSoLuong,
+} from "~/utils/formatResponse";
 import {
   DeleteOutlined,
   PictureOutlined,
@@ -43,7 +47,7 @@ function TableSanPham({
   }, [fakeData, onFakeDataChange]);
   useEffect(() => {
     setFakeData(createFakeData());
-  }, [selectedMauSac, selectedKichCo]);
+  }, [selectedMauSac, selectedKichCo, selectedDiaHinhSan, selectedLoaiDe]);
 
   const mauSacMapping = {};
   dataMS.forEach((ms) => {
@@ -135,6 +139,7 @@ function TableSanPham({
             id: kichCo,
             ten: kichCoMapping[kichCo],
           },
+          trangThai: "ACTIVE",
         });
       });
     });
@@ -270,9 +275,7 @@ function TableSanPham({
                   value={soLuong}
                   min={1}
                   style={{ width: "100%" }}
-                  formatter={(value) =>
-                    `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
+                  formatter={(value) => `${formatSoLuong(value)}`}
                   parser={(value) => value.replace(/,/g, "")}
                   onChange={(newSoLuong) =>
                     handleEditSoLuong(record.key, newSoLuong)
@@ -290,7 +293,7 @@ function TableSanPham({
                   style={{ width: "100%" }}
                   min={0}
                   step={1000}
-                  formatter={(value) => `${formatGiaTien(value)}`}
+                  formatter={(value) => `${formatGiaTienVND(value)}`}
                   parser={(value) => value!.replace(/\D/g, "")}
                   onChange={(newGiaTien) =>
                     handleEditGiaTien(record.key, newGiaTien)

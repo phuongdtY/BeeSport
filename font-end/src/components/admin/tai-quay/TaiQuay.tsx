@@ -26,7 +26,10 @@ const TaiQuay: React.FC = () => {
 
     try {
       // Thực hiện yêu cầu POST đến API
-      const response = await request.post("hoa-don", {});
+      const response = await request.post("hoa-don", {
+        loaiHoaDon: "COUNTER",
+        trangThaiHoaDon: "PENDING",
+      });
       const newActiveKey = `newTab${newTabIndex.current++}`;
       const newPanes = [...items];
       newPanes.push({

@@ -65,7 +65,26 @@ function TableUpdateSanPhamTest({ idSanPham }) {
       setDataChiTietSanPham(res.data);
       setMauSac(res.data[0].mauSac);
       const modifiedData = res.data.map((data: any) => ({
-        ...data,
+        id: data.id,
+        diaHinhSan: {
+          id: data.diaHinhSan.id,
+        },
+        loaiDe: {
+          id: data.loaiDe.id,
+        },
+        mauSac: {
+          id: data.mauSac.id,
+        },
+        kichCo: {
+          id: data.kichCo.id,
+          kichCo: data.kichCo.kichCo,
+        },
+        soLuong: data.soLuong,
+        giaTien: data.giaTien,
+        sanPham: {
+          id: data.sanPham.id,
+        },
+        trangThai: data.trangThai.ten,
         key: `${data.mauSac.id}-${data.kichCo.id}`,
       }));
       setDataFake(modifiedData);
@@ -107,13 +126,15 @@ function TableUpdateSanPhamTest({ idSanPham }) {
     try {
       console.log(selectedData);
 
-      await request.put("chi-tiet-san-pham", selectedData, {
+      await request.put("chi-tiet-san-pham/update", selectedData, {
         headers: {
           "Content-Type": "application/json",
         },
       });
+      getDataChiTietSanPham();
+      message.success("Chỉnh sửa dữ liệu thành công");
     } catch (error) {
-      message.error("Update thất bại");
+      message.error("Chỉnh sửa dữ liệu thất bại");
       console.log(error);
     }
   };
@@ -274,16 +295,23 @@ function TableUpdateSanPhamTest({ idSanPham }) {
       updatedFakeData.push({
         id: null,
         key: uniqueId,
-        mauSac: dataChiTietSanPham[0].mauSac,
+        mauSac: {
+          id: dataChiTietSanPham[0].mauSac.id,
+        },
         kichCo: {
           id: kichCo,
           kichCo: kichCoMapping[kichCo],
         },
         soLuong: 10,
         giaTien: 100000,
-        loaiDe: dataChiTietSanPham[0].loaiDe,
-        diaHinhSan: dataChiTietSanPham[0].diaHinhSan,
+        loaiDe: {
+          id: dataChiTietSanPham[0].loaiDe.id,
+        },
+        diaHinhSan: {
+          id: dataChiTietSanPham[0].diaHinhSan.id,
+        },
         sanPham: { id: idSanPham },
+        trangThai: "ACTIVE",
       });
 
       newSelectedKeys.push(uniqueId);

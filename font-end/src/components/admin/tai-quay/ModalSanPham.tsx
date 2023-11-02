@@ -65,7 +65,7 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
 
         return (
           <img
-            src={firstImage.duongDan}
+            src={`http://localhost:8080/admin/api/file/view/${firstImage.duongDan}`}
             alt="Hình ảnh"
             style={{ maxWidth: "100px" }}
           />

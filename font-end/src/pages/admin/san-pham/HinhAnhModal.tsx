@@ -144,6 +144,7 @@ function HinhAnhModal({ openModal, closeModal, mauSac, sanPham }) {
             onChange={onChange}
             onPreview={handlePreview}
             onRemove={onRemove}
+            accept=".png,.jpg,.gif"
           >
             {fileList.length >= 5 ? null : (
               <div>

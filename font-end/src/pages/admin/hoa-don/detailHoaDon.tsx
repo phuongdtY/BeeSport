@@ -93,7 +93,6 @@ const detailHoaDon: React.FC = () => {
       title: "Sản phẩm",
       dataIndex: "chiTietSanPham",
       key: "chiTietSanPham",
-      align: "center",
       sorter: true,
       width: "40%",
       render: (chiTietSanPham) => (
@@ -752,6 +751,7 @@ const detailHoaDon: React.FC = () => {
         fee={Number(phiShipThongTin)}
       />
       <HoaDonChiTietComponent
+        loadTable={fetchHoaDonData}
         open={sanPhamOpen}
         onCancel={handleCancelSanPham}
         idHoaDon={idHoaDonTamThoi}

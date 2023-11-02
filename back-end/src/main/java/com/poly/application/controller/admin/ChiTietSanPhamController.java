@@ -72,10 +72,10 @@ public class ChiTietSanPhamController {
         return new ResponseEntity<>(service.addList(request), HttpStatus.CREATED);
     }
 
-    @PutMapping()
+    @PutMapping("/update")
     public ResponseEntity<?> update( @RequestBody List<UpdatedChiTietSanPhamRequest> request) {
         service.update(request);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Danh sách ChiTietSanPham đã được cập nhật thành công.");
     }
 //    @PutMapping("/update-status/{id}")
 //    public ResponseEntity<?> updateStatus(@PathVariable(name = "id") Long id, @RequestBody UpdatedChiTietSanPhamRequest request) {
