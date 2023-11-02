@@ -218,7 +218,6 @@ const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
           if (res.data) {
             setLoading();
             message.success("Thêm sản phẩm thành công");
-            onSuccess();
           } else {
             console.error("Phản hồi API không như mong đợi:", res);
           }
@@ -232,7 +231,6 @@ const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
         }
       },
     });
-
   };
 
   // sử dụng useEffect
