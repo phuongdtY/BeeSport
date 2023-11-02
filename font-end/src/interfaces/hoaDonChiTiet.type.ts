@@ -1,6 +1,6 @@
 export interface DataType {
   id: number;
-  soLuong: string;
+  soLuong: number;
   donGia: number;
   ghiChu: string;
   ngayTao: string;

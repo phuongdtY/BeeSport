@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import generatePDF, { Margin, Options } from "react-to-pdf";
+import generatePDF, { Margin, Options, Resolution } from "react-to-pdf";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import {
@@ -87,45 +87,6 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
     },
   ];
 
-  const columnsThanhToan: ColumnsType<DataTypeHoaDonChiTiet> = [
-    {
-      title: "STT",
-      key: "index",
-      align: "center",
-      rowScope: "row",
-      width: "5%",
-    },
-    {
-      title: "Sản phẩm",
-      key: "chiTietSanPham",
-      align: "center",
-      sorter: true,
-      width: "40%",
-    },
-    {
-      title: "Số lượng",
-      key: "soLuong",
-      align: "center",
-      sorter: true,
-      width: "10%",
-    },
-    {
-      title: "Đơn giá",
-      key: "donGia",
-      align: "center",
-      sorter: true,
-      width: "15%",
-    },
-    {
-      title: "Thành tiền",
-      dataIndex: "tongTien",
-      key: "tongTien",
-      align: "center",
-      sorter: true,
-      width: "15%",
-    },
-  ];
-
   const fetchHoaDonData = async (id: number | undefined) => {
     try {
       const res = await request.get("hoa-don/" + id);
@@ -144,11 +105,11 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
     filename: "hoa-don.pdf",
     page: {
       // margin is in MM, default is Margin.NONE = 0
-      margin: Margin.SMALL,
+      margin: 20,
       // default is 'A4'
-      format: "letter",
+      format: "A4",
       // default is 'portrait'
-      orientation: "landscape",
+      orientation: "portrait",
     },
   };
   const getTargetElement = () => document.getElementById("pdfReaderHoaDon");
@@ -158,16 +119,6 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
     onCancel(false);
   };
 
-  const tinhTongTienCaShip = (tienShip: number) => {
-    return (
-      (listHoaDonChiTiet || [])
-        .map((item) => ({
-          ...item,
-          thanhTien: Number(item.soLuong) * Number(item.donGia),
-        }))
-        .reduce((sum, item) => sum + item.thanhTien, 0) + tienShip
-    );
-  };
 
   const tinhTongTien = () => {
     return (listHoaDonChiTiet || [])

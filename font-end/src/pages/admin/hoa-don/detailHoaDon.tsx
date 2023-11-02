@@ -1,6 +1,7 @@
 import {
   DeleteOutlined,
   ExclamationCircleFilled,
+  PlusCircleOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import {
@@ -109,11 +110,30 @@ const detailHoaDon: React.FC = () => {
     },
     {
       title: "Số lượng",
-      dataIndex: "soLuong",
-      key: "soLuong",
+      dataIndex: "hoaDonChiTietItem",
+      key: "hoaDonChiTietItem",
       align: "center",
       sorter: true,
-      width: "10%",
+      width: "20%",
+      render: (hoaDonChiTietItem) => (
+        <Space direction="horizontal" align="center">
+          <Tooltip title="Trừ">
+            <Button type="link" style={{ padding: 0 }}>
+              <PlusCircleOutlined
+                style={{ color: "red" }}
+              />
+            </Button>
+          </Tooltip>
+          <Input name="soLuong" value={hoaDonChiTietItem.soLuong}/>
+          <Tooltip title="Cộng">
+            <Button type="link" style={{ padding: 0 }}>
+              <PlusCircleOutlined
+                style={{ color: "green" }}
+              />
+            </Button>
+          </Tooltip>
+        </Space>
+      ),
     },
     {
       title: "Đơn giá",
@@ -384,7 +404,7 @@ const detailHoaDon: React.FC = () => {
         try {
           const res = await request.put("hoa-don/" + id, {
             ma: data?.ma,
-            diaChiNguoiNhan: values.diaChiNguoiNhan,
+            diaChiNguoiNhan: diaChiThongTin,
             emailNguoiNhan: values.emailNguoiNhan,
             ghiChu: values.ghiChu,
             nguoiNhan: values.nguoiNhan,
@@ -395,7 +415,7 @@ const detailHoaDon: React.FC = () => {
             tongTien: tongTien,
           });
           if (res.data) {
-            setData(res.data)
+            setData(res.data);
             message.success("Cập nhật hóa đơn thành công");
             navigate("/admin/hoa-don");
           } else {
@@ -465,7 +485,7 @@ const detailHoaDon: React.FC = () => {
         phiShip: feeResponse,
         emailNguoiNhan: data?.emailNguoiNhan,
         ghiChu: data?.ghiChu,
-        trangThaiHoaDon: data?.trangThaiHoaDon.ten,
+        trangThaiHoaDon: orderStatus?.ten,
         loaiHoaDon: data?.loaiHoaDon.ten,
         nguoiNhan: data?.nguoiNhan,
         sdtNguoiNhan: data?.sdtNguoiNhan,
@@ -483,6 +503,7 @@ const detailHoaDon: React.FC = () => {
       setphiShipThongTin(feeResponse);
       setTongTien(tinhTongTien(feeResponse));
       if (res.data) {
+        fetchHoaDonData();
         message.success("Cập nhật địa chỉ hóa đơn thành công");
       } else {
         console.error("Phản hồi API không như mong đợi:", res);
@@ -504,6 +525,7 @@ const detailHoaDon: React.FC = () => {
       soKichCo: item.chiTietSanPham.kichCo.kichCo,
       donGiaFromat: formatGiaTien(item.donGia),
       thanhTien: formatGiaTien(Number(item.soLuong) * Number(item.donGia)),
+      hoaDonChiTietItem: item,
     }));
   };
   // tính tổng tiền của hóa đơn đó cần trả
@@ -601,13 +623,6 @@ const detailHoaDon: React.FC = () => {
       setOrderStatus(shipingStatus);
     }
   };
-  const someFunction = () => {
-    4;
-    console.log("Button clicked!");
-  };
-  const onSuccess = () => {
-    return setLoadingTable(false);
-  };
   return (
     <>
       <Card title="Hóa đơn chi tiết">
@@ -682,24 +697,26 @@ const detailHoaDon: React.FC = () => {
                     </Form.Item>
                     <Form.Item>
                       <Space>
-                        {/* {orderStatus?.ten === "PENDING" && ( */}
-                        <Button
-                          type="primary"
-                          onClick={async () => {
-                            await handleConfirm(form.getFieldsValue());
-                          }}
-                        >
-                          Xác nhận
-                        </Button>
-                        {/* )} */}
+                        {orderStatus?.ten === "PENDING" && (
+                          <Button
+                            type="primary"
+                            onClick={async () => {
+                              await handleConfirm(form.getFieldsValue());
+                            }}
+                          >
+                            Xác nhận
+                          </Button>
+                        )}
 
-                        {/* {orderStatus?.ten === "CONFIRMED" &&
-                          showExportButton && ( */}
-                        <Button type="primary" onClick={showExportHoaDonModal}>
-                          Export PDF
-                        </Button>
-
-                        {/* )} */}
+                        {orderStatus?.ten === "CONFIRMED" &&
+                          showExportButton && (
+                            <Button
+                              type="primary"
+                              onClick={showExportHoaDonModal}
+                            >
+                              Export PDF
+                            </Button>
+                          )}
                       </Space>
                     </Form.Item>
                   </Col>
@@ -751,7 +768,6 @@ const detailHoaDon: React.FC = () => {
         fee={Number(phiShipThongTin)}
       />
       <HoaDonChiTietComponent
-        loadTable={fetchHoaDonData}
         open={sanPhamOpen}
         onCancel={handleCancelSanPham}
         idHoaDon={idHoaDonTamThoi}
