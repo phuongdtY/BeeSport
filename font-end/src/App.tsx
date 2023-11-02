@@ -39,10 +39,10 @@ import DetailHoaDon from "./pages/admin/hoa-don/detailHoaDon";
 import DetailSanPham from "./pages/shop/san-pham/detail";
 import BanHangTaiQuay from "./pages/admin/ban-hang-tai-quay/BanHangTaiQuay.tsx";
 import UpdateSanPham from "./pages/admin/san-pham/UpdateSanPham.tsx";
-import IndexHinhThucGiamGia from "./pages/admin/hinh-thuc-giam-gia/index";
-import AddHinhThucGiamGia from "./pages/admin/hinh-thuc-giam-gia/add";
-import UpdateHinhThucGiamGia from "./pages/admin/hinh-thuc-giam-gia/update";
-import AddVoucherTest from "./pages/admin/voucher/add copy";
+// import IndexHinhThucGiamGia from "./pages/admin/hinh-thuc-giam-gia/index";
+// import AddHinhThucGiamGia from "./pages/admin/hinh-thuc-giam-gia/add";
+// import UpdateHinhThucGiamGia from "./pages/admin/hinh-thuc-giam-gia/update";
+// import AddVoucherTest from "./pages/admin/voucher/add copy";
 
 function App() {
   return (
@@ -85,10 +85,10 @@ function App() {
         <Route path="khach-hang/add" element={<AddKH />} />
          {/*<Route path="khach-hang/edit/:id" element={<UpdateKhachHang />} /> */}
         <Route path="voucher/update/:id" element={<UpdateVoucher />} />
-        <Route path="hinh-thuc-giam-gia" element={<IndexHinhThucGiamGia />} />
+        {/* <Route path="hinh-thuc-giam-gia" element={<IndexHinhThucGiamGia />} />
         <Route path="hinh-thuc-giam-gia/add" element={<AddHinhThucGiamGia />} />
         <Route path="hinh-thuc-giam-gia/update/:id" element={<UpdateHinhThucGiamGia />} />
-        <Route path="voucher/addTest" element={<AddVoucherTest />} />
+        <Route path="voucher/addTest" element={<AddVoucherTest />} /> */}
       </Route>
     </Routes>
   );

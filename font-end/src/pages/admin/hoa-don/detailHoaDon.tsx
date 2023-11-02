@@ -392,7 +392,7 @@ const detailHoaDon: React.FC = () => {
             nguoiNhan: data?.nguoiNhan,
             sdtNguoiNhan: data?.sdtNguoiNhan,
             phiShip: data?.phiShip,
-            tongTien: data?.tongTien,
+            tongTien: tongTien,
           });
           if (res.data) {
             message.success("Cập nhật hóa đơn thành công");
@@ -548,7 +548,7 @@ const detailHoaDon: React.FC = () => {
             nguoiNhan: data?.nguoiNhan,
             sdtNguoiNhan: values.sdtNguoiNhan,
             phiShip: data?.phiShip,
-            tongTien: data?.tongTien,
+            tongTien: tongTien,
           });
           setLoadingForm(false);
           if (res.data) {
@@ -604,7 +604,7 @@ const detailHoaDon: React.FC = () => {
     console.log("Button clicked!");
   };
   const onSuccess = () => {
-    setLoadingTable(false);
+    return setLoadingTable(false);
   };
   return (
     <>
@@ -752,8 +752,7 @@ const detailHoaDon: React.FC = () => {
         open={sanPhamOpen}
         onCancel={handleCancelSanPham}
         idHoaDon={idHoaDonTamThoi}
-        setLoading={setLoadingTable}
-        onSuccess={onSuccess}
+        setLoading={fetchHoaDonData}
       />
       <ExportHoaDonPDF open={hoaDonOpen} onCancel={handleCancelExportHoaDon} id={data?.id} />
     </>

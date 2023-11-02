@@ -21,15 +21,13 @@ interface HoaDonChiTietProps {
   open: boolean;
   onCancel: (value: boolean) => void;
   idHoaDon: number | undefined;
-  setLoading: (value: boolean) => void;
-  onSuccess: () => void;
+  setLoading: () => void;
 }
 const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
   open,
   onCancel,
   idHoaDon,
   setLoading,
-  onSuccess,
 }) => {
   const [dataSanPham, setDataSanPham] = useState<DataTypeCtsp[]>([]);
   const [loaiDeOptions, setLoaiDeOptions] = useState([]);
@@ -123,17 +121,6 @@ const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
     ten: string;
     kichCo: number;
   }
-  // lấy API của hóa đơn chi tiết theo id hoa đơn
-  const fetchDataHoaDonChiTiet = async () => {
-    try {
-      const res = await request.get("chi-tiet-san-pham/list");
-      setDataSanPham(res.data);
-      console.log(dataSanPham);
-    } catch (error) {
-      console.log(error);
-      message.error("Lấy dữ liệu sản phẩm thất bại");
-    }
-  };
   // lấy API của sản phẩm
   const fetchDataChiTietSanPham = async () => {
     try {
@@ -220,7 +207,6 @@ const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
       cancelText: "Hủy",
       onOk: async () => {
         try {
-          setLoading(true);
           const res = await request.post("hoa-don/add-san-pham/" + idHoaDon, {
             soLuong: 1,
             donGia: ctsp.giaTien,
@@ -230,8 +216,8 @@ const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
             },
           });
           if (res.data) {
+            setLoading();
             message.success("Thêm sản phẩm thành công");
-            onSuccess();
           } else {
             console.error("Phản hồi API không như mong đợi:", res);
           }
@@ -245,6 +231,7 @@ const HoaDonChiTietComponent: React.FC<HoaDonChiTietProps> = ({
         }
       },
     });
+    
   };
 
   // sử dụng useEffect
