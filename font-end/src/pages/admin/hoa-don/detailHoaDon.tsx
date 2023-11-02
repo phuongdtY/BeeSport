@@ -264,6 +264,7 @@ const detailHoaDon: React.FC = () => {
       form.setFieldsValue({
         diaChiNguoiNhan: res.data?.hoaDonResponse.diaChiNguoiNhan,
         emailNguoiNhan: res.data?.hoaDonResponse.emailNguoiNhan,
+        nguoiNhan: res.data?.hoaDonResponse.nguoiNhan,
         sdtNguoiNhan: res.data?.hoaDonResponse.sdtNguoiNhan,
         ghiChu: res.data?.hoaDonResponse.ghiChu,
       });
@@ -387,14 +388,15 @@ const detailHoaDon: React.FC = () => {
             diaChiNguoiNhan: values.diaChiNguoiNhan,
             emailNguoiNhan: values.emailNguoiNhan,
             ghiChu: values.ghiChu,
+            nguoiNhan: values.nguoiNhan,
             trangThaiHoaDon: data?.trangThaiHoaDon.ten,
             loaiHoaDon: data?.loaiHoaDon.ten,
-            nguoiNhan: data?.nguoiNhan,
             sdtNguoiNhan: data?.sdtNguoiNhan,
             phiShip: data?.phiShip,
             tongTien: tongTien,
           });
           if (res.data) {
+            setData(res.data)
             message.success("Cập nhật hóa đơn thành công");
             navigate("/admin/hoa-don");
           } else {
@@ -545,7 +547,7 @@ const detailHoaDon: React.FC = () => {
             ghiChu: values.ghiChu,
             trangThaiHoaDon: "CONFIRMED",
             loaiHoaDon: data?.loaiHoaDon.ten,
-            nguoiNhan: data?.nguoiNhan,
+            nguoiNhan: values.nguoiNhan,
             sdtNguoiNhan: values.sdtNguoiNhan,
             phiShip: data?.phiShip,
             tongTien: tongTien,
@@ -578,7 +580,7 @@ const detailHoaDon: React.FC = () => {
           ghiChu: values.ghiChu,
           trangThaiHoaDon: "SHIPPING",
           loaiHoaDon: data?.loaiHoaDon.ten,
-          nguoiNhan: data?.nguoiNhan,
+          nguoiNhan: values.nguoiNhan,
           sdtNguoiNhan: data?.sdtNguoiNhan,
           phiShip: data?.phiShip,
           tongTien: data?.tongTien,
@@ -600,7 +602,8 @@ const detailHoaDon: React.FC = () => {
       setOrderStatus(shipingStatus);
     }
   };
-  const someFunction = () => {4
+  const someFunction = () => {
+    4;
     console.log("Button clicked!");
   };
   const onSuccess = () => {
@@ -641,7 +644,7 @@ const detailHoaDon: React.FC = () => {
                       <Tag color={orderStatus?.mauSac}>{orderStatus?.moTa}</Tag>
                     </Form.Item>
                     <Form.Item name="nguoiNhan" label="Người nhận">
-                      <span>{data?.nguoiNhan}</span>
+                      <Input />
                     </Form.Item>
                     <Form.Item
                       name="sdtNguoiNhan"
@@ -754,7 +757,11 @@ const detailHoaDon: React.FC = () => {
         idHoaDon={idHoaDonTamThoi}
         setLoading={fetchHoaDonData}
       />
-      <ExportHoaDonPDF open={hoaDonOpen} onCancel={handleCancelExportHoaDon} id={data?.id} />
+      <ExportHoaDonPDF
+        open={hoaDonOpen}
+        onCancel={handleCancelExportHoaDon}
+        id={data?.id}
+      />
     </>
   );
 };
