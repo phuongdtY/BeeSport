@@ -7,9 +7,13 @@ import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface HoaDonService {
 
     Page<HoaDonResponse> getAll(Integer currentPage, Integer pageSize, String searchText, String sorter, String sortOrder, String loaiHoaDonString, String trangThaiHoaDonString);
+
+    List<HoaDonResponse> get7HoaDonPendingByDateNew();
 
     HoaDonResponse add(CreateHoaDonRequest createHoaDonRequest);
 

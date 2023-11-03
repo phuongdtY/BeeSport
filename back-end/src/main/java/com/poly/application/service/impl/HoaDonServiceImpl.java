@@ -4,6 +4,7 @@ import com.poly.application.common.CommonEnum;
 import com.poly.application.common.GenCode;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.HoaDonChiTiet;
+import com.poly.application.entity.SanPham;
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
@@ -12,6 +13,7 @@ import com.poly.application.model.request.create_request.CreateHoaDonRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
+import com.poly.application.model.response.SanPhamResponse;
 import com.poly.application.repository.HoaDonChiTietRepository;
 import com.poly.application.repository.HoaDonRepository;
 import com.poly.application.repository.TaiKhoanRepository;
@@ -23,7 +25,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class HoaDonServiceImpl implements HoaDonService {
@@ -67,6 +71,15 @@ public class HoaDonServiceImpl implements HoaDonService {
         Pageable pageable = PageRequest.of(currentPage - 1, pageSize, sort);
         Page<HoaDon> hoaDonPage = hoaDonRepository.findPageHoaDon(pageable, searchText, loaiHoaDon, trangThaiHoaDon);
         return hoaDonPage.map(hoaDonMapper::convertHoaDonEntityToHoaDonResponse);
+    }
+
+    @Override
+    public List<HoaDonResponse> get7HoaDonPendingByDateNew() {
+        List<HoaDon> hoaDonMoiNhat = hoaDonRepository.get7HoaDonPendingByDate();
+        return hoaDonMoiNhat
+                .stream()
+                .map(hoaDonMapper::convertHoaDonEntityToHoaDonResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
