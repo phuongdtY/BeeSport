@@ -31,6 +31,7 @@ import {
   DataType as DataTypeHoaDonChiTiet,
   DataParams,
 } from "~/interfaces/hoaDonChiTiet.type";
+import { DataType as DataTypeCtsp } from "~/interfaces/ctsp.type";
 import request from "~/utils/request";
 const { confirm } = Modal;
 import generatePDF, { Options } from "react-to-pdf";
@@ -119,17 +120,13 @@ const detailHoaDon: React.FC = () => {
         <Space direction="horizontal" align="center">
           <Tooltip title="Trừ">
             <Button type="link" style={{ padding: 0 }}>
-              <PlusCircleOutlined
-                style={{ color: "red" }}
-              />
+              <PlusCircleOutlined style={{ color: "red" }} />
             </Button>
           </Tooltip>
-          <Input name="soLuong" value={hoaDonChiTietItem.soLuong}/>
+          <Input name="soLuong" value={hoaDonChiTietItem.soLuong} />
           <Tooltip title="Cộng">
             <Button type="link" style={{ padding: 0 }}>
-              <PlusCircleOutlined
-                style={{ color: "green" }}
-              />
+              <PlusCircleOutlined style={{ color: "green" }} />
             </Button>
           </Tooltip>
         </Space>
@@ -186,7 +183,6 @@ const detailHoaDon: React.FC = () => {
     page: 1,
     pageSize: 10,
   });
-
   // API địa chỉ
   const fetchProvinces = async () => {
     try {
@@ -309,7 +305,6 @@ const detailHoaDon: React.FC = () => {
     });
     console.log(value);
   };
-
   const onChangeTable = (
     pagination: TablePaginationConfig,
     filters: Record<string, FilterValue | null>,
@@ -623,6 +618,8 @@ const detailHoaDon: React.FC = () => {
       setOrderStatus(shipingStatus);
     }
   };
+
+  const handlePlusSoLuong = async (values: DataTypeCtsp) => {};
   return (
     <>
       <Card title="Hóa đơn chi tiết">
