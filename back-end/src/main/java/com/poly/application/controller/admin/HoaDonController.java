@@ -3,6 +3,7 @@ package com.poly.application.controller.admin;
 import com.poly.application.model.dto.HoaDonHoaDonChiTietListResponseDTO;
 import com.poly.application.model.request.create_request.CreateHoaDonChiTietRequest;
 import com.poly.application.model.request.create_request.CreateHoaDonRequest;
+import com.poly.application.model.request.update_request.UpdatedHoaDonChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
@@ -61,6 +62,11 @@ public class HoaDonController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@RequestBody UpdatedHoaDonRequest updatedHoaDonRequest, @PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(hoaDonService.update(id, updatedHoaDonRequest));
+    }
+
+    @PutMapping("/hoa-don-chi-tiet/{id}")
+    public ResponseEntity<?> updateHoaDonChiTiet(@RequestBody UpdatedHoaDonChiTietRequest updatedHoaDonChiTietRequest, @PathVariable(name = "id") Long id) {
+        return ResponseEntity.ok(hoaDonChiTietService.update(id, updatedHoaDonChiTietRequest));
     }
 
     @DeleteMapping("/{id}")
