@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
 
@@ -25,4 +27,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
 
     Boolean existsByMa(String ma);
 
+    @Query("SELECT hd FROM HoaDon hd WHERE hd.trangThaiHoaDon = 'PENDING' AND hd.loaiHoaDon = 'COUNTER' ORDER BY hd.ngayTao DESC LIMIT 3")
+    List<HoaDon> get7HoaDonPendingByDate();
 }

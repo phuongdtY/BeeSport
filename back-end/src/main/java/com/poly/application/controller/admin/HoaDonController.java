@@ -94,4 +94,9 @@ public class HoaDonController {
         return ResponseEntity.ok(chiTietSanPhamService.getOneCtspById(id));
     }
 
+    @GetMapping("/hoa-don-cho")
+    public ResponseEntity<?> get7HoaDonPendingByDate(){
+        return ResponseEntity.ok(hoaDonService.get7HoaDonPendingByDateNew());
+    }
+
 }
