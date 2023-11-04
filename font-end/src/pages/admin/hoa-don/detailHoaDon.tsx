@@ -619,7 +619,30 @@ const detailHoaDon: React.FC = () => {
     }
   };
 
-  const handlePlusSoLuong = async (values: DataTypeCtsp) => {};
+  const handlePlusSoLuong = async (ctsp: DataTypeCtsp) => {
+    try {
+      const res = await request.put("hoa-don/hoa-don-chi-tiet/" + data?.id, {
+        soLuong: 1,
+        donGia: ctsp.giaTien,
+        trangThaiHoaDonChiTiet: "APPROVED",
+        chiTietSanPham: {
+          id: ctsp.id,
+        },
+      });
+      if (res.data) {
+        message.success("Thêm sản phẩm thành công");
+      } else {
+        console.error("Phản hồi API không như mong đợi:", res);
+      }
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        message.error(error.response.data.message);
+      } else {
+        console.error("Lỗi không xác định:", error);
+        message.error("Xóa sản phẩm thất bại");
+      }
+    }
+  };
   return (
     <>
       <Card title="Hóa đơn chi tiết">
