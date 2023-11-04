@@ -3,11 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Spin, Upload, message } from "antd";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import request, { request4s } from "~/utils/request";
-import {
-  PictureOutlined,
-  PlusOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
+import { PictureOutlined, PlusOutlined } from "@ant-design/icons";
 
 const getBase64 = (file: RcFile): Promise<string> =>
   new Promise((resolve, reject) => {
