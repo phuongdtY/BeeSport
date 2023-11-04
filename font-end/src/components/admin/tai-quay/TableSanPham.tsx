@@ -1,8 +1,9 @@
-import { Button, Table } from "antd";
+import { Button, Table, Tooltip, message } from "antd";
 import { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect } from "react";
 import request from "~/utils/request";
 import ModalSanPham from "./ModalSanPham";
+import { DeleteOutlined } from "@ant-design/icons";
 
 interface DataGioHang {
   key: React.Key;
@@ -24,45 +25,64 @@ function formatCurrency(amount) {
   }).format(amount);
 }
 
-const tableGioHang: ColumnsType<DataGioHang> = [
-  {
-    title: "#",
-    dataIndex: "rowIndex",
-    render: (text, record, index) => index + 1,
-  },
-  {
-    title: "Hình ảnh",
-    dataIndex: "duongDan",
-    render: (text, record) => (
-      <img src={record.duongDan} alt="Product" width="80" height="80" />
-    ),
-  },
-  {
-    title: "Tên Sản Phẩm",
-    dataIndex: ["chiTietSanPham", "sanPham", "ten"],
-  },
-  {
-    title: "Số Lượng",
-    dataIndex: "soLuong",
-  },
-  {
-    title: "Đơn giá",
-    dataIndex: "donGia",
-    render: (text, record) => formatCurrency(record.chiTietSanPham.giaTien),
-  },
-  {
-    title: "Tổng tiền",
-    dataIndex: "tongTien",
-    render: (text, record) => formatCurrency(record.tongTien),
-  },
-  {
-    title: "Mã Hóa Đơn",
-    dataIndex: ["hoaDon", "ma"],
-  },
-];
-
 const TableSanPham: React.FC<{ id: number }> = ({ id }) => {
   const [dataGioHang, setDataGioHang] = useState<DataGioHang[]>([]); // Specify the data type
+
+  const tableGioHang: ColumnsType<DataGioHang> = [
+    {
+      title: "#",
+      dataIndex: "rowIndex",
+      render: (text, record, index) => index + 1,
+    },
+    {
+      title: "Hình ảnh",
+      dataIndex: "duongDan",
+      render: (text, record) => (
+        <img src={record.duongDan} alt="Product" width="80" height="80" />
+      ),
+    },
+    {
+      title: "Tên Sản Phẩm",
+      dataIndex: ["chiTietSanPham", "sanPham", "ten"],
+    },
+    {
+      title: "Số Lượng",
+      dataIndex: "soLuong",
+    },
+    {
+      title: "Đơn giá",
+      dataIndex: "donGia",
+      render: (text, record) => formatCurrency(record.chiTietSanPham.giaTien),
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "tongTien",
+      render: (text, record) => formatCurrency(record.tongTien),
+    },
+    {
+      title: "Hành động",
+      dataIndex: "",
+      key: "",
+      render: (item, record) => (
+        <Button danger type="link" onClick={() => deleteHoaDonChiTiet(item.id)}>
+          <Tooltip title="Xóa">
+            <DeleteOutlined />
+          </Tooltip>
+        </Button>
+      ),
+    },
+  ];
+
+  const deleteHoaDonChiTiet = async (idHoaDonChiTiet) => {
+    try {
+      await request.delete(`/hoa-don/${idHoaDonChiTiet}`);
+      message.success("Đã xóa sản phẩm khỏi giỏ hàng");
+      getDataGioHang();
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      // Handle errors, e.g., display an error message
+    }
+  };
 
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -98,6 +118,7 @@ const TableSanPham: React.FC<{ id: number }> = ({ id }) => {
           return { ...item, donGia, tongTien, idSanPham, idMauSac, duongDan };
         })
       );
+
       setDataGioHang(gioHangData);
       setLoading(false);
     } catch (error) {
@@ -127,6 +148,8 @@ const TableSanPham: React.FC<{ id: number }> = ({ id }) => {
               Thêm Sản phẩm
             </Button>
             <ModalSanPham
+              loadData={getDataGioHang}
+              idHoaDon={id}
               isModalVisible={isModalVisible}
               setIsModalVisible={setIsModalVisible}
             />

@@ -6,6 +6,7 @@ import TableSanPham from "./TableSanPham";
 import { PlusOutlined } from "@ant-design/icons";
 import request from "~/utils/request";
 import ModalAddKhachHang from "./ModalAddKhachHang";
+import { formatPhoneNumber } from "~/utils/formatResponse";
 
 const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
   const [checked, setChecked] = useState(false);
@@ -108,7 +109,7 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
                 <Row>
                   <Col span={5}>Số điện thoại:</Col>
                   <span style={{ fontWeight: "bold" }}>
-                    {selectKhachHang.soDienThoai}
+                    {formatPhoneNumber(selectKhachHang.soDienThoai)}
                   </span>
                 </Row>
                 <br />
