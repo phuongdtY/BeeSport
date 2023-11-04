@@ -1,58 +1,123 @@
 import React, { useState, useEffect } from "react";
 import {
-  Alert,
   Button,
   Col,
-  ColorPicker,
   InputNumber,
-  Pagination,
+  Modal,
   Radio,
   Row,
   Space,
   Table,
   Tooltip,
+  message,
 } from "antd";
 import { formatGiaTienVND, formatSoLuong } from "~/utils/formatResponse";
 import {
   DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleFilled,
   PictureOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import request, { request4s } from "~/utils/request";
 import ModalKichCo from "./ModalKichCo";
-import ModalAddKichCo from "./ModalAddKichCo";
+import { ColumnsType } from "antd/es/table";
+import HinhAnhModal from "./HinhAnhModal";
+import { DataTypeCTSP } from "~/interfaces/ctsp.type";
+import ModalAddMauSac from "./ModalAddMauSac";
 
-function TableUpdateSanPham({ idSanPham }) {
+function TableUpdateSanpham({ idSanPham }) {
+  const [openModal, setOpenModal] = useState(false);
+  const [openModalMauSac, setOpenModalMauSac] = useState(false);
   const [dataChiTietSanPham, setDataChiTietSanPham] = useState([]);
-  const [selectedMauSac, setSelectedMauSac] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [dataFake, setDataFake] = useState([]);
+  const [dataFake, setDataFake] = useState<DataTypeCTSP[]>([]);
   const [dataKichCo, setDataKichCo] = useState([]);
+  const [newData, setNewData] = useState([]);
+  const [checkedMauSac, setCheckedMauSac] = useState(null);
   const [dataMauSac, setDataMauSac] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
+  const [dataMauSacFull, setDataMauSacFull] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
-  const getDataChiTietSanPham = async () => {
-    try {
-      const res = await request.get(`chi-tiet-san-pham/${idSanPham}`);
-      setDataChiTietSanPham(res.data);
-      const modifiedData = res.data.map((data: any) => ({
-        ...data,
-        key: `${data.mauSac.id}-${data.kichCo.id}`,
-      }));
-      setDataFake(modifiedData);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [idMauSac, setIdMauSac] = useState();
+  const [mauSac, setMauSac] = useState();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const { confirm } = Modal;
+  useEffect(() => {
+    getDataMauSacFull();
+    getDataMauSac();
+    getDataChiTietSanPham();
+    getDataKichCo();
+  }, [idMauSac]);
   const getDataMauSac = async () => {
     try {
-      const res = await request4s.get("mau-sac/list");
-      setDataMauSac(res.data);
+      const res = await request.get(`mau-sac/detail/${idSanPham}`);
+      if (checkedMauSac === null) {
+        setCheckedMauSac(res.data[0].id);
+      }
+      if (dataMauSac.length === 0) {
+        setDataMauSac(res.data);
+      }
+
+      if (idMauSac === undefined || null) {
+        setIdMauSac(res.data[0].id);
+      }
     } catch (error) {
       console.log(error);
     }
   };
+  const getDataMauSacFull = async () => {
+    try {
+      const res = await request.get(`mau-sac/list`);
+      setDataMauSacFull(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getDataChiTietSanPham = async () => {
+    try {
+      const res = await request.get("chi-tiet-san-pham", {
+        params: {
+          idSanPham: idSanPham,
+          idMauSac: idMauSac,
+        },
+      });
+      console.log(res.data);
+
+      if (res.data.length > 0) {
+        setDataChiTietSanPham(res.data);
+        const modifiedData = res.data.map((data: any) => ({
+          id: data.id,
+          diaHinhSan: {
+            id: data.diaHinhSan.id,
+          },
+          loaiDe: {
+            id: data.loaiDe.id,
+          },
+          mauSac: {
+            id: data.mauSac.id,
+          },
+          kichCo: {
+            id: data.kichCo.id,
+            kichCo: data.kichCo.kichCo,
+          },
+          soLuong: data.soLuong,
+          giaTien: data.giaTien,
+          sanPham: {
+            id: data.sanPham.id,
+          },
+          trangThai: data.trangThai.ten,
+          key: `${data.mauSac.id}-${data.kichCo.id}`,
+        }));
+        setDataFake(modifiedData);
+      } else {
+        setDataFake(newData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getDataKichCo = async () => {
     try {
       const res = await request4s.get("kich-co/list");
@@ -61,11 +126,7 @@ function TableUpdateSanPham({ idSanPham }) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    getDataChiTietSanPham();
-    getDataMauSac();
-    getDataKichCo();
-  }, []);
+
   const groupedData = {};
   dataFake.forEach((data) => {
     const mauSacKey = `${data.mauSac.id}`;
@@ -75,7 +136,7 @@ function TableUpdateSanPham({ idSanPham }) {
     groupedData[mauSacKey].push(data);
   });
   const mauSacMapping = {};
-  dataMauSac.forEach((ms) => {
+  dataMauSacFull.forEach((ms) => {
     mauSacMapping[ms.id] = ms.ten;
   });
 
@@ -83,230 +144,356 @@ function TableUpdateSanPham({ idSanPham }) {
   dataKichCo.forEach((kc) => {
     kichCoMapping[kc.id] = kc.kichCo;
   });
-  const onClickUpdate = () => {
-    console.log(selectedRows);
-  };
-  return Object.keys(groupedData).map((mauSacKey) => {
-    const mauSacData = groupedData[mauSacKey];
-    const firstMauSac = mauSacData[0].mauSac;
-    const onAddModalKichCo = (mauSac: any, selectedKichCo: any) => {
-      const updatedFakeData = [...dataFake];
-      selectedKichCo.forEach((kichCo: any) => {
-        const uniqueId = `${mauSac}-${kichCo}`;
-        updatedFakeData.push({
-          id: null,
-          key: uniqueId,
-          mauSac: {
-            id: mauSac,
-            ten: mauSacMapping[mauSac],
-          },
-          kichCo: {
-            id: kichCo,
-            kichCo: kichCoMapping[kichCo],
-          },
-          soLuong: 10,
-          giaTien: 100000,
-          loaiDe: { id: dataChiTietSanPham[0].loaiDe.id },
-          diaHinhSan: { id: dataChiTietSanPham[0].diaHinhSan.id },
-          sanPham: { id: idSanPham },
-        });
+  const onClickUpdate = async () => {
+    const selectedData = dataFake.filter((row) =>
+      selectedRowKeys.includes(row.key)
+    );
+    try {
+      console.log(selectedData);
+
+      await request.put("chi-tiet-san-pham/update", selectedData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      setDataFake(updatedFakeData);
-    };
-    const editGiaTien = (key, newGiaTien) => {
-      setDataFake((prevFakeData: any) =>
-        prevFakeData.map((item) =>
-          item.key === key ? { ...item, giaTien: newGiaTien } : item
-        )
-      );
-    };
-    const editSoLuong = (key, newSoLuong) => {
-      setDataFake((prevFakeData: any) =>
-        prevFakeData.map((item) =>
-          item.key === key ? { ...item, soLuong: newSoLuong } : item
-        )
-      );
-    };
-    return (
-      <>
-        <div key={mauSacKey} style={{ marginBottom: 50 }}>
-          <Alert
-            style={{
-              fontSize: 17,
-              textAlign: "center",
-              fontWeight: "bold",
-            }}
-            message={firstMauSac.ten.toUpperCase()}
-            type="warning"
-          />
-          <Button type="primary" danger onClick={onClickUpdate}>
-            Test
-          </Button>
-          <Table
-            showSorterTooltip={false}
-            dataSource={mauSacData}
-            rowSelection={{
-              ...selectedRows,
-              ...selectedRowKeys, // Use the state variable for selected row keys
-              onChange: (selectedRowKeys: any, selectedRows: any) => {
-                setSelectedRowKeys(selectedRowKeys);
-                setSelectedRows(selectedRows);
-              },
-              checkStrictly: true,
-              type: "checkbox",
-            }}
-            columns={[
-              {
-                title: "STT",
-                dataIndex: "key",
-                rowScope: "row",
-              },
-              {
-                title: "Kích Cỡ",
-                align: "center",
-                dataIndex: "kichCo",
-                render: (kichCo) => kichCo.kichCo,
-                sorter: (a, b) => {
-                  const kichCoA = parseFloat(a.kichCo.kichCo);
-                  const kichCoB = parseFloat(b.kichCo.kichCo);
-                  return kichCoA - kichCoB;
-                },
-              },
-              {
-                title: "Số lượng",
-                align: "center",
-                dataIndex: "soLuong",
-                render: (soLuong, record) => (
-                  <InputNumber
-                    value={soLuong} // Make sure this is the correct value from your data
-                    min={1}
-                    style={{ width: "100%" }}
-                    formatter={(value) => formatSoLuong(value)}
-                    parser={(value: any) => value.replace(/,/g, "")}
-                    onChange={(newSoLuong) =>
-                      editSoLuong(record.key, newSoLuong)
-                    }
-                  />
-                ),
-              },
-              {
-                title: "Giá tiền",
-                dataIndex: "giaTien",
-                width: "250px",
-                render: (giaTien, record) => {
-                  if (selectedRowKeys.includes(record.key)) {
-                    return (
-                      <InputNumber
-                        value={giaTien}
-                        style={{ width: "100%" }}
-                        min={1000}
-                        step={10000}
-                        formatter={(value) => `${formatGiaTienVND(value)}`}
-                        parser={(value) => value.replace(/\D/g, "")}
-                        onChange={(newSoLuong) =>
-                          editGiaTien(record.key, newSoLuong)
-                        }
-                      />
-                    );
-                  } else {
-                    return (
-                      <span style={{ marginLeft: 12 }}>
-                        {formatGiaTienVND(giaTien)}
-                      </span>
-                    ); // Display the text if not selected
-                  }
-                },
-              },
-              {
-                dataIndex: "key",
-                align: "center",
-                width: "1px",
-                render: (key) => (
-                  <Button type="link" style={{ padding: 0 }}>
-                    <Tooltip title="Xóa">
-                      <DeleteOutlined style={{ color: "red" }} />
-                    </Tooltip>
-                  </Button>
-                ),
-              },
-              {
-                title: "Ảnh",
-                dataIndex: "anh",
-                width: "10%",
-                render: (text, record, index) => {
-                  if (index === 0) {
-                    return {
-                      children: (
-                        <Button
-                          type="link"
-                          style={{ padding: 0, fontSize: 30 }}
-                        >
-                          <PictureOutlined />
-                        </Button>
-                      ),
-                      props: {
-                        rowSpan: mauSacData.length,
-                      },
-                    };
-                  } else {
-                    return {
-                      children: null,
-                      props: {
-                        rowSpan: 0,
-                      },
-                    };
-                  }
-                },
-              },
-            ]}
-          />
+      getDataChiTietSanPham();
+      message.success("Chỉnh sửa dữ liệu thành công");
+    } catch (error) {
+      message.error("Chỉnh sửa dữ liệu thất bại");
+      console.log(error);
+    }
+  };
+  const colums: ColumnsType<any> = [
+    {
+      title: "STT",
+      rowScope: "row",
+      width: "10%",
+      render: (text, record, index) => index + 1 + pageSize * (page - 1),
+    },
+    {
+      title: "Kích Cỡ",
+      align: "center",
+      dataIndex: "kichCo",
+      render: (kichCo) => kichCo.kichCo,
+      sorter: (a, b) => {
+        const kichCoA = parseFloat(a.kichCo.kichCo);
+        const kichCoB = parseFloat(b.kichCo.kichCo);
+        return kichCoA - kichCoB;
+      },
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "soLuong",
+      width: "250px",
+      render: (soLuong, record) => {
+        if (selectedRowKeys.includes(record.key)) {
+          return (
+            <InputNumber
+              value={soLuong} // Make sure this is the correct value from your data
+              min={1}
+              style={{ width: "100%" }}
+              formatter={(value) => formatSoLuong(value)}
+              parser={(value: any) => value.replace(/,/g, "")}
+              onChange={(newSoLuong) => editSoLuong(record.key, newSoLuong)}
+            />
+          );
+        } else {
+          return (
+            <span style={{ marginLeft: 12 }}>{formatSoLuong(soLuong)}</span>
+          );
+        }
+      },
+    },
+    {
+      title: "Giá tiền",
+      dataIndex: "giaTien",
+      width: "250px",
+      render: (giaTien, record) => {
+        if (selectedRowKeys.includes(record.key)) {
+          return (
+            <InputNumber
+              value={giaTien}
+              style={{ width: "100%" }}
+              min={1000}
+              step={10000}
+              formatter={(value) => `${formatGiaTienVND(value)}`}
+              parser={(value: any) => value.replace(/\D/g, "")}
+              onChange={(newSoLuong) => editGiaTien(record.key, newSoLuong)}
+            />
+          );
+        } else {
+          return (
+            <span style={{ marginLeft: 12 }}>{formatGiaTienVND(giaTien)}</span>
+          );
+        }
+      },
+    },
+    {
+      dataIndex: "key",
+      align: "center",
+      width: "1px",
+      render: (key, record) => (
+        <Button type="link" style={{ padding: 0 }}>
+          <Tooltip title="Xóa">
+            <DeleteOutlined
+              style={{ color: "red" }}
+              onClick={() => deleteItem(key, record)}
+            />
+          </Tooltip>
+        </Button>
+      ),
+    },
+    {
+      title: "Ảnh",
+      dataIndex: "anh",
+      width: "10%",
+      render: (text, record, index) => {
+        if (index === 0) {
+          return {
+            children: (
+              <Button
+                type="link"
+                style={{ padding: 0, fontSize: 30 }}
+                onClick={() => setOpenModal(true)}
+              >
+                <PictureOutlined />
+              </Button>
+            ),
+            props: {
+              rowSpan: 10,
+            },
+          };
+        } else {
+          return {
+            children: null,
+            props: {
+              rowSpan: 0,
+            },
+          };
+        }
+      },
+    },
+  ];
+
+  const onClickMauSac = (event) => {
+    const selectedValue = event.target.value;
+    setIdMauSac(selectedValue);
+    setPage(1);
+  };
+  const deleteItem = (key, record) => {
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: (
+        <span>
+          Bạn có chắc xóa kích cỡ <strong>{record.kichCo.kichCo}</strong> không?
+        </span>
+      ),
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        const updatedData = dataFake.filter((item) => item.key !== key);
+        setDataFake(updatedData);
+        message.success("Xóa thành công");
+        console.log(record.id);
+
+        if (record.id !== null) {
+          try {
+            const res = await request.put(`chi-tiet-san-pham/${record.id}`, {
+              trangThai: "DELETED",
+            });
+            console.log(res);
+          } catch (error) {
+            message.error("Xóa thất bại");
+            console.log(error);
+          }
+        }
+      },
+    });
+  };
+  const onAddModalKichCo = (mauSac: any, selectedKichCo: any) => {
+    const updatedFakeData: DataTypeCTSP[] = [...dataFake];
+    const newSelectedKeys: string[] = [];
+    selectedKichCo.forEach((kichCo: string) => {
+      const uniqueId = `${mauSac}-${kichCo}`;
+      updatedFakeData.push({
+        id: null,
+        key: uniqueId,
+        mauSac: {
+          id: dataChiTietSanPham[0].mauSac.id,
+        },
+        kichCo: {
+          id: kichCo,
+          kichCo: kichCoMapping[kichCo],
+        },
+        soLuong: 10,
+        giaTien: 100000,
+        loaiDe: {
+          id: dataChiTietSanPham[0].loaiDe.id,
+        },
+        diaHinhSan: {
+          id: dataChiTietSanPham[0].diaHinhSan.id,
+        },
+        sanPham: { id: idSanPham },
+        trangThai: "ACTIVE",
+      });
+
+      newSelectedKeys.push(uniqueId);
+    });
+
+    setDataFake(updatedFakeData);
+    setSelectedRowKeys((prevSelectedKeys: string[]) => [
+      ...prevSelectedKeys,
+      ...newSelectedKeys,
+    ]);
+  };
+
+  const editGiaTien = (key, newGiaTien) => {
+    setDataFake((prevFakeData: any) =>
+      prevFakeData.map((item) =>
+        item.key === key ? { ...item, giaTien: newGiaTien } : item
+      )
+    );
+  };
+  const editSoLuong = (key, newSoLuong) => {
+    setDataFake((prevFakeData: any) =>
+      prevFakeData.map((item) =>
+        item.key === key ? { ...item, soLuong: newSoLuong } : item
+      )
+    );
+  };
+  const onAddMauSac = (idMauSac, listKichCo) => {
+    setCheckedMauSac(idMauSac);
+    const updatedMauSac: DataTypeCTSP[] = [...dataMauSac];
+    updatedMauSac.push({
+      id: idMauSac,
+      ten: mauSacMapping[idMauSac],
+    });
+    setDataMauSac(updatedMauSac);
+    const newData1 = [];
+    listKichCo.forEach((kichCo: string) => {
+      const uniqueId = `${idMauSac}-${kichCo}`;
+      newData1.push({
+        id: null,
+        key: uniqueId,
+        mauSac: {
+          id: idMauSac,
+        },
+        kichCo: {
+          id: kichCo,
+          kichCo: kichCoMapping[kichCo],
+        },
+        soLuong: 10,
+        giaTien: 100000,
+        loaiDe: {
+          id: dataChiTietSanPham[0].loaiDe.id,
+        },
+        diaHinhSan: {
+          id: dataChiTietSanPham[0].diaHinhSan.id,
+        },
+        sanPham: { id: idSanPham },
+        trangThai: "ACTIVE",
+      });
+      setNewData(newData1);
+      setDataChiTietSanPham(newData1);
+    });
+  };
+  return (
+    <>
+      {dataMauSac.length !== 0 && (
+        <Radio.Group
+          buttonStyle="outline"
+          value={checkedMauSac}
+          onChange={onClickMauSac}
+        >
+          <Space>
+            {dataMauSac.map((record: any) => (
+              <Row gutter={[10, 10]} key={record.id}>
+                <Col>
+                  <Radio.Button
+                    onClick={() => setCheckedMauSac(record.id)}
+                    value={record.id}
+                  >
+                    {record.ten}
+                  </Radio.Button>
+                </Col>
+              </Row>
+            ))}
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
+              onClick={() => setOpenModalMauSac(true)}
+            >
+              Thêm
+            </Button>
+          </Space>
+        </Radio.Group>
+      )}
+
+      <Button
+        onClick={onClickUpdate}
+        type="primary"
+        icon={<EditOutlined />}
+        style={{ float: "right", backgroundColor: "green" }}
+      >
+        Hoàn Tất Chỉnh Sửa
+      </Button>
+      <Table
+        showSorterTooltip={false}
+        pagination={{
+          showSizeChanger: true,
+          current: page,
+          pageSize: pageSize,
+          onChange: (page, pageSize) => {
+            setPage(page);
+            setPageSize(pageSize);
+          },
+        }}
+        dataSource={dataFake}
+        rowSelection={{
+          selectedRowKeys,
+          onChange: (selectedRowKeys: any, selectedRows: any) => {
+            setSelectedRowKeys(selectedRowKeys);
+          },
+          checkStrictly: true,
+          type: "checkbox",
+        }}
+        columns={colums}
+        footer={() => (
           <Button
             type="dashed"
             style={{ textAlign: "center" }}
             icon={<PlusOutlined />}
             onClick={() => {
-              setSelectedMauSac(firstMauSac);
               setShowModal(true);
             }}
             block
           >
-            Thêm Kích Cỡ Giày {firstMauSac.ten}
+            Thêm Kích Cỡ
           </Button>
-          <ModalKichCo
-            openModal={showModal}
-            closeModal={() => setShowModal(false)}
-            mauSac={selectedMauSac}
-            fakeData={dataFake}
-            onAddKichCo={onAddModalKichCo}
-          />
-          {/* <ModalAddKichCo
-          data={dataChiTietSanPham}
-          openModal={showModal}
-          closeModal={() => setShowModal(false)}
-          mauSac={selectedMauSac}
-        /> */}
-          <Radio.Group buttonStyle="outline">
-            <Space>
-              <Row gutter={[10, 10]}>
-                {dataMauSac.map((record: any) => (
-                  <Col key={record.id}>
-                    <Radio.Button value={record.id}>{record.ten}</Radio.Button>
-                  </Col>
-                ))}
-              </Row>
-              <Button
-                type="dashed"
-                // style={{ width: 50 }}
-                icon={<PlusOutlined />}
-              >
-                Thêm
-              </Button>
-            </Space>
-          </Radio.Group>
-        </div>
-      </>
-    );
-  });
+        )}
+      />
+      <ModalKichCo
+        openModal={showModal}
+        closeModal={() => setShowModal(false)}
+        mauSac={mauSac}
+        fakeData={dataFake}
+        onAddKichCo={onAddModalKichCo}
+      />
+      <ModalAddMauSac
+        onAddMauSac={onAddMauSac}
+        idSanPham={idSanPham}
+        openModal={openModalMauSac}
+        closeModal={() => setOpenModalMauSac(false)}
+      />
+      <HinhAnhModal
+        sanPham={idSanPham}
+        mauSac={mauSac}
+        openModal={openModal}
+        closeModal={() => setOpenModal(false)}
+      />
+    </>
+  );
 }
 
-export default TableUpdateSanPham;
+export default TableUpdateSanpham;

@@ -16,17 +16,12 @@ import TextArea from "antd/es/input/TextArea";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import request from "~/utils/request";
-import TableSanPham from "./TableAddSanPham";
-import TableUpdateSanPham from "./TableUpdateSanPham";
-import TableUpdateSanPhamTest from "./TableUpdateSanPhamTest";
 import ModalAddThuongHieu from "./ModalAddThuongHieu";
-import { DataType } from "~/interfaces/thuongHieu.type";
+import TableUpdateSanpham from "./TableUpdateSanPham";
 
 const UpdateSanPham: React.FC = () => {
   const [form] = Form.useForm();
   const { confirm } = Modal;
-  const [dataSanPham, setDataSanPham] = useState([]);
-  const [dataChiTietSanPham, setDataChiTietSanPham] = useState([]);
   const [dataThuongHieu, setDataThuongHieu] = useState([]);
   const [openModalTH, setOpenModalTH] = useState(false);
 
@@ -35,7 +30,6 @@ const UpdateSanPham: React.FC = () => {
   const getDataSanPham = async () => {
     try {
       const res = await request.get(`san-pham/${id}`);
-      setDataSanPham(res.data);
       form.setFieldsValue({
         ten: res.data?.ten,
         thuongHieu: res.data.thuongHieu.id,
@@ -55,23 +49,9 @@ const UpdateSanPham: React.FC = () => {
       console.log(error);
     }
   };
-  // api gọi danh sách chi tiết sản phẩm
-  const getDataChiTietSanPham = async () => {
-    try {
-      const res = await request.get("chi-tiet-san-pham/list-page", {
-        params: {
-          idSanPham: id,
-        },
-      });
-      setDataChiTietSanPham(res.data.content);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   useEffect(() => {
     getDataThuongHieu();
     getDataSanPham();
-    getDataChiTietSanPham();
   }, []);
   const addThuongHieu = (newData) => {
     getDataThuongHieu();
@@ -172,7 +152,7 @@ const UpdateSanPham: React.FC = () => {
         addThuongHieu={addThuongHieu}
       />
       <Card title="Chi Tiết Sản Phẩm">
-        <TableUpdateSanPhamTest idSanPham={id} />
+        <TableUpdateSanpham idSanPham={id} />
       </Card>
     </>
   );

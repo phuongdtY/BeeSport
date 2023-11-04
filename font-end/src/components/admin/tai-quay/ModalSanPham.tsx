@@ -1,8 +1,4 @@
-import {
-  BehanceSquareOutlined,
-  CheckCircleFilled,
-  ReloadOutlined,
-} from "@ant-design/icons";
+import { ReloadOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -13,19 +9,24 @@ import {
   Select,
   Slider,
   Table,
+  message,
 } from "antd";
 import { Option } from "antd/es/mentions";
 import React, { useState, useEffect } from "react";
-import request from "~/utils/request";
+import request, { request4s } from "~/utils/request";
 
 interface ModalSanPhamProps {
   isModalVisible: boolean;
   setIsModalVisible: (value: boolean) => void;
+  idHoaDon: number;
+  loadData: () => void;
 }
 
 const ModalSanPham: React.FC<ModalSanPhamProps> = ({
   isModalVisible,
   setIsModalVisible,
+  idHoaDon,
+  loadData,
 }) => {
   const [dataSanPham, setDataSanPham] = useState([]);
   const [loaiDeOptions, setLoaiDeOptions] = useState([]);
@@ -55,7 +56,6 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
       key: "moTa",
       render: (item, record) => {
         const images = record.images;
-        console.log(images);
 
         if (!images || images.length === 0) {
           return "Chưa có ảnh";
@@ -131,12 +131,42 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
       dataIndex: "",
       key: "",
       render: (item, record) => (
-        <Button type="primary" onClick={() => {}}>
+        <Button
+          type="primary"
+          onClick={() => handleChonSanPham(record.id, record.giaTien)}
+        >
           Chọn
         </Button>
       ),
     },
   ];
+
+  const handleChonSanPham = async (idHoaDonChiTiet, donGia) => {
+    try {
+      // Make an API call to add the product to the invoice
+      const response = await request4s.post(
+        `hoa-don/add-san-pham/${idHoaDon}`,
+        {
+          chiTietSanPham: {
+            id: idHoaDonChiTiet,
+          },
+          soLuong: 1,
+          trangThaiHoaDonChiTiet: "APPROVED",
+          donGia: donGia,
+        }
+      );
+      loadData();
+      message.success("Thêm sản phẩm vào giỏ hàng thành công !");
+      // Handle the response, e.g., display a success message or update the invoice data
+      console.log("Product added to invoice:", response.data);
+
+      // Close the modal or perform any other necessary actions
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error("Error adding product to invoice:", error);
+      // Handle errors, e.g., display an error message
+    }
+  };
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -202,8 +232,6 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           ...sanPham,
           images: images[index],
         }));
-        console.log(updatedSanPhamData);
-
         setDataSanPham(updatedSanPhamData);
       });
     }
@@ -335,7 +363,15 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
             </Col>
           </Row>
         </Row>
-        <Table dataSource={dataSanPham} columns={columns} />
+        <Table
+          dataSource={dataSanPham}
+          columns={columns}
+          pagination={{
+            pageSizeOptions: ["5"],
+            showSizeChanger: true,
+            defaultPageSize: 5,
+          }}
+        />
       </Modal>
     </>
   );

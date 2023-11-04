@@ -1,18 +1,46 @@
-import { Button, Tabs, message } from "antd";
-import React, { useRef, useState } from "react";
+import { Tabs, message } from "antd";
+import React, { useRef, useState, useEffect } from "react";
 import GioHangTaiQuay from "./GioHangTaiQuay";
 import request from "~/utils/request";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
-const initialItems = [
-  { label: "HD01", children: <GioHangTaiQuay id={44} />, key: "1" },
-];
-
 const TaiQuay: React.FC = () => {
-  const [activeKey, setActiveKey] = useState(initialItems[0].key);
-  const [items, setItems] = useState(initialItems);
+  const [activeKey, setActiveKey] = useState<string | undefined>(undefined);
+  const [items, setItems] = useState<React.ReactNode[]>([]);
   const newTabIndex = useRef(1);
+
+  useEffect(() => {
+    // Gọi API để lấy danh sách 5 hóa đơn mới nhất
+    const fetchRecentInvoices = async () => {
+      try {
+        const response = await request.get("hoa-don/hoa-don-cho");
+        const recentInvoices = response.data;
+
+        // Cập nhật danh sách các tab với hóa đơn mới nhất
+        const newPanes = recentInvoices.map((invoice: any) => {
+          const newActiveKey = `newTab${newTabIndex.current++}`;
+          return {
+            label: invoice.ma,
+            children: <GioHangTaiQuay id={invoice.id} />,
+            key: newActiveKey,
+          };
+        });
+
+        setItems(newPanes);
+
+        // Đặt tab đầu tiên là active khi danh sách được cập nhật
+        if (newPanes.length > 0) {
+          setActiveKey(newPanes[0].key);
+        }
+      } catch (error) {
+        // Xử lý lỗi từ API nếu có
+        message.error("Lỗi khi tải danh sách hóa đơn: " + error);
+      }
+    };
+
+    fetchRecentInvoices();
+  }, []);
 
   const onChange = (newActiveKey: string) => {
     setActiveKey(newActiveKey);

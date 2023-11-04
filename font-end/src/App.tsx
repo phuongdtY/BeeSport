@@ -26,11 +26,11 @@ import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
 import IndexVoucher from "./pages/admin/voucher/index";
 import AddVoucher from "./pages/admin/voucher/add";
 import UpdateVoucher from "./pages/admin/voucher/update";
-// import Signin from "./pages/login/sign-in/Signin";
-// import Signup from "./pages/login/sign-up/Singup";
-// import Forgotpassword from "./pages/login/forgot-password/Forgotpassword";
+import Signin from "./pages/login/sign-in/Signin";
+import Signup from "./pages/login/sign-up/Singup";
+import Forgotpassword from "./pages/login/forgot-password/Forgotpassword";
 import AddKH from "./pages/admin/khach-hang/add";
-// import UpdateKhachHang from "./pages/admin/khach-hang/update";
+import UpdateKhachHang from "./pages/admin/khach-hang/update";
 import IndexHoaDon from "./pages/admin/hoa-don";
 import IndexKichCo from "./pages/admin/kich-co";
 import AddKichCo from "./pages/admin/kich-co/add";
@@ -43,6 +43,9 @@ import UpdateSanPham from "./pages/admin/san-pham/UpdateSanPham.tsx";
 function App() {
   return (
     <Routes>
+      <Route path="/sign-in" element={<Signin />} />
+      <Route path="/sign-up" element={<Signup />} />
+      <Route path="/forgot-password" element={<Forgotpassword />} />
       <Route path="/thanh-toan" element={<ThanhToan />} />
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
