@@ -209,7 +209,7 @@ function TableSanPham({
           message={firstMauSac.ten}
           type="info"
         />
-        <Space style={{ margin: 5 }}>
+        {/* <Space style={{ margin: 5 }}>
           <Button type="primary" danger onClick={clickDelete}>
             <DeleteOutlined />
             Xóa
@@ -238,7 +238,7 @@ function TableSanPham({
           <Button type="default" onClick={clickGiaTien}>
             Sửa giá tiền
           </Button>
-        </Space>
+        </Space> */}
         <Table
           showSorterTooltip={false}
           rowSelection={rowSelection}

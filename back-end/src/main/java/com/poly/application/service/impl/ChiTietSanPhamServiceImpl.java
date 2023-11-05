@@ -2,7 +2,6 @@ package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.ChiTietSanPham;
-import com.poly.application.entity.LoaiDe;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.ChiTietSanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRequest;
@@ -12,9 +11,6 @@ import com.poly.application.repository.ChiTietSanPhamRepository;
 import com.poly.application.service.ChiTietSanPhamService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -77,9 +73,9 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
     }
 
     @Override
-    public List<ChiTietSanPhamResponse> getListSanPhamAndMauSac(Long idSanPham, Long idMauSac) {
+    public List<ChiTietSanPhamResponse> getListSanPham(Long idSanPham) {
 
-        List<ChiTietSanPham> list = repository.getListSanPhamAndMauSac(idSanPham, idMauSac);
+        List<ChiTietSanPham> list = repository.getListSanPham(idSanPham);
         return list.stream().map(sanPham -> mapper.convertEntityToResponse(sanPham))
                 .collect(Collectors.toList());
     }

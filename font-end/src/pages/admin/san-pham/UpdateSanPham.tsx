@@ -2,14 +2,12 @@ import { EditOutlined, PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
-  Col,
   Form,
   Input,
   Modal,
-  Row,
   Select,
   Space,
-  Table,
+  Switch,
   message,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -30,10 +28,12 @@ const UpdateSanPham: React.FC = () => {
   const getDataSanPham = async () => {
     try {
       const res = await request.get(`san-pham/${id}`);
+      const trangThaiValue = res.data?.trangThai.ten === "ACTIVE";
       form.setFieldsValue({
         ten: res.data?.ten,
         thuongHieu: res.data.thuongHieu.id,
         moTa: res.data.moTa,
+        trangThai: trangThaiValue,
       });
     } catch (error) {
       message.error("Lấy dữ liệu sản phẩm thất bại");
@@ -59,16 +59,18 @@ const UpdateSanPham: React.FC = () => {
       thuongHieu: newData.id,
     });
   };
-  const onFinish = async (data) => {
+  const onFinish = async (values) => {
+    const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
+    const data = {
+      ten: values.ten,
+      moTa: values.moTa,
+      thuongHieu: {
+        id: values.thuongHieu,
+      },
+      trangThai: trangThai,
+    };
     try {
-      await request.put(`san-pham/${id}`, {
-        ten: data.ten,
-        moTa: data.moTa,
-        thuongHieu: {
-          id: data.ThuongHieu,
-        },
-        trangThai: "ACTIVE",
-      });
+      await request.put(`san-pham/${id}`, data);
       message.success("sửa sản phẩm thành công");
     } catch (error) {
       console.log(error);
@@ -129,11 +131,19 @@ const UpdateSanPham: React.FC = () => {
               }}
             />
           </Space.Compact>
+
           <Form.Item label="Mô tả" name="moTa">
             <TextArea />
           </Form.Item>
+          <Form.Item
+            name="trangThai"
+            label="Trạng thái"
+            valuePropName="checked"
+          >
+            <Switch size="small" />
+          </Form.Item>
           <Form.Item>
-            <Space style={{ marginLeft: 690 }}>
+            <Space style={{ float: "right" }}>
               <Button type="dashed" htmlType="reset" icon={<RedoOutlined />}>
                 Reset
               </Button>

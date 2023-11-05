@@ -60,7 +60,7 @@ function ModalKichCo({ fakeData, openModal, closeModal, mauSac, onAddKichCo }) {
     if (selectAll) {
       setCheckedKeys([]);
     } else {
-      setCheckedKeys(dataKichCo.map((kichCo) => kichCo.id));
+      setCheckedKeys(availableKichCoOptions.map((kichCo) => kichCo.id));
     }
     setSelectAll(!selectAll);
   };

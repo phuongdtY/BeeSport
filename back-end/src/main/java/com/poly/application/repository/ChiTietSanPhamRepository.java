@@ -22,6 +22,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "AND (obj.trangThai = 'ACTIVE') " +
             "GROUP BY obj.id")
     List<ChiTietSanPham> findByAll(@Param("idSanPham") Long idSanPham, @Param("idMauSac") Long idMauSac, @Param("idKichCo") Long idKichCo, @Param("idLoaiDe") Long idLoaiDe, @Param("idDiaHinhSan") Long idDiaHinhSan);
+
     @Query("SELECT obj FROM ChiTietSanPham obj " +
             "WHERE (obj.sanPham.id = :idSanPham) " +
             "AND (:idMauSac IS NULL OR obj.mauSac.id = :idMauSac OR :idMauSac = '') " +
@@ -42,7 +43,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     @Query("SELECT obj FROM ChiTietSanPham obj " +
             "WHERE (obj.sanPham.id = :idSanPham)" +
-            "AND (obj.mauSac.id = :idMauSac) ORDER BY obj.ngayTao DESC")
-    List<ChiTietSanPham> getListSanPhamAndMauSac(@Param("idSanPham") Long idSanPham, @Param("idMauSac") Long idMauSac);
+            "ORDER BY obj.ngayTao DESC")
+    List<ChiTietSanPham> getListSanPham(@Param("idSanPham") Long idSanPham);
 
 }
