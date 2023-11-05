@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
+import dayjs from "dayjs";
 import {
   EditOutlined,
   EyeOutlined,
@@ -65,6 +66,9 @@ const index: React.FC = () => {
       dataIndex: "ngayBatDau",
       key: "ngayBatDau",
       sorter: true,
+      render: (ngayBatDau) => {
+        return dayjs(ngayBatDau).format("DD/MM/YYYY"); // Định dạng ngày theo ý muốn của bạn
+      },
     },
     {
       title: "Ngày kết thúc",
@@ -72,6 +76,9 @@ const index: React.FC = () => {
       dataIndex: "ngayKetThuc",
       key: "ngayKetThuc",
       sorter: true,
+      render: (ngayKetThuc) => {
+        return dayjs(ngayKetThuc).format("DD/MM/YYYY"); // Định dạng ngày theo ý muốn của bạn
+      },
     },
     {
       title: "Trạng Thái",

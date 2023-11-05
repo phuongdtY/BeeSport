@@ -89,14 +89,14 @@ const AddVoucher: React.FC = () => {
             <Form.Item
               name="ngayBatDau"
               label="Ngày Bắt Đầu"
-              rules={[{ required: true, message: "Vui lòng Chọn ngày và giờ bắt đầu!" }]}>
-              <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ bắt đầu" style={{ width: "100%" }} />
+              rules={[{ required: true, message: "Vui lòng Chọn ngày bắt đầu!" }]}>
+              <DatePicker format="DD/MM/YYYY" placeholder="Chọn ngày bắt đầu" style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item
               name="ngayKetThuc"
               label="Ngày Kết Thúc"
               rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc!" }]}>
-              <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ kết thúc" style={{ width: "100%" }} />
+              <DatePicker format="DD/MM/YYYY" placeholder="Chọn ngày kết thúc" style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item
               name="hinhThucGiam"
