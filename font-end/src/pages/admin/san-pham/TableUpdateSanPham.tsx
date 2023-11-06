@@ -63,7 +63,7 @@ function TableUpdateSanpham({ idSanPham }) {
           idSanPham: idSanPham,
         },
       });
-
+      setDataChiTietSanPham(res.data);
       const list = [];
       res.data.forEach((item: string) => {
         const uniqueId = `${item.mauSac.id}-${item.kichCo.id}`;
@@ -292,6 +292,8 @@ function TableUpdateSanpham({ idSanPham }) {
     });
   };
   const onAddModalKichCo = (mauSac: any, selectedKichCo: any) => {
+    console.log(mauSac);
+
     const updatedFakeData: DataTypeCTSP[] = [...dataFake];
     const newSelectedKeys: string[] = [];
     selectedKichCo.forEach((kichCo: string) => {
@@ -300,7 +302,8 @@ function TableUpdateSanpham({ idSanPham }) {
         id: null,
         key: uniqueId,
         mauSac: {
-          id: dataChiTietSanPham[0].mauSac.id,
+          id: mauSac,
+          ten: mauSacMapping[mauSac],
         },
         kichCo: {
           id: kichCo,
@@ -309,10 +312,10 @@ function TableUpdateSanpham({ idSanPham }) {
         soLuong: 10,
         giaTien: 100000,
         loaiDe: {
-          id: dataChiTietSanPham[0].loaiDe.id,
+          id: 1,
         },
         diaHinhSan: {
-          id: dataChiTietSanPham[0].diaHinhSan.id,
+          id: 1,
         },
         sanPham: { id: idSanPham },
         trangThai: "ACTIVE",
@@ -419,7 +422,6 @@ function TableUpdateSanpham({ idSanPham }) {
           </Space>
         </Radio.Group>
       )}
-      <Divider />
       <Button
         onClick={onClickUpdate}
         type="primary"
