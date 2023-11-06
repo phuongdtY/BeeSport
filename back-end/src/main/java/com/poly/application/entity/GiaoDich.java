@@ -39,9 +39,6 @@ public class GiaoDich {
     @Column(name = "ma_giao_dich")
     private String maGiaoDich;
 
-    @Column(name = "nhan_vien_giao_dich")
-    private String nhanVienGiaoDich;
-
     @Column(name = "so_tien_giao_dich")
     private BigDecimal soTienGiaoDich;
 

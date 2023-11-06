@@ -83,11 +83,11 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
                 .orElseThrow(() -> new NotFoundException("Hóa đơn chi tiết không tồn tại"));
 
         hoaDonChiTiet.setSoLuong(updatedHoaDonChiTietRequest.getSoLuong());
-        hoaDonChiTiet.setDonGia(updatedHoaDonChiTietRequest.getDonGia());
-        hoaDonChiTiet.setTrangThaiHoaDonChiTiet(updatedHoaDonChiTietRequest.getTrangThaiHoaDonChiTiet());
-        hoaDonChiTiet.setChiTietSanPham(updatedHoaDonChiTietRequest.getChiTietSanPham());
-        hoaDonChiTiet.setHoaDon(updatedHoaDonChiTietRequest.getHoaDon());
-        hoaDonChiTiet.setGhiChu(updatedHoaDonChiTietRequest.getGhiChu());
+//        hoaDonChiTiet.setDonGia(updatedHoaDonChiTietRequest.getDonGia());
+//        hoaDonChiTiet.setTrangThaiHoaDonChiTiet(updatedHoaDonChiTietRequest.getTrangThaiHoaDonChiTiet());
+//        hoaDonChiTiet.setChiTietSanPham(updatedHoaDonChiTietRequest.getChiTietSanPham());
+//        hoaDonChiTiet.setHoaDon(updatedHoaDonChiTietRequest.getHoaDon());
+//        hoaDonChiTiet.setGhiChu(updatedHoaDonChiTietRequest.getGhiChu());
 //        hoaDonChiTiet.setNguoiTao(updatedHoaDonChiTietRequest.getNguoiTao());
 //        hoaDonChiTiet.setNguoiSua(updatedHoaDonChiTietRequest.getNguoiSua());
 
@@ -106,6 +106,13 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
 
         hoaDonChiTietRepository.delete(donChiTiet);
 
+    }
+
+    @Override
+    public void updateHoaDonChiTiet(List<UpdatedHoaDonChiTietRequest> updatedHoaDonChiTietRequests) {
+        for (UpdatedHoaDonChiTietRequest request : updatedHoaDonChiTietRequests) {
+            update(request.getId(), request);
+        }
     }
 
     @Override
