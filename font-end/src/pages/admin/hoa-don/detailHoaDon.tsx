@@ -1,7 +1,9 @@
 import {
   DeleteOutlined,
   ExclamationCircleFilled,
+  MinusOutlined,
   PlusCircleOutlined,
+  PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import {
@@ -82,6 +84,10 @@ const detailHoaDon: React.FC = () => {
   const [phiShipThongTin, setphiShipThongTin] = useState(data?.phiShip);
   const [tongTien, setTongTien] = useState(data?.tongTien);
   const [idHoaDonTamThoi, setIdHoaDonTamThoi] = useState(data?.id);
+  const [updatedQuantities, setUpdatedQuantities] = useState<
+    DataTypeHoaDonChiTiet[]
+  >([]);
+
   const columns: ColumnsType<DataTypeHoaDonChiTiet> = [
     {
       title: "STT",
@@ -116,20 +122,22 @@ const detailHoaDon: React.FC = () => {
       align: "center",
       sorter: true,
       width: "20%",
-      render: (hoaDonChiTietItem) => (
-        <Space direction="horizontal" align="center">
-          <Tooltip title="Trừ">
-            <Button type="link" style={{ padding: 0 }}>
-              <PlusCircleOutlined style={{ color: "red" }} />
-            </Button>
-          </Tooltip>
-          <Input name="soLuong" value={hoaDonChiTietItem.soLuong} />
-          <Tooltip title="Cộng">
-            <Button type="link" style={{ padding: 0 }}>
-              <PlusCircleOutlined style={{ color: "green" }} />
-            </Button>
-          </Tooltip>
-        </Space>
+      render: (hoaDonChiTietItem: DataTypeHoaDonChiTiet) => (
+        <Space.Compact>
+          <Button
+            icon={<MinusOutlined />}
+            onClick={() => handleMinusSoLuong(hoaDonChiTietItem)}
+          />
+          <Input
+            style={{ textAlign: "center", width: 40 }}
+            value={hoaDonChiTietItem.soLuong}
+            readOnly
+          />
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => handlePlusSoLuong(hoaDonChiTietItem)}
+          />
+        </Space.Compact>
       ),
     },
     {
@@ -512,6 +520,24 @@ const detailHoaDon: React.FC = () => {
       }
     }
   };
+
+  const handleUpdateSoLuongSanPham = async () => {
+    try {
+      setLoadingTable(true);
+      await request.put("hoa-don/hoa-don-chi-tiet/" + id, {
+        soLuong: listHoaDonChiTiet?.map((item) => ({
+          soLuong: item.soLuong,
+        })),
+      });
+      fetchHoaDonData();
+      setLoadingTable(false);
+      message.success("Cập nhật giỏ hàng thành công");
+    } catch (error) {
+      message.error("Cập nhật giỏ hàng thất bại");
+      setLoadingTable(false);
+    }
+  };
+
   // hiển thị danh sách sản phẩm trong cột
   const dataSourceDanhSachSanPham = () => {
     return listHoaDonChiTiet?.map((item) => ({
@@ -618,8 +644,27 @@ const detailHoaDon: React.FC = () => {
       setOrderStatus(shipingStatus);
     }
   };
+  const handlePlusSoLuong = async (hdct: DataTypeHoaDonChiTiet) => {
+    const newData = [...listHoaDonChiTiet];
+    const index = newData.indexOf(hdct);
+    newData[index].soLuong += 1;
+    setListHoaDonChiTiet(newData);
 
-  const handlePlusSoLuong = async (values: DataTypeCtsp) => {};
+    // if (!updatedQuantities.includes(hdct.id)) {
+    //   setUpdatedQuantities((pre) => [...pre,hdct.id})
+    // }
+  };
+  const handleMinusSoLuong = async (hdct: DataTypeHoaDonChiTiet) => {
+    if (hdct.soLuong > 1) {
+      const newData = [...listHoaDonChiTiet];
+      const index = newData.indexOf(hdct);
+      newData[index].soLuong -= 1;
+      setListHoaDonChiTiet(newData);
+    }
+
+    if (!updatedQuantities.includes(hdct)) {
+    }
+  };
   return (
     <>
       <Card title="Hóa đơn chi tiết">
@@ -694,16 +739,16 @@ const detailHoaDon: React.FC = () => {
                     </Form.Item>
                     <Form.Item>
                       <Space>
-                        {orderStatus?.ten === "PENDING" && (
-                          <Button
-                            type="primary"
-                            onClick={async () => {
-                              await handleConfirm(form.getFieldsValue());
-                            }}
-                          >
-                            Xác nhận
-                          </Button>
-                        )}
+                        {/* {orderStatus?.ten === "PENDING" && ( */}
+                        <Button
+                          type="primary"
+                          onClick={async () => {
+                            await handleConfirm(form.getFieldsValue());
+                          }}
+                        >
+                          Xác nhận
+                        </Button>
+                        {/* )} */}
 
                         {orderStatus?.ten === "CONFIRMED" &&
                           showExportButton && (
@@ -730,6 +775,9 @@ const detailHoaDon: React.FC = () => {
                       allowClear
                       prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
                     />
+                    <Button onClick={handleUpdateSoLuongSanPham}>
+                      Cập nhật lại giỏ hàng
+                    </Button>
                     <Button onClick={showSanPhamModal}>Thêm sản phẩm</Button>
                   </Space>
                 </Row>

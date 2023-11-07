@@ -44,8 +44,8 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     @Query("SELECT obj FROM ChiTietSanPham obj " +
             "WHERE (obj.sanPham.id = :idSanPham)" +
-            "AND (obj.mauSac.id = :idMauSac) ORDER BY obj.ngayTao DESC")
-    List<ChiTietSanPham> getListSanPhamAndMauSac(@Param("idSanPham") Long idSanPham, @Param("idMauSac") Long idMauSac);
+            "ORDER BY obj.ngayTao DESC")
+    List<ChiTietSanPham> getListSanPham(@Param("idSanPham") Long idSanPham);
 
     @Query("SELECT obj " +
             "FROM ChiTietSanPham obj " +

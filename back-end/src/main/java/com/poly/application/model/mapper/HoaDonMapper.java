@@ -34,9 +34,9 @@ public class HoaDonMapper {
         return modelMapper.map(createHoaDonRequest, HoaDon.class);
     }
 
-    public HoaDon convertUpdatedHoaDonRequestToHoaDonEntity(UpdatedHoaDonRequest updatedHoaDonRequest){
+    public void convertUpdatedHoaDonRequestToHoaDonEntity(UpdatedHoaDonRequest updatedHoaDonRequest, HoaDon detail){
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        return modelMapper.map(updatedHoaDonRequest, HoaDon.class);
+        modelMapper.map(updatedHoaDonRequest, detail);
     }
 
     public List<HoaDonResponse> convertListHoaDonEntityToHoaDonResponse(List<HoaDon> hoaDonList){

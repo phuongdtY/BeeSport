@@ -129,6 +129,13 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher voucher = optional.get();
         voucher.setNgaySua(LocalDateTime.now());
 
+        voucher.setNgayBatDau(request.getNgayBatDau());
+        voucher.setNgayKetThuc(request.getNgayKetThuc());
+        voucher.setHinhThucGiamGia(request.getHinhThucGiam());
+        voucher.setGiaToiThieu(request.getGiaToiThieu());
+        voucher.setGiaTriGiam(request.getGiaTriGiam());
+        voucher.setGiaTriGiamToiDa(request.getGiaTriGiamToiDa());
+
         mapper.convertUpdateRequestToEntity(request, voucher);
         String status = voucherUtils.getVoucherStatusWithInactive(
                 voucher.getNgayBatDau().toLocalDate(),
