@@ -1,4 +1,4 @@
-import { Button, Table, Tooltip, message } from "antd";
+import { Button, Col, Input, Row, Space, Table, Tooltip, message } from "antd";
 import { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect } from "react";
 import request from "~/utils/request";
@@ -40,9 +40,15 @@ const TableSanPham: React.FC<{
     {
       title: "Hình ảnh",
       dataIndex: "duongDan",
-      render: (text, record) => (
-        <img src={record.duongDan} alt="Product" width="80" height="80" />
-      ),
+      render: (item, record) => {
+        return (
+          <img
+            src={`http://localhost:8080/admin/api/file/view/${record.duongDan}`}
+            alt="Hình ảnh"
+            style={{ maxWidth: "100px" }}
+          />
+        );
+      },
     },
     {
       title: "Tên Sản Phẩm",
@@ -51,6 +57,13 @@ const TableSanPham: React.FC<{
     {
       title: "Số Lượng",
       dataIndex: "soLuong",
+      render: (text, record) => (
+        <Input
+          type="number"
+          value={record.soLuong}
+          onChange={(e) => handleSoLuongChange(record, e.target.value)}
+        />
+      ),
     },
     {
       title: "Đơn giá",
@@ -75,6 +88,24 @@ const TableSanPham: React.FC<{
       ),
     },
   ];
+
+  // Thay đổi hàm handleSoLuongChange như sau:
+  const handleSoLuongChange = (record, newSoLuong) => {
+    const newSoLuongValue = parseInt(newSoLuong, 10);
+    if (!isNaN(newSoLuongValue) && newSoLuongValue >= 0) {
+      // Tìm index của bản ghi trong dataGioHang
+      const index = dataGioHang.findIndex((item) => item.key === record.key);
+      if (index !== -1) {
+        // Tạo một bản sao của dataGioHang và cập nhật số lượng cho bản ghi cụ thể
+        const updatedData = [...dataGioHang];
+        updatedData[index] = {
+          ...updatedData[index],
+          soLuong: newSoLuongValue,
+        };
+        setDataGioHang(updatedData);
+      }
+    }
+  };
 
   const passTotalPriceToParentCallback = (price) => {
     // Gọi hàm callback để truyền tổng tiền lên component cha
@@ -155,13 +186,26 @@ const TableSanPham: React.FC<{
         title={() => (
           <>
             <div style={{ fontWeight: "bold", fontSize: "18px" }}>Giỏ hàng</div>
-            <Button
-              type="primary"
-              style={{ float: "right", marginBottom: 15 }}
-              onClick={showModal}
-            >
-              Thêm Sản phẩm
-            </Button>
+            <Row>
+              <Col span={10}></Col>
+              <Col span={7}>
+                <Button
+                  type="primary"
+                  style={{ float: "right", marginBottom: 15 }}
+                >
+                  Cập nhật giỏ hàng
+                </Button>
+              </Col>
+              <Col span={7}>
+                <Button
+                  type="primary"
+                  style={{ float: "right", marginBottom: 15 }}
+                  onClick={showModal}
+                >
+                  Thêm Sản phẩm
+                </Button>
+              </Col>
+            </Row>
             <ModalSanPham
               loadData={getDataGioHang}
               idHoaDon={id}

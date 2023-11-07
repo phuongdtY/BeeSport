@@ -34,6 +34,7 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
   const [kichCoOptions, setKichCoOptions] = useState([]);
   const [diaHinhSanOptions, setDiaHinhSanOptions] = useState([]);
   const [thuongHieuOptions, setThuongHieuOptions] = useState([]);
+  const [totalElements, setTotalElements] = useState(0);
 
   // Thêm state để lưu trạng thái của các phần tử
   const [productNameFilter, setProductNameFilter] = useState("");
@@ -221,7 +222,6 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
       });
 
       handleFilterChange();
-      console.log(productNameFilter);
     }
   }, [
     isModalVisible,
@@ -268,6 +268,7 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           images: images[index],
         }));
         setDataSanPham(updatedSanPhamData);
+        setTotalElements(response.data.totalElements);
       });
   };
 
@@ -407,8 +408,8 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           dataSource={dataSanPham}
           columns={columns}
           pagination={{
+            total: totalElements,
             showSizeChanger: true,
-
             onChange(page, pageSize) {
               setPage(page), setPageSize(pageSize);
             },
