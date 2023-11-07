@@ -53,7 +53,7 @@ public class GiaoDich {
     private LocalDateTime ngaySua;
 
     @Column(name = "trang_thai_giao_dich")
-    private Integer trangThaiGiaoDich;
+    private CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich;
 
     @ManyToOne
     @JoinColumn(name = "hoa_don_id",referencedColumnName = "id")
