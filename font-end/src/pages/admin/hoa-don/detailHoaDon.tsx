@@ -524,16 +524,18 @@ const detailHoaDon: React.FC = () => {
   const handleUpdateSoLuongSanPham = async () => {
     try {
       setLoadingTable(true);
-      await request.put("hoa-don/hoa-don-chi-tiet/" + id, {
-        soLuong: listHoaDonChiTiet?.map((item) => ({
+      await request.put("hoa-don/hoa-don-chi-tiet/" + id, 
+        listHoaDonChiTiet?.map((item) => ({
+          id: item.id,
           soLuong: item.soLuong,
         })),
-      });
+      );
       fetchHoaDonData();
       setLoadingTable(false);
       message.success("Cập nhật giỏ hàng thành công");
     } catch (error) {
       message.error("Cập nhật giỏ hàng thất bại");
+      console.log(error);
       setLoadingTable(false);
     }
   };
@@ -546,6 +548,7 @@ const detailHoaDon: React.FC = () => {
       soKichCo: item.chiTietSanPham.kichCo.kichCo,
       donGiaFromat: formatGiaTien(item.donGia),
       thanhTien: formatGiaTien(Number(item.soLuong) * Number(item.donGia)),
+      tongTienSoLuong: Number(item.soLuong) * Number(item.donGia),
       hoaDonChiTietItem: item,
     }));
   };
@@ -649,10 +652,6 @@ const detailHoaDon: React.FC = () => {
     const index = newData.indexOf(hdct);
     newData[index].soLuong += 1;
     setListHoaDonChiTiet(newData);
-
-    // if (!updatedQuantities.includes(hdct.id)) {
-    //   setUpdatedQuantities((pre) => [...pre,hdct.id})
-    // }
   };
   const handleMinusSoLuong = async (hdct: DataTypeHoaDonChiTiet) => {
     if (hdct.soLuong > 1) {
@@ -660,9 +659,6 @@ const detailHoaDon: React.FC = () => {
       const index = newData.indexOf(hdct);
       newData[index].soLuong -= 1;
       setListHoaDonChiTiet(newData);
-    }
-
-    if (!updatedQuantities.includes(hdct)) {
     }
   };
   return (
