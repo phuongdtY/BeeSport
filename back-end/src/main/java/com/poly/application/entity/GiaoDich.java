@@ -39,9 +39,6 @@ public class GiaoDich {
     @Column(name = "ma_giao_dich")
     private String maGiaoDich;
 
-    @Column(name = "nhan_vien_giao_dich")
-    private String nhanVienGiaoDich;
-
     @Column(name = "so_tien_giao_dich")
     private BigDecimal soTienGiaoDich;
 
@@ -56,7 +53,7 @@ public class GiaoDich {
     private LocalDateTime ngaySua;
 
     @Column(name = "trang_thai_giao_dich")
-    private Integer trangThaiGiaoDich;
+    private CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich;
 
     @ManyToOne
     @JoinColumn(name = "hoa_don_id",referencedColumnName = "id")

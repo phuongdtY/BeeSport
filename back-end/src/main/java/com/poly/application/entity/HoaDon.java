@@ -116,4 +116,7 @@ public class HoaDon {
     @OneToMany(mappedBy = "hoaDon",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HoaDonChiTiet> hoaDonChiTietList;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "hoaDon",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<TimeLine> timeLineList;
 }

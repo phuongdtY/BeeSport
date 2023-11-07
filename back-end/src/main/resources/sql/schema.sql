@@ -2,7 +2,7 @@ CREATE DATABASE du_an_tot_nghiep;
 
 USE du_an_tot_nghiep;
 
--- Tạo bảng Thương hiệutai_khoan
+-- Tạo bảng Thương hiệu
 CREATE TABLE thuong_hieu
 (
     id         BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -41,7 +41,7 @@ CREATE TABLE san_pham
     mo_ta           TEXT,
     ngay_tao   		TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ngay_sua   		TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    trang_thai 		ENUM('ACTIVE', 'INACTIVE','DISCONTINUED') DEFAULT 'ACTIVE',
+    trang_thai 		ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE',
 
     thuong_hieu_id  BIGINT,
     FOREIGN KEY (thuong_hieu_id) REFERENCES thuong_hieu (id)
@@ -101,8 +101,20 @@ CREATE TABLE hinh_anh_san_pham
     ngay_sua   	TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     trang_thai 	ENUM('DEFAULT', 'AVATAR', 'DELETED') DEFAULT 'DEFAULT',
 
-    chi_tiet_san_pham_id BIGINT,
-    FOREIGN KEY (chi_tiet_san_pham_id) REFERENCES chi_tiet_san_pham (id)
+    san_pham_id BIGINT,
+    mau_sac_id BIGINT,
+    FOREIGN KEY (san_pham_id) REFERENCES san_pham (id),
+    FOREIGN KEY (mau_sac_id) REFERENCES mau_sac (id)
+);
+
+-- Tạo bảng Vai trò
+CREATE TABLE vai_tro
+(
+    id        	BIGINT PRIMARY KEY AUTO_INCREMENT,
+    ten        	NVARCHAR(30),
+    ngay_tao   	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ngay_sua	TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    trang_thai 	ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE'
 );
 
 -- Tạo bảng Tài khoản
@@ -123,21 +135,10 @@ CREATE TABLE tai_khoan
     mat_khau            VARCHAR(30),
     ngay_tao            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ngay_sua            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    trang_thai          ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE'
-);
+    trang_thai          ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE',
 
-
--- Tạo bảng Vai trò
-CREATE TABLE vai_tro
-(
-    id           BIGINT PRIMARY KEY AUTO_INCREMENT,
-    ten          ENUM('MANAGER', 'EMPLOYEE', 'CUSTOMER') DEFAULT 'CUSTOMER',
-    ngay_tao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ngay_sua     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    trang_thai   ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE',
-
-    tai_khoan_id   BIGINT,
-    FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan (id)
+    vai_tro_id   BIGINT,
+    FOREIGN KEY (vai_tro_id) REFERENCES vai_tro (id)
 );
 
 -- Địa chỉ
@@ -159,6 +160,16 @@ CREATE TABLE dia_chi
     FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan (id)
 );
 
+-- hình thức giảm giá
+CREATE TABLE hinh_thuc_giam_gia
+(
+    id           BIGINT PRIMARY KEY AUTO_INCREMENT,
+    ten        	 VARCHAR(255),
+    ngay_tao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ngay_sua     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    trang_thai   ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE'
+);
+
 -- Voucher
 CREATE TABLE voucher
 (
@@ -167,20 +178,23 @@ CREATE TABLE voucher
     ten                    	NVARCHAR(50),
     ngay_bat_dau           	TIMESTAMP,
     ngay_ket_thuc          	TIMESTAMP,
-    hinh_thuc_giam          ENUM('PERCENT', 'PERCENT'),
-    gia_toi_thieu			DECIMAL(18, 2),
+    gia_don_hang_toi_thieu	DECIMAL(18, 2),
     gia_tri_giam           	DECIMAL(18, 2),
     gia_tri_giam_toi_da    	DECIMAL(18, 2),
+    so_luong   				INT,
     ngay_tao   				TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ngay_sua   				TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    trang_thai             	ENUM('ACTIVE', 'EXPIRED', 'INACTIVE', 'UPCOMING')
+    trang_thai             	ENUM('ACTIVE', 'EXPIRED', 'INACTIVE', 'UPCOMING'),
+
+    hinh_thuc_giam_gia_id   BIGINT,
+    FOREIGN KEY (hinh_thuc_giam_gia_id) REFERENCES hinh_thuc_giam_gia (id)
 );
 
 CREATE TABLE hoa_don
 (
     id                 	BIGINT PRIMARY KEY AUTO_INCREMENT,
     ma_hoa_don         	VARCHAR(20),
-    loai_hoa_don       	ENUM('ONLINE', 'COUNTER', 'PHONE_ORDER'),
+    loai_hoa_don       	ENUM('ONLINE', 'COUNTER'),
     ngay_thanh_toan    	TIMESTAMP,
     phi_ship           	DECIMAL(18, 2),
     tong_tien          	DECIMAL(18, 2),
@@ -205,13 +219,27 @@ CREATE TABLE hoa_don
     FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan (id)
 );
 
+-- timeline hóa đơn
+CREATE TABLE timeline_hoa_don
+(
+    id                      BIGINT PRIMARY KEY AUTO_INCREMENT,
+    ghi_chu				    NVARCHAR(255),
+    ngay_tao   			    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    trang_thai			    enum('ACTIVE','INACTIVE'),
+
+    hoa_don_id 				BIGINT,
+    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don (id)
+);
+
 -- Phương thức thanh toán
 CREATE TABLE phuong_thuc_thanh_toan
 (
     id                      BIGINT PRIMARY KEY AUTO_INCREMENT,
     ma            			VARCHAR(20),
     ten				        NVARCHAR(50),
-    trang_thai			    TINYINT
+    ngay_tao   			    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ngay_sua			    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    trang_thai			    enum('ACTIVE','INACTIVE')
 );
 
 -- Giao dịch
@@ -219,17 +247,16 @@ CREATE TABLE giao_dich
 (
     id                      BIGINT PRIMARY KEY AUTO_INCREMENT,
     ma_giao_dich            VARCHAR(20),
-    nhan_vien_giao_dich     NVARCHAR(50),
     so_tien_giao_dich       DECIMAL(18, 2),
     ngay_tao   			    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ngay_sua			    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    trang_thai_giao_dich    TINYINT,
+    trang_thai_giao_dich	ENUM("SUCCESS","FAILED","PENDING"),
 
     hoa_don_id   BIGINT,
-    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don(id),
     tai_khoan_id   BIGINT,
-    FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan(id),
     phuong_thuc_id BIGINT,
+    FOREIGN KEY (hoa_don_id) REFERENCES hoa_don(id),
+    FOREIGN KEY (tai_khoan_id) REFERENCES tai_khoan(id),
     FOREIGN KEY (phuong_thuc_id) REFERENCES phuong_thuc_thanh_toan(id)
 );
 
@@ -244,13 +271,15 @@ CREATE TABLE hoa_don_chi_tiet
     ngay_sua   			 TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     nguoi_tao            NVARCHAR(255),
     nguoi_sua            NVARCHAR(255),
-    trang_thai         	 ENUM('ACTIVE', 'INACTIVE', 'PAID', 'CANCELLED', 'PROCESSING', 'PENDING', 'PACKING', 'SHIPPING', 'DELIVERED'),
+    trang_thai         	 ENUM("APPROVED","UNAPPROVED"),
 
     hoa_don_id           BIGINT,
     chi_tiet_san_pham_id BIGINT,
     FOREIGN KEY (hoa_don_id) REFERENCES hoa_don (id),
     FOREIGN KEY (chi_tiet_san_pham_id) REFERENCES chi_tiet_san_pham (id)
 );
+
+
 
 -- Giỏ hàng
 CREATE TABLE gio_hang
@@ -263,7 +292,9 @@ CREATE TABLE gio_hang
     trang_thai   TINYINT,
 
     nguoi_so_huu BIGINT,
-    FOREIGN KEY (nguoi_so_huu) REFERENCES tai_khoan (id)
+    voucher_id BIGINT,
+    FOREIGN KEY (nguoi_so_huu) REFERENCES tai_khoan (id),
+    FOREIGN KEY (voucher_id) REFERENCES voucher (id)
 );
 
 -- Giỏ hàng chi tiet
@@ -281,3 +312,18 @@ CREATE TABLE gio_hang_chi_tiet
     FOREIGN KEY (gio_hang_id) REFERENCES gio_hang (id),
     FOREIGN KEY (chi_tiet_san_pham_id) REFERENCES chi_tiet_san_pham (id)
 );
+
+-- quy trình thay đổi cột trong table
+
+-- ALTER TABLE du_an_tot_nghiep.giao_dich
+-- ADD trang_thai_enum ENUM('ACTIVE', 'INACTIVE');
+
+-- ALTER TABLE du_an_tot_nghiep.giao_dich
+-- DROP COLUMN nhan_vien_giao_dich;
+
+-- ALTER TABLE du_an_tot_nghiep.giao_dich
+-- CHANGE COLUMN trang_thai_enum trang_thai ENUM('ACTIVE', 'INACTIVE');
+
+
+
+

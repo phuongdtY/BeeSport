@@ -3,6 +3,7 @@ package com.poly.application.controller.admin;
 import com.poly.application.model.dto.HoaDonHoaDonChiTietListResponseDTO;
 import com.poly.application.model.request.create_request.CreateHoaDonChiTietRequest;
 import com.poly.application.model.request.create_request.CreateHoaDonRequest;
+import com.poly.application.model.request.update_request.UpdatedHoaDonChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin("*")
 @RestController
@@ -31,7 +34,7 @@ public class HoaDonController {
 
     @GetMapping()
     public ResponseEntity<?> getAll(
-            @RequestParam(value = "currentPage", defaultValue = "1") Integer page,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
             @RequestParam(value = "searchText", defaultValue = "", required = false) String searchText,
             @RequestParam(value = "sortField", defaultValue = "", required = false) String sorter,
@@ -63,6 +66,12 @@ public class HoaDonController {
         return ResponseEntity.ok(hoaDonService.update(id, updatedHoaDonRequest));
     }
 
+    @PutMapping("/hoa-don-chi-tiet/{id}")
+    public ResponseEntity<?> updateHoaDonChiTiet(@RequestBody List<UpdatedHoaDonChiTietRequest> updatedHoaDonChiTietRequest) {
+        hoaDonChiTietService.updateHoaDonChiTiet(updatedHoaDonChiTietRequest);
+        return ResponseEntity.ok("chạy xong");
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(name = "id") Long id) {
         HoaDonChiTietResponse hoaDonChiTiet = hoaDonChiTietService.findById(id);
@@ -73,7 +82,7 @@ public class HoaDonController {
     @GetMapping("/test-hoa-don/{id}")
     public ResponseEntity<?> detail(
             @PathVariable(name = "id") Long id,
-            @RequestParam(value = "currentPage", defaultValue = "1") Integer page,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
             @RequestParam(value = "searchText", defaultValue = "", required = false) String searchText,
             @RequestParam(value = "sortField", defaultValue = "", required = false) String sorter,
