@@ -19,6 +19,8 @@ public interface HoaDonChiTietService {
 
     void delete(Long id);
 
+    void updateHoaDonChiTiet(List<UpdatedHoaDonChiTietRequest> updatedHoaDonChiTietRequests);
+
     List<HoaDonChiTietResponse> findByHoaDonId(Long id);
 
     Page<HoaDonChiTietResponse> getPageAllByIdHoaDon(Integer currentPage, Integer pageSize, String searchText, String sorter, String sortOrder, Long id);

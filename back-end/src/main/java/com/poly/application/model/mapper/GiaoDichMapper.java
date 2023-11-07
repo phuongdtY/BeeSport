@@ -24,12 +24,10 @@ public class GiaoDichMapper {
     }
 
     public GiaoDichResponse convertGiaoDichEntityToGiaoDichResponse(GiaoDich giaoDich){
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         return modelMapper.map(giaoDich, GiaoDichResponse.class);
     }
 
     public GiaoDich convertCreateGiaoDichRequestToGiaoDichEntity(CreateGiaoDichRequest createGiaoDichRequest){
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         return modelMapper.map(createGiaoDichRequest, GiaoDich.class);
     }
 

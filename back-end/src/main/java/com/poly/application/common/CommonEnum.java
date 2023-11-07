@@ -190,4 +190,17 @@ public class CommonEnum {
         private final String mauSac;
     }
 
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum TrangThaiGiaoDich{
+        SUCCESS("SUCCESS", "Thành công","success"),
+        FAILED("FAILED", "Thất bại","error"),
+        PENDING("PENDING", "Đang chờ xử lý","warning");
+
+        private final String ten;
+        private final String moTa;
+        private final String mauSac;
+    }
+
 }
