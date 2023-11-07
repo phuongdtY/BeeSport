@@ -34,9 +34,10 @@ public class ChiTietSanPhamController {
 
     @GetMapping("")
     public ResponseEntity<?> getListSanPhamAndMauSac(
-                @RequestParam(name = "idSanPham", defaultValue = "",required = false) Long idSanPham
+                @RequestParam(name = "idSanPham", defaultValue = "",required = false) Long idSanPham,
+                @RequestParam(name = "idMauSac", defaultValue = "",required = false) Long idMauSac
     ) {
-        return ResponseEntity.ok(service.getListSanPham(idSanPham));
+        return ResponseEntity.ok(service.getListSanPhamAndMauSac(idSanPham, idMauSac));
     }
 
     @GetMapping("/list-page")
