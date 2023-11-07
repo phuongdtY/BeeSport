@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -22,6 +23,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "AND (obj.trangThai = 'ACTIVE') " +
             "GROUP BY obj.id")
     List<ChiTietSanPham> findByAll(@Param("idSanPham") Long idSanPham, @Param("idMauSac") Long idMauSac, @Param("idKichCo") Long idKichCo, @Param("idLoaiDe") Long idLoaiDe, @Param("idDiaHinhSan") Long idDiaHinhSan);
+
     @Query("SELECT obj FROM ChiTietSanPham obj " +
             "WHERE (obj.sanPham.id = :idSanPham) " +
             "AND (:idMauSac IS NULL OR obj.mauSac.id = :idMauSac OR :idMauSac = '') " +
@@ -44,5 +46,28 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "WHERE (obj.sanPham.id = :idSanPham)" +
             "AND (obj.mauSac.id = :idMauSac) ORDER BY obj.ngayTao DESC")
     List<ChiTietSanPham> getListSanPhamAndMauSac(@Param("idSanPham") Long idSanPham, @Param("idMauSac") Long idMauSac);
+
+    @Query("SELECT obj " +
+            "FROM ChiTietSanPham obj " +
+            "INNER JOIN SanPham sp ON " +
+            "   obj.sanPham.id = sp.id" +
+            "   WHERE " +
+            "    (sp.ma LIKE %:searchText% OR sp.ten LIKE %:searchText% )" +
+            "    AND (obj.giaTien BETWEEN :minGiaTien AND :maxGiaTien)" +
+            "    AND (:idMauSac IS NULL OR obj.mauSac.id = :idMauSac OR :idMauSac = '')" +
+            "    AND (:idDiaHinhSan IS NULL OR obj.diaHinhSan.id = :idDiaHinhSan OR :idDiaHinhSan = '')" +
+            "    AND (:idKichCo IS NULL OR obj.kichCo.id = :idKichCo OR :idKichCo = '')" +
+            "    AND (:idLoaiDe IS NULL OR obj.loaiDe.id = :idLoaiDe OR :idLoaiDe = '')" +
+            "    AND (:idThuongHieu IS NULL OR obj.sanPham.thuongHieu.id = :idThuongHieu OR :idThuongHieu = '')" )
+    Page<ChiTietSanPham> filterChiTietSanPham(
+            Pageable pageable,
+            @Param("searchText") String searchText,
+            @Param("minGiaTien") BigDecimal minGiaTien,
+            @Param("maxGiaTien") BigDecimal maxGiaTien,
+            @Param("idLoaiDe") Long idLoaiDe,
+            @Param("idMauSac") Long idMauSac,
+            @Param("idKichCo") Long idKichCo,
+            @Param("idDiaHinhSan") Long idDiaHinhSan,
+            @Param("idThuongHieu") Long idThuongHieu);
 
 }

@@ -3,6 +3,7 @@ package com.poly.application.service.impl;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.ChiTietSanPham;
 import com.poly.application.entity.LoaiDe;
+import com.poly.application.entity.SanPham;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.ChiTietSanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRequest;
@@ -12,12 +13,11 @@ import com.poly.application.repository.ChiTietSanPhamRepository;
 import com.poly.application.service.ChiTietSanPhamService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -140,6 +140,36 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
 
         ChiTietSanPham chiTietSanPham = optional.get();
         return mapper.convertEntityToResponse(chiTietSanPham);
+    }
+
+    @Override
+    public Page<ChiTietSanPhamResponse> filterChiTietSanPham(
+            Integer page,
+            Integer pageSize,
+            String searchText,
+            String sortField,
+            String sortOrder,
+            BigDecimal minGiaTien,
+            BigDecimal maxGiaTien,
+            Long idLoaiDe,
+            Long idMauSac,
+            Long idKichCo,
+            Long idDiaHinhSan,
+            Long idThuongHieu)
+    {
+        Sort sort;
+        if ("ascend".equals(sortOrder)) {
+            sort = Sort.by(sortField).ascending();
+        } else if ("descend".equals(sortOrder)) {
+            sort = Sort.by(sortField).descending();
+        } else {
+            sort = Sort.by("ngayTao").descending();
+        }
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
+        System.out.println(searchText);
+        Page<ChiTietSanPham> pageSanPham = repository.filterChiTietSanPham(pageable, searchText, minGiaTien, maxGiaTien, idLoaiDe, idMauSac, idKichCo, idDiaHinhSan, idThuongHieu);
+        return pageSanPham.map(mapper::convertEntityToResponse);
     }
 
 }

@@ -4,7 +4,7 @@ import ThongTinGiaoHang from "./ThongTinGiaoHang";
 import TextArea from "antd/es/input/TextArea";
 import TableSanPham from "./TableSanPham";
 import { PlusOutlined } from "@ant-design/icons";
-import request from "~/utils/request";
+import request, { request4s } from "~/utils/request";
 import ModalAddKhachHang from "./ModalAddKhachHang";
 import { formatPhoneNumber } from "~/utils/formatResponse";
 
@@ -12,14 +12,38 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
   const [checked, setChecked] = useState(false);
   const [selectKhachHangOptions, setSelectKhachHangOptions] = useState([]);
   const [selectKhachHang, setSelectKhachHang] = useState<any>(null);
-  const [selectVoucher, setSelectVoucher] = useState<string | undefined>(
-    undefined
-  );
+  const [voucherOptions, setVoucherOptions] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [totalPriceFromTable, setTotalPriceFromTable] = useState(0);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
+
+  const handleVoucherSelect = (value, option) => {
+    const selectedVoucher = voucherOptions.find(
+      (voucher) => voucher.id === value
+    );
+
+    const hinhThucGiamGia = selectedVoucher.hinhThucGiam;
+    const giaTriGiam = selectedVoucher.giaTriGiam;
+
+    console.log(selectedVoucher);
+
+    setSelectedVoucher(selectedVoucher);
+  };
+
+  const passTotalPriceToParent = (price) => {
+    setTotalPriceFromTable(price);
+  };
 
   const showModal = () => {
     setIsModalVisible(true);
   };
+
+  function formatCurrency(amount) {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
+  }
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -33,9 +57,22 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
       })
       .catch((error) => console.error(error));
   };
+
+  useEffect(() => {}, [totalPriceFromTable]);
+
   useEffect(() => {
-    // Call your API to fetch the list of khach hang options
     loadSelectKhachHang();
+    request4s
+      .get("voucher/list")
+      .then((response) => {
+        const options = response.data.map((voucher) => ({
+          ...voucher,
+        }));
+        setVoucherOptions(options);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi lấy danh sách voucher từ API: ", error);
+      });
   }, []);
 
   const onChangeGiaoHang = (checked: boolean) => {
@@ -43,16 +80,11 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
   };
 
   const onChangeKhachHang = (value: string) => {
-    // Find the selected khachHang object from selectKhachHangOptions based on the value
     const selectedKhachHang = selectKhachHangOptions.find(
       (khachHang) => khachHang.id === value
     );
 
     setSelectKhachHang(selectedKhachHang);
-  };
-
-  const onChangeVoucher = (value: string) => {
-    setSelectVoucher(value);
   };
 
   const onSearch = (value: string) => {
@@ -131,7 +163,10 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
               </>
             )}
             <Divider />
-            <TableSanPham id={id} />
+            <TableSanPham
+              id={id}
+              passTotalPriceToParent={passTotalPriceToParent}
+            />
           </Card>
         </Col>
         <Col span={10}>
@@ -157,23 +192,18 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
                   showSearch
                   placeholder="Tìm kiếm Voucher"
                   optionFilterProp="children"
-                  onChange={onChangeVoucher}
+                  onChange={handleVoucherSelect}
                   onSearch={onSearch}
                   filterOption={filterOption}
-                  options={[
-                    {
-                      value: "1",
-                      label: "Giảm giá Tết Dương Lịch",
-                    },
-                    {
-                      value: "2",
-                      label: "Giảm giá Tết Nguyên Đán",
-                    },
-                    {
-                      value: "3",
-                      label: "Giảm giá Sinh nhật",
-                    },
-                  ]}
+                  options={voucherOptions.map((voucher) => ({
+                    value: voucher.id,
+                    label:
+                      voucher.hinhThucGiam.id === 1
+                        ? `${voucher.ten} - Giảm: ${formatCurrency(
+                            voucher.giaTriGiam
+                          )}`
+                        : `${voucher.ten} - Giảm: ${voucher.giaTriGiam}% `,
+                  }))}
                 />
               </Col>
             </Row>
@@ -184,7 +214,7 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
               </Col>
               <Col span={16}></Col>
               <Col span={3}>
-                <p>500.000</p>
+                <p>{formatCurrency(totalPriceFromTable)}</p>
               </Col>
             </Row>
             {/* Phí vận chuyển */}
@@ -194,7 +224,7 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
               </Col>
               <Col span={14}></Col>
               <Col span={3}>
-                <p>50.000</p>
+                <p>0 đ</p>
               </Col>
             </Row>
             {/* Giảm giá */}
@@ -204,7 +234,18 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
               </Col>
               <Col span={16}></Col>
               <Col span={3}>
-                <p>34.000</p>
+                <p>
+                  {formatCurrency(
+                    selectedVoucher
+                      ? selectedVoucher.hinhThucGiam.id === 1
+                        ? selectedVoucher.giaTriGiam
+                        : selectedVoucher.hinhThucGiam.id === 2
+                        ? (totalPriceFromTable / 100) *
+                          selectedVoucher.giaTriGiam
+                        : 0
+                      : 0
+                  )}
+                </p>
               </Col>
             </Row>
             {/* Tổng tiền */}

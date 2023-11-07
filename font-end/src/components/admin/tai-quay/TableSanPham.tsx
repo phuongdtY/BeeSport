@@ -25,7 +25,10 @@ function formatCurrency(amount) {
   }).format(amount);
 }
 
-const TableSanPham: React.FC<{ id: number }> = ({ id }) => {
+const TableSanPham: React.FC<{
+  id: number;
+  passTotalPriceToParent: (price: number) => void;
+}> = ({ id, passTotalPriceToParent }) => {
   const [dataGioHang, setDataGioHang] = useState<DataGioHang[]>([]); // Specify the data type
 
   const tableGioHang: ColumnsType<DataGioHang> = [
@@ -72,6 +75,18 @@ const TableSanPham: React.FC<{ id: number }> = ({ id }) => {
       ),
     },
   ];
+
+  const passTotalPriceToParentCallback = (price) => {
+    // Gọi hàm callback để truyền tổng tiền lên component cha
+    passTotalPriceToParent(price);
+  };
+
+  // Thêm một useEffect để theo dõi sự thay đổi của dataGioHang và tính toán tổng tiền
+  useEffect(() => {
+    const total = dataGioHang.reduce((acc, item) => acc + item.tongTien, 0);
+    // Gọi hàm callback để truyền tổng tiền lên component cha khi tổng tiền thay đổi
+    passTotalPriceToParentCallback(total);
+  }, [dataGioHang]);
 
   const deleteHoaDonChiTiet = async (idHoaDonChiTiet) => {
     try {
