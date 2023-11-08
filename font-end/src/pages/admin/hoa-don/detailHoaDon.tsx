@@ -1,10 +1,14 @@
 import {
   DeleteOutlined,
   ExclamationCircleFilled,
+  LoadingOutlined,
   MinusOutlined,
   PlusCircleOutlined,
   PlusOutlined,
   SearchOutlined,
+  SmileOutlined,
+  SolutionOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -12,17 +16,19 @@ import {
   Col,
   Form,
   Input,
+  InputNumber,
   Modal,
   Row,
   Skeleton,
   Space,
+  Steps,
   Table,
   TablePaginationConfig,
   Tag,
   Tooltip,
   message,
 } from "antd";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   DataType as DataTypeHoaDon,
@@ -44,7 +50,13 @@ import DiaChiComponent from "./diaChiModal";
 import HoaDonChiTietComponent from "./hoaDonChiTietModal";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import ExportHoaDonPDF from "./exportHoaDonPDF";
-import { formatGiaTien } from "~/utils/formatResponse";
+import {
+  formatGiaTien,
+  formatGiaTienVND,
+  formatNgayTao,
+} from "~/utils/formatResponse";
+import React from "react";
+import { FaShippingFast } from "react-icons/fa";
 
 const optionPrintPDF: Options = {
   filename: "hoa-don.pdf",
@@ -60,10 +72,30 @@ interface Option {
   isLeaf?: boolean;
 }
 
+interface Item {
+  title: String | null;
+  subTitle: String | null;
+  description: String | null;
+  icon: React.ReactNode;
+}
+
+const containerStyle: React.CSSProperties = {
+  width: "100%",
+  height: 100,
+  overflow: "auto",
+  border: "1px solid #40a9ff",
+};
+
+const style: React.CSSProperties = {
+  width: "100%",
+  height: 1000,
+};
+
 const getTargetElement = () => document.getElementById("pdfReaderHoaDon");
 const downloadPdf = () => generatePDF(getTargetElement, optionPrintPDF);
 
 const detailHoaDon: React.FC = () => {
+  const [itemTimeline, setItemTimeline] = useState<Item[]>([]);
   const [diaChiOpen, setDiaChiOpen] = useState(false);
   const [sanPhamOpen, setSanPhamOpen] = useState(false);
   const [hoaDonOpen, setHoaDonOpen] = useState(false);
@@ -83,6 +115,7 @@ const detailHoaDon: React.FC = () => {
   const [diaChiThongTin, setDiaChiThongTin] = useState(data?.diaChiNguoiNhan);
   const [phiShipThongTin, setphiShipThongTin] = useState(data?.phiShip);
   const [tongTien, setTongTien] = useState(data?.tongTien);
+  const [tienShip, setTienShip] = useState<number>(0);
   const [idHoaDonTamThoi, setIdHoaDonTamThoi] = useState(data?.id);
   const [updatedQuantities, setUpdatedQuantities] = useState<
     DataTypeHoaDonChiTiet[]
@@ -300,10 +333,43 @@ const detailHoaDon: React.FC = () => {
       setLoadingTable(false);
       setTongTien(res.data?.hoaDonResponse.tongTien);
       setIdHoaDonTamThoi(res.data.hoaDonResponse.id);
+      setTienShip(res.data?.hoaDonResponse.phiShip);
     } catch (error) {
       console.log(error);
 
       setLoadingTable(false);
+    }
+  };
+
+  const fetchDataTimeline = async () => {
+    try {
+      const timelineRes = await request.get("/timeline/" + 4);
+      const timelineItem1: Item[] = timelineRes.data.map((item: any) => ({
+        title: item.trangThai.moTa,
+        subTitle: formatNgayTao(item.ngayTao),
+        description: item.ghiChu,
+        icon: handleIconTimeline(item.trangThai.ten),
+      }));
+      setItemTimeline(timelineItem1);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleIconTimeline = (value: string) => {
+    switch (value) {
+      case "PENDING":
+        return <UserOutlined />;
+      case "CANCELLED":
+        return <SolutionOutlined />;
+      case "APPROVED":
+        return <SolutionOutlined />;
+      case "CONFIRMED":
+        return <SolutionOutlined />;
+      case "SHIPPING":
+        return <FaShippingFast />;
+      default:
+        return null;
     }
   };
   const handleSearch = (value: string) => {
@@ -393,6 +459,7 @@ const detailHoaDon: React.FC = () => {
   // load dữ liệu useEffect
   useEffect(() => {
     fetchHoaDonData();
+    fetchDataTimeline();
     fetchProvinces();
   }, [params]);
   // cập nhật hóa đơn
@@ -414,7 +481,7 @@ const detailHoaDon: React.FC = () => {
             trangThaiHoaDon: data?.trangThaiHoaDon.ten,
             loaiHoaDon: data?.loaiHoaDon.ten,
             sdtNguoiNhan: data?.sdtNguoiNhan,
-            phiShip: data?.phiShip,
+            phiShip: Number(values.phiShip),
             tongTien: tongTien,
           });
           if (res.data) {
@@ -524,16 +591,19 @@ const detailHoaDon: React.FC = () => {
   const handleUpdateSoLuongSanPham = async () => {
     try {
       setLoadingTable(true);
-      await request.put("hoa-don/hoa-don-chi-tiet/" + id, {
-        soLuong: listHoaDonChiTiet?.map((item) => ({
+      await request.put(
+        "hoa-don/hoa-don-chi-tiet/" + id,
+        listHoaDonChiTiet?.map((item) => ({
+          id: item.id,
           soLuong: item.soLuong,
-        })),
-      });
+        }))
+      );
       fetchHoaDonData();
       setLoadingTable(false);
       message.success("Cập nhật giỏ hàng thành công");
     } catch (error) {
       message.error("Cập nhật giỏ hàng thất bại");
+      console.log(error);
       setLoadingTable(false);
     }
   };
@@ -546,6 +616,7 @@ const detailHoaDon: React.FC = () => {
       soKichCo: item.chiTietSanPham.kichCo.kichCo,
       donGiaFromat: formatGiaTien(item.donGia),
       thanhTien: formatGiaTien(Number(item.soLuong) * Number(item.donGia)),
+      tongTienSoLuong: Number(item.soLuong) * Number(item.donGia),
       hoaDonChiTietItem: item,
     }));
   };
@@ -591,10 +662,11 @@ const detailHoaDon: React.FC = () => {
             loaiHoaDon: data?.loaiHoaDon.ten,
             nguoiNhan: values.nguoiNhan,
             sdtNguoiNhan: values.sdtNguoiNhan,
-            phiShip: data?.phiShip,
+            phiShip: tienShip,
             tongTien: tongTien,
           });
           setLoadingForm(false);
+          console.log(values);
           if (res.data) {
             message.success("Cập nhật hóa đơn thành công");
           } else {
@@ -624,7 +696,7 @@ const detailHoaDon: React.FC = () => {
           loaiHoaDon: data?.loaiHoaDon.ten,
           nguoiNhan: values.nguoiNhan,
           sdtNguoiNhan: data?.sdtNguoiNhan,
-          phiShip: data?.phiShip,
+          phiShip: Number(values.phiShip),
           tongTien: data?.tongTien,
         });
         if (res.data) {
@@ -649,10 +721,6 @@ const detailHoaDon: React.FC = () => {
     const index = newData.indexOf(hdct);
     newData[index].soLuong += 1;
     setListHoaDonChiTiet(newData);
-
-    // if (!updatedQuantities.includes(hdct.id)) {
-    //   setUpdatedQuantities((pre) => [...pre,hdct.id})
-    // }
   };
   const handleMinusSoLuong = async (hdct: DataTypeHoaDonChiTiet) => {
     if (hdct.soLuong > 1) {
@@ -661,10 +729,12 @@ const detailHoaDon: React.FC = () => {
       newData[index].soLuong -= 1;
       setListHoaDonChiTiet(newData);
     }
-
-    if (!updatedQuantities.includes(hdct)) {
-    }
   };
+  const handleTienShip = (event: any) => {
+    setTienShip(event);
+    console.log(tienShip);
+  };
+  const [container, setContainer] = React.useState<HTMLDivElement | null>(null);
   return (
     <>
       <Card title="Hóa đơn chi tiết">
@@ -676,127 +746,138 @@ const detailHoaDon: React.FC = () => {
             layout="horizontal"
             form={form}
           >
-            <div>
-              <Card style={{ marginBottom: "5px" }}>
-                <Row>
-                  <Col span={12}>
-                    <h3>Thông tin người mua</h3>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col span={10}>
-                    <Form.Item name="ma" label="Mã hóa đơn">
-                      <span>{data?.ma}</span>
-                    </Form.Item>
-                    <Form.Item name="loaiHoaDon" label="Loại hóa đơn">
-                      <Tag color={data?.loaiHoaDon?.mauSac}>
-                        {data?.loaiHoaDon.moTa}
-                      </Tag>
-                    </Form.Item>
-                    <Form.Item
-                      name="trangThaiHoaDon"
-                      label="Trạng thái hóa đơn"
-                    >
-                      <Tag color={orderStatus?.mauSac}>{orderStatus?.moTa}</Tag>
-                    </Form.Item>
-                    <Form.Item name="nguoiNhan" label="Người nhận">
-                      <Input />
-                    </Form.Item>
-                    <Form.Item
-                      name="sdtNguoiNhan"
-                      label="Số điện thoại người nhận"
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                  <Col span={14}>
-                    <Form.Item
-                      name="diaChiNguoiNhan"
-                      label="Địa chỉ người nhận"
-                    >
-                      <Space direction="horizontal">
-                        <div style={{ width: "190px" }}>
-                          <span>{diaChiThongTin}</span>
-                        </div>
-                        <Button onClick={showDiaChiModal}>Tùy chỉnh</Button>
-                      </Space>
-                    </Form.Item>
-                    <Form.Item name="emailNguoiNhan" label="Email người nhận">
-                      <Input />
-                    </Form.Item>
-                    <Form.Item name="ghiChu" label="Ghi chú">
-                      <TextArea />
-                    </Form.Item>
-                    <Form.Item name="phiShip" label="Phí ship">
+            <Card style={{ marginBottom: "5ps" }}>
+              <Row>
+                <Col span={12}>
+                  <h3>Timeline</h3>
+                </Col>
+              </Row>
+              <Row>
+                <Steps current={4} items={itemTimeline} />
+              </Row>
+            </Card>
+            <Card style={{ marginBottom: "5px" }}>
+              <Row>
+                <Col span={12}>
+                  <h3>Thông tin người mua</h3>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={10}>
+                  <Form.Item name="ma" label="Mã hóa đơn">
+                    <span>{data?.ma}</span>
+                  </Form.Item>
+                  <Form.Item name="loaiHoaDon" label="Loại hóa đơn">
+                    <Tag color={data?.loaiHoaDon?.mauSac}>
+                      {data?.loaiHoaDon.moTa}
+                    </Tag>
+                  </Form.Item>
+                  <Form.Item name="trangThaiHoaDon" label="Trạng thái hóa đơn">
+                    <Tag color={orderStatus?.mauSac}>{orderStatus?.moTa}</Tag>
+                  </Form.Item>
+                  <Form.Item name="nguoiNhan" label="Người nhận">
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    name="sdtNguoiNhan"
+                    label="Số điện thoại người nhận"
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={14}>
+                  <Form.Item name="diaChiNguoiNhan" label="Địa chỉ người nhận">
+                    <Space direction="horizontal">
                       <div style={{ width: "190px" }}>
-                        <span>{formatGiaTien(Number(phiShipThongTin))}</span>
+                        <span>{diaChiThongTin}</span>
                       </div>
-                    </Form.Item>
-                    <Form.Item name="tongTien" label="Tổng tiền">
-                      <div style={{ width: "190px" }}>
-                        <span>{formatGiaTien(tongTien)}</span>
-                      </div>
-                    </Form.Item>
-                    <Form.Item>
-                      <Space>
-                        {/* {orderStatus?.ten === "PENDING" && ( */}
-                        <Button
-                          type="primary"
-                          onClick={async () => {
-                            await handleConfirm(form.getFieldsValue());
-                          }}
-                        >
-                          Xác nhận
-                        </Button>
-                        {/* )} */}
-
-                        {orderStatus?.ten === "CONFIRMED" &&
-                          showExportButton && (
-                            <Button
-                              type="primary"
-                              onClick={showExportHoaDonModal}
-                            >
-                              Export PDF
-                            </Button>
-                          )}
-                      </Space>
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Card>
-              <Card>
-                <Row>
-                  <Space direction="horizontal">
-                    <h3 style={{ width: "200px" }}>Danh sách sản phẩm</h3>
-                    <Input
-                      onChange={(e) => handleSearch(e.target.value)}
-                      placeholder="Tìm kiếm theo Tên..."
-                      style={{ width: "200px" }}
-                      allowClear
-                      prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
+                      <Button onClick={showDiaChiModal}>Tùy chỉnh</Button>
+                    </Space>
+                  </Form.Item>
+                  <Form.Item name="emailNguoiNhan" label="Email người nhận">
+                    <Input />
+                  </Form.Item>
+                  <Form.Item name="ghiChu" label="Ghi chú">
+                    <TextArea />
+                  </Form.Item>
+                  <Form.Item
+                    name="phiShip"
+                    label="Phí ship"
+                    // initialValue={tienShip}
+                  >
+                    <div style={{ width: "190px" }}>
+                      <span>{formatGiaTien(Number(phiShipThongTin))}</span>
+                    </div>
+                    <InputNumber
+                      value={tienShip}
+                      onChange={(e) => handleTienShip(e.target.value)}
+                      style={{ width: "100%" }}
+                      min={10000}
+                      step={10000}
+                      formatter={(value) => `${formatGiaTienVND(value)}`}
+                      parser={(value: any) => value.replace(/\D/g, "")}
                     />
-                    <Button onClick={handleUpdateSoLuongSanPham}>
-                      Cập nhật lại giỏ hàng
-                    </Button>
-                    <Button onClick={showSanPhamModal}>Thêm sản phẩm</Button>
-                  </Space>
-                </Row>
-                <Table
-                  pagination={{
-                    pageSizeOptions: ["1", "5", "10"],
-                    showSizeChanger: true,
-                    total: totalElements,
-                    showTotal: (total, range) =>
-                      `${range[0]}-${range[1]} of ${total} items`,
-                  }}
-                  columns={columns}
-                  dataSource={dataSourceDanhSachSanPham()}
-                  onChange={onChangeTable}
-                  loading={loadingTable}
-                  showSorterTooltip={false}
-                />
-              </Card>
-            </div>
+                  </Form.Item>
+                  <Form.Item name="tongTien" label="Tổng tiền">
+                    <div style={{ width: "190px" }}>
+                      <span>{formatGiaTien(tongTien)}</span>
+                    </div>
+                  </Form.Item>
+                  <Form.Item>
+                    <Space>
+                      {/* {orderStatus?.ten === "PENDING" && ( */}
+                      <Button
+                        type="primary"
+                        onClick={async () => {
+                          await handleConfirm(form.getFieldsValue());
+                        }}
+                      >
+                        Xác nhận
+                      </Button>
+                      {/* )} */}
+
+                      {orderStatus?.ten === "CONFIRMED" && showExportButton && (
+                        <Button type="primary" onClick={showExportHoaDonModal}>
+                          Export PDF
+                        </Button>
+                      )}
+                    </Space>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Card>
+            <Card>
+              <Row>
+                <Space direction="horizontal">
+                  <h3 style={{ width: "200px" }}>Danh sách sản phẩm</h3>
+                  <Input
+                    onChange={(e) => handleSearch(e.target.value)}
+                    placeholder="Tìm kiếm theo Tên..."
+                    style={{ width: "200px" }}
+                    allowClear
+                    prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
+                  />
+                  <Button onClick={handleUpdateSoLuongSanPham}>
+                    Cập nhật lại giỏ hàng
+                  </Button>
+                  <Button onClick={showSanPhamModal}>Thêm sản phẩm</Button>
+                </Space>
+              </Row>
+              <Table
+                pagination={{
+                  pageSizeOptions: ["1", "5", "10"],
+                  showSizeChanger: true,
+                  total: totalElements,
+                  showTotal: (total, range) =>
+                    `${range[0]}-${range[1]} of ${total} items`,
+                }}
+                columns={columns}
+                dataSource={dataSourceDanhSachSanPham()}
+                onChange={onChangeTable}
+                loading={loadingTable}
+                showSorterTooltip={false}
+              />
+            </Card>
           </Form>
         </Skeleton>
       </Card>
