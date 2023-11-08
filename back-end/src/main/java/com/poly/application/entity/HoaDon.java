@@ -82,9 +82,6 @@ public class HoaDon {
     @Column(name = "ngay_nhan")
     private LocalDateTime ngayNhan;
 
-    @Column(name = "ngay_mong_muon")
-    private LocalDateTime ngayMongMuon;
-
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")

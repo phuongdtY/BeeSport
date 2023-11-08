@@ -7,8 +7,6 @@ import java.util.List;
 
 public interface TimelineService {
 
-    List<TimelineResponse> getAllList();
-
-
+    List<TimelineResponse> getAllList(Long id);
 
 }

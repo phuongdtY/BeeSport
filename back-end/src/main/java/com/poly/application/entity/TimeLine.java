@@ -42,9 +42,6 @@ public class TimeLine {
     @Column(name = "ghi_chu")
     private String ghiChu;
 
-    @Column(name = "ma")
-    private String ma;
-
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")

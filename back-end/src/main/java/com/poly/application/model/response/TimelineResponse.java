@@ -2,6 +2,8 @@ package com.poly.application.model.response;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HoaDon;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +12,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Builder
 public class TimelineResponse {
 
     private Long id;
@@ -21,6 +22,7 @@ public class TimelineResponse {
 
     private LocalDateTime ngayTao;
 
+    @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiHoaDon trangThai;
 
     private HoaDon hoaDon;

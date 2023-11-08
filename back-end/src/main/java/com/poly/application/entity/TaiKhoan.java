@@ -1,5 +1,6 @@
 package com.poly.application.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.poly.application.common.CommonEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -97,6 +98,7 @@ public class TaiKhoan implements Serializable {
     @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DiaChi> diaChiList;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HoaDon> hoaDonList;
 
