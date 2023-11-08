@@ -105,6 +105,10 @@ public class HoaDon {
     private CommonEnum.TrangThaiHoaDon trangThaiHoaDon;
 
     @ManyToOne
+    @JoinColumn(name = "voucher_id", referencedColumnName = "id")
+    private Voucher voucher;
+
+    @ManyToOne
     @JoinColumn(name = "tai_khoan_id", referencedColumnName = "id")
     private TaiKhoan taiKhoan;
 

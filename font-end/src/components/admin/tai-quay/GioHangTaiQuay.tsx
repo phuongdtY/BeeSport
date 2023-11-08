@@ -1,4 +1,14 @@
-import { Button, Card, Col, Divider, Row, Select, Space, Switch } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  Divider,
+  Row,
+  Select,
+  Space,
+  Switch,
+  message,
+} from "antd";
 import React, { useState, useEffect } from "react";
 import ThongTinGiaoHang from "./ThongTinGiaoHang";
 import TextArea from "antd/es/input/TextArea";
@@ -8,7 +18,10 @@ import request, { request4s } from "~/utils/request";
 import ModalAddKhachHang from "./ModalAddKhachHang";
 import { formatPhoneNumber } from "~/utils/formatResponse";
 
-const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
+const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
+  id,
+  loadHoaDon,
+}) => {
   const [checked, setChecked] = useState(false);
   const [selectKhachHangOptions, setSelectKhachHangOptions] = useState([]);
   const [selectKhachHang, setSelectKhachHang] = useState<any>(null);
@@ -16,19 +29,42 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [totalPriceFromTable, setTotalPriceFromTable] = useState(0);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [hoaDon, setHoaDon] = useState(null); // State để lưu đối tượng hóa đơn
+  const [ghiChu, setGhiChu] = useState("null"); // State để lưu đối tượng hóa đơn
 
-  const handleVoucherSelect = (value, option) => {
-    const selectedVoucher = voucherOptions.find(
-      (voucher) => voucher.id === value
-    );
-
-    const hinhThucGiamGia = selectedVoucher.hinhThucGiam;
-    const giaTriGiam = selectedVoucher.giaTriGiam;
-
-    console.log(selectedVoucher);
-
-    setSelectedVoucher(selectedVoucher);
+  // Hàm để lấy thông tin chi tiết hóa đơn dựa trên id
+  const fetchHoaDonDetails = async (idHoaDon) => {
+    try {
+      // Gọi API để lấy thông tin hóa đơn dựa trên idHoaDon
+      const response = await request.get(`/hoa-don/${idHoaDon}`);
+      if (response.status === 200) {
+        const hoaDon = response.data; // Dữ liệu hóa đơn từ máy chủ
+        setHoaDon(hoaDon); // Lưu hóa đơn vào state
+        // Sử dụng hoaDonData để hiển thị hoặc thực hiện các thao tác khác
+        console.log("Thông tin hóa đơn:", hoaDon);
+      } else {
+        // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
+        message.error("Có lỗi xảy ra khi lấy thông tin hóa đơn.");
+      }
+    } catch (error) {
+      console.error("Error fetching invoice details:", error);
+      // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
+      message.error("Có lỗi xảy ra khi lấy thông tin hóa đơn.");
+    }
   };
+
+  const handleGhiChuChange = (event) => {
+    const giaTriGhiChu = event.target.value;
+    // Set giá trị vào setGhiChu
+    setGhiChu(giaTriGhiChu);
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchHoaDonDetails(id); // Gọi hàm để lấy thông tin hóa đơn khi id thay đổi
+    }
+    // ...
+  }, [id]);
 
   const passTotalPriceToParent = (price) => {
     setTotalPriceFromTable(price);
@@ -48,6 +84,7 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
+
   const loadSelectKhachHang = () => {
     request
       .get("khach-hang/list")
@@ -58,21 +95,56 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
       .catch((error) => console.error(error));
   };
 
+  const getHoaDonData = () => {
+    const idTaiKhoan = selectKhachHang ? selectKhachHang.id : null; // Lấy id của khách hàng (nếu có)
+
+    // const idVoucher = selectedVoucher ? selectedVoucher.id : null; // Lấy id của voucher (nếu có)
+    const tongTien = totalPriceFromTable; // Lấy tổng tiền từ state hoặc props
+
+    // Tạo đối tượng hóa đơn
+    const hoaDonData = {
+      id: id,
+      ma: hoaDon.ma,
+      loaiHoaDon: "COUNTER",
+      taiKhoan: {
+        id: idTaiKhoan,
+      },
+      tongTien: tongTien,
+      voucher: {
+        id: 1,
+      },
+      giaToiThieu: 12000,
+      trangThaiHoaDon: "CONFIRMED",
+      ghiChu: ghiChu,
+    };
+
+    return hoaDonData;
+  };
+
+  const handleLuuHoaDon = async (id) => {
+    // Lấy thông tin hóa đơn
+    const hoaDonData = getHoaDonData();
+    try {
+      // Gọi API để cập nhật hóa đơn theo `id`
+      const response = await request.put(`/hoa-don/${id}`, hoaDonData);
+      if (response.status === 200) {
+        message.success("Hóa đơn đã được cập nhật thành công.");
+      } else {
+        // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
+        message.error("Có lỗi xảy ra khi cập nhật hóa đơn.");
+      }
+    } catch (error) {
+      console.error("Error updating invoice:", error);
+      // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
+      message.error("Có lỗi xảy ra khi cập nhật hóa đơn.");
+    }
+    loadHoaDon();
+  };
+
   useEffect(() => {}, [totalPriceFromTable]);
 
   useEffect(() => {
     loadSelectKhachHang();
-    request4s
-      .get("voucher/list")
-      .then((response) => {
-        const options = response.data.map((voucher) => ({
-          ...voucher,
-        }));
-        setVoucherOptions(options);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi lấy danh sách voucher từ API: ", error);
-      });
   }, []);
 
   const onChangeGiaoHang = (checked: boolean) => {
@@ -192,18 +264,8 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
                   showSearch
                   placeholder="Tìm kiếm Voucher"
                   optionFilterProp="children"
-                  onChange={handleVoucherSelect}
                   onSearch={onSearch}
                   filterOption={filterOption}
-                  options={voucherOptions.map((voucher) => ({
-                    value: voucher.id,
-                    label:
-                      voucher.hinhThucGiam.id === 1
-                        ? `${voucher.ten} - Giảm: ${formatCurrency(
-                            voucher.giaTriGiam
-                          )}`
-                        : `${voucher.ten} - Giảm: ${voucher.giaTriGiam}% `,
-                  }))}
                 />
               </Col>
             </Row>
@@ -259,12 +321,18 @@ const GioHangTaiQuay: React.FC<{ id: number }> = ({ id }) => {
               </Col>
             </Row>
             <p>Ghi chú: </p>
-            <TextArea rows={4} />
+            <TextArea
+              rows={4}
+              value={ghiChu}
+              onChange={handleGhiChuChange}
+              id="ghiChu"
+            />
             <Row>
               <Col span={24}>
                 <Button
                   type="primary"
                   style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
+                  onClick={() => handleLuuHoaDon(id)}
                 >
                   Lưu hóa đơn
                 </Button>

@@ -1,7 +1,17 @@
-import { Button, Col, Input, Row, Space, Table, Tooltip, message } from "antd";
+import {
+  Button,
+  Col,
+  Input,
+  InputNumber,
+  Row,
+  Space,
+  Table,
+  Tooltip,
+  message,
+} from "antd";
 import { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect } from "react";
-import request from "~/utils/request";
+import request, { request4s } from "~/utils/request";
 import ModalSanPham from "./ModalSanPham";
 import { DeleteOutlined } from "@ant-design/icons";
 
@@ -30,6 +40,7 @@ const TableSanPham: React.FC<{
   passTotalPriceToParent: (price: number) => void;
 }> = ({ id, passTotalPriceToParent }) => {
   const [dataGioHang, setDataGioHang] = useState<DataGioHang[]>([]); // Specify the data type
+  const [soLuong, setSoLuong] = useState({});
 
   const tableGioHang: ColumnsType<DataGioHang> = [
     {
@@ -57,11 +68,11 @@ const TableSanPham: React.FC<{
     {
       title: "Số Lượng",
       dataIndex: "soLuong",
-      render: (text, record) => (
-        <Input
-          type="number"
+      render: (text, record, index) => (
+        <InputNumber
           value={record.soLuong}
-          onChange={(e) => handleSoLuongChange(record, e.target.value)}
+          inputMode="numeric"
+          onChange={(newSoLuong) => handleSoLuongChange(index, newSoLuong)}
         />
       ),
     },
@@ -89,21 +100,39 @@ const TableSanPham: React.FC<{
     },
   ];
 
-  // Thay đổi hàm handleSoLuongChange như sau:
-  const handleSoLuongChange = (record, newSoLuong) => {
-    const newSoLuongValue = parseInt(newSoLuong, 10);
-    if (!isNaN(newSoLuongValue) && newSoLuongValue >= 0) {
-      // Tìm index của bản ghi trong dataGioHang
-      const index = dataGioHang.findIndex((item) => item.key === record.key);
-      if (index !== -1) {
-        // Tạo một bản sao của dataGioHang và cập nhật số lượng cho bản ghi cụ thể
-        const updatedData = [...dataGioHang];
-        updatedData[index] = {
-          ...updatedData[index],
-          soLuong: newSoLuongValue,
-        };
-        setDataGioHang(updatedData);
-      }
+  const handleCapNhatGioHang = async (id) => {
+    console.log(dataGioHang);
+    try {
+      const response = await request4s.put(
+        `/hoa-don/hoa-don-chi-tiet/${id}`,
+        dataGioHang?.map((item) => ({
+          id: item.id,
+          soLuong: item.soLuong,
+        }))
+      );
+      message.success("Đã cập nhật giỏ hàng");
+    } catch (error) {
+      console.error("Error updating cart:", error);
+      // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
+      message.error("Có lỗi xảy ra khi cập nhật giỏ hàng.");
+    }
+  };
+
+  const handleSoLuongChange = (index, newSoLuong) => {
+    const newSoLuongValue = typeof newSoLuong === "number" ? newSoLuong : 0;
+
+    // Tìm sản phẩm trong danh sách dựa trên index
+    const productToUpdate = dataGioHang[index];
+
+    if (productToUpdate) {
+      // Tạo một bản sao của dataGioHang và cập nhật số lượng và tổng tiền cho sản phẩm cụ thể
+      const updatedData = [...dataGioHang];
+      updatedData[index] = {
+        ...productToUpdate,
+        soLuong: newSoLuongValue,
+        tongTien: newSoLuongValue * productToUpdate.donGia, // Cập nhật tổng tiền
+      };
+      setDataGioHang(updatedData);
     }
   };
 
@@ -192,6 +221,7 @@ const TableSanPham: React.FC<{
                 <Button
                   type="primary"
                   style={{ float: "right", marginBottom: 15 }}
+                  onClick={() => handleCapNhatGioHang(id)}
                 >
                   Cập nhật giỏ hàng
                 </Button>
