@@ -157,7 +157,9 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Override
     public void updateTrangThaiHoaDon(Long idHoadon, CommonEnum.TrangThaiHoaDon trangThaiHoaDon, String ghiChu) {
-        System.out.println(trangThaiHoaDon + " /  " + idHoadon);
+        if (trangThaiHoaDon == null) {
+            return;
+        }
         HoaDon hoaDon = hoaDonRepository.findById(idHoadon).orElseThrow(() -> new NotFoundException("Không tìm thấy hóa đơn có id " + idHoadon));
         TimeLine timeLine = new TimeLine();
         timeLine.setHoaDon(hoaDon);
@@ -194,7 +196,10 @@ public class HoaDonServiceImpl implements HoaDonService {
             default:
                 break;
         }
-        timelineRepository.save(timeLine);
+
+        if (!timelineRepository.existsTimeLineByTrangThai(trangThaiHoaDon)) {
+            timelineRepository.save(timeLine);
+        }
         hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
     }
 
