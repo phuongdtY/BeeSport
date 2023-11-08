@@ -9,7 +9,7 @@ import {
   Switch,
   message,
 } from "antd";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ThongTinGiaoHang from "./ThongTinGiaoHang";
 import TextArea from "antd/es/input/TextArea";
 import TableSanPham from "./TableSanPham";
@@ -31,6 +31,21 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [hoaDon, setHoaDon] = useState(null); // State để lưu đối tượng hóa đơn
   const [ghiChu, setGhiChu] = useState("null"); // State để lưu đối tượng hóa đơn
+  const [address, setAddress] = useState(""); // Sử dụng state để lưu địa chỉ
+  const [phiShip, setPhiShip] = useState(0);
+
+  // Xử lý sự kiện thay đổi địa chỉ (address) từ ThongTinGiaoHang
+  const handleFullAddressChange = (addressValue) => {
+    setAddress(addressValue);
+  };
+
+  // Xử lý sự kiện thay đổi phí ship (phiShip) từ ThongTinGiaoHang
+  const handleFeeResponseChange = (feeValue) => {
+    setPhiShip(feeValue);
+  };
+
+  console.log("Phi Ship:", phiShip);
+  console.log("Địa chỉ:", address);
 
   // Hàm để lấy thông tin chi tiết hóa đơn dựa trên id
   const fetchHoaDonDetails = async (idHoaDon) => {
@@ -106,18 +121,17 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       id: id,
       ma: hoaDon.ma,
       loaiHoaDon: "COUNTER",
-      taiKhoan: {
-        id: idTaiKhoan,
-      },
+      taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
       tongTien: tongTien,
       voucher: {
         id: 1,
       },
+      phiShip: phiShip, // Thêm phiShip vào hoaDonData
+      diaChiNguoiNhan: address, // Thêm address vào hoaDonData
       giaToiThieu: 12000,
       trangThaiHoaDon: "CONFIRMED",
       ghiChu: ghiChu,
     };
-
     return hoaDonData;
   };
 
@@ -128,6 +142,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       // Gọi API để cập nhật hóa đơn theo `id`
       const response = await request.put(`/hoa-don/${id}`, hoaDonData);
       if (response.status === 200) {
+        loadHoaDon();
         message.success("Hóa đơn đã được cập nhật thành công.");
       } else {
         // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
@@ -138,7 +153,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
       message.error("Có lỗi xảy ra khi cập nhật hóa đơn.");
     }
-    loadHoaDon();
   };
 
   useEffect(() => {}, [totalPriceFromTable]);
@@ -249,7 +263,10 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
             {checked ? (
               <>
                 <Card title="Thông tin nhận hàng">
-                  <ThongTinGiaoHang />
+                  <ThongTinGiaoHang
+                    onFullAddressChange={handleFullAddressChange}
+                    onFeeResponseChange={handleFeeResponseChange}
+                  />
                 </Card>
                 <Divider />
               </>
