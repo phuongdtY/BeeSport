@@ -1,7 +1,17 @@
-import { Button, Table, Tooltip, message } from "antd";
+import {
+  Button,
+  Col,
+  Input,
+  InputNumber,
+  Row,
+  Space,
+  Table,
+  Tooltip,
+  message,
+} from "antd";
 import { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect } from "react";
-import request from "~/utils/request";
+import request, { request4s } from "~/utils/request";
 import ModalSanPham from "./ModalSanPham";
 import { DeleteOutlined } from "@ant-design/icons";
 
@@ -25,8 +35,12 @@ function formatCurrency(amount) {
   }).format(amount);
 }
 
-const TableSanPham: React.FC<{ id: number }> = ({ id }) => {
+const TableSanPham: React.FC<{
+  id: number;
+  passTotalPriceToParent: (price: number) => void;
+}> = ({ id, passTotalPriceToParent }) => {
   const [dataGioHang, setDataGioHang] = useState<DataGioHang[]>([]); // Specify the data type
+  const [soLuong, setSoLuong] = useState({});
 
   const tableGioHang: ColumnsType<DataGioHang> = [
     {
@@ -37,9 +51,15 @@ const TableSanPham: React.FC<{ id: number }> = ({ id }) => {
     {
       title: "Hình ảnh",
       dataIndex: "duongDan",
-      render: (text, record) => (
-        <img src={record.duongDan} alt="Product" width="80" height="80" />
-      ),
+      render: (item, record) => {
+        return (
+          <img
+            src={`http://localhost:8080/admin/api/file/view/${record.duongDan}`}
+            alt="Hình ảnh"
+            style={{ maxWidth: "100px" }}
+          />
+        );
+      },
     },
     {
       title: "Tên Sản Phẩm",
@@ -48,6 +68,13 @@ const TableSanPham: React.FC<{ id: number }> = ({ id }) => {
     {
       title: "Số Lượng",
       dataIndex: "soLuong",
+      render: (text, record, index) => (
+        <InputNumber
+          value={record.soLuong}
+          inputMode="numeric"
+          onChange={(newSoLuong) => handleSoLuongChange(index, newSoLuong)}
+        />
+      ),
     },
     {
       title: "Đơn giá",
@@ -72,6 +99,54 @@ const TableSanPham: React.FC<{ id: number }> = ({ id }) => {
       ),
     },
   ];
+
+  const handleCapNhatGioHang = async (id) => {
+    console.log(dataGioHang);
+    try {
+      const response = await request4s.put(
+        `/hoa-don/hoa-don-chi-tiet/${id}`,
+        dataGioHang?.map((item) => ({
+          id: item.id,
+          soLuong: item.soLuong,
+        }))
+      );
+      message.success("Đã cập nhật giỏ hàng");
+    } catch (error) {
+      console.error("Error updating cart:", error);
+      // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
+      message.error("Có lỗi xảy ra khi cập nhật giỏ hàng.");
+    }
+  };
+
+  const handleSoLuongChange = (index, newSoLuong) => {
+    const newSoLuongValue = typeof newSoLuong === "number" ? newSoLuong : 0;
+
+    // Tìm sản phẩm trong danh sách dựa trên index
+    const productToUpdate = dataGioHang[index];
+
+    if (productToUpdate) {
+      // Tạo một bản sao của dataGioHang và cập nhật số lượng và tổng tiền cho sản phẩm cụ thể
+      const updatedData = [...dataGioHang];
+      updatedData[index] = {
+        ...productToUpdate,
+        soLuong: newSoLuongValue,
+        tongTien: newSoLuongValue * productToUpdate.donGia, // Cập nhật tổng tiền
+      };
+      setDataGioHang(updatedData);
+    }
+  };
+
+  const passTotalPriceToParentCallback = (price) => {
+    // Gọi hàm callback để truyền tổng tiền lên component cha
+    passTotalPriceToParent(price);
+  };
+
+  // Thêm một useEffect để theo dõi sự thay đổi của dataGioHang và tính toán tổng tiền
+  useEffect(() => {
+    const total = dataGioHang.reduce((acc, item) => acc + item.tongTien, 0);
+    // Gọi hàm callback để truyền tổng tiền lên component cha khi tổng tiền thay đổi
+    passTotalPriceToParentCallback(total);
+  }, [dataGioHang]);
 
   const deleteHoaDonChiTiet = async (idHoaDonChiTiet) => {
     try {
@@ -140,13 +215,27 @@ const TableSanPham: React.FC<{ id: number }> = ({ id }) => {
         title={() => (
           <>
             <div style={{ fontWeight: "bold", fontSize: "18px" }}>Giỏ hàng</div>
-            <Button
-              type="primary"
-              style={{ float: "right", marginBottom: 15 }}
-              onClick={showModal}
-            >
-              Thêm Sản phẩm
-            </Button>
+            <Row>
+              <Col span={10}></Col>
+              <Col span={7}>
+                <Button
+                  type="primary"
+                  style={{ float: "right", marginBottom: 15 }}
+                  onClick={() => handleCapNhatGioHang(id)}
+                >
+                  Cập nhật giỏ hàng
+                </Button>
+              </Col>
+              <Col span={7}>
+                <Button
+                  type="primary"
+                  style={{ float: "right", marginBottom: 15 }}
+                  onClick={showModal}
+                >
+                  Thêm Sản phẩm
+                </Button>
+              </Col>
+            </Row>
             <ModalSanPham
               loadData={getDataGioHang}
               idHoaDon={id}

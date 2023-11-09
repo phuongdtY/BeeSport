@@ -4,6 +4,7 @@ import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.GiaoDich;
 import com.poly.application.entity.HoaDonChiTiet;
 import com.poly.application.entity.TaiKhoan;
+import com.poly.application.entity.Voucher;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -66,6 +67,8 @@ public class CreateHoaDonRequest {
 
     @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiHoaDon trangThaiHoaDon;
+
+    private Voucher voucher;
 
     private TaiKhoan taiKhoan;
 

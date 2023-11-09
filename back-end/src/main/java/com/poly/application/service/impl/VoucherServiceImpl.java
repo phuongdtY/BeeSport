@@ -6,6 +6,7 @@ import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.VoucherMapper;
 import com.poly.application.model.request.create_request.CreatedVoucherRequest;
 import com.poly.application.model.request.update_request.UpdateVoucherRequest;
+import com.poly.application.model.response.GioHangChiTietResponse;
 import com.poly.application.model.response.VoucherResponse;
 import com.poly.application.repository.VoucherRepository;
 import com.poly.application.service.VoucherService;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class VoucherServiceImpl implements VoucherService {
@@ -54,6 +56,16 @@ public class VoucherServiceImpl implements VoucherService {
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
         Page<Voucher> voucherPage = repository.findByALl(pageable, searchText, hinhThucGiamGiaId, trangThai);
         return voucherPage.map(mapper::convertEntityToResponse);
+    }
+
+    @Override
+    public List<VoucherResponse> getListVoucher() {
+        List<Voucher> list = repository.getListVoucherActive();
+        return list
+                .stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
+
     }
 
     @Override
@@ -116,14 +128,6 @@ public class VoucherServiceImpl implements VoucherService {
 
         Voucher voucher = optional.get();
         voucher.setNgaySua(LocalDateTime.now());
-
-        voucher.setNgayBatDau(request.getNgayBatDau());
-        voucher.setNgayKetThuc(request.getNgayKetThuc());
-        voucher.setHinhThucGiamGia(request.getHinhThucGiam());
-        voucher.setGiaToiThieu(request.getGiaToiThieu());
-        voucher.setGiaTriGiam(request.getGiaTriGiam());
-        voucher.setGiaTriGiamToiDa(request.getGiaTriGiamToiDa());
-        voucher.setSoLuong(request.getSoLuong());
 
         mapper.convertUpdateRequestToEntity(request, voucher);
         String status = voucherUtils.getVoucherStatusWithInactive(

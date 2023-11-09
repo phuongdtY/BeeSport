@@ -1,6 +1,9 @@
 package com.poly.application.model.request.update_request;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HinhThucGiamGia;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,5 +38,6 @@ public class UpdateVoucherRequest {
 
     private LocalDateTime ngaySua;
 
+    @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;
 }

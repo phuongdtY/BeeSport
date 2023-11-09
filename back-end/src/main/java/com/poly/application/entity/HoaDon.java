@@ -16,7 +16,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -101,6 +100,10 @@ public class HoaDon {
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai")
     private CommonEnum.TrangThaiHoaDon trangThaiHoaDon;
+
+    @ManyToOne
+    @JoinColumn(name = "voucher_id", referencedColumnName = "id")
+    private Voucher voucher;
 
     @ManyToOne
     @JoinColumn(name = "tai_khoan_id", referencedColumnName = "id")

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Input, Row, Select } from "antd";
 import { Option } from "antd/es/mentions";
 import axios from "axios";
+import request from "~/utils/request";
 
 interface Option {
   value?: number | null;
@@ -17,11 +18,19 @@ type FieldType = {
   diaChi?: string;
 };
 
-const ThongTinGiaoHang: React.FC = () => {
+const ThongTinGiaoHang: React.FC<{
+  onFullAddressChange: (address: string) => void; // Sửa kiểu dữ liệu của onFullAddressChange
+  onFeeResponseChange: (fee: number) => void; // Sửa kiểu dữ liệu của onFeeResponseChange
+}> = ({ onFullAddressChange, onFeeResponseChange }) => {
   const [provinces, setProvinces] = useState<Option[]>([]);
   const [districts, setDistricts] = useState<Option[]>([]);
   const [wards, setWards] = useState<Option[]>([]);
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    getFullAddress(); // Export the getFullAddress function
+    calculateShippingFee(form.getFieldsValue());
+  }, [form]);
 
   const onFinish = (values: any) => {
     console.log("Success:", values);
@@ -29,6 +38,46 @@ const ThongTinGiaoHang: React.FC = () => {
 
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
+  };
+
+  const calculateShippingFee = async (value) => {
+    try {
+      const feeRes = await request.get(
+        `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee`,
+        {
+          params: {
+            service_type_id: "2",
+            to_district_id: value.quanHuyen,
+            to_ward_code: value.phuongXa,
+            height: "9",
+            length: "29",
+            weight: "300",
+            width: "18",
+          },
+          headers: {
+            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
+            shop_id: "4611572",
+            ContentType: "application/json",
+          },
+        }
+      );
+
+      if (feeRes.status === 200) {
+        const feeResponse = feeRes.data.data.total;
+        console.log(feeResponse);
+
+        // Cập nhật state phiShip sau khi tính phí ship thành công
+        onFeeResponseChange(feeResponse);
+      } else {
+        console.error("Lỗi khi gọi API tính phí ship: ", feeRes.status);
+        // Xử lý lỗi và cập nhật state phiShip (ví dụ, set giá trị mặc định hoặc 0 nếu có lỗi)
+        onFeeResponseChange(0);
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API tính phí ship:", error);
+      // Xử lý lỗi và cập nhật state phiShip (ví dụ, set giá trị mặc định hoặc 0 nếu có lỗi)
+      onFeeResponseChange(0);
+    }
   };
 
   useEffect(() => {
@@ -77,7 +126,7 @@ const ThongTinGiaoHang: React.FC = () => {
 
       const districtOptions: Option[] = districtRes.data.data.map(
         (district: any) => ({
-          value: district.DistrictID,
+          value: Number(district.DistrictID),
           label: district.DistrictName,
           isLeaf: false,
         })
@@ -113,6 +162,34 @@ const ThongTinGiaoHang: React.FC = () => {
       console.error(error);
     }
   };
+  // lấy tên của địa chỉ và cập nhật địa chỉ
+  const getProvinceLabelFromId = (id: number | null | undefined) => {
+    const province = provinces.find((p) => p.value === id);
+    return province?.label;
+  };
+  const getDistrictLabelFromId = (id: number | null | undefined) => {
+    const district = districts.find((d) => d.value === id);
+    return district?.label;
+  };
+  const getWardLabelFromId = (id: number | null | undefined) => {
+    const ward = wards.find((w) => w.value === id);
+    return ward?.label;
+  };
+
+  // Hàm để lấy thông tin địa chỉ chính xác nhất
+  const getFullAddress = () => {
+    const formValues = form.getFieldsValue();
+    const provinceLabel = getProvinceLabelFromId(formValues.thanhPho);
+    const districtLabel = getDistrictLabelFromId(formValues.quanHuyen);
+    const wardLabel = getWardLabelFromId(formValues.phuongXa);
+    const diaChiCuThe = formValues.diaChi;
+    console.log(provinceLabel);
+
+    // Cộng chuỗi thông tin địa chỉ lại với nhau
+    const fullAddress = `${diaChiCuThe}, ${wardLabel}, ${districtLabel}, ${provinceLabel}`;
+    onFullAddressChange(fullAddress);
+    return fullAddress;
+  };
 
   return (
     <>
@@ -126,6 +203,12 @@ const ThongTinGiaoHang: React.FC = () => {
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
+        // Sử dụng onChange để theo dõi thay đổi trong biểu mẫu
+        onChange={() => {
+          const fullAddress = getFullAddress();
+          onFullAddressChange(fullAddress);
+          calculateShippingFee(form.getFieldsValue());
+        }}
       >
         <Row>
           <Col span={12}>

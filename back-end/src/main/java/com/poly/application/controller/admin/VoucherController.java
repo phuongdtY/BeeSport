@@ -29,6 +29,11 @@ public class VoucherController {
         return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, hinhThucGiamGiaId, trangThaiString));
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<?> getList() {
+        return ResponseEntity.ok(service.getListVoucher());
+    }
+
     @PostMapping()
     public ResponseEntity<?> add(@RequestBody CreatedVoucherRequest request) {
         return new ResponseEntity<>(service.add(request), HttpStatus.CREATED);
