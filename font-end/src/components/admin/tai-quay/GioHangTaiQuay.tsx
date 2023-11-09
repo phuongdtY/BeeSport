@@ -3,12 +3,16 @@ import {
   Card,
   Col,
   Divider,
+  Input,
+  InputNumber,
+  Radio,
   Row,
   Select,
   Space,
   Switch,
   message,
 } from "antd";
+import { BsCashCoin, BsCreditCard2Back } from "react-icons/bs";
 import React, { useState, useEffect, useRef } from "react";
 import ThongTinGiaoHang from "./ThongTinGiaoHang";
 import TextArea from "antd/es/input/TextArea";
@@ -16,7 +20,7 @@ import TableSanPham from "./TableSanPham";
 import { PlusOutlined } from "@ant-design/icons";
 import request, { request4s } from "~/utils/request";
 import ModalAddKhachHang from "./ModalAddKhachHang";
-import { formatPhoneNumber } from "~/utils/formatResponse";
+import { formatGiaTienVND, formatPhoneNumber } from "~/utils/formatResponse";
 
 const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   id,
@@ -33,6 +37,28 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [ghiChu, setGhiChu] = useState("null"); // State để lưu đối tượng hóa đơn
   const [address, setAddress] = useState(""); // Sử dụng state để lưu địa chỉ
   const [phiShip, setPhiShip] = useState(0);
+  const [isCashSelected, setIsCashSelected] = useState(false); // State để kiểm tra xem "Tiền mặt" được chọn hay không
+  const [customerInfo, setCustomerInfo] = useState({
+    // Initialize with default values if needed
+    nguoiNhan: "",
+    sdtNguoiNhan: "",
+    emailNguoiNhan: "",
+  });
+  const tongTienKhiGiam = totalPriceFromTable + phiShip;
+
+  // Xử lý sự kiện khi radio "Tiền mặt" được chọn
+  const handleCashRadioChange = (e) => {
+    setIsCashSelected(e.target.value === 0);
+  };
+
+  const handleCustomerInfoChange = (formValues) => {
+    console.log(formValues);
+    setCustomerInfo({
+      nguoiNhan: formValues.nguoiNhan,
+      sdtNguoiNhan: formValues.sdtNguoiNhan,
+      emailNguoiNhan: formValues.emailNguoiNhan,
+    });
+  };
 
   // Xử lý sự kiện thay đổi địa chỉ (address) từ ThongTinGiaoHang
   const handleFullAddressChange = (addressValue) => {
@@ -43,9 +69,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const handleFeeResponseChange = (feeValue) => {
     setPhiShip(feeValue);
   };
-
-  console.log("Phi Ship:", phiShip);
-  console.log("Địa chỉ:", address);
 
   // Hàm để lấy thông tin chi tiết hóa đơn dựa trên id
   const fetchHoaDonDetails = async (idHoaDon) => {
@@ -123,6 +146,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       loaiHoaDon: "COUNTER",
       taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
       tongTien: tongTien,
+      tongTienKhiGiam: tongTienKhiGiam,
       voucher: {
         id: 1,
       },
@@ -131,7 +155,11 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       giaToiThieu: 12000,
       trangThaiHoaDon: "CONFIRMED",
       ghiChu: ghiChu,
+      nguoiNhan: customerInfo.nguoiNhan,
+      sdtNguoiNhan: customerInfo.sdtNguoiNhan,
+      emailNguoiNhan: customerInfo.emailNguoiNhan,
     };
+
     return hoaDonData;
   };
 
@@ -181,7 +209,9 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     input: string,
     option?: { label: string; value: string }
   ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
-
+  const test = (value) => {
+    setPhiShip(value);
+  };
   return (
     <>
       <Row>
@@ -266,6 +296,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                   <ThongTinGiaoHang
                     onFullAddressChange={handleFullAddressChange}
                     onFeeResponseChange={handleFeeResponseChange}
+                    onFormValuesChange={handleCustomerInfoChange}
                   />
                 </Card>
                 <Divider />
@@ -301,9 +332,17 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               <Col span={7}>
                 <p>Phí vận chuyển: </p>
               </Col>
-              <Col span={14}></Col>
-              <Col span={3}>
-                <p>0 đ</p>
+              <Col span={10}></Col>
+              <Col span={7}>
+                <InputNumber
+                  value={phiShip}
+                  style={{ width: "100%" }}
+                  min={1000}
+                  step={10000}
+                  formatter={(value) => `${formatGiaTienVND(value)}`}
+                  parser={(value: any) => value.replace(/\D/g, "")}
+                  onChange={test}
+                />
               </Col>
             </Row>
             {/* Giảm giá */}
@@ -334,7 +373,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               </Col>
               <Col span={16}></Col>
               <Col span={3}>
-                <p>516.000</p>
+                <p>{formatCurrency(tongTienKhiGiam)}</p>
               </Col>
             </Row>
             <p>Ghi chú: </p>
@@ -344,6 +383,67 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               onChange={handleGhiChuChange}
               id="ghiChu"
             />
+            <Radio.Group
+              buttonStyle="solid"
+              optionType="button"
+              onChange={handleCashRadioChange}
+            >
+              <Row gutter={[15, 15]} style={{ marginTop: 20 }}>
+                <Radio.Button
+                  value={0}
+                  style={{
+                    height: 70,
+                    width: 220,
+                    marginRight: 20,
+                    marginLeft: 5,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 10,
+                  }}
+                >
+                  <Space>
+                    <BsCashCoin style={{ fontSize: 30, marginTop: 16 }} />
+                    <span style={{ fontSize: 17, fontWeight: "bold" }}>
+                      Tiền mặt
+                    </span>
+                  </Space>
+                </Radio.Button>
+                <Radio.Button
+                  value={1}
+                  style={{
+                    height: 70,
+                    width: 220,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 10,
+                  }}
+                >
+                  <Space>
+                    <BsCreditCard2Back
+                      style={{ fontSize: 30, marginTop: 10 }}
+                    />
+                    <span style={{ fontSize: 17, fontWeight: "bold" }}>
+                      Chuyển khoản
+                    </span>
+                  </Space>
+                </Radio.Button>
+              </Row>
+            </Radio.Group>
+            {isCashSelected && (
+              <>
+                {/* Hiển thị hai ô input khi "Tiền mặt" được chọn */}
+                <span style={{ paddingTop: 10 }}>Tiền khách đưa: </span>
+                <Input style={{ marginTop: 10 }} />
+                <Input
+                  placeholder="Nhập số hóa đơn"
+                  style={{ marginTop: 10 }}
+                />
+              </>
+            )}
             <Row>
               <Col span={24}>
                 <Button
