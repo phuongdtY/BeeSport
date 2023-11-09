@@ -9,7 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.sql.Date;
 
 @Getter
 @Setter
@@ -31,6 +31,8 @@ public class UpdateVoucherRequest {
     private BigDecimal giaTriGiam;
 
     private BigDecimal giaTriGiamToiDa;
+
+    private Integer soLuong;
 
     private LocalDateTime ngayTao;
 

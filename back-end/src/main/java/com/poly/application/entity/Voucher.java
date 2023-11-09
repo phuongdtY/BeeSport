@@ -58,6 +58,9 @@ public class Voucher implements Serializable {
     @Column(name = "gia_tri_giam_toi_da")
     private BigDecimal giaTriGiamToiDa;
 
+    @Column(name = "so_luong")
+    private Integer soLuong;
+
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")
