@@ -49,7 +49,7 @@ public class Voucher implements Serializable {
     @JoinColumn(name = "hinh_thuc_giam_gia_id", referencedColumnName = "id")
     private HinhThucGiamGia hinhThucGiamGia;
 
-    @Column(name = "gia_toi_thieu")
+    @Column(name = "gia_don_hang_toi_thieu")
     private BigDecimal giaToiThieu;
 
     @Column(name = "gia_tri_giam")
@@ -57,6 +57,9 @@ public class Voucher implements Serializable {
 
     @Column(name = "gia_tri_giam_toi_da")
     private BigDecimal giaTriGiamToiDa;
+
+    @Column(name = "so_luong")
+    private Integer soLuong;
 
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")

@@ -1,8 +1,6 @@
 package com.poly.application.model.request.update_request;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HinhThucGiamGia;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,10 +29,11 @@ public class UpdateVoucherRequest {
 
     private BigDecimal giaTriGiamToiDa;
 
+    private Integer soLuong;
+
     private LocalDateTime ngayTao;
 
     private LocalDateTime ngaySua;
 
-    @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;
 }

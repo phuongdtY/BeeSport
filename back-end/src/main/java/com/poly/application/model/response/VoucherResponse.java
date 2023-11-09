@@ -37,7 +37,8 @@ public class VoucherResponse {
 
     private BigDecimal giaTriGiamToiDa;
 
-//    @Enumerated(EnumType.STRING)
+    private Integer soLuong;
+
     private CommonEnum.TrangThaiVoucher trangThai;
 
 }

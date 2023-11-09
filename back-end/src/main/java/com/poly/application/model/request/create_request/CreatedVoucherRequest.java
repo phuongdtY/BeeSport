@@ -33,6 +33,8 @@ public class  CreatedVoucherRequest {
 
     private BigDecimal giaTriGiamToiDa;
 
+    private Integer soLuong;
+
     private LocalDateTime ngayTao;
 
     private LocalDateTime ngaySua;
