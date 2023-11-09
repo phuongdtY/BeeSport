@@ -16,6 +16,6 @@ public interface TimelineRepository extends JpaRepository<TimeLine, Long> {
     List<TimeLine> findTimeLinesByHoaDonId(@Param("idHoaDon") Long id);
 
 //    @Query("SELECT CASE WHEN COUNT(tl) > 0 THEN true ELSE false END FROM TimeLine tl WHERE 'PENDING' = :trangThai or 'CONFIRMED' = :trangThai")
-    Boolean existsTimeLineByTrangThai(CommonEnum.TrangThaiHoaDon trangThaiHoaDon);
+    Boolean existsTimeLineByTrangThaiAndHoaDonId(CommonEnum.TrangThaiHoaDon trangThaiHoaDon,Long id);
 
 }

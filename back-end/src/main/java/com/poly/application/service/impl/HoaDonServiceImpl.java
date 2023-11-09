@@ -146,7 +146,9 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setDiaChiNguoiNhan(updatedHoaDonRequest.getDiaChiNguoiNhan());
         hoaDon.setEmailNguoiNhan(updatedHoaDonRequest.getEmailNguoiNhan());
         hoaDon.setTaiKhoan(updatedHoaDonRequest.getTaiKhoan());
-        updateTrangThaiHoaDon(id, hoaDon.getTrangThaiHoaDon(), hoaDon.getGhiChu());
+        if (!timelineRepository.existsTimeLineByTrangThaiAndHoaDonId(hoaDon.getTrangThaiHoaDon(), hoaDon.getId())) {
+            updateTrangThaiHoaDon(id, hoaDon.getTrangThaiHoaDon(), hoaDon.getGhiChu());
+        }
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
 
@@ -197,9 +199,10 @@ public class HoaDonServiceImpl implements HoaDonService {
                 break;
         }
 
-        if (!timelineRepository.existsTimeLineByTrangThai(trangThaiHoaDon)) {
-            timelineRepository.save(timeLine);
-        }
+//        if (!timelineRepository.existsTimeLineByTrangThai(trangThaiHoaDon)) {
+//            timelineRepository.save(timeLine);
+//        }
+        timelineRepository.save(timeLine);
         hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
     }
 
