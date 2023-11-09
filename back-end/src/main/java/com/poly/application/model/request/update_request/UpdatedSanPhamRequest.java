@@ -14,19 +14,10 @@ import java.time.LocalDateTime;
 @Setter
 public class UpdatedSanPhamRequest {
 
-    private Long id;
-
-    @NotBlank(message = "Vui lòng điền mã sản phẩm")
-    private String ma;
-
     @NotBlank(message = "Vui lòng điền tên sản phẩm")
     private String ten;
 
     private String moTa;
-
-    private LocalDateTime ngayTao;
-
-    private LocalDateTime ngaySua;
 
     @NotNull(message = "Vui lòng chọn thương hiệu")
     private ThuongHieu thuongHieu;

@@ -99,17 +99,25 @@ public class SanPhamServiceImpl implements SanPhamService {
         if (optional.isEmpty()) {
             throw new NotFoundException("Sản phẩm không tồn tại!");
         }
-        if (!request.getTen().equals(optional.get().getTen()) && repository.existsByTen(request.getTen())) {
+        SanPham detail = optional.get();
+
+        if (!request.getTen().equals(detail.getTen()) && repository.existsByTen(request.getTen())) {
             throw new BadRequestException("Tên sản phẩm đã tồn tại trong hệ thống!");
         }
 
-        SanPham sanPham = optional.get();
-        sanPham.setTen(request.getTen());
-        sanPham.setMoTa(request.getMoTa());
-        sanPham.setThuongHieu(request.getThuongHieu());
-        sanPham.setTrangThai(CommonEnum.TrangThaiSanPham.valueOf(request.getTrangThai()));
-        return mapper.convertEntityToResponse(repository.save(sanPham));
+        // Ánh xạ các trường từ UpdatedSanPhamRequest sang SanPham
+        mapper.convertUpdateRequestToEntity(request,detail);
+
+        // Lưu thay đổi vào cơ sở dữ liệu
+        detail = repository.save(detail);
+        System.out.println(detail);
+        // Trả về thông tin sản phẩm sau khi cập nhật
+        SanPhamResponse response = new SanPhamResponse();
+        // Điền thông tin sản phẩm vào response dựa trên detail
+
+        return response;
     }
+
 
     @Override
     public void delete(Long id) {

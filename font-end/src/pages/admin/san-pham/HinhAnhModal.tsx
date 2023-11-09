@@ -43,6 +43,8 @@ function HinhAnhModal({ openModal, closeModal, mauSac, sanPham }) {
   };
 
   useEffect(() => {
+    console.log(mauSac);
+
     if (openModal === true) {
       loadImages(mauSac);
     }
@@ -55,7 +57,7 @@ function HinhAnhModal({ openModal, closeModal, mauSac, sanPham }) {
           id: sanPham,
         },
         mauSac: {
-          id: mauSac.id,
+          id: mauSac,
         },
         duongDan: item.response,
       }));

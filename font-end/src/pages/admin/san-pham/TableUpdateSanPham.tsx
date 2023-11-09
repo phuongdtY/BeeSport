@@ -26,6 +26,7 @@ import { ColumnsType } from "antd/es/table";
 import HinhAnhModal from "./HinhAnhModal";
 import { DataTypeCTSP } from "~/interfaces/ctsp.type";
 import ModalAddMauSac from "./ModalAddMauSac";
+import TableAllSanpham from "./TableAllSanPham";
 
 function TableUpdateSanpham({ idSanPham }) {
   const [openModal, setOpenModal] = useState(false);
@@ -46,7 +47,8 @@ function TableUpdateSanpham({ idSanPham }) {
     getDataMauSacFull();
     getDataChiTietSanPham();
     getDataKichCo();
-  }, []);
+    console.log(checkedMauSac);
+  }, [checkedMauSac]);
   useEffect(() => {}, [idMauSac]);
   const getDataMauSacFull = async () => {
     try {
@@ -116,9 +118,12 @@ function TableUpdateSanpham({ idSanPham }) {
   });
   const mauSacMapping = {};
   dataMauSacFull.forEach((ms) => {
-    mauSacMapping[ms.id] = ms.ten;
+    mauSacMapping[ms.ten] = ms.id;
   });
-
+  const mauSacMappingTen = {};
+  dataMauSacFull.forEach((ms) => {
+    mauSacMappingTen[ms.id] = ms.ten;
+  });
   const kichCoMapping = {};
   dataKichCo.forEach((kc) => {
     kichCoMapping[kc.id] = kc.kichCo;
@@ -136,6 +141,7 @@ function TableUpdateSanpham({ idSanPham }) {
         },
       });
       getDataChiTietSanPham();
+      setSelectedRowKeys([]);
       message.success("Chỉnh sửa dữ liệu thành công");
     } catch (error) {
       message.error("Chỉnh sửa dữ liệu thất bại");
@@ -291,7 +297,12 @@ function TableUpdateSanpham({ idSanPham }) {
       },
     });
   };
-  const onAddModalKichCo = (mauSac: any, selectedKichCo: any) => {
+  const onAddModalKichCo = (
+    mauSac: any,
+    selectedKichCo: any,
+    soLuong: number,
+    giaTien: number
+  ) => {
     console.log(mauSac);
 
     const updatedFakeData: DataTypeCTSP[] = [...dataFake];
@@ -302,15 +313,15 @@ function TableUpdateSanpham({ idSanPham }) {
         id: null,
         key: uniqueId,
         mauSac: {
-          id: mauSac,
-          ten: mauSacMapping[mauSac],
+          id: mauSacMapping[mauSac],
+          ten: mauSac,
         },
         kichCo: {
           id: kichCo,
           kichCo: kichCoMapping[kichCo],
         },
-        soLuong: 10,
-        giaTien: 100000,
+        soLuong: soLuong,
+        giaTien: giaTien,
         loaiDe: {
           id: 1,
         },
@@ -345,7 +356,7 @@ function TableUpdateSanpham({ idSanPham }) {
       )
     );
   };
-  const onAddMauSac = (idMauSac, listKichCo) => {
+  const onAddMauSac = (idMauSac, listKichCo, soLuong, giaTien) => {
     const updatedList: DataTypeCTSP[] = [...dataFake];
     const newSelectedKeys = [];
 
@@ -356,14 +367,14 @@ function TableUpdateSanpham({ idSanPham }) {
         key: uniqueId,
         mauSac: {
           id: idMauSac,
-          ten: mauSacMapping[idMauSac],
+          ten: mauSacMappingTen[idMauSac],
         },
         kichCo: {
           id: kichCo,
           kichCo: kichCoMapping[kichCo],
         },
-        soLuong: 10,
-        giaTien: 100000,
+        soLuong: soLuong,
+        giaTien: giaTien,
         loaiDe: {
           id: 1,
         },
@@ -377,6 +388,8 @@ function TableUpdateSanpham({ idSanPham }) {
     });
     setIdMauSac(idMauSac);
     setDataFake(updatedList);
+    console.log(updatedList);
+
     setCheckedMauSac(idMauSac);
     // Add the new selected keys to the state
     setSelectedRowKeys((prevSelectedKeys) => [
@@ -392,13 +405,22 @@ function TableUpdateSanpham({ idSanPham }) {
 
   return (
     <>
-      {mauSacList.length !== 0 && (
-        <Radio.Group
-          buttonStyle="outline"
-          // defaultValue={mauSacList[0].id}
-          value={checkedMauSac}
-          onChange={onClickMauSac}
-        >
+      <Radio.Group
+        buttonStyle="outline"
+        // defaultValue={mauSacList[0].id}
+        value={checkedMauSac}
+        onChange={onClickMauSac}
+      >
+        <Space>
+          <Row gutter={[10, 10]}>
+            <Radio.Button
+              type="default"
+              style={{ marginRight: 5 }}
+              // onClick={}
+            >
+              Tất cả
+            </Radio.Button>
+          </Row>
           <Space>
             {mauSacList.map((record: any) => (
               <Row gutter={[10, 10]} key={record.id}>
@@ -420,8 +442,8 @@ function TableUpdateSanpham({ idSanPham }) {
               Thêm
             </Button>
           </Space>
-        </Radio.Group>
-      )}
+        </Space>
+      </Radio.Group>
       <Button
         onClick={onClickUpdate}
         type="primary"
@@ -430,41 +452,46 @@ function TableUpdateSanpham({ idSanPham }) {
       >
         Hoàn Tất Chỉnh Sửa
       </Button>
-      <Table
-        showSorterTooltip={false}
-        pagination={{
-          showSizeChanger: true,
-          current: page,
-          pageSize: pageSize,
-          onChange: (page, pageSize) => {
-            setPage(page);
-            setPageSize(pageSize);
-          },
-        }}
-        dataSource={filteredData}
-        rowSelection={{
-          selectedRowKeys,
-          onChange: (selectedRowKeys: any, selectedRows: any) => {
-            setSelectedRowKeys(selectedRowKeys);
-          },
-          checkStrictly: true,
-          type: "checkbox",
-        }}
-        columns={colums}
-        footer={() => (
-          <Button
-            type="dashed"
-            style={{ textAlign: "center" }}
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setShowModal(true);
-            }}
-            block
-          >
-            Thêm Kích Cỡ
-          </Button>
-        )}
-      />
+      {checkedMauSac === undefined ? (
+        <TableAllSanpham idSanPham={idSanPham} />
+      ) : (
+        <Table
+          showSorterTooltip={false}
+          pagination={{
+            showSizeChanger: true,
+            current: page,
+            pageSize: pageSize,
+            onChange: (page, pageSize) => {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+          }}
+          dataSource={filteredData}
+          rowSelection={{
+            selectedRowKeys,
+            onChange: (selectedRowKeys: any, selectedRows: any) => {
+              setSelectedRowKeys(selectedRowKeys);
+            },
+            checkStrictly: true,
+            type: "checkbox",
+          }}
+          columns={colums}
+          footer={() => (
+            <Button
+              type="dashed"
+              style={{ textAlign: "center" }}
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setShowModal(true);
+              }}
+              block
+            >
+              Thêm Kích Cỡ
+            </Button>
+          )}
+        />
+      )}
+
       <ModalKichCo
         openModal={showModal}
         closeModal={() => setShowModal(false)}
