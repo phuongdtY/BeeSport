@@ -146,10 +146,9 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setDiaChiNguoiNhan(updatedHoaDonRequest.getDiaChiNguoiNhan());
         hoaDon.setEmailNguoiNhan(updatedHoaDonRequest.getEmailNguoiNhan());
         hoaDon.setTaiKhoan(updatedHoaDonRequest.getTaiKhoan());
-        updateTrangThaiHoaDon(id, hoaDon.getTrangThaiHoaDon(), hoaDon.getGhiChu());
-        hoaDon.setTaiKhoan(updatedHoaDonRequest.getTaiKhoan());
-        hoaDon.setGhiChu(updatedHoaDonRequest.getGhiChu());
-
+        if (!timelineRepository.existsTimeLineByTrangThaiAndHoaDonId(hoaDon.getTrangThaiHoaDon(), hoaDon.getId())) {
+            updateTrangThaiHoaDon(id, hoaDon.getTrangThaiHoaDon(), hoaDon.getGhiChu());
+        }
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
 
@@ -160,7 +159,9 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Override
     public void updateTrangThaiHoaDon(Long idHoadon, CommonEnum.TrangThaiHoaDon trangThaiHoaDon, String ghiChu) {
-        System.out.println(trangThaiHoaDon + " /  " + idHoadon);
+        if (trangThaiHoaDon == null) {
+            return;
+        }
         HoaDon hoaDon = hoaDonRepository.findById(idHoadon).orElseThrow(() -> new NotFoundException("Không tìm thấy hóa đơn có id " + idHoadon));
         TimeLine timeLine = new TimeLine();
         timeLine.setHoaDon(hoaDon);
@@ -197,6 +198,10 @@ public class HoaDonServiceImpl implements HoaDonService {
             default:
                 break;
         }
+
+//        if (!timelineRepository.existsTimeLineByTrangThai(trangThaiHoaDon)) {
+//            timelineRepository.save(timeLine);
+//        }
         timelineRepository.save(timeLine);
         hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
     }
