@@ -2,8 +2,6 @@ package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.ChiTietSanPham;
-import com.poly.application.entity.LoaiDe;
-import com.poly.application.entity.SanPham;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.ChiTietSanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRequest;
@@ -39,8 +37,10 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
     }
 
     @Override
-    public Page<ChiTietSanPhamResponse> findByAllPage(Integer page, Integer pageSize, Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan) {
-        return null;
+    public Page<ChiTietSanPhamResponse> findByAllPage(Integer page, Integer pageSize, Long idSanPham, Long idMauSac, Long idKichCo, Long idLoaiDe, Long idDiaHinhSan, BigDecimal minGiaTien, BigDecimal maxGiaTien) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        Page<ChiTietSanPham> sanPhamPage = repository.findByAllPage(pageable, idSanPham, idMauSac, idKichCo, idLoaiDe, idDiaHinhSan,minGiaTien,maxGiaTien);
+        return sanPhamPage.map(mapper::convertEntityToResponse);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
     @Override
     public List<ChiTietSanPhamResponse> addList(List<CreatedChiTietSanPhamRequest> requests) {
         List<ChiTietSanPham> list = new ArrayList<>();
-        for (CreatedChiTietSanPhamRequest request :requests){
+        for (CreatedChiTietSanPhamRequest request : requests) {
             ChiTietSanPham sanPham = mapper.convertCreateRequestToEntity(request);
             list.add(sanPham);
         }
@@ -97,6 +97,16 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
     }
 
     @Override
+    public ChiTietSanPhamResponse updateTrangThai(Long id) {
+        ChiTietSanPham chiTietSanPham = repository.findById(id).orElse(null);
+
+        chiTietSanPham.setTrangThai(CommonEnum.TrangThaiChiTietSanPham.DELETED);
+        repository.save(chiTietSanPham);
+
+        return mapper.convertEntityToResponse(chiTietSanPham);
+    }
+
+    @Override
     public void update(List<UpdatedChiTietSanPhamRequest> request) {
         List<ChiTietSanPham> newProducts = new ArrayList<>();
         List<ChiTietSanPham> updateProducts = new ArrayList<>();
@@ -108,10 +118,10 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
                 if (optional.isPresent()) {
                     ChiTietSanPham existingProduct = optional.get();
                     dto.setId(existingProduct.getId());
-                    mapper.convertUpdateRequestToEntity(dto,existingProduct);
+                    mapper.convertUpdateRequestToEntity(dto, existingProduct);
                     updateProducts.add(existingProduct);
                 }
-            } else if(dto.getId() == null){
+            } else if (dto.getId() == null) {
                 ChiTietSanPham newProduct = new ChiTietSanPham();
                 mapper.convertUpdateRequestToEntity(dto, newProduct);
                 newProducts.add(newProduct);
@@ -155,8 +165,7 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
             Long idMauSac,
             Long idKichCo,
             Long idDiaHinhSan,
-            Long idThuongHieu)
-    {
+            Long idThuongHieu) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();

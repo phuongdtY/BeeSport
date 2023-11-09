@@ -4,8 +4,6 @@ import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRe
 import com.poly.application.model.request.update_request.UpdatedChiTietSanPhamRequest;
 import com.poly.application.service.ChiTietSanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,9 +46,11 @@ public class ChiTietSanPhamController {
             @RequestParam(name = "idMauSac", defaultValue = "") Long idMauSac,
             @RequestParam(name = "idKichCo", defaultValue = "") Long idKichCo,
             @RequestParam(name = "idLoaiDe", defaultValue = "") Long idLoaiDe,
-            @RequestParam(name = "idDiaHinhSan", defaultValue = "") Long idDiaHinhSan
+            @RequestParam(name = "idDiaHinhSan", defaultValue = "") Long idDiaHinhSan,
+            @RequestParam(name = "minGiaTien", required = false) BigDecimal minGiaTien,
+            @RequestParam(name = "maxGiaTien", required = false) BigDecimal maxGiaTien
     ) {
-        return ResponseEntity.ok(service.findByAllPage(page,pageSize,idSanPham, idMauSac, idKichCo, idLoaiDe, idDiaHinhSan));
+        return ResponseEntity.ok(service.findByAllPage(page,pageSize,idSanPham, idMauSac,idKichCo ,idLoaiDe,  idDiaHinhSan,minGiaTien ,maxGiaTien ));
     }
 
     @GetMapping("/list")
@@ -80,10 +80,10 @@ public class ChiTietSanPhamController {
         service.update(request);
         return ResponseEntity.ok("Danh sách ChiTietSanPham đã được cập nhật thành công.");
     }
-//    @PutMapping("/update-status/{id}")
-//    public ResponseEntity<?> updateStatus(@PathVariable(name = "id") Long id, @RequestBody UpdatedChiTietSanPhamRequest request) {
-//        return ResponseEntity.ok(service.update(id, request));
-//    }
+    @PutMapping("/update-status/{id}")
+    public ResponseEntity<?> updateStatus(@PathVariable(name = "id") Long id) {
+        return ResponseEntity.ok(service.updateTrangThai(id));
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(name = "id") Long id) {

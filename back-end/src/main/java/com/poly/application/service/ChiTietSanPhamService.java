@@ -4,7 +4,6 @@ import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRe
 import com.poly.application.model.request.update_request.UpdatedChiTietSanPhamRequest;
 import com.poly.application.model.response.ChiTietSanPhamResponse;
 import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -13,7 +12,7 @@ public interface ChiTietSanPhamService {
 
     List<ChiTietSanPhamResponse> findByAll(Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
 
-    Page<ChiTietSanPhamResponse> findByAllPage(Integer page, Integer pageSize, Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan);
+    Page<ChiTietSanPhamResponse> findByAllPage(Integer page, Integer pageSize, Long idSanPham, Long idMauSac,Long idKichCo, Long idLoaiDe , Long idDiaHinhSan,BigDecimal minGiaTien,BigDecimal maxGiaTien);
 
     List<ChiTietSanPhamResponse> getListChiTietSanPham();
 
@@ -26,6 +25,8 @@ public interface ChiTietSanPhamService {
     List<ChiTietSanPhamResponse> getListSanPhamAndMauSac(Long idSanPham, Long idMauSac);
 
     void delete(Long id);
+
+    ChiTietSanPhamResponse updateTrangThai(Long id);
 
     void update(List<UpdatedChiTietSanPhamRequest> request);
 

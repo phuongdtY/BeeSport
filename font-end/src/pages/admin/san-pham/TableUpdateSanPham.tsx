@@ -47,8 +47,7 @@ function TableUpdateSanpham({ idSanPham }) {
     getDataMauSacFull();
     getDataChiTietSanPham();
     getDataKichCo();
-    console.log(checkedMauSac);
-  }, [checkedMauSac]);
+  }, []);
   useEffect(() => {}, [idMauSac]);
   const getDataMauSacFull = async () => {
     try {
@@ -60,11 +59,7 @@ function TableUpdateSanpham({ idSanPham }) {
   };
   const getDataChiTietSanPham = async () => {
     try {
-      const res = await request.get("chi-tiet-san-pham", {
-        params: {
-          idSanPham: idSanPham,
-        },
-      });
+      const res = await request.get("chi-tiet-san-pham/" + idSanPham);
       setDataChiTietSanPham(res.data);
       const list = [];
       res.data.forEach((item: string) => {
@@ -285,10 +280,7 @@ function TableUpdateSanpham({ idSanPham }) {
 
         if (record.id !== null) {
           try {
-            const res = await request.put(`chi-tiet-san-pham/${record.id}`, {
-              trangThai: "DELETED",
-            });
-            console.log(res);
+            await request.put(`chi-tiet-san-pham/update-status/${record.id}`);
           } catch (error) {
             message.error("Xóa thất bại");
             console.log(error);
@@ -413,11 +405,7 @@ function TableUpdateSanpham({ idSanPham }) {
       >
         <Space>
           <Row gutter={[10, 10]}>
-            <Radio.Button
-              type="default"
-              style={{ marginRight: 5 }}
-              // onClick={}
-            >
+            <Radio.Button type="default" style={{ marginRight: 5 }}>
               Tất cả
             </Radio.Button>
           </Row>
@@ -453,7 +441,10 @@ function TableUpdateSanpham({ idSanPham }) {
         Hoàn Tất Chỉnh Sửa
       </Button>
       {checkedMauSac === undefined ? (
-        <TableAllSanpham idSanPham={idSanPham} />
+        <TableAllSanpham
+          idSanPham={idSanPham}
+          loadData={getDataChiTietSanPham}
+        />
       ) : (
         <Table
           showSorterTooltip={false}
