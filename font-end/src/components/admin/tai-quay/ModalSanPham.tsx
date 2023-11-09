@@ -34,15 +34,18 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
   const [kichCoOptions, setKichCoOptions] = useState([]);
   const [diaHinhSanOptions, setDiaHinhSanOptions] = useState([]);
   const [thuongHieuOptions, setThuongHieuOptions] = useState([]);
+  const [totalElements, setTotalElements] = useState(0);
 
   // Thêm state để lưu trạng thái của các phần tử
   const [productNameFilter, setProductNameFilter] = useState("");
-  const [giaTienRange, setGiaTienRange] = useState([0, 10000000]);
+  const [giaTienRange, setGiaTienRange] = useState([0, 100000000000]);
   const [selectedLoaiDe, setSelectedLoaiDe] = useState(undefined);
   const [selectedMauSac, setSelectedMauSac] = useState(undefined);
   const [selectedKichCo, setSelectedKichCo] = useState(undefined);
   const [selectedDiaHinhSan, setSelectedDiaHinhSan] = useState(undefined);
   const [selectedThuongHieu, setSelectedThuongHieu] = useState(undefined);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const columns = [
     {
@@ -187,7 +190,7 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
   const resetFilter = () => {
     // Đặt lại giá trị của các state về mặc định
     setProductNameFilter("");
-    setGiaTienRange([0, 10000000]);
+    setGiaTienRange([0, 1000000000000]);
     setSelectedLoaiDe(undefined);
     setSelectedMauSac(undefined);
     setSelectedKichCo(undefined);
@@ -217,9 +220,41 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
       request.get("thuong-hieu/list").then((response) => {
         setThuongHieuOptions(response.data);
       });
-      // Call API List SanPham
-      request.get("chi-tiet-san-pham/list").then(async (response) => {
-        const sanPhamData = response.data;
+
+      handleFilterChange();
+    }
+  }, [
+    isModalVisible,
+    page,
+    pageSize,
+    productNameFilter,
+    giaTienRange,
+    selectedLoaiDe,
+    selectedMauSac,
+    selectedKichCo,
+    selectedDiaHinhSan,
+    selectedThuongHieu,
+  ]);
+
+  const handleFilterChange = () => {
+    // Thực hiện gọi lại API và cập nhật dữ liệu dựa trên các giá trị filter hiện tại
+    request
+      .get("/chi-tiet-san-pham/filter-page", {
+        params: {
+          page,
+          pageSize,
+          searchText: productNameFilter,
+          min: giaTienRange[0],
+          max: giaTienRange[1],
+          idLoaiDe: selectedLoaiDe,
+          idMauSac: selectedMauSac,
+          idKichCo: selectedKichCo,
+          idDiaHinhSan: selectedDiaHinhSan,
+          idThuongHieu: selectedThuongHieu,
+        },
+      })
+      .then(async (response) => {
+        const sanPhamData = response.data.content;
 
         // Fetch images for all sanPham in parallel
         const imagePromises = sanPhamData.map((item) =>
@@ -233,9 +268,9 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           images: images[index],
         }));
         setDataSanPham(updatedSanPhamData);
+        setTotalElements(response.data.totalElements);
       });
-    }
-  }, [isModalVisible]);
+  };
 
   return (
     <>
@@ -250,8 +285,9 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           <Col span={10} style={{ marginRight: 70 }}>
             <span>Sản phẩm: </span>
             <Input
+              allowClear
               placeholder="Mã, Tên sản phẩm"
-              value={productNameFilter} // Sử dụng giá trị từ state
+              value={productNameFilter}
               onChange={(e) => setProductNameFilter(e.target.value)} // Cập nhật giá trị vào state
             />
           </Col>
@@ -272,6 +308,7 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           <Col span={4} style={{ marginRight: 15 }}>
             <span>Loại đế: </span>
             <Select
+              allowClear
               placeholder="Chọn Loại đế"
               style={{ width: "100%" }}
               value={selectedLoaiDe}
@@ -287,6 +324,7 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           <Col span={4} style={{ marginRight: 15 }}>
             <span>Màu sắc: </span>
             <Select
+              allowClear
               placeholder="Chọn Màu sắc"
               style={{ width: "100%" }}
               value={selectedMauSac}
@@ -308,6 +346,7 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           <Col span={4} style={{ marginRight: 15 }}>
             <span>Kích cỡ: </span>
             <Select
+              allowClear
               placeholder="Chọn Kích cỡ"
               style={{ width: "100%" }}
               value={selectedKichCo}
@@ -323,6 +362,7 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           <Col span={4} style={{ marginRight: 15 }}>
             <span>Địa hình sân: </span>
             <Select
+              allowClear
               placeholder="Chọn Địa hình sân"
               style={{ width: "100%", marginRight: 10 }}
               value={selectedDiaHinhSan}
@@ -338,6 +378,7 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           <Col span={4}>
             <span>Thương hiệu: </span>
             <Select
+              allowClear
               placeholder="Chọn Thương hiệu"
               style={{ width: "100%", marginRight: 10 }}
               value={selectedThuongHieu}
@@ -367,9 +408,11 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           dataSource={dataSanPham}
           columns={columns}
           pagination={{
-            pageSizeOptions: ["5"],
+            total: totalElements,
             showSizeChanger: true,
-            defaultPageSize: 5,
+            onChange(page, pageSize) {
+              setPage(page), setPageSize(pageSize);
+            },
           }}
         />
       </Modal>

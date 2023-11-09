@@ -27,9 +27,6 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "ORDER BY obj.ngayTao DESC")
     Page<SanPham> findByAll(Pageable pageable, String searchText, Long thuongHieuId, CommonEnum.TrangThaiSanPham trangThai);
 
-
-
-
     boolean existsByTen(String ten);
 
     @Query("SELECT sp FROM SanPham sp WHERE sp.trangThai = 'ACTIVE' ORDER BY sp.ngayTao DESC")

@@ -95,6 +95,7 @@ public class TaiKhoan implements Serializable {
     @Column(name = "trang_thai")
     private CommonEnum.TrangThaiThuocTinh trangThai;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DiaChi> diaChiList;
 
@@ -102,6 +103,7 @@ public class TaiKhoan implements Serializable {
     @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HoaDon> hoaDonList;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<GiaoDich> giaoDichList;
 
