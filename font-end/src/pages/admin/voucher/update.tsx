@@ -83,6 +83,15 @@ const UpdateVoucher: React.FC = () => {
           soLuong: res.data?.soLuong,
           trangThai: trangThaiValue,
         });
+
+        if (res.data?.soLuong !== null && res.data?.soLuong !== undefined) {
+          setInputSoLuong(res.data?.soLuong.toString());
+          setSelectedOption2('2'); // Giới hạn
+        } else {
+          setInputSoLuong('');
+          setSelectedOption2('1'); // Không giới hạn
+        }
+
         setLoadingForm(false);
       } catch (error) {
         console.log(error);
@@ -196,7 +205,16 @@ const UpdateVoucher: React.FC = () => {
               name="soLan"
               label="Số lần sử dụng"
               initialValue="Không giới hạn"
-              rules={[{ required: true, message: 'Vui lòng chọn số lần' }]}
+              rules={[{ required: true, message: 'Vui lòng chọn số lần' },
+              {
+                validator: (_, value) => {
+                  if (selectedOption2 === '2' && value <= 0) {
+                    return Promise.reject(new Error('Vui lòng nhập số lượng lớn hơn 0'));
+                  }
+                  return Promise.resolve();
+                },
+              },
+              ]}
             >
               <Select value={selectedOption2} onChange={handleSelectChange2}>
                 <Option value="1">Không giới hạn</Option>
@@ -289,7 +307,7 @@ const UpdateVoucher: React.FC = () => {
                       },
                     ]}
                   >
-                    <InputNumber defaultValue={1} min={0} max={1000} formatter={(value) => `${value}%`.replace('%', '')} style={{ width: '100%' }} addonAfter="%" />
+                    <InputNumber min={0} max={1000} formatter={(value) => `${value}%`.replace('%', '')} style={{ width: '100%' }} addonAfter="%" />
                   </Form.Item>
                 </>
               )}
