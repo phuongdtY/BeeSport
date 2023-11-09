@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Button,
   Col,
+  Divider,
   InputNumber,
   Modal,
   Radio,
@@ -24,7 +25,8 @@ import ModalKichCo from "./ModalKichCo";
 import { ColumnsType } from "antd/es/table";
 import HinhAnhModal from "./HinhAnhModal";
 import { DataTypeCTSP } from "~/interfaces/ctsp.type";
-// import ModalAddMauSac from "./ModalAddMauSac";
+import ModalAddMauSac from "./ModalAddMauSac";
+import TableAllSanpham from "./TableAllSanPham";
 
 function TableUpdateSanpham({ idSanPham }) {
   const [openModal, setOpenModal] = useState(false);
@@ -33,39 +35,21 @@ function TableUpdateSanpham({ idSanPham }) {
   const [showModal, setShowModal] = useState(false);
   const [dataFake, setDataFake] = useState<DataTypeCTSP[]>([]);
   const [dataKichCo, setDataKichCo] = useState([]);
-  const [newData, setNewData] = useState([]);
-  const [checkedMauSac, setCheckedMauSac] = useState(null);
-  const [dataMauSac, setDataMauSac] = useState([]);
   const [dataMauSacFull, setDataMauSacFull] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [idMauSac, setIdMauSac] = useState();
   const [mauSac, setMauSac] = useState();
+  const [checkedMauSac, setCheckedMauSac] = useState();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const { confirm } = Modal;
   useEffect(() => {
     getDataMauSacFull();
-    getDataMauSac();
     getDataChiTietSanPham();
     getDataKichCo();
-  }, [idMauSac]);
-  const getDataMauSac = async () => {
-    try {
-      const res = await request.get(`mau-sac/detail/${idSanPham}`);
-      if (checkedMauSac === null) {
-        setCheckedMauSac(res.data[0].id);
-      }
-      if (dataMauSac.length === 0) {
-        setDataMauSac(res.data);
-      }
-
-      if (idMauSac === undefined || null) {
-        setIdMauSac(res.data[0].id);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    console.log(checkedMauSac);
+  }, [checkedMauSac]);
+  useEffect(() => {}, [idMauSac]);
   const getDataMauSacFull = async () => {
     try {
       const res = await request.get(`mau-sac/list`);
@@ -79,40 +63,37 @@ function TableUpdateSanpham({ idSanPham }) {
       const res = await request.get("chi-tiet-san-pham", {
         params: {
           idSanPham: idSanPham,
-          idMauSac: idMauSac,
         },
       });
-      console.log(res.data);
-
-      if (res.data.length > 0) {
-        setDataChiTietSanPham(res.data);
-        const modifiedData = res.data.map((data: any) => ({
-          id: data.id,
-          diaHinhSan: {
-            id: data.diaHinhSan.id,
-          },
-          loaiDe: {
-            id: data.loaiDe.id,
-          },
+      setDataChiTietSanPham(res.data);
+      const list = [];
+      res.data.forEach((item: string) => {
+        const uniqueId = `${item.mauSac.id}-${item.kichCo.id}`;
+        list.push({
+          key: uniqueId,
+          id: item.id,
           mauSac: {
-            id: data.mauSac.id,
+            id: item.mauSac.id,
+            ten: item.mauSac.ten,
           },
           kichCo: {
-            id: data.kichCo.id,
-            kichCo: data.kichCo.kichCo,
+            id: item.kichCo.id,
+            kichCo: item.kichCo.kichCo,
           },
-          soLuong: data.soLuong,
-          giaTien: data.giaTien,
-          sanPham: {
-            id: data.sanPham.id,
+          soLuong: item.soLuong,
+          giaTien: item.giaTien,
+          loaiDe: {
+            id: item.loaiDe.id,
           },
-          trangThai: data.trangThai.ten,
-          key: `${data.mauSac.id}-${data.kichCo.id}`,
-        }));
-        setDataFake(modifiedData);
-      } else {
-        setDataFake(newData);
-      }
+          diaHinhSan: {
+            id: item.diaHinhSan.id,
+          },
+          sanPham: { id: item.sanPham.id },
+          trangThai: item.trangThai.ten,
+        });
+      });
+
+      setDataFake(list); // Move this line outside the forEach loop
     } catch (error) {
       console.log(error);
     }
@@ -137,9 +118,12 @@ function TableUpdateSanpham({ idSanPham }) {
   });
   const mauSacMapping = {};
   dataMauSacFull.forEach((ms) => {
-    mauSacMapping[ms.id] = ms.ten;
+    mauSacMapping[ms.ten] = ms.id;
   });
-
+  const mauSacMappingTen = {};
+  dataMauSacFull.forEach((ms) => {
+    mauSacMappingTen[ms.id] = ms.ten;
+  });
   const kichCoMapping = {};
   dataKichCo.forEach((kc) => {
     kichCoMapping[kc.id] = kc.kichCo;
@@ -157,6 +141,7 @@ function TableUpdateSanpham({ idSanPham }) {
         },
       });
       getDataChiTietSanPham();
+      setSelectedRowKeys([]);
       message.success("Chỉnh sửa dữ liệu thành công");
     } catch (error) {
       message.error("Chỉnh sửa dữ liệu thất bại");
@@ -278,6 +263,7 @@ function TableUpdateSanpham({ idSanPham }) {
   const onClickMauSac = (event) => {
     const selectedValue = event.target.value;
     setIdMauSac(selectedValue);
+    setCheckedMauSac(selectedValue);
     setPage(1);
   };
   const deleteItem = (key, record) => {
@@ -311,7 +297,14 @@ function TableUpdateSanpham({ idSanPham }) {
       },
     });
   };
-  const onAddModalKichCo = (mauSac: any, selectedKichCo: any) => {
+  const onAddModalKichCo = (
+    mauSac: any,
+    selectedKichCo: any,
+    soLuong: number,
+    giaTien: number
+  ) => {
+    console.log(mauSac);
+
     const updatedFakeData: DataTypeCTSP[] = [...dataFake];
     const newSelectedKeys: string[] = [];
     selectedKichCo.forEach((kichCo: string) => {
@@ -320,19 +313,20 @@ function TableUpdateSanpham({ idSanPham }) {
         id: null,
         key: uniqueId,
         mauSac: {
-          id: dataChiTietSanPham[0].mauSac.id,
+          id: mauSacMapping[mauSac],
+          ten: mauSac,
         },
         kichCo: {
           id: kichCo,
           kichCo: kichCoMapping[kichCo],
         },
-        soLuong: 10,
-        giaTien: 100000,
+        soLuong: soLuong,
+        giaTien: giaTien,
         loaiDe: {
-          id: dataChiTietSanPham[0].loaiDe.id,
+          id: 1,
         },
         diaHinhSan: {
-          id: dataChiTietSanPham[0].diaHinhSan.id,
+          id: 1,
         },
         sanPham: { id: idSanPham },
         trangThai: "ACTIVE",
@@ -362,56 +356,77 @@ function TableUpdateSanpham({ idSanPham }) {
       )
     );
   };
-  const onAddMauSac = (idMauSac, listKichCo) => {
-    setCheckedMauSac(idMauSac);
-    const updatedMauSac: DataTypeCTSP[] = [...dataMauSac];
-    updatedMauSac.push({
-      id: idMauSac,
-      ten: mauSacMapping[idMauSac],
-    });
-    setDataMauSac(updatedMauSac);
-    const newData1 = [];
-    listKichCo.forEach((kichCo: string) => {
+  const onAddMauSac = (idMauSac, listKichCo, soLuong, giaTien) => {
+    const updatedList: DataTypeCTSP[] = [...dataFake];
+    const newSelectedKeys = [];
+
+    listKichCo.forEach((kichCo) => {
       const uniqueId = `${idMauSac}-${kichCo}`;
-      newData1.push({
+      updatedList.push({
         id: null,
         key: uniqueId,
         mauSac: {
           id: idMauSac,
+          ten: mauSacMappingTen[idMauSac],
         },
         kichCo: {
           id: kichCo,
           kichCo: kichCoMapping[kichCo],
         },
-        soLuong: 10,
-        giaTien: 100000,
+        soLuong: soLuong,
+        giaTien: giaTien,
         loaiDe: {
-          id: dataChiTietSanPham[0].loaiDe.id,
+          id: 1,
         },
         diaHinhSan: {
-          id: dataChiTietSanPham[0].diaHinhSan.id,
+          id: 1,
         },
         sanPham: { id: idSanPham },
         trangThai: "ACTIVE",
       });
-      setNewData(newData1);
-      setDataChiTietSanPham(newData1);
+      newSelectedKeys.push(uniqueId);
     });
+    setIdMauSac(idMauSac);
+    setDataFake(updatedList);
+    console.log(updatedList);
+
+    setCheckedMauSac(idMauSac);
+    // Add the new selected keys to the state
+    setSelectedRowKeys((prevSelectedKeys) => [
+      ...prevSelectedKeys,
+      ...newSelectedKeys,
+    ]);
   };
+
+  const filteredData = dataFake.filter((item) => item.mauSac.id === idMauSac);
+  const mauSacList = Array.from(
+    new Set(dataFake.map((item) => JSON.stringify(item.mauSac)))
+  ).map((item) => JSON.parse(item));
+
   return (
     <>
-      {dataMauSac.length !== 0 && (
-        <Radio.Group
-          buttonStyle="outline"
-          value={checkedMauSac}
-          onChange={onClickMauSac}
-        >
+      <Radio.Group
+        buttonStyle="outline"
+        // defaultValue={mauSacList[0].id}
+        value={checkedMauSac}
+        onChange={onClickMauSac}
+      >
+        <Space>
+          <Row gutter={[10, 10]}>
+            <Radio.Button
+              type="default"
+              style={{ marginRight: 5 }}
+              // onClick={}
+            >
+              Tất cả
+            </Radio.Button>
+          </Row>
           <Space>
-            {dataMauSac.map((record: any) => (
+            {mauSacList.map((record: any) => (
               <Row gutter={[10, 10]} key={record.id}>
                 <Col>
                   <Radio.Button
-                    onClick={() => setCheckedMauSac(record.id)}
+                    onClick={() => setMauSac(record)}
                     value={record.id}
                   >
                     {record.ten}
@@ -427,9 +442,8 @@ function TableUpdateSanpham({ idSanPham }) {
               Thêm
             </Button>
           </Space>
-        </Radio.Group>
-      )}
-
+        </Space>
+      </Radio.Group>
       <Button
         onClick={onClickUpdate}
         type="primary"
@@ -438,41 +452,46 @@ function TableUpdateSanpham({ idSanPham }) {
       >
         Hoàn Tất Chỉnh Sửa
       </Button>
-      <Table
-        showSorterTooltip={false}
-        pagination={{
-          showSizeChanger: true,
-          current: page,
-          pageSize: pageSize,
-          onChange: (page, pageSize) => {
-            setPage(page);
-            setPageSize(pageSize);
-          },
-        }}
-        dataSource={dataFake}
-        rowSelection={{
-          selectedRowKeys,
-          onChange: (selectedRowKeys: any, selectedRows: any) => {
-            setSelectedRowKeys(selectedRowKeys);
-          },
-          checkStrictly: true,
-          type: "checkbox",
-        }}
-        columns={colums}
-        footer={() => (
-          <Button
-            type="dashed"
-            style={{ textAlign: "center" }}
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setShowModal(true);
-            }}
-            block
-          >
-            Thêm Kích Cỡ
-          </Button>
-        )}
-      />
+      {checkedMauSac === undefined ? (
+        <TableAllSanpham idSanPham={idSanPham} />
+      ) : (
+        <Table
+          showSorterTooltip={false}
+          pagination={{
+            showSizeChanger: true,
+            current: page,
+            pageSize: pageSize,
+            onChange: (page, pageSize) => {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+          }}
+          dataSource={filteredData}
+          rowSelection={{
+            selectedRowKeys,
+            onChange: (selectedRowKeys: any, selectedRows: any) => {
+              setSelectedRowKeys(selectedRowKeys);
+            },
+            checkStrictly: true,
+            type: "checkbox",
+          }}
+          columns={colums}
+          footer={() => (
+            <Button
+              type="dashed"
+              style={{ textAlign: "center" }}
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setShowModal(true);
+              }}
+              block
+            >
+              Thêm Kích Cỡ
+            </Button>
+          )}
+        />
+      )}
+
       <ModalKichCo
         openModal={showModal}
         closeModal={() => setShowModal(false)}
@@ -488,7 +507,7 @@ function TableUpdateSanpham({ idSanPham }) {
       />
       <HinhAnhModal
         sanPham={idSanPham}
-        mauSac={mauSac}
+        mauSac={idMauSac}
         openModal={openModal}
         closeModal={() => setOpenModal(false)}
       />

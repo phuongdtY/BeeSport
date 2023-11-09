@@ -17,7 +17,7 @@ import {
   Select,
 } from "antd";
 
-import {requestTimMatKhau} from "~/utils/request";
+import { requestTimMatKhau } from "~/utils/request";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import axios from "axios";
 import { Option } from "antd/es/mentions";
@@ -50,7 +50,10 @@ const AddNV: React.FC = () => {
       onOk: async () => {
         try {
           setLoading(true);
-          const response = await requestTimMatKhau.post("nhan-vien/add", values);
+          const response = await requestTimMatKhau.post(
+            "nhan-vien/add",
+            values
+          );
           console.log("Response from API:", response); // In dữ liệu từ API
           setLoading(false);
           message.success("Thêm nhân viên thành công");
@@ -240,10 +243,8 @@ const AddNV: React.FC = () => {
     console.log(value, selectedOptions);
   };
   return (
-    
     <Card title="THÊM NHÂN VIÊN">
       <Row>
-        
         <Col span={16}>
           <Form form={form} onFinish={onSubmit} {...formItemLayout}>
             <Form.Item

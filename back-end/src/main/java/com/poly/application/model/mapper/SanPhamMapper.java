@@ -26,9 +26,9 @@ public class SanPhamMapper {
         return mapper.map(request, SanPham.class);
     }
 
-    public void convertUpdateRequestToEntity(UpdatedSanPhamRequest request, SanPham sanPham) {
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        mapper.map(request, sanPham);
+    public SanPham convertUpdateRequestToEntity(UpdatedSanPhamRequest request,SanPham sanPham) {
+         mapper.map(request, sanPham);
+        return sanPham;
     }
 
 }

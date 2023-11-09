@@ -1,19 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Alert,
-  Button,
-  InputNumber,
-  Space,
-  Table,
-  Tooltip,
-  message,
-} from "antd";
-import type { TableRowSelection } from "antd/es/table/interface";
-import {
-  formatGiaTien,
-  formatGiaTienVND,
-  formatSoLuong,
-} from "~/utils/formatResponse";
+import { Alert, Button, InputNumber, Table, Tooltip, message } from "antd";
+import { formatGiaTienVND, formatSoLuong } from "~/utils/formatResponse";
 import {
   DeleteOutlined,
   PictureOutlined,
@@ -22,9 +9,11 @@ import {
 import HinhAnhModal from "./HinhAnhModal";
 import ModalKichCo from "./ModalKichCo";
 
-function TableSanPham({
+function TableAddSanPham({
   dataMS,
   dataKC,
+  soLuong,
+  giaTien,
   selectedLoaiDe,
   selectedSanPham,
   selectedDiaHinhSan,
@@ -35,9 +24,6 @@ function TableSanPham({
   const [fakeData, setFakeData] = useState<DataTypeSanPham[]>([]);
 
   const [openModal, setOpenModal] = useState(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [soLuong, setSoLuong] = useState(1);
-  const [giaTien, setGiaTien] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10); // Default page size
   const [kichCoModalVisible, setKichCoModalVisible] = useState(false);
@@ -47,16 +33,28 @@ function TableSanPham({
   }, [fakeData, onFakeDataChange]);
   useEffect(() => {
     setFakeData(createFakeData());
-  }, [selectedMauSac, selectedKichCo, selectedDiaHinhSan, selectedLoaiDe]);
+  }, [
+    selectedSanPham,
+    selectedMauSac,
+    selectedKichCo,
+    selectedDiaHinhSan,
+    selectedLoaiDe,
+    soLuong,
+    giaTien,
+  ]);
 
   const mauSacMapping = {};
   dataMS.forEach((ms) => {
-    mauSacMapping[ms.id] = ms.ten;
+    mauSacMapping[ms.ten] = ms.id;
   });
 
   const kichCoMapping = {};
   dataKC.forEach((kc) => {
-    kichCoMapping[kc.id] = kc.kichCo;
+    kichCoMapping[kc.kichCo] = kc.id;
+  });
+  const kichCoMappingId = {};
+  dataKC.forEach((kc) => {
+    kichCoMappingId[kc.id] = kc.kichCo;
   });
 
   const handleEditSoLuong = (key, newSoLuong) => {
@@ -80,83 +78,54 @@ function TableSanPham({
     setPageSize(size);
   };
 
-  const clickDelete = () => {
-    const updatedData = fakeData.filter(
-      (item) => !selectedRowKeys.includes(item.key)
-    );
-    setFakeData(updatedData);
-  };
-
-  const clickSoLuong = () => {
-    const updatedData = fakeData.map((item) => {
-      if (selectedRowKeys.includes(item.key)) {
-        return {
-          ...item,
-          soLuong: soLuong,
-        };
-      }
-      return item;
-    });
-    setFakeData(updatedData);
-  };
-
-  const clickGiaTien = () => {
-    const updatedData = fakeData.map((item) => {
-      if (selectedRowKeys.includes(item.key)) {
-        return {
-          ...item,
-          giaTien: giaTien,
-        };
-      }
-      return item;
-    });
-    setFakeData(updatedData);
-  };
-
   const createFakeData = () => {
     const fakeData = [];
-    selectedMauSac.forEach((mauSac) => {
-      selectedKichCo.forEach((kichCo) => {
-        const uniqueId = `${mauSac}-${kichCo}`;
-        fakeData.push({
-          key: uniqueId,
-          giaTien: 100000,
-          soLuong: 10,
-          loaiDe: {
-            id: selectedLoaiDe,
-          },
-          diaHinhSan: {
-            id: selectedDiaHinhSan,
-          },
-          sanPham: {
-            id: selectedSanPham,
-          },
-          mauSac: {
-            id: mauSac,
-            ten: mauSacMapping[mauSac],
-          },
-          kichCo: {
-            id: kichCo,
-            ten: kichCoMapping[kichCo],
-          },
-          trangThai: "ACTIVE",
+    if (
+      selectedSanPham !== undefined &&
+      selectedLoaiDe !== undefined &&
+      selectedDiaHinhSan !== undefined &&
+      soLuong !== undefined &&
+      giaTien !== undefined &&
+      selectedMauSac !== undefined &&
+      selectedKichCo !== undefined
+    ) {
+      selectedMauSac.forEach((mauSac) => {
+        selectedKichCo.forEach((kichCo) => {
+          const uniqueId = `${mauSacMapping[mauSac]}-${kichCo}`;
+          fakeData.push({
+            key: uniqueId,
+            giaTien: giaTien,
+            soLuong: soLuong,
+            loaiDe: {
+              id: selectedLoaiDe,
+            },
+            diaHinhSan: {
+              id: selectedDiaHinhSan,
+            },
+            sanPham: {
+              id: selectedSanPham,
+            },
+            mauSac: {
+              id: mauSacMapping[mauSac],
+              ten: mauSac,
+            },
+            kichCo: {
+              id: kichCoMapping[kichCo],
+              kichCo: kichCo,
+            },
+            trangThai: "ACTIVE",
+          });
         });
       });
-    });
+    }
+    console.log(fakeData);
     return fakeData;
-  };
-
-  const rowSelection: TableRowSelection<DataType> = {
-    onSelect: (changeableRowKeys) => {
-      setSelectedRowKeys(changeableRowKeys);
-    },
   };
 
   const deleteItemFromFakeData = (key) => {
     const updatedData = fakeData.filter((item) => item.key !== key);
     setFakeData(updatedData);
   };
-
   const handleOpenKichCoModal = (mauSac) => {
     setSelectedMauSacForModal(mauSac);
     setKichCoModalVisible(true);
@@ -165,18 +134,20 @@ function TableSanPham({
   const handleAddKichCoToFakeData = (mauSac, selectedKichCo) => {
     const updatedFakeData = fakeData.slice();
     selectedKichCo.forEach((kichCo) => {
-      const uniqueId = `${mauSac}-${kichCo}`;
+      const uniqueId = `${mauSacMapping[mauSac]}-${kichCo}`;
       updatedFakeData.push({
         key: uniqueId,
-        giaTien: 100000,
-        soLuong: 10,
+        giaTien: giaTien,
+        soLuong: soLuong,
         loaiDe: { id: selectedLoaiDe },
         diaHinhSan: { id: selectedDiaHinhSan },
-        sanPham: { id: null },
-        mauSac: { id: mauSac, ten: mauSacMapping[mauSac] },
-        kichCo: { id: kichCo, ten: kichCoMapping[kichCo] },
+        sanPham: { id: selectedSanPham },
+        mauSac: { id: mauSacMapping[mauSac], ten: mauSac },
+        kichCo: { id: kichCo, kichCo: kichCoMappingId[kichCo] },
+        trangThai: "ACTIVE",
       });
     });
+    console.log(updatedFakeData);
 
     setFakeData(updatedFakeData);
   };
@@ -209,7 +180,7 @@ function TableSanPham({
           message={firstMauSac.ten}
           type="info"
         />
-        <Space style={{ margin: 5 }}>
+        {/* <Space style={{ margin: 5 }}>
           <Button type="primary" danger onClick={clickDelete}>
             <DeleteOutlined />
             Xóa
@@ -238,10 +209,9 @@ function TableSanPham({
           <Button type="default" onClick={clickGiaTien}>
             Sửa giá tiền
           </Button>
-        </Space>
+        </Space> */}
         <Table
           showSorterTooltip={false}
-          rowSelection={rowSelection}
           dataSource={mauSacData}
           pagination={{
             pageSize: pageSize,
@@ -259,10 +229,10 @@ function TableSanPham({
               title: "Kích Cỡ",
               align: "center",
               dataIndex: "kichCo",
-              render: (kichCo, record) => kichCo.ten,
+              render: (kichCo, record) => kichCo.kichCo,
               sorter: (a, b) => {
-                const kichCoA = parseFloat(a.kichCo.ten);
-                const kichCoB = parseFloat(b.kichCo.ten);
+                const kichCoA = parseFloat(a.kichCo.kichCo);
+                const kichCoB = parseFloat(b.kichCo.kichCo);
                 return kichCoA - kichCoB;
               },
             },
@@ -380,4 +350,4 @@ function TableSanPham({
   });
 }
 
-export default TableSanPham;
+export default TableAddSanPham;

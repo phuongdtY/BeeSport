@@ -4,6 +4,11 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { UpdatedRequest } from "~/interfaces/voucher.type";
 import request from "~/utils/request";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { DataType } from "~/interfaces/voucher.type";
+dayjs.extend(customParseFormat);
+
 const { confirm } = Modal;
 const { Option } = Select;
 
@@ -13,6 +18,7 @@ const UpdateVoucher: React.FC = () => {
   const [options, setOptions] = useState([]);
   const [form] = Form.useForm();
   let { id } = useParams();
+  const [data, setData] = useState<DataType | null>(null);
 
   const [selectedOption, setSelectedOption] = useState('');
   const [input1, setInput1] = useState('');
@@ -49,10 +55,14 @@ const UpdateVoucher: React.FC = () => {
           res.data?.trangThai.ten === "EXPIRED" ? "Hết hạn" :
             res.data?.trangThai.ten === "INACTIVE" ? "Không hoạt động" :
               res.data?.trangThai.ten === "UPCOMING" ? "Sắp tới" : "";
+        const ngayBatDauValue = dayjs(res.data?.ngayBatDau);
+        const ngayKetThucValue = dayjs(res.data?.ngayKetThuc);
         form.setFieldsValue({
           id: res.data?.id,
           ma: res.data?.ma,
           ten: res.data?.ten,
+          ngayBatDau: ngayBatDauValue,
+          ngayKetThuc: ngayKetThucValue,
           hinhThucGiam: { id: res.data?.hinhThucGiam },
           giaToiThieu: res.data?.giaToiThieu,
           giaTriGiam: res.data?.giaTriGiam,
@@ -121,12 +131,7 @@ const UpdateVoucher: React.FC = () => {
             <Form.Item
               name="id"
               label="Id"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập id voucher!",
-                },
-              ]}
+              style={{ display: 'none' }} // Ẩn trường id
             >
               <Input disabled />
             </Form.Item>
@@ -141,7 +146,7 @@ const UpdateVoucher: React.FC = () => {
                 },
               ]}
             >
-              <Input />
+              <Input disabled />
             </Form.Item>
             <Form.Item
               name="ten"
@@ -158,14 +163,14 @@ const UpdateVoucher: React.FC = () => {
             <Form.Item
               name="ngayBatDau"
               label="Ngày Bắt Đầu"
-              rules={[{ required: true, message: "Vui lòng Chọn ngày và giờ bắt đầu!" }]}>
-              <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ bắt đầu" style={{ width: "100%" }} />
+              rules={[{ required: true, message: "Vui lòng Chọn ngày bắt đầu!" }]} >
+              <DatePicker format="DD/MM/YYYY" placeholder="Chọn ngày bắt đầu" style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item
               name="ngayKetThuc"
               label="Ngày Kết Thúc"
               rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc!" }]}>
-              <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" placeholder="Chọn ngày và giờ kết thúc" style={{ width: "100%" }} />
+              <DatePicker format="DD/MM/YYYY" placeholder="Chọn ngày kết thúc" style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item
               name="hinhThucGiam"
@@ -229,13 +234,7 @@ const UpdateVoucher: React.FC = () => {
             <Form.Item
               name="trangThai"
               label="Trạng Thái"
-              rules={[
-                {
-                  whitespace: true,
-                  required: true,
-                  message: "Vui lòng nhập mã voucher!",
-                },
-              ]}
+              style={{ display: 'none' }} // Ẩn trường trạng thái
             >
               <Input disabled />
             </Form.Item>

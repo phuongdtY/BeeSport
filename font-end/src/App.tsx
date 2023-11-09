@@ -8,7 +8,7 @@ import IndexMauSac from "./pages/admin/mau-sac/index";
 import AddMauSac from "./pages/admin/mau-sac/add";
 import UpdateMauSac from "./pages/admin/mau-sac/update";
 import IndexSanPham from "./pages/admin/san-pham/index";
-import AddSanPham from "./pages/admin/san-pham/add";
+import AddSanPham from "./pages/admin/san-pham/AddSanPham.tsx";
 import IndexThuongHieu from "./pages/admin/thuong-hieu/index";
 import AddThuongHieu from "./pages/admin/thuong-hieu/add";
 import UpdateThuongHieu from "./pages/admin/thuong-hieu/update";
