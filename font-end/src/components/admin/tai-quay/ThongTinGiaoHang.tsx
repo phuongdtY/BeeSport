@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Row, Select } from "antd";
+import React, { useEffect, useState, useRef } from "react";
+import { Col, Form, Input, Row, Select } from "antd";
 import { Option } from "antd/es/mentions";
 import axios from "axios";
 import request from "~/utils/request";
@@ -12,29 +12,34 @@ interface Option {
 }
 
 type FieldType = {
-  hoVaTen?: string;
-  soDienThoai?: string;
-  email?: string;
-  diaChi?: string;
+  nguoiNhan?: string;
+  sdtNguoiNhan?: string;
+  emailNguoiNhan?: string;
 };
 
 const ThongTinGiaoHang: React.FC<{
   onFullAddressChange: (address: string) => void; // Sửa kiểu dữ liệu của onFullAddressChange
   onFeeResponseChange: (fee: number) => void; // Sửa kiểu dữ liệu của onFeeResponseChange
-}> = ({ onFullAddressChange, onFeeResponseChange }) => {
+  onFormValuesChange: (formValues: FieldType) => void; // New prop
+}> = ({ onFullAddressChange, onFeeResponseChange, onFormValuesChange }) => {
   const [provinces, setProvinces] = useState<Option[]>([]);
   const [districts, setDistricts] = useState<Option[]>([]);
   const [wards, setWards] = useState<Option[]>([]);
   const [form] = Form.useForm();
+  // Thêm các biến state để lưu giá trị của hoVaTen, soDienThoai, email
+  const [formValues, setFormValues] = useState<FieldType>({
+    nguoiNhan: "",
+    sdtNguoiNhan: "",
+    emailNguoiNhan: "",
+  });
 
   useEffect(() => {
     getFullAddress(); // Export the getFullAddress function
     calculateShippingFee(form.getFieldsValue());
-  }, [form]);
+    onFormValuesChange(formValues);
+  }, [form, formValues]);
 
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
-  };
+  const onFinish = (values: any) => {};
 
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
@@ -183,7 +188,6 @@ const ThongTinGiaoHang: React.FC<{
     const districtLabel = getDistrictLabelFromId(formValues.quanHuyen);
     const wardLabel = getWardLabelFromId(formValues.phuongXa);
     const diaChiCuThe = formValues.diaChi;
-    console.log(provinceLabel);
 
     // Cộng chuỗi thông tin địa chỉ lại với nhau
     const fullAddress = `${diaChiCuThe}, ${wardLabel}, ${districtLabel}, ${provinceLabel}`;
@@ -214,31 +218,49 @@ const ThongTinGiaoHang: React.FC<{
           <Col span={12}>
             <Form.Item<FieldType>
               label="Họ và tên"
-              name="username"
+              name="nguoiNhan"
               style={{ marginRight: 10 }}
               rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
             >
-              <Input />
+              <Input
+                value={formValues.nguoiNhan}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, nguoiNhan: e.target.value })
+                }
+              />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item<FieldType>
               label="SĐT"
-              name="soDienThoai"
+              name="sdtNguoiNhan"
               rules={[
                 { required: true, message: "Vui lòng nhập số điện thoại" },
               ]}
             >
-              <Input />
+              <Input
+                value={formValues.sdtNguoiNhan}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, sdtNguoiNhan: e.target.value })
+                }
+              />
             </Form.Item>
           </Col>
           <Col span={24}>
             <Form.Item<FieldType>
               label="Email"
-              name="email"
+              name="emailNguoiNhan"
               rules={[{ required: true, message: "Vui lòng điền email" }]}
             >
-              <Input />
+              <Input
+                value={formValues.emailNguoiNhan}
+                onChange={(e) =>
+                  setFormValues({
+                    ...formValues,
+                    emailNguoiNhan: e.target.value,
+                  })
+                }
+              />
             </Form.Item>
           </Col>
         </Row>
