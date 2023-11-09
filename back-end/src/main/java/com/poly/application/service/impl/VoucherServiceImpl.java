@@ -123,6 +123,7 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setGiaToiThieu(request.getGiaToiThieu());
         voucher.setGiaTriGiam(request.getGiaTriGiam());
         voucher.setGiaTriGiamToiDa(request.getGiaTriGiamToiDa());
+        voucher.setSoLuong(request.getSoLuong());
 
         mapper.convertUpdateRequestToEntity(request, voucher);
         String status = voucherUtils.getVoucherStatusWithInactive(

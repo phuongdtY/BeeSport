@@ -9,10 +9,11 @@ export interface DataType {
         ten: string;
         mota: string;
         hinhThucGiam: string;
-      };
+    };
     giaToiThieu : string;
     giaTriGiam : string;
     giaTriGiamToiDa : string;
+    soLuong: number | null; 
     ngayTao: string;
     ngaySua: string;
     trangThai: {
@@ -39,9 +40,10 @@ export interface DataType {
     ngayBatDau: string;
     ngayKetThuc: string;
     hinhThucGiam : string;
-    giaToiThieu : string;
-    giaTriGiam : string;
-    giaTriGiamToiDa : string;
+    giaToiThieu : number;
+    giaTriGiam : number;
+    giaTriGiamToiDa : number;
+    soLuong: number | null; 
   }
   export interface UpdatedRequest {
     id: number;
@@ -49,12 +51,11 @@ export interface DataType {
     ten: string;
     ngayBatDau: string;
     ngayKetThuc: string;
-    ngayTao: string;
     hinhThucGiam : string;
-    giaToiThieu : string;
-    giaTriGiam : string;
-    giaTriGiamToiDa : string;
-    // trangThai: boolean;
+    giaToiThieu : number;
+    giaTriGiam : number;
+    giaTriGiamToiDa : number;
+    soLuong: number | null; 
   }
 
   

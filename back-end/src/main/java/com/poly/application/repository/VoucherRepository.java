@@ -16,4 +16,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
             "AND (:trangThai IS NULL OR obj.trangThai = :trangThai)")
     Page<Voucher> findByALl(Pageable pageable, String searchText, Long hinhThucGiamGiaId, CommonEnum.TrangThaiVoucher trangThai);
 
+    boolean existsByTen(String ten);
+
 }
