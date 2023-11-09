@@ -5,9 +5,11 @@ import com.poly.application.entity.HoaDon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -29,4 +31,12 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
 
     @Query("SELECT hd FROM HoaDon hd WHERE hd.trangThaiHoaDon = 'PENDING' AND hd.loaiHoaDon = 'COUNTER' ORDER BY hd.ngayTao DESC LIMIT 3")
     List<HoaDon> get7HoaDonPendingByDate();
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE HoaDon hd SET hd.trangThaiHoaDon = :trangThai WHERE hd.id = :id")
+    void updateTrangThaiHoaDon(
+            @Param("trangThai") CommonEnum.TrangThaiHoaDon trangThaiHoaDon,
+            @Param("id")Long id
+    );
 }

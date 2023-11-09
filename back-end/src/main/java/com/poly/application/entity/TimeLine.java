@@ -11,6 +11,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -24,44 +26,33 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@SuppressWarnings("serial")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@Table(name = "phuong_thuc_thanh_toan")
-public class PhuongThucThanhToan {
+@Table(name = "timeline")
+public class TimeLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "ten")
-    private String ten;
-
-    @Column(name = "ma")
-    private String ma;
+    @Column(name = "ghi_chu")
+    private String ghiChu;
 
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")
     private LocalDateTime ngayTao;
 
-    @UpdateTimestamp
-    @ColumnDefault("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
-    @Column(name = "ngay_sua", columnDefinition = "TIMESTAMP")
-    private LocalDateTime ngaySua;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai")
-    private CommonEnum.TrangThaiThuocTinh trangThai;
+    private CommonEnum.TrangThaiHoaDon trangThai;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "phuongThucThanhToan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<GiaoDich> giaoDichList;
-
-
+    @ManyToOne
+    @JoinColumn(name = "hoa_don_id", referencedColumnName = "id")
+    private HoaDon hoaDon;
 
 }

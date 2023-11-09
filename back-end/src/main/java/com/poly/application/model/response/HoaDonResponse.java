@@ -46,8 +46,6 @@ public class HoaDonResponse {
 
     private LocalDateTime ngayNhan;
 
-    private LocalDateTime ngayMongMuon;
-
     private LocalDateTime ngayTao;
 
     private LocalDateTime ngaySua;

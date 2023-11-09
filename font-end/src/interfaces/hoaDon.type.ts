@@ -57,6 +57,7 @@ export interface DataType {
 export interface UpdatedRequest {
   ma: String;
   diaChiNguoiNhan: String;
+  phiShip: string;
   loaiHoaDon: {
     ten: string;
     moTa: string;

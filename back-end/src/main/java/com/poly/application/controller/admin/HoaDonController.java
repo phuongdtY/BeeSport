@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/admin/api/hoa-don")
@@ -32,7 +34,7 @@ public class HoaDonController {
 
     @GetMapping()
     public ResponseEntity<?> getAll(
-            @RequestParam(value = "currentPage", defaultValue = "1") Integer page,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
             @RequestParam(value = "searchText", defaultValue = "", required = false) String searchText,
             @RequestParam(value = "sortField", defaultValue = "", required = false) String sorter,
@@ -65,8 +67,9 @@ public class HoaDonController {
     }
 
     @PutMapping("/hoa-don-chi-tiet/{id}")
-    public ResponseEntity<?> updateHoaDonChiTiet(@RequestBody UpdatedHoaDonChiTietRequest updatedHoaDonChiTietRequest, @PathVariable(name = "id") Long id) {
-        return ResponseEntity.ok(hoaDonChiTietService.update(id, updatedHoaDonChiTietRequest));
+    public ResponseEntity<?> updateHoaDonChiTiet(@RequestBody List<UpdatedHoaDonChiTietRequest> updatedHoaDonChiTietRequest) {
+        hoaDonChiTietService.updateHoaDonChiTiet(updatedHoaDonChiTietRequest);
+        return ResponseEntity.ok("chạy xong");
     }
 
     @DeleteMapping("/{id}")
@@ -79,7 +82,7 @@ public class HoaDonController {
     @GetMapping("/test-hoa-don/{id}")
     public ResponseEntity<?> detail(
             @PathVariable(name = "id") Long id,
-            @RequestParam(value = "currentPage", defaultValue = "1") Integer page,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
             @RequestParam(value = "searchText", defaultValue = "", required = false) String searchText,
             @RequestParam(value = "sortField", defaultValue = "", required = false) String sorter,
@@ -104,5 +107,7 @@ public class HoaDonController {
     public ResponseEntity<?> get7HoaDonPendingByDate(){
         return ResponseEntity.ok(hoaDonService.get7HoaDonPendingByDateNew());
     }
+
+
 
 }

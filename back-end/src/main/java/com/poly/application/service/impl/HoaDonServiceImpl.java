@@ -2,10 +2,12 @@ package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.common.GenCode;
+import com.poly.application.entity.ChiTietSanPham;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.HoaDonChiTiet;
 import com.poly.application.entity.SanPham;
 import com.poly.application.entity.TaiKhoan;
+import com.poly.application.entity.TimeLine;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.HoaDonMapper;
@@ -14,10 +16,13 @@ import com.poly.application.model.request.update_request.UpdatedHoaDonRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
 import com.poly.application.model.response.SanPhamResponse;
+import com.poly.application.repository.ChiTietSanPhamRepository;
 import com.poly.application.repository.HoaDonChiTietRepository;
 import com.poly.application.repository.HoaDonRepository;
 import com.poly.application.repository.TaiKhoanRepository;
+import com.poly.application.repository.TimelineRepository;
 import com.poly.application.service.HoaDonService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +42,12 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Autowired
     private TaiKhoanRepository taiKhoanRepository;
+
+    @Autowired
+    private ChiTietSanPhamRepository chiTietSanPhamRepository;
+
+    @Autowired
+    private TimelineRepository timelineRepository;
 
     @Autowired
     private HoaDonMapper hoaDonMapper;
@@ -85,7 +96,7 @@ public class HoaDonServiceImpl implements HoaDonService {
     @Override
     public HoaDonResponse add(CreateHoaDonRequest createHoaDonRequest) {
         HoaDon createHoaDon = hoaDonMapper.convertCreateHoaDonRequestToHoaDonEntity(createHoaDonRequest);
-
+        TimeLine timeLine = new TimeLine();
         // Kiểm tra xem createHoaDonRequest có chứa thông tin về TaiKhoan không
         if (createHoaDonRequest.getTaiKhoan() != null) {
             // Lấy thông tin về TaiKhoan từ createHoaDonRequest và lưu trước
@@ -95,6 +106,10 @@ public class HoaDonServiceImpl implements HoaDonService {
 
         createHoaDon.setMa(GenCode.generateHoaDonCode());
         HoaDon savedHoaDon = hoaDonRepository.save(createHoaDon);
+        timeLine.setGhiChu("chờ xác nhận");
+        timeLine.setHoaDon(savedHoaDon);
+        timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.PENDING);
+        timelineRepository.save(timeLine);
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(savedHoaDon);
     }
 
@@ -130,13 +145,57 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setNguoiNhan(updatedHoaDonRequest.getNguoiNhan());
         hoaDon.setDiaChiNguoiNhan(updatedHoaDonRequest.getDiaChiNguoiNhan());
         hoaDon.setEmailNguoiNhan(updatedHoaDonRequest.getEmailNguoiNhan());
-
+        hoaDon.setTaiKhoan(updatedHoaDonRequest.getTaiKhoan());
+        updateTrangThaiHoaDon(id, hoaDon.getTrangThaiHoaDon(), hoaDon.getGhiChu());
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
 
     @Override
     public void delete(Long id) {
 
+    }
+
+    @Override
+    public void updateTrangThaiHoaDon(Long idHoadon, CommonEnum.TrangThaiHoaDon trangThaiHoaDon, String ghiChu) {
+        System.out.println(trangThaiHoaDon + " /  " + idHoadon);
+        HoaDon hoaDon = hoaDonRepository.findById(idHoadon).orElseThrow(() -> new NotFoundException("Không tìm thấy hóa đơn có id " + idHoadon));
+        TimeLine timeLine = new TimeLine();
+        timeLine.setHoaDon(hoaDon);
+        timeLine.getGhiChu();
+        switch (trangThaiHoaDon) {
+            case SHIPPING:
+                timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.SHIPPING);
+                timeLine.setGhiChu(ghiChu);
+                if (hoaDon.getLoaiHoaDon() != CommonEnum.LoaiHoaDon.ONLINE) {
+                    for (HoaDonChiTiet hdct : hoaDon.getHoaDonChiTietList()) {
+                        ChiTietSanPham ctsp = chiTietSanPhamRepository.findById(hdct.getChiTietSanPham().getId()).get();
+                        ctsp.setSoLuong(ctsp.getSoLuong() - hdct.getSoLuong());
+                        chiTietSanPhamRepository.save(ctsp);
+                    }
+                }
+                break;
+            case APPROVED:
+                timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.APPROVED);
+                timeLine.setGhiChu(ghiChu);
+                break;
+            case CANCELLED:
+                timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.CANCELLED);
+                timeLine.setGhiChu(ghiChu);
+                for (HoaDonChiTiet hdct : hoaDon.getHoaDonChiTietList()) {
+                    ChiTietSanPham ctsp = chiTietSanPhamRepository.findById(hdct.getChiTietSanPham().getId()).get();
+                    ctsp.setSoLuong(ctsp.getSoLuong() + hdct.getSoLuong());
+                    chiTietSanPhamRepository.save(ctsp);
+                }
+                break;
+            case CONFIRMED:
+                timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.CONFIRMED);
+                timeLine.setGhiChu(ghiChu);
+                break;
+            default:
+                break;
+        }
+        timelineRepository.save(timeLine);
+        hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
     }
 
 }

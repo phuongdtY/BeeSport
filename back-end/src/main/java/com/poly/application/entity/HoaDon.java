@@ -82,9 +82,6 @@ public class HoaDon {
     @Column(name = "ngay_nhan")
     private LocalDateTime ngayNhan;
 
-    @Column(name = "ngay_mong_muon")
-    private LocalDateTime ngayMongMuon;
-
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")
@@ -117,4 +114,7 @@ public class HoaDon {
     @OneToMany(mappedBy = "hoaDon",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HoaDonChiTiet> hoaDonChiTietList;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "hoaDon",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<TimeLine> timeLineList;
 }
