@@ -27,9 +27,9 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   loadHoaDon,
 }) => {
   const [checked, setChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const [selectKhachHangOptions, setSelectKhachHangOptions] = useState([]);
   const [selectKhachHang, setSelectKhachHang] = useState<any>(null);
-  const [voucherOptions, setVoucherOptions] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [totalPriceFromTable, setTotalPriceFromTable] = useState(0);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
@@ -38,6 +38,16 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [address, setAddress] = useState(""); // Sử dụng state để lưu địa chỉ
   const [phiShip, setPhiShip] = useState(0);
   const [isCashSelected, setIsCashSelected] = useState(false); // State để kiểm tra xem "Tiền mặt" được chọn hay không
+  const [isPaymentSelected, setIsPaymentSelected] = useState(false);
+  const [selectedRadio, setSelectedRadio] = useState(null);
+  const [tienKhachDua, setTienKhachDua] = useState(0);
+
+  const handleTienKhachDuaChange = (event) => {
+    const giaTriTienKhachDua = event.target.value;
+
+    setTienKhachDua(giaTriTienKhachDua);
+  };
+
   const [customerInfo, setCustomerInfo] = useState({
     // Initialize with default values if needed
     nguoiNhan: "",
@@ -46,13 +56,16 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   });
   const tongTienKhiGiam = totalPriceFromTable + phiShip;
 
+  const tienTraKhach = tienKhachDua - tongTienKhiGiam;
+
+  const giaTriTienTraKhach = tienTraKhach < 0 ? 0 : tienTraKhach;
+
   // Xử lý sự kiện khi radio "Tiền mặt" được chọn
   const handleCashRadioChange = (e) => {
     setIsCashSelected(e.target.value === 0);
   };
 
   const handleCustomerInfoChange = (formValues) => {
-    console.log(formValues);
     setCustomerInfo({
       nguoiNhan: formValues.nguoiNhan,
       sdtNguoiNhan: formValues.sdtNguoiNhan,
@@ -78,8 +91,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       if (response.status === 200) {
         const hoaDon = response.data; // Dữ liệu hóa đơn từ máy chủ
         setHoaDon(hoaDon); // Lưu hóa đơn vào state
-        // Sử dụng hoaDonData để hiển thị hoặc thực hiện các thao tác khác
-        console.log("Thông tin hóa đơn:", hoaDon);
       } else {
         // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
         message.error("Có lỗi xảy ra khi lấy thông tin hóa đơn.");
@@ -183,13 +194,43 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     }
   };
 
+  const handleThanhToan = async (id) => {
+    // Tạo đối tượng hóa đơn với trạng thái APPROVE
+    const hoaDonData = getHoaDonData();
+    const trangThai = isChecked ? "CONFIRMED" : "APPROVED";
+    const hoaDonThanhToan = {
+      ...hoaDonData,
+      trangThaiHoaDon: trangThai,
+    };
+
+    try {
+      // Gọi API để cập nhật hóa đơn với trạng thái APPROVE
+      const response = await request.put(`/hoa-don/${id}`, hoaDonThanhToan);
+      if (response.status === 200) {
+        loadHoaDon();
+        // Nếu cập nhật thành công, hiển thị thông báo thành công
+        message.success("Hóa đơn đã được thanh toán thành công.");
+        // Sau khi thanh toán, bạn có thể thực hiện các hành động khác ở đây
+        // Ví dụ: gửi email xác nhận đơn hàng, in hóa đơn, vv.
+      } else {
+        // Xử lý lỗi nếu cập nhật không thành công
+        message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
+      }
+    } catch (error) {
+      console.error("Error making payment:", error);
+      // Xử lý lỗi nếu có lỗi trong quá trình thanh toán
+      message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
+    }
+  };
+
   useEffect(() => {}, [totalPriceFromTable]);
 
   useEffect(() => {
     loadSelectKhachHang();
-  }, []);
+  }, [selectedRadio]);
 
   const onChangeGiaoHang = (checked: boolean) => {
+    setIsChecked(checked);
     setChecked(checked);
   };
 
@@ -209,9 +250,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     input: string,
     option?: { label: string; value: string }
   ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
-  const test = (value) => {
-    setPhiShip(value);
-  };
   return (
     <>
       <Row>
@@ -287,8 +325,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         </Col>
         <Col span={10}>
           <Card>
-            <Switch defaultChecked={checked} onChange={onChangeGiaoHang} /> Giao
-            hàng
+            <Switch checked={isChecked} onChange={onChangeGiaoHang} /> Giao hàng
             <Divider />
             {checked ? (
               <>
@@ -341,7 +378,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                   step={10000}
                   formatter={(value) => `${formatGiaTienVND(value)}`}
                   parser={(value: any) => value.replace(/\D/g, "")}
-                  onChange={test}
+                  onChange={(value) => setPhiShip(value)}
                 />
               </Col>
             </Row>
@@ -379,18 +416,36 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
             <p>Ghi chú: </p>
             <TextArea
               rows={4}
-              value={ghiChu}
+              value={ghiChu === "null" ? "" : ghiChu}
               onChange={handleGhiChuChange}
               id="ghiChu"
             />
             <Radio.Group
               buttonStyle="solid"
+              value={selectedRadio}
               optionType="button"
-              onChange={handleCashRadioChange}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                // Kiểm tra nếu radio đang được chọn đã là giá trị của selectedRadio
+                if (selectedRadio === value) {
+                  setSelectedRadio(null); // Bỏ chọn radio đó
+                } else {
+                  setSelectedRadio(value); // Đặt radio được chọn
+                  handleCashRadioChange(e); // Gọi hàm handleCashRadioChange của bạn
+                  setIsPaymentSelected(true); // Đặt biến state khi radio được chọn
+                }
+              }}
+              style={{ marginBottom: 15 }}
             >
               <Row gutter={[15, 15]} style={{ marginTop: 20 }}>
                 <Radio.Button
                   value={0}
+                  onClick={(value) => {
+                    setSelectedRadio(value.target.value);
+                    setIsPaymentSelected(false);
+                    setIsCashSelected(false);
+                  }}
                   style={{
                     height: 70,
                     width: 220,
@@ -412,6 +467,9 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </Radio.Button>
                 <Radio.Button
                   value={1}
+                  onClick={(value) => {
+                    setSelectedRadio(value.target.value);
+                  }}
                   style={{
                     height: 70,
                     width: 220,
@@ -436,25 +494,49 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
             {isCashSelected && (
               <>
                 {/* Hiển thị hai ô input khi "Tiền mặt" được chọn */}
-                <span style={{ paddingTop: 10 }}>Tiền khách đưa: </span>
-                <Input style={{ marginTop: 10 }} />
-                <Input
-                  placeholder="Nhập số hóa đơn"
-                  style={{ marginTop: 10 }}
+                <span>Tiền khách đưa: </span>
+                <InputNumber
+                  style={{ marginTop: 10, width: "100%" }}
+                  value={tienKhachDua}
+                  formatter={(value) => `${formatGiaTienVND(value)}`}
+                  parser={(value: any) => value.replace(/\D/g, "")}
+                  onChange={(value) => setTienKhachDua(value)}
+                />
+                <br />
+                <span>Tiền trả khách: </span>
+                <InputNumber
+                  disabled={true}
+                  style={{ marginTop: 10, width: "100%" }}
+                  value={formatGiaTienVND(giaTriTienTraKhach)}
                 />
               </>
             )}
-            <Row>
-              <Col span={24}>
-                <Button
-                  type="primary"
-                  style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
-                  onClick={() => handleLuuHoaDon(id)}
-                >
-                  Lưu hóa đơn
-                </Button>
-              </Col>
-            </Row>
+            {isPaymentSelected && (
+              <Row>
+                <Col span={24}>
+                  <Button
+                    type="primary"
+                    style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
+                    onClick={() => handleThanhToan(id)}
+                  >
+                    {isChecked ? "Xác nhận" : "Thanh toán"}
+                  </Button>
+                </Col>
+              </Row>
+            )}
+            {!isPaymentSelected && (
+              <Row>
+                <Col span={24}>
+                  <Button
+                    type="primary"
+                    style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
+                    onClick={() => handleLuuHoaDon(id)}
+                  >
+                    Lưu hóa đơn
+                  </Button>
+                </Col>
+              </Row>
+            )}
           </Card>
         </Col>
       </Row>
