@@ -3,7 +3,6 @@ import {
   Card,
   Col,
   Divider,
-  Input,
   InputNumber,
   Radio,
   Row,
@@ -13,12 +12,12 @@ import {
   message,
 } from "antd";
 import { BsCashCoin, BsCreditCard2Back } from "react-icons/bs";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import ThongTinGiaoHang from "./ThongTinGiaoHang";
 import TextArea from "antd/es/input/TextArea";
 import TableSanPham from "./TableSanPham";
 import { PlusOutlined } from "@ant-design/icons";
-import request, { request4s } from "~/utils/request";
+import request from "~/utils/request";
 import ModalAddKhachHang from "./ModalAddKhachHang";
 import { formatGiaTienVND, formatPhoneNumber } from "~/utils/formatResponse";
 
@@ -32,7 +31,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [selectKhachHang, setSelectKhachHang] = useState<any>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [totalPriceFromTable, setTotalPriceFromTable] = useState(0);
-  const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [vouchers, setVouchers] = useState([]);
   const [hoaDon, setHoaDon] = useState(null); // State để lưu đối tượng hóa đơn
   const [ghiChu, setGhiChu] = useState("null"); // State để lưu đối tượng hóa đơn
   const [address, setAddress] = useState(""); // Sử dụng state để lưu địa chỉ
@@ -41,11 +40,63 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [isPaymentSelected, setIsPaymentSelected] = useState(false);
   const [selectedRadio, setSelectedRadio] = useState(null);
   const [tienKhachDua, setTienKhachDua] = useState(0);
+  const [giaTriGiam, setGiaTriGiam] = useState(0); // New state for discount amount
+  const [selectedVoucher, setSelectedVoucher] = useState([]);
+  const [tongTienKhiGiam, setTongTienKhiGiam] = useState(0);
+
+  const calculateRemainingAmountForVoucher = () => {
+    // Sắp xếp các voucher theo giaToiThieu theo thứ tự tăng dần
+    const sortedVouchers = vouchers.sort(
+      (a, b) => a.giaToiThieu - b.giaToiThieu
+    );
+
+    // Tìm voucher đầu tiên mà tổng số tiền nhỏ hơn giaToiThieu
+    const nextVoucher = sortedVouchers.find(
+      (voucher) => totalPriceFromTable < voucher.giaToiThieu
+    );
+
+    if (nextVoucher) {
+      const remainingAmount = nextVoucher.giaToiThieu - totalPriceFromTable;
+
+      return { remainingAmount, nextVoucher };
+    } else {
+      return { remainingAmount: 0, nextVoucher: null }; // Không còn voucher nào khả dụng
+    }
+  };
 
   const handleTienKhachDuaChange = (event) => {
     const giaTriTienKhachDua = event.target.value;
-
     setTienKhachDua(giaTriTienKhachDua);
+  };
+
+  const { remainingAmount, nextVoucher } = calculateRemainingAmountForVoucher();
+
+  const getVouchers = async () => {
+    try {
+      const response = await request.get("/voucher/list");
+
+      if (response.status === 200) {
+        setVouchers(response.data);
+
+        // Find the first voucher that meets the condition
+        const selectedVoucher = response.data.find(
+          (voucher) => totalPriceFromTable >= voucher.giaToiThieu
+        );
+
+        if (selectedVoucher) {
+          setSelectedVoucher(selectedVoucher.ten);
+          setGiaTriGiam(selectedVoucher.giaTriGiam); // Set giaTriGiam here
+        } else {
+          setSelectedVoucher(null); // Reset the selected voucher name if none is selected
+          setGiaTriGiam(0); // Reset giaTriGiam if no voucher is selected
+        }
+      } else {
+        message.error("Error fetching vouchers");
+      }
+    } catch (error) {
+      console.error("Error fetching vouchers:", error);
+      message.error("Error fetching vouchers");
+    }
   };
 
   const [customerInfo, setCustomerInfo] = useState({
@@ -54,7 +105,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     sdtNguoiNhan: "",
     emailNguoiNhan: "",
   });
-  const tongTienKhiGiam = totalPriceFromTable + phiShip;
 
   const tienTraKhach = tienKhachDua - tongTienKhiGiam;
 
@@ -110,9 +160,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
 
   useEffect(() => {
     if (id) {
-      fetchHoaDonDetails(id); // Gọi hàm để lấy thông tin hóa đơn khi id thay đổi
+      fetchHoaDonDetails(id);
     }
-    // ...
   }, [id]);
 
   const passTotalPriceToParent = (price) => {
@@ -146,8 +195,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
 
   const getHoaDonData = () => {
     const idTaiKhoan = selectKhachHang ? selectKhachHang.id : null; // Lấy id của khách hàng (nếu có)
-
-    // const idVoucher = selectedVoucher ? selectedVoucher.id : null; // Lấy id của voucher (nếu có)
     const tongTien = totalPriceFromTable; // Lấy tổng tiền từ state hoặc props
 
     // Tạo đối tượng hóa đơn
@@ -223,7 +270,32 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     }
   };
 
-  useEffect(() => {}, [totalPriceFromTable]);
+  useEffect(() => {
+    const tienGiam = totalPriceFromTable + phiShip - giaTriGiam;
+    setTongTienKhiGiam(tienGiam);
+  }, [totalPriceFromTable, phiShip, giaTriGiam]);
+
+  useEffect(() => {
+    calculateRemainingAmountForVoucher();
+    if (!checked) {
+      setPhiShip(0);
+    }
+  }, [checked]);
+
+  useEffect(() => {
+    const voucher = vouchers.find(
+      (voucher) => totalPriceFromTable >= voucher.giaToiThieu
+    );
+    if (voucher) {
+      setGiaTriGiam(voucher.giaTriGiam);
+    } else {
+      setGiaTriGiam(0);
+    }
+  }, []);
+
+  useEffect(() => {
+    getVouchers();
+  }, [vouchers]);
 
   useEffect(() => {
     loadSelectKhachHang();
@@ -339,21 +411,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 <Divider />
               </>
             ) : null}
-            {/* Voucher */}
-            <Row>
-              <Col span={24}>
-                <p>Voucher: </p>
-                <Select
-                  style={{ width: "100%" }}
-                  allowClear
-                  showSearch
-                  placeholder="Tìm kiếm Voucher"
-                  optionFilterProp="children"
-                  onSearch={onSearch}
-                  filterOption={filterOption}
-                />
-              </Col>
-            </Row>
             {/* Tạm tính */}
             <Row>
               <Col span={5}>
@@ -389,20 +446,20 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               </Col>
               <Col span={16}></Col>
               <Col span={3}>
-                <p>
-                  {formatCurrency(
-                    selectedVoucher
-                      ? selectedVoucher.hinhThucGiam.id === 1
-                        ? selectedVoucher.giaTriGiam
-                        : selectedVoucher.hinhThucGiam.id === 2
-                        ? (totalPriceFromTable / 100) *
-                          selectedVoucher.giaTriGiam
-                        : 0
-                      : 0
-                  )}
-                </p>
+                <p>{formatCurrency(giaTriGiam)}</p>
               </Col>
             </Row>
+            {selectedVoucher && (
+              <Row>
+                <span style={{ color: "green" }}>
+                  Đã áp dụng Voucher '{selectedVoucher}'. Cần mua thêm{" "}
+                  {formatCurrency(remainingAmount)} để được giảm{" "}
+                  {formatCurrency(
+                    nextVoucher == null ? 0 : nextVoucher.giaTriGiam
+                  )}
+                </span>
+              </Row>
+            )}
             {/* Tổng tiền */}
             <Row>
               <Col span={5}>
