@@ -1,43 +1,41 @@
 package com.poly.application.model.request.create_request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HinhThucGiamGia;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
+@ToString
 public class  CreatedVoucherRequest {
-
-    private Long id;
 
     private String ma;
 
     private String ten;
 
-    private Date ngayBatDau;
+    private Integer soLuong;
 
-    private Date ngayKetThuc;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime ngayBatDau;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime ngayKetThuc;
 
     private HinhThucGiamGia hinhThucGiam;
 
-    private BigDecimal giaToiThieu;
+    private BigDecimal donToiThieu;
 
     private BigDecimal giaTriGiam;
 
-    private BigDecimal giaTriGiamToiDa;
-
-    private Integer soLuong;
-
-    private LocalDateTime ngayTao;
-
-    private LocalDateTime ngaySua;
+    private BigDecimal giamToiDa;
 
     @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;

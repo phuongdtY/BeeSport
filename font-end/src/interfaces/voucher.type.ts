@@ -1,61 +1,59 @@
 export interface DataType {
+  id: number;
+  ma: string;
+  ten: string;
+  ngayBatDau: string;
+  ngayKetThuc: string;
+  hinhThucGiam: {
     id: number;
-    ma: string;
     ten: string;
-    ngayBatDau: string;
-    ngayKetThuc: string;
-    hinhThucGiam : {
-        id : number;
-        ten: string;
-        mota: string;
-        hinhThucGiam: string;
-    };
-    giaToiThieu : string;
-    giaTriGiam : string;
-    giaTriGiamToiDa : string;
-    soLuong: number | null; 
-    ngayTao: string;
-    ngaySua: string;
-    trangThai: {
-      ten: string;
-      mota: string;
-      mauSac: string;
-    };
-  }
+    mota: string;
+    hinhThucGiam: string;
+  };
+  giaToiThieu: string;
+  giaTriGiam: string;
+  giaTriGiamToiDa: string;
+  soLuong: number | null;
+  ngayTao: string;
+  ngaySua: string;
+  trangThai: {
+    ten: string;
+    mota: string;
+    mauSac: string;
+  };
+}
 
-  export interface DataParams {
-    currentPage: number;
-    pageSize: number;
-    searchText: string;
-    filterStatus: string;
-    filterGender: string;
-    sorter: string;
-    sortOrder: string;
-  }
-  
-  export interface CreatedRequest {
-    id: number;
-    ma: string;
-    ten: string;
-    ngayBatDau: string;
-    ngayKetThuc: string;
-    hinhThucGiam : string;
-    giaToiThieu : number;
-    giaTriGiam : number;
-    giaTriGiamToiDa : number;
-    soLuong: number | null; 
-  }
-  export interface UpdatedRequest {
-    id: number;
-    ma: string;
-    ten: string;
-    ngayBatDau: string;
-    ngayKetThuc: string;
-    hinhThucGiam : string;
-    giaToiThieu : number;
-    giaTriGiam : number;
-    giaTriGiamToiDa : number;
-    soLuong: number | null; 
-  }
+export interface DataParams {
+  page: number;
+  pageSize: number;
+  searchText: string;
+  filterStatus: string;
+  filterGender: string;
+  sorter: string;
+  sortOrder: string;
+}
 
-  
+export interface CreatedRequest {
+  id: number;
+  ma: string;
+  ten: string;
+  ngayBatDau: string;
+  ngayKetThuc: string;
+  hinhThucGiam: string;
+  donToiThieu: number;
+  giaTriGiam: number;
+  giamToiDa: number;
+  soLuong: number | null;
+}
+export interface UpdatedRequest {
+  id: number;
+  ma: string;
+  ten: string;
+  ngayBatDau: string;
+  ngayKetThuc: string;
+  hinhThucGiam: string;
+  giaToiThieu: number;
+  giaTriGiam: number;
+  giaTriGiamToiDa: number;
+  soLuong: number | null;
+}

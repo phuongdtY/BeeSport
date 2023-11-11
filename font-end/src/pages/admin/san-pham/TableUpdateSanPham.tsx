@@ -276,8 +276,6 @@ function TableUpdateSanpham({ idSanPham }) {
         const updatedData = dataFake.filter((item) => item.key !== key);
         setDataFake(updatedData);
         message.success("Xóa thành công");
-        console.log(record.id);
-
         if (record.id !== null) {
           try {
             await request.put(`chi-tiet-san-pham/update-status/${record.id}`);

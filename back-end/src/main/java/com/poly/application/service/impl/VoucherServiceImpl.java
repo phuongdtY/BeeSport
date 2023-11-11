@@ -1,7 +1,9 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.common.GenCode;
 import com.poly.application.entity.Voucher;
+import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.VoucherMapper;
 import com.poly.application.model.request.create_request.CreatedVoucherRequest;
@@ -70,51 +72,16 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public VoucherResponse add(CreatedVoucherRequest request) {
+        if (repository.existsByTen(request.getTen())) {
+            throw new BadRequestException("Tên voucher đã tồn tại trong hệ thống!");
+        }
         Voucher createdVoucher = mapper.convertCreateRequestToEntity(request);
-
-        String defaultString = "BeeSprot"; // Chữ cái mặc định
-        int length = 6; // Độ dài của chuỗi số ngẫu nhiên
-
-        // Tạo danh sách các chữ số từ 0 đến 9
-        List<Integer> digits = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            digits.add(i);
-        }
-
-        // Trộn ngẫu nhiên danh sách chữ số
-        Collections.shuffle(digits);
-
-        // Lấy length chữ số đầu tiên từ danh sách đã trộn
-        List<Integer> selectedDigits = digits.subList(0, length);
-
-        // Tạo chuỗi số ngẫu nhiên không trùng lặp
-        StringBuilder randomDigits = new StringBuilder();
-        for (int digit : selectedDigits) {
-            randomDigits.append(digit);
-        }
-
-        // Kết hợp chuỗi số ngẫu nhiên với chữ cái mặc định
-        String code = defaultString + randomDigits.toString();
-
-        createdVoucher.setMa(code);
-        createdVoucher.setHinhThucGiamGia(request.getHinhThucGiam());
-        String status = voucherUtils.getVoucherStatusWithInactive(
-                createdVoucher.getNgayBatDau().toLocalDate(),
-                createdVoucher.getNgayKetThuc().toLocalDate()
+        createdVoucher.setMa(GenCode.generateVoucherCode());
+        CommonEnum.TrangThaiVoucher status = voucherUtils.setTrangThaiVoucher(
+                createdVoucher.getNgayBatDau(),
+                createdVoucher.getNgayKetThuc()
         );
-
-        if (status.equals("ACTIVE")){
-            createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
-        } else if (status.equals("EXPIRED")){
-            createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
-        } else if (status.equals("INACTIVE")) {
-            createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.INACTIVE);
-        } else {
-            createdVoucher.setTrangThai(CommonEnum.TrangThaiVoucher.UPCOMING);
-        }
-        System.out.println("Trạng thái: " + status);
-        createdVoucher.setNgayTao(LocalDateTime.now());
-        System.out.println(createdVoucher.getNgayTao());
+        createdVoucher.setTrangThai(status);
         Voucher savedVoucher = this.repository.save(createdVoucher);
         return mapper.convertEntityToResponse(savedVoucher);
     }
@@ -130,21 +97,20 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setNgaySua(LocalDateTime.now());
 
         mapper.convertUpdateRequestToEntity(request, voucher);
-        String status = voucherUtils.getVoucherStatusWithInactive(
-                voucher.getNgayBatDau().toLocalDate(),
-                voucher.getNgayKetThuc().toLocalDate()
-        );
-
-        if (status.equals("ACTIVE")) {
-            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
-        } else if (status.equals("EXPIRED")) {
-            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
-        } else if (status.equals("INACTIVE")) {
-            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.INACTIVE);
-        } else {
-            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.UPCOMING);
-        }
-        System.out.println("Trạng thái: " + status);
+//        String status = voucherUtils.getVoucherStatusWithInactive(
+//                voucher.getNgayBatDau().toLocalDate(),
+//                voucher.getNgayKetThuc().toLocalDate()
+//        );
+//
+//        if (status.equals("ACTIVE")) {
+//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
+//        } else if (status.equals("EXPIRED")) {
+//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
+//        } else if (status.equals("INACTIVE")) {
+//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.INACTIVE);
+//        } else {
+//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.UPCOMING);
+//        }
         System.out.println(voucher.getTrangThai());
         Voucher updatedVoucher = repository.save(voucher);
         return mapper.convertEntityToResponse(updatedVoucher);

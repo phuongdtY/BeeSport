@@ -20,13 +20,14 @@ import {
   TablePaginationConfig,
   Tag,
   Tooltip,
-  message
+  message,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
 import { DataParams, DataType } from "~/interfaces/voucher.type";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import request from "~/utils/request";
+import { formatGiaTienVND } from "~/utils/formatResponse";
 const index: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<DataType[]>([]);
@@ -41,7 +42,7 @@ const index: React.FC = () => {
       title: "STT",
       align: "center",
       rowScope: "row",
-      width: "10%",
+      width: "60px",
       render: (_, __, index) => (params.page - 1) * params.pageSize + index + 1,
     },
     {
@@ -56,9 +57,17 @@ const index: React.FC = () => {
       title: "Tên",
       dataIndex: "ten",
       key: "ten",
+      sorter: true,
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "soLuong",
+      key: "soLuong",
       align: "center",
       sorter: true,
-      width: "20%",
+      render: (soLuong) => {
+        return soLuong === null ? "Không giới hạn" : soLuong;
+      },
     },
     {
       title: "Ngày bắt đầu",
@@ -67,7 +76,7 @@ const index: React.FC = () => {
       key: "ngayBatDau",
       sorter: true,
       render: (ngayBatDau) => {
-        return dayjs(ngayBatDau).format("DD/MM/YYYY"); // Định dạng ngày theo ý muốn của bạn
+        return dayjs(ngayBatDau).format("DD/MM/YYYY HH:mm:ss"); // Định dạng ngày theo ý muốn của bạn
       },
     },
     {
@@ -77,16 +86,41 @@ const index: React.FC = () => {
       key: "ngayKetThuc",
       sorter: true,
       render: (ngayKetThuc) => {
-        return dayjs(ngayKetThuc).format("DD/MM/YYYY"); // Định dạng ngày theo ý muốn của bạn
+        return dayjs(ngayKetThuc).format("DD/MM/YYYY HH:mm:ss"); // Định dạng ngày theo ý muốn của bạn
       },
     },
+    {
+      title: "Giảm giá",
+      dataIndex: "giaTriGiam",
+      key: "giaTriGiam",
+      align: "center",
+      sorter: true,
+      render: (giaTriGiam, object: any) => {
+        if (object.hinhThucGiam.id === 2) {
+          return formatGiaTienVND(giaTriGiam);
+        } else if (object.hinhThucGiam.id === 1) {
+          return giaTriGiam + "%";
+        } else {
+          return "";
+        }
+      },
+    },
+    // {
+    //   title: "Đơn tối thiểu",
+    //   dataIndex: "donToiThieu",
+    //   key: "donToiThieu",
+    //   sorter: true,
+    //   render: (donToiThieu) => {
+    //     return formatGiaTienVND(donToiThieu);
+    //   },
+    // },
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
       align: "center",
       sorter: true,
-      width: "20%",
+
       render: (trangThai) => (
         <Tag color={trangThai?.mauSac}>{trangThai?.moTa}</Tag>
       ),
@@ -96,7 +130,6 @@ const index: React.FC = () => {
       dataIndex: "id",
       key: "id",
       align: "center",
-      width: "10%",
       render: (id) => (
         <Space>
           <Button type="link" style={{ padding: 0 }}>
@@ -143,9 +176,7 @@ const index: React.FC = () => {
       }
     };
     fetchData();
-    data.map(
-      (ii) => (console.log(ii))
-    )
+    data.map((ii) => console.log(ii));
   }, [params]);
   const handleSearch = (value: string) => {
     setParams({

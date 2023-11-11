@@ -1,29 +1,41 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, Col, DatePicker, Form, Input, Modal, Row, Space, message, InputNumber, Select } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Space,
+  message,
+  InputNumber,
+  Select,
+  TimeRangePickerProps,
+} from "antd";
+import dayjs from "dayjs";
 import request from "~/utils/request";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { CreatedRequest } from "~/interfaces/voucher.type";
+import { formatGiaTienVND, formatSoLuong } from "~/utils/formatResponse";
 const { Option } = Select;
 
 const AddVoucher: React.FC = () => {
   const [form] = Form.useForm();
-  const [options, setOptions] = useState([]);
+  // const [options, setOptions] = useStatsetSelectedOption2e([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { confirm } = Modal;
-  const [selectedOption, setSelectedOption] = useState('');
-  const [selectedOption2, setSelectedOption2] = useState('');
-  const [input1, setInput1] = useState('');
-  const [input2, setInput2] = useState('');
-  const [inputSoLuong, setInputSoLuong] = useState('');
+  const [selectedOption, setSelectedOption] = useState("");
+  const [dataHinhThucGiamGia, setDataHinhThucGiamGia] = useState([]);
+  const [input1, setInput1] = useState("");
+  const [input2, setInput2] = useState("");
+  const [inputSoLuong, setInputSoLuong] = useState("");
 
   const handleSelectChange = (value) => {
     setSelectedOption(value);
-  };
-
-  const handleSelectChange2 = (value) => {
-    setSelectedOption2(value);
   };
 
   const handleInputChange1 = (value) => {
@@ -34,15 +46,12 @@ const AddVoucher: React.FC = () => {
     setInput2(value);
   };
 
-  const handleInputChangeSoLuong = (value) => {
-    setInputSoLuong(value);
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await request.get("hinh-thuc-giam-gia");
-        setOptions(res.data.content);
+        setDataHinhThucGiamGia(res.data.content);
+        console.log(res.data.content);
       } catch (error) {
         console.log(error);
       }
@@ -59,34 +68,43 @@ const AddVoucher: React.FC = () => {
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
+        const data = {
+          ten: values.ten,
+          ngayBatDau: values.dateRange[0].format("YYYY-MM-DD HH:mm:ss"),
+          ngayKetThuc: values.dateRange[1].format("YYYY-MM-DD HH:mm:ss"),
+          hinhThucGiam: { id: values.hinhThucGiam },
+          donToiThieu: values.donToiThieu,
+          giaTriGiam: values.giaTriGiam,
+          giamToiDa: values.giamToiDa,
+          soLuong: values.soLuong,
+        };
+        console.log(data);
+
         try {
           setLoading(true);
-          const ngayBatDau = values.dateRange[0];
-          const ngayKetThuc = values.dateRange[1];
-          await request.post("voucher", {
-            ten: values.ten,
-            ngayBatDau: ngayBatDau,
-            ngayKetThuc: ngayKetThuc,
-            hinhThucGiam: { id: values.hinhThucGiam },
-            giaToiThieu: values.giaToiThieu,
-            giaTriGiam: values.giaTriGiam,
-            giaTriGiamToiDa: values.giaTriGiamToiDa,
-            soLuong: values.soLuong,
-          });
-          console.log(values.hinhThucGiam);
+          await request.post("voucher", data);
           setLoading(false);
           message.success("Thêm voucher thành công");
           navigate("/admin/voucher");
         } catch (error: any) {
-          console.log(values.hinhThucGiam);
-          // console.log(error);
+          console.log(error);
           message.error(error.response.data.message);
           setLoading(false);
         }
       },
     });
   };
-
+  const rangePresets: TimeRangePickerProps["presets"] = [
+    { label: "Hạn 7 ngày", value: [dayjs(), dayjs().add(+7, "d")] },
+    { label: "Hạn 14 ngày", value: [dayjs(), dayjs().add(+14, "d")] },
+    { label: "Hạn 30 ngày", value: [dayjs(), dayjs().add(+30, "d")] },
+    { label: "Hạn 90 ngày", value: [dayjs(), dayjs().add(+90, "d")] },
+  ];
+  const onChangeHinhThucGiamGia = () => {
+    form.setFieldsValue({
+      giaTriGiam: 0,
+    });
+  };
   return (
     <Card title="THÊM VOUCHER">
       <Row>
@@ -101,170 +119,238 @@ const AddVoucher: React.FC = () => {
             <Form.Item
               name="ten"
               label="Tên voucher"
-              rules={[{ required: true, whitespace: true, message: "Vui lòng nhập tên voucher!" }]}>
+              rules={[
+                {
+                  required: true,
+                  whitespace: true,
+                  message: "Vui lòng điền tên voucher!",
+                },
+              ]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item
-              label="Ngày Bắt Đầu - Kết Thúc"
-              name="dateRange"
-              rules={[{ required: true, message: "Vui lòng Chọn ngày bắt đầu, ngày kết thúc!" }]}
-            >
-              <DatePicker.RangePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
-            </Form.Item>
-
-            <Form.Item
-              name="soLan"
-              label="Số lần sử dụng"
-              initialValue="Không giới hạn"
-              rules={[{ required: true, message: 'Vui lòng chọn số lần' }]}
-            >
-              <Select value={selectedOption2} onChange={handleSelectChange2}>
-                <Option value="1">Không giới hạn</Option>
-                <Option value="2">Giới hạn</Option>
+            <Form.Item name="soLanSuDung" label="Số lần sử dụng">
+              <Select defaultValue={0}>
+                <Option value={0}>Không giới hạn</Option>
+                <Option value={1}>Giới hạn</Option>
               </Select>
-
-              {selectedOption2 === '2' && (
-                <>
-                  <Form.Item style={{ marginTop: '25px' }}
+            </Form.Item>
+            <Form.Item
+              noStyle
+              shouldUpdate={(prevValues, currentValues) =>
+                prevValues.soLanSuDung !== currentValues.soLanSuDung
+              }
+            >
+              {({ getFieldValue }) =>
+                getFieldValue("soLanSuDung") === 1 ? (
+                  <Form.Item
                     name="soLuong"
                     label="Số lượng"
-                    rules={[{ required: true, message: 'Vui lòng nhập số lượng!' },
-                    {
-                      validator: (_, value) => {
-                        if (selectedOption2 === '2' && value <= 0) {
-                          return Promise.reject(new Error('Vui lòng nhập số lượng lớn hơn 0'));
-                        }
-                        return Promise.resolve();
-                      },
-                    },
-                    ]}>
+                    rules={[
+                      { required: true, message: "Bạn chưa điền số lượng!" },
+                    ]}
+                  >
                     <InputNumber
-
-                      style={{ width: '100%' }}
-                      step={1}
-                      value={inputSoLuong}
-                      onChange={handleInputChangeSoLuong}
-                      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      defaultValue={0}
+                      style={{ width: "100%" }}
+                      min={1}
+                      formatter={(value) => formatSoLuong(value)}
+                      parser={(value: any) => value.replace(/,/g, "")}
                     />
                   </Form.Item>
-                </>
-              )}
-
+                ) : null
+              }
             </Form.Item>
-
+            <Form.Item
+              label="Thời gian áp dụng"
+              name="dateRange"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn ngày bắt đầu ~ ngày kết thúc !",
+                },
+              ]}
+            >
+              <DatePicker.RangePicker
+                style={{ width: "100%" }}
+                presets={[
+                  {
+                    label: (
+                      <span aria-label="Current Time to End of Day">
+                        Hiện tại ~ Cuối ngày
+                      </span>
+                    ),
+                    value: () => [dayjs(), dayjs().endOf("day")],
+                  },
+                  ...rangePresets,
+                ]}
+                showTime
+                format="DD/MM/YYYY HH:mm:ss"
+              />
+            </Form.Item>
             <Form.Item
               name="hinhThucGiam"
               label="Hình thức giảm giá"
-              initialValue="Chọn hình thức giảm giá"
-              rules={[{ required: true, message: 'Vui lòng chọn hình thức giảm giá' }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn hình thức giảm giá !",
+                },
+              ]}
             >
-              <Select value={selectedOption} onChange={handleSelectChange}>
-                <Option value="1">Phần trăm</Option>
-                <Option value="2">Giá tiền</Option>
-              </Select>
-
-              {selectedOption === '1' && (
-                <>
-                  <Form.Item style={{ marginTop: '25px' }}
-                    name="giaToiThieu"
-                    label="Giá trị đơn hàng tối thiểu"
-                    rules={[{ required: true, message: 'Vui lòng nhập giá trị đơn hàng tối thiểu!' }]}
-                  >
-                    <InputNumber
-                      style={{ width: '100%' }}
-                      step={1000}
-                      value={input1}
-                      onChange={handleInputChange1}
-                      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} addonAfter="VND"
-                    />
-                  </Form.Item>
-
-                  <Form.Item name="giaTriGiamToiDa"
-                    label="Giá trị giảm tối đa"
-                    rules={[{ required: true, message: 'Vui lòng nhập giá trị giảm tối đa!' }]}
-                  >
-                    <InputNumber
-                      style={{ width: '100%' }}
-                      step={1000}
-                      value={input2}
-                      onChange={handleInputChange2}
-                      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} addonAfter="VND"
-                    />
-                  </Form.Item>
-
-                  <Form.Item name="giaTriGiam"
-                    label="Giá trị giảm"
-                    rules={[
-                      { required: true, message: 'Vui lòng nhập giá trị giảm!' },
-                      {
-                        validator: (_, value) => {
-                          if (value <= 0) {
-                            return Promise.reject(new Error('Giá trị giảm phải lớn hơn 0%'));
-                          }
-                          else if (value > 99) {
-                            return Promise.reject(new Error('Chỉ giảm tối đa 99%'));
-                          }
-                          return Promise.resolve();
-                        },
-                      },
-                    ]}
-                  >
-                    <InputNumber defaultValue={1} min={0} max={1000} formatter={(value) => `${value}%`.replace('%', '')} style={{ width: '100%' }} addonAfter="%" />
-                  </Form.Item>
-                </>
-              )}
-
-              {selectedOption === '2' && (
-                <>
-                  <Form.Item style={{ marginTop: '25px' }}
-                    name="giaToiThieu"
-                    label="Giá trị đơn tối thiểu"
-                    rules={[{ required: true, message: 'Vui lòng nhập giá trị đơn tối thiểu!' },
-                    {
-                      validator: (_, value) => {
-                        if (value <= 0) {
-                          return Promise.reject(new Error('Giá trị đơn tối thiểu phải lớn hơn 0'));
-                        }
-                        return Promise.resolve();
-                      },
-                    },
-                    ]}>
-                    <InputNumber
-                      style={{ width: '100%' }}
-                      step={1000}
-                      value={input1}
-                      onChange={handleInputChange1}
-                      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} addonAfter="VND"
-                    />
-                  </Form.Item>
-
-                  <Form.Item name="giaTriGiamToiDa"
-                    label="Giá trị giảm"
-                    rules={[{ required: true, message: 'Vui lòng nhập giá trị giảm tối đa!' },
-                    {
-                      validator: (_, value) => {
-                        if (value <= 0) {
-                          return Promise.reject(new Error('Giá trị giảm tối đa lớn hơn 0'));
-                        }
-                        return Promise.resolve();
-                      },
-                    },]}>
-                    <InputNumber
-                      style={{ width: '100%' }}
-                      step={1000}
-                      value={input2}
-                      onChange={handleInputChange2}
-                      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} addonAfter="VND"
-                    />
-                  </Form.Item>
-                </>
-              )}
+              <Select
+                onChange={onChangeHinhThucGiamGia}
+                placeholder="Chọn hình thức giảm giá"
+                options={dataHinhThucGiamGia.map((values: any) => ({
+                  label: values.ten,
+                  value: values.id,
+                }))}
+              ></Select>
             </Form.Item>
-
+            <Form.Item
+              noStyle
+              shouldUpdate={(prevValues, currentValues) =>
+                prevValues.hinhThucGiam !== currentValues.hinhThucGiam
+              }
+            >
+              {({ getFieldValue }) =>
+                getFieldValue("hinhThucGiam") === 1 ? (
+                  <>
+                    <Form.Item
+                      initialValue={0}
+                      name="donToiThieu"
+                      label="Đơn tối thiểu"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Bạn chưa điền đơn tối thiểu!",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        style={{ width: "100%" }}
+                        min={0}
+                        step={5000}
+                        formatter={(value) => `${formatGiaTienVND(value)}`}
+                        parser={(value: any) => value.replace(/\D/g, "")}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name="giaTriGiam"
+                      label="Số tiền giảm"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Bạn chưa điền đơn tối thiểu!",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        // defaultValue={0}
+                        style={{ width: "100%" }}
+                        min={1000}
+                        step={5000}
+                        formatter={(value) => `${formatGiaTienVND(value)}`}
+                        parser={(value: any) => value.replace(/\D/g, "")}
+                      />
+                    </Form.Item>
+                  </>
+                ) : getFieldValue("hinhThucGiam") === 2 ? (
+                  <>
+                    <Form.Item
+                      initialValue={0}
+                      name="donToiThieu"
+                      label="Đơn tối thiểu"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Bạn chưa điền đơn tối thiểu!",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        style={{ width: "100%" }}
+                        min={0}
+                        step={5000}
+                        formatter={(value) => `${formatGiaTienVND(value)}`}
+                        parser={(value: any) => value.replace(/\D/g, "")}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name="giaTriGiam"
+                      label="Giảm giá (%)"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Bạn chưa điền giảm giá(%)",
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (value <= 1) {
+                              return Promise.reject(
+                                new Error("Giá trị giảm phải lớn hơn 0%")
+                              );
+                            } else if (value > 100) {
+                              return Promise.reject(
+                                new Error("Chỉ giảm tối đa 100%")
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        defaultValue={0}
+                        style={{ width: "100%" }}
+                        min={1}
+                        max={100}
+                        step={1}
+                        formatter={(value) => `${value}%`}
+                        parser={(value: any) => value!.replace("%", "")}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name="giamToiDa"
+                      label="Giảm tối đa"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Bạn chưa điền giảm tối đa!",
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (value <= 0) {
+                              return Promise.reject(
+                                new Error("Giá trị giảm tối đa lớn hơn 0")
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        defaultValue={0}
+                        style={{ width: "100%" }}
+                        min={1000}
+                        step={5000}
+                        formatter={(value) => `${formatGiaTienVND(value)}`}
+                        parser={(value: any) => value.replace(/\D/g, "")}
+                      />
+                    </Form.Item>
+                  </>
+                ) : null
+              }
+            </Form.Item>
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
               <Space>
-                <Button type="dashed" htmlType="reset" style={{ margin: "0 12px" }}>
+                <Button
+                  type="dashed"
+                  htmlType="reset"
+                  style={{ margin: "0 12px" }}
+                >
                   Reset
                 </Button>
                 <Button type="primary" htmlType="submit" loading={loading}>

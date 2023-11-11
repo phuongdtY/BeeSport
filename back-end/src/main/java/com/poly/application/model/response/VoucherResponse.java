@@ -21,23 +21,23 @@ public class VoucherResponse {
 
     private String ten;
 
-    private LocalDateTime ngayTao;
+    private Integer soLuong;
 
-    private LocalDateTime ngaySua;
+    private LocalDateTime ngayBatDau;
 
-    private Date ngayBatDau;
-
-    private Date ngayKetThuc;
+    private LocalDateTime ngayKetThuc;
 
     private HinhThucGiamGia hinhThucGiam;
 
-    private BigDecimal giaToiThieu;
-
     private BigDecimal giaTriGiam;
 
-    private BigDecimal giaTriGiamToiDa;
+    private BigDecimal donToiThieu;
 
-    private Integer soLuong;
+    private BigDecimal giamToiDa;
+
+    private LocalDateTime ngayTao;
+
+    private LocalDateTime ngaySua;
 
     private CommonEnum.TrangThaiVoucher trangThai;
 

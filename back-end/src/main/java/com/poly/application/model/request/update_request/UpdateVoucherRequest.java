@@ -1,15 +1,14 @@
 package com.poly.application.model.request.update_request;
+
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HinhThucGiamGia;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.sql.Date;
 
 @Getter
 @Setter
@@ -20,9 +19,9 @@ public class UpdateVoucherRequest {
 
     private String ten;
 
-    private Date ngayBatDau;
+    private LocalDateTime ngayBatDau;
 
-    private Date ngayKetThuc;
+    private LocalDateTime ngayKetThuc;
 
     private HinhThucGiamGia hinhThucGiam;
 
