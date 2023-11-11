@@ -7,8 +7,7 @@ import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.VoucherMapper;
 import com.poly.application.model.request.create_request.CreatedVoucherRequest;
-import com.poly.application.model.request.update_request.UpdateVoucherRequest;
-import com.poly.application.model.response.GioHangChiTietResponse;
+import com.poly.application.model.request.update_request.UpdatedVoucherRequest;
 import com.poly.application.model.response.VoucherResponse;
 import com.poly.application.repository.VoucherRepository;
 import com.poly.application.service.VoucherService;
@@ -88,7 +87,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public VoucherResponse update(Long id, UpdateVoucherRequest request) {
+    public VoucherResponse update(Long id, UpdatedVoucherRequest request) {
         Optional<Voucher> optional = repository.findById(id);
         if (optional.isEmpty()) {
             throw new NotFoundException("Voucher không tồn tại");
