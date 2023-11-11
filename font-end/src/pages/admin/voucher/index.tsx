@@ -96,9 +96,9 @@ const index: React.FC = () => {
       align: "center",
       sorter: true,
       render: (giaTriGiam, object: any) => {
-        if (object.hinhThucGiam.id === 2) {
+        if (object.hinhThucGiam.id === 1) {
           return formatGiaTienVND(giaTriGiam);
-        } else if (object.hinhThucGiam.id === 1) {
+        } else if (object.hinhThucGiam.id === 2) {
           return giaTriGiam + "%";
         } else {
           return "";

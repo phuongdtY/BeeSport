@@ -39,10 +39,11 @@ export interface CreatedRequest {
   ten: string;
   ngayBatDau: string;
   ngayKetThuc: string;
-  hinhThucGiam: string;
+  hinhThucGiam: number;
   donToiThieu: number;
   giaTriGiam: number;
   giamToiDa: number;
+  dateRange: any;
   soLuong: number | null;
 }
 export interface UpdatedRequest {
@@ -51,9 +52,10 @@ export interface UpdatedRequest {
   ten: string;
   ngayBatDau: string;
   ngayKetThuc: string;
-  hinhThucGiam: string;
-  giaToiThieu: number;
+  hinhThucGiam: number;
+  donToiThieu: number;
   giaTriGiam: number;
-  giaTriGiamToiDa: number;
+  giamToiDa: number;
+  dateRange: any;
   soLuong: number | null;
 }

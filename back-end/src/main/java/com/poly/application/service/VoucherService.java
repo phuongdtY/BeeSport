@@ -1,7 +1,7 @@
 package com.poly.application.service;
 
 import com.poly.application.model.request.create_request.CreatedVoucherRequest;
-import com.poly.application.model.request.update_request.UpdateVoucherRequest;
+import com.poly.application.model.request.update_request.UpdatedVoucherRequest;
 import com.poly.application.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
 
@@ -16,7 +16,7 @@ public interface VoucherService {
 
     VoucherResponse add(CreatedVoucherRequest request);
 
-    VoucherResponse update(Long id, UpdateVoucherRequest request);
+    VoucherResponse update(Long id, UpdatedVoucherRequest request);
 
     VoucherResponse delete(Long id);
 

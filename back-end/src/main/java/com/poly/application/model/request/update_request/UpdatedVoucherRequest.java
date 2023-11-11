@@ -1,5 +1,6 @@
 package com.poly.application.model.request.update_request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HinhThucGiamGia;
 import jakarta.persistence.EnumType;
@@ -12,30 +13,25 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class UpdateVoucherRequest {
-    private Long id;
-
-    private String ma;
+public class UpdatedVoucherRequest {
 
     private String ten;
 
+    private Integer soLuong;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ngayBatDau;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ngayKetThuc;
 
     private HinhThucGiamGia hinhThucGiam;
 
-    private BigDecimal giaToiThieu;
+    private BigDecimal donToiThieu;
 
     private BigDecimal giaTriGiam;
 
-    private BigDecimal giaTriGiamToiDa;
-
-    private Integer soLuong;
-
-    private LocalDateTime ngayTao;
-
-    private LocalDateTime ngaySua;
+    private BigDecimal giamToiDa;
 
     @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;

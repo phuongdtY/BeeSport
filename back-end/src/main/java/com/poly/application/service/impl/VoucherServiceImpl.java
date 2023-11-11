@@ -7,8 +7,7 @@ import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.VoucherMapper;
 import com.poly.application.model.request.create_request.CreatedVoucherRequest;
-import com.poly.application.model.request.update_request.UpdateVoucherRequest;
-import com.poly.application.model.response.GioHangChiTietResponse;
+import com.poly.application.model.request.update_request.UpdatedVoucherRequest;
 import com.poly.application.model.response.VoucherResponse;
 import com.poly.application.repository.VoucherRepository;
 import com.poly.application.service.VoucherService;
@@ -20,8 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +37,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Page<VoucherResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,
-                                        String searchText, Long hinhThucGiamGiaId,String trangThaiString) {
+                                        String searchText, Long hinhThucGiamGiaId, String trangThaiString) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
@@ -87,33 +84,22 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public VoucherResponse update(Long id, UpdateVoucherRequest request) {
+    public VoucherResponse update(Long id, UpdatedVoucherRequest request) {
         Optional<Voucher> optional = repository.findById(id);
         if (optional.isEmpty()) {
             throw new NotFoundException("Voucher không tồn tại");
         }
-
-        Voucher voucher = optional.get();
-        voucher.setNgaySua(LocalDateTime.now());
-
-        mapper.convertUpdateRequestToEntity(request, voucher);
-//        String status = voucherUtils.getVoucherStatusWithInactive(
-//                voucher.getNgayBatDau().toLocalDate(),
-//                voucher.getNgayKetThuc().toLocalDate()
-//        );
-//
-//        if (status.equals("ACTIVE")) {
-//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
-//        } else if (status.equals("EXPIRED")) {
-//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
-//        } else if (status.equals("INACTIVE")) {
-//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.INACTIVE);
-//        } else {
-//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.UPCOMING);
-//        }
-        System.out.println(voucher.getTrangThai());
-        Voucher updatedVoucher = repository.save(voucher);
-        return mapper.convertEntityToResponse(updatedVoucher);
+        if (!request.getTen().equals(optional.get().getTen()) && repository.existsByTen(request.getTen())) {
+            throw new BadRequestException("Tên voucher đã tồn tại trong hệ thống!");
+        }
+        Voucher detail = optional.get();
+        CommonEnum.TrangThaiVoucher status = voucherUtils.setTrangThaiVoucher(
+                request.getNgayBatDau(), request.getNgayKetThuc()
+        );
+        request.setTrangThai(status);
+        mapper.convertUpdateRequestToEntity(request, detail);
+        Voucher savedVoucher = this.repository.saveAndFlush(detail);
+        return mapper.convertEntityToResponse(savedVoucher);
     }
 
     @Override

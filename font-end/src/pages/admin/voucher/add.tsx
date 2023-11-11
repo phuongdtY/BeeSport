@@ -24,27 +24,10 @@ const { Option } = Select;
 
 const AddVoucher: React.FC = () => {
   const [form] = Form.useForm();
-  // const [options, setOptions] = useStatsetSelectedOption2e([]);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const { confirm } = Modal;
-  const [selectedOption, setSelectedOption] = useState("");
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [dataHinhThucGiamGia, setDataHinhThucGiamGia] = useState([]);
-  const [input1, setInput1] = useState("");
-  const [input2, setInput2] = useState("");
-  const [inputSoLuong, setInputSoLuong] = useState("");
-
-  const handleSelectChange = (value) => {
-    setSelectedOption(value);
-  };
-
-  const handleInputChange1 = (value) => {
-    setInput1(value);
-  };
-
-  const handleInputChange2 = (value) => {
-    setInput2(value);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,7 +57,8 @@ const AddVoucher: React.FC = () => {
           ngayKetThuc: values.dateRange[1].format("YYYY-MM-DD HH:mm:ss"),
           hinhThucGiam: { id: values.hinhThucGiam },
           donToiThieu: values.donToiThieu,
-          giaTriGiam: values.giaTriGiam,
+          giaTriGiam:
+            values.hinhThucGiam === 2 ? values.giaTriGiam : values.giamToiDa,
           giamToiDa: values.giamToiDa,
           soLuong: values.soLuong,
         };
@@ -102,7 +86,9 @@ const AddVoucher: React.FC = () => {
   ];
   const onChangeHinhThucGiamGia = () => {
     form.setFieldsValue({
+      donToiThieu: 0,
       giaTriGiam: 0,
+      giamToiDa: 0,
     });
   };
   return (
@@ -237,7 +223,7 @@ const AddVoucher: React.FC = () => {
                       />
                     </Form.Item>
                     <Form.Item
-                      name="giaTriGiam"
+                      name="giamToiDa"
                       label="Số tiền giảm"
                       rules={[
                         {

@@ -1,7 +1,7 @@
 package com.poly.application.controller.admin;
 
 import com.poly.application.model.request.create_request.CreatedVoucherRequest;
-import com.poly.application.model.request.update_request.UpdateVoucherRequest;
+import com.poly.application.model.request.update_request.UpdatedVoucherRequest;
 import com.poly.application.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,7 +50,7 @@ public class VoucherController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable(name = "id") Long id,@RequestBody UpdateVoucherRequest request) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") Long id,@RequestBody UpdatedVoucherRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }
 
