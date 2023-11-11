@@ -11,7 +11,7 @@ public class ScheduledTasks {
     @Autowired
     private VoucherService voucherService;
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 1000)
     public void updateVoucherStatus() {
         voucherService.updateVoucherStatus();
     }

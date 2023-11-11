@@ -176,6 +176,8 @@ const index: React.FC = () => {
       }
     };
     fetchData();
+    const intervalId = setInterval(fetchData, 1000);
+    return () => clearInterval(intervalId);
     data.map((ii) => console.log(ii));
   }, [params]);
   const handleSearch = (value: string) => {

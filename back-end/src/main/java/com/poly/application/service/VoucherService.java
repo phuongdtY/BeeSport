@@ -26,6 +26,6 @@ public interface VoucherService {
 
     VoucherResponse findById(Long id);
 
-//    void updateVoucherStatus();
+    void updateVoucherStatus();
 
 }

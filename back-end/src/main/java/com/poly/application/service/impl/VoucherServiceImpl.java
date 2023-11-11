@@ -13,6 +13,7 @@ import com.poly.application.model.response.VoucherResponse;
 import com.poly.application.repository.VoucherRepository;
 import com.poly.application.service.VoucherService;
 import com.poly.application.utils.VoucherUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -97,20 +99,11 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setNgaySua(LocalDateTime.now());
 
         mapper.convertUpdateRequestToEntity(request, voucher);
-//        String status = voucherUtils.getVoucherStatusWithInactive(
-//                voucher.getNgayBatDau().toLocalDate(),
-//                voucher.getNgayKetThuc().toLocalDate()
-//        );
-//
-//        if (status.equals("ACTIVE")) {
-//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ACTIVE);
-//        } else if (status.equals("EXPIRED")) {
-//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
-//        } else if (status.equals("INACTIVE")) {
-//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.INACTIVE);
-//        } else {
-//            voucher.setTrangThai(CommonEnum.TrangThaiVoucher.UPCOMING);
-//        }
+        CommonEnum.TrangThaiVoucher status = voucherUtils.setTrangThaiVoucher(
+                voucher.getNgayBatDau(),
+                voucher.getNgayKetThuc()
+        );
+        voucher.setTrangThai(status);
         System.out.println(voucher.getTrangThai());
         Voucher updatedVoucher = repository.save(voucher);
         return mapper.convertEntityToResponse(updatedVoucher);
@@ -133,6 +126,34 @@ public class VoucherServiceImpl implements VoucherService {
             throw new NotFoundException("Voucher không tồn tại");
         }
         return mapper.convertEntityToResponse(optional.get());
+    }
+
+    public void updateVoucherStatus() {
+        List<Voucher> vouchers = repository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Voucher voucher : vouchers) {
+            CommonEnum.TrangThaiVoucher oldStatus = voucher.getTrangThai();
+
+            if (now.isBefore(voucher.getNgayBatDau())) {
+                voucher.setTrangThai(CommonEnum.TrangThaiVoucher.UPCOMING);
+            } else if (now.isEqual(voucher.getNgayBatDau()) || (now.isAfter(voucher.getNgayBatDau()) && now.isBefore(voucher.getNgayKetThuc()))) {
+                if (now.isAfter(voucher.getNgayKetThuc().minus(1, ChronoUnit.DAYS))) {
+                    voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ENDING_SOON);
+                } else {
+                    voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ONGOING);
+                }
+            } else if (now.isAfter(voucher.getNgayKetThuc())) {
+                voucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
+            }
+
+            CommonEnum.TrangThaiVoucher newStatus = voucher.getTrangThai();
+            if (oldStatus != newStatus) {
+                System.out.println("Voucher ID: " + voucher.getId() + " - Status changed from " + oldStatus + " to " + newStatus);
+            }
+        }
+
+        repository.saveAll(vouchers);
     }
 
 }
