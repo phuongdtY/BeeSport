@@ -25,7 +25,7 @@ import ModalKichCo from "./ModalKichCo";
 import { ColumnsType } from "antd/es/table";
 import HinhAnhModal from "./HinhAnhModal";
 import { DataTypeCTSP } from "~/interfaces/ctsp.type";
-import ModalAddMauSac from "./ModalAddMauSac";
+// import ModalAddMauSac from "./ModalAddMauSac";
 import TableAllSanpham from "./TableAllSanPham";
 
 function TableUpdateSanpham({ idSanPham }) {
