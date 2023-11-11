@@ -9,6 +9,9 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class HinhThucGiamGiaMapper {
 
@@ -28,6 +31,14 @@ public class HinhThucGiamGiaMapper {
     public void convertUpdateRequestToEntity(UpdatedHinhThucGiamGiaRequest request, HinhThucGiamGia hinhThucGiamGia) {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         modelMapper.map(request, hinhThucGiamGia);
+    }
+
+    public List<HinhThucGiamGiaResponse> listNhanVienEntityToNhanVienResponse(List<HinhThucGiamGia> hinhThucGiamGiaList) {
+        List<HinhThucGiamGiaResponse> list = new ArrayList<>(hinhThucGiamGiaList.size());
+        for (HinhThucGiamGia ht : hinhThucGiamGiaList) {
+            list.add(convertEntityToResponse(ht));
+        }
+        return list;
     }
 
 }

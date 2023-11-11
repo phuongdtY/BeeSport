@@ -380,7 +380,7 @@ const index: React.FC = () => {
           />
           <Divider style={{ margin: 0 }} />
           <DescriptionItem title="Trạng thái">
-            {contentModal?.trangThai.ten==="ACTIVE" ? (
+            {contentModal?.trangThai.ten === "ACTIVE" ? (
               <Tag color="success">Kích hoạt</Tag>
             ) : (
               <Tag color="error">Ngừng kích hoạt</Tag>

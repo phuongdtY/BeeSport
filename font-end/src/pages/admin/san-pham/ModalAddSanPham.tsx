@@ -166,13 +166,13 @@ function ModalAddSanPham({ openModal, closeModal, addSanPham }) {
         <Form.Item
           label="Mô tả"
           name="moTa"
-          // rules={[
-          //   {
-          //     whitespace: true,
-          //     required: true,
-          //     message: "Vui lòng nhập mô tả",
-          //   },
-          // ]}
+        // rules={[
+        //   {
+        //     whitespace: true,
+        //     required: true,
+        //     message: "Vui lòng nhập mô tả",
+        //   },
+        // ]}
         >
           <TextArea />
         </Form.Item>
