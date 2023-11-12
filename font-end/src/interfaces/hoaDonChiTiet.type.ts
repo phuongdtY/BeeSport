@@ -7,6 +7,7 @@ export interface DataType {
   ngaySua: string;
   nguoiTao: string;
   nguoiSua: string;
+  thanhTien: number;
   trangThaiHoaDonChiTiet: {
     ten: string;
     moTa: string;
