@@ -20,7 +20,7 @@ import { formatNgayTao, formatGiaTien } from "~/utils/formatResponse";
 
 interface exportHoaDonPDFProps {
   open: boolean;
-  id: number | undefined;
+  id: number;
   onCancel: (value: boolean) => void;
 }
 
@@ -87,7 +87,7 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
     },
   ];
 
-  const fetchHoaDonData = async (id: number | undefined) => {
+  const fetchHoaDonData = async () => {
     try {
       const res = await request.get("hoa-don/" + id);
       setData(res.data);
@@ -98,8 +98,11 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
   };
 
   useEffect(() => {
-    fetchHoaDonData(id);
-  }, [id]);
+    fetchHoaDonData();
+    if (open) {
+      fetchHoaDonData();
+    }
+  }, [open, id]);
 
   const optionPrintPDF: Options = {
     filename: "hoa-don.pdf",
@@ -118,7 +121,6 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
   const handleCancel = () => {
     onCancel(false);
   };
-
 
   const tinhTongTien = () => {
     return (listHoaDonChiTiet || [])

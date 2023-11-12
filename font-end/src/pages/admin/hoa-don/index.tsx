@@ -102,16 +102,9 @@ const index: React.FC = () => {
       width: "10%",
       render: (id) => (
         <Space>
-          <Button type="link" style={{ padding: 0 }}>
-            <Tooltip title="Chi tiết">
-              <EyeOutlined style={{ color: "orange" }} />
-            </Tooltip>
-          </Button>
           <Tooltip title="Chỉnh sửa">
             <Link to={`/admin/hoa-don/${id}`}>
-              <Button type="link" style={{ padding: 0 }}>
-                <EditOutlined />
-              </Button>
+              <Button type="primary">Chọn</Button>
             </Link>
           </Tooltip>
         </Space>
@@ -215,7 +208,6 @@ const index: React.FC = () => {
                   { value: "", label: "Tất cả" },
                   { value: "ONLINE", label: "Trên website" },
                   { value: "COUNTER", label: "Tại quầy" },
-                  { value: "PHONE_ORDER", label: "Đặt hàng bằng điện thoại" },
                 ]}
               />
             </Form.Item>
