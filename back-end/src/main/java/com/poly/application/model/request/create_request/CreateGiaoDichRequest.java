@@ -20,17 +20,14 @@ public class CreateGiaoDichRequest {
 
     private String maGiaoDich;
 
-    private String nhanVienGiaoDich;
-
     private BigDecimal soTienGiaoDich;
-
-    private String ghiChu;
 
     private LocalDateTime ngayTao;
 
     private LocalDateTime ngaySua;
 
-    private Integer trangThaiGiaoDich;
+    @Enumerated(EnumType.STRING)
+    private CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich;
 
     private HoaDon hoaDon;
 

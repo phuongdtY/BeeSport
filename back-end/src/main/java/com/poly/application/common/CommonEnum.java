@@ -76,19 +76,6 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum PhuongThucThanhToan{
-        BANKING("CREATED", "Tạo Đơn Hàng", "#2dc258"),
-        CASH("CONFIRMED", "Đã Xác Nhận Thông Tin Thanh Toán", "#2dc258"),
-        COD("SHIPPING", "Đã Giao Cho Đơn Vị Vận Chuyển", "#2dc258");
-
-        private final String ten;
-        private final String moTa;
-        private final String mauSac;
-    }
-
-    @AllArgsConstructor
-    @Getter
-    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum TrangThaiHoaDonChiTiet{
         APPROVED("APPROVED", "Đã Xác Nhận", "primary"),
         UNAPPROVED("UNAPPROVED", "Không Xác Nhận", "error");
