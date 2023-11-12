@@ -19,7 +19,6 @@ import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -33,7 +32,6 @@ import java.time.LocalDateTime;
 @ToString
 @Table(name = "voucher")
 @Entity
-
 public class Voucher implements Serializable {
 
     @Id
@@ -51,12 +49,10 @@ public class Voucher implements Serializable {
     private Integer soLuong;
 
     @Column(name = "ngay_bat_dau",columnDefinition = "TIMESTAMP")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ngayBatDau;
 
 
     @Column(name = "ngay_ket_thuc",columnDefinition = "TIMESTAMP")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ngayKetThuc;
 
     @ManyToOne
@@ -74,7 +70,7 @@ public class Voucher implements Serializable {
 
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")
+    @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP", updatable = false)
     private LocalDateTime ngayTao;
 
     @UpdateTimestamp

@@ -331,7 +331,7 @@ const AddVoucher: React.FC = () => {
               }
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-              <Space>
+              <Space style={{ float: "right" }}>
                 <Button
                   type="dashed"
                   htmlType="reset"

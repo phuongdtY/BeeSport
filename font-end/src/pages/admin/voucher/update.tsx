@@ -126,6 +126,25 @@ const UpdateVoucher: React.FC = () => {
     { label: "Hạn 30 ngày", value: [dayjs(), dayjs().add(+30, "d")] },
     { label: "Hạn 90 ngày", value: [dayjs(), dayjs().add(+90, "d")] },
   ];
+  const clickHuyBo = () => {
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc hủy bỏ voucher này không?",
+      okText: "Có",
+      cancelText: "Không",
+      onOk: async () => {
+        try {
+          await request.put("voucher/cancel-voucher/" + id);
+          message.success("Hủy bỏ voucher thành công");
+          navigate("/admin/voucher");
+        } catch (error) {
+          message.error("Hủy bỏ voucher thất bại");
+          console.log(error);
+        }
+      },
+    });
+  };
   return (
     <>
       <Card title="CẬP NHẬT VOUCHER">
@@ -366,16 +385,17 @@ const UpdateVoucher: React.FC = () => {
               }
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-              <Space>
-                <Button
-                  type="dashed"
-                  htmlType="reset"
-                  style={{ margin: "0 12px" }}
-                >
-                  Reset
-                </Button>
+              <Space style={{ float: "right" }}>
                 <Button type="primary" htmlType="submit">
-                  Thêm
+                  Cập nhật
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="button"
+                  danger
+                  onClick={clickHuyBo}
+                >
+                  Hủy bỏ
                 </Button>
               </Space>
             </Form.Item>

@@ -180,12 +180,12 @@ public class CommonEnum {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum TrangThaiVoucher{
-        UPCOMING("UPCOMING", "Sắp diễn ra","blue"),
-        ONGOING("ONGOING", "Đang diễn ra","success"),
-        ENDING_SOON("ENDING_SOON", "Sắp hết hạn","warning"),
-        EXPIRED("EXPIRED", "Hết hạn","error"),
-        OUT_OF_STOCK("OUT_OF_STOCK", "Đã hết","error"),
-        CANCELLED("CANCELLED", "Hủy bỏ","error");
+        UPCOMING("UPCOMING", "Sắp diễn ra","gold"),
+        ONGOING("ONGOING", "Đang diễn ra","green"),
+        ENDING_SOON("ENDING_SOON", "Sắp hết hạn","volcano"),
+        EXPIRED("EXPIRED", "Hết hạn","blue"),
+        OUT_OF_STOCK("OUT_OF_STOCK", "Đã hết","purple"),
+        CANCELLED("CANCELLED", "Hủy bỏ","default");
 
         private final String ten;
         private final String moTa;

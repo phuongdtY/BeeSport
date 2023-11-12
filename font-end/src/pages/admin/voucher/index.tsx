@@ -251,7 +251,6 @@ const index: React.FC = () => {
         <Table
           columns={columns}
           pagination={{
-            pageSizeOptions: ["1", "5", "10"],
             showSizeChanger: true,
             total: totalElements,
             showTotal: (total, range) =>

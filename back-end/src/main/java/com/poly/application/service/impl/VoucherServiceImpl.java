@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -40,7 +39,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Page<VoucherResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,
-                                        String searchText, Long hinhThucGiamGiaId,String trangThaiString) {
+                                        String searchText, Long hinhThucGiamGiaId, String trangThaiString) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
@@ -99,9 +98,11 @@ public class VoucherServiceImpl implements VoucherService {
         CommonEnum.TrangThaiVoucher status = voucherUtils.setTrangThaiVoucher(
                 request.getNgayBatDau(), request.getNgayKetThuc()
         );
+        request.setId(detail.getId());
         request.setTrangThai(status);
         mapper.convertUpdateRequestToEntity(request, detail);
-        Voucher savedVoucher = this.repository.saveAndFlush(detail);
+        Voucher savedVoucher = this.repository.save(detail);
+        System.out.println(detail);
         return mapper.convertEntityToResponse(savedVoucher);
     }
 
@@ -150,6 +151,13 @@ public class VoucherServiceImpl implements VoucherService {
         }
 
         repository.saveAll(vouchers);
+    }
+
+    @Override
+    public void cancelVoucher(Long id) {
+        Voucher voucher = repository.findById(id).orElse(null);
+        voucher.setTrangThai(CommonEnum.TrangThaiVoucher.CANCELLED);
+        repository.save(voucher);
     }
 
 }
