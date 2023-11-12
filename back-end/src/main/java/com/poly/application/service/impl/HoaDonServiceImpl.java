@@ -131,6 +131,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setEmailNguoiNhan(updatedHoaDonRequest.getEmailNguoiNhan());
         hoaDon.setTaiKhoan(updatedHoaDonRequest.getTaiKhoan());
         hoaDon.setGhiChu(updatedHoaDonRequest.getGhiChu());
+        hoaDon.setVoucher(updatedHoaDonRequest.getVoucher());
 
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(hoaDonRepository.save(hoaDon));
     }

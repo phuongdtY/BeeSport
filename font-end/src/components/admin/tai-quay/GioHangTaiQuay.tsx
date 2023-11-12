@@ -43,6 +43,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [giaTriGiam, setGiaTriGiam] = useState(0); // New state for discount amount
   const [selectedVoucher, setSelectedVoucher] = useState([]);
   const [tongTienKhiGiam, setTongTienKhiGiam] = useState(0);
+  const [giaTriGiamGiaTien, setGiaTriGiamGiaTien] = useState(0);
+  const [giaTriGiamPhanTram, setGiaTriGiamPhanTram] = useState(0);
 
   const calculateRemainingAmountForVoucher = () => {
     // Sắp xếp các voucher theo giaToiThieu theo thứ tự tăng dần
@@ -84,7 +86,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         );
 
         if (selectedVoucher) {
-          setSelectedVoucher(selectedVoucher.ten);
+          setSelectedVoucher(selectedVoucher);
           setGiaTriGiam(selectedVoucher.giaTriGiam); // Set giaTriGiam here
         } else {
           setSelectedVoucher(null); // Reset the selected voucher name if none is selected
@@ -98,6 +100,77 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       message.error("Error fetching vouchers");
     }
   };
+
+  // const getVouchers = async () => {
+  //   try {
+  //     const response = await request.get("/voucher/list");
+
+  //     if (response.status === 200) {
+  //       setVouchers(response.data);
+
+  //       const allVouchers = response.data;
+
+  //       const voucherGiaTien = allVouchers
+  //         .filter((voucher) => voucher.hinhThucGiam.id === 1)
+  //         .sort((a, b) => a.giaToiThieu - b.giaToiThieu);
+
+  //       const voucherPhanTram = allVouchers
+  //         .filter((voucher) => voucher.hinhThucGiam.id === 2)
+  //         .sort((a, b) => a.giaToiThieu - b.giaToiThieu);
+
+  //       // lấy ra voucher ngon nhất giá tiền
+  //       const voucherNgonGiaTien = voucherGiaTien.find(
+  //         (voucher) => totalPriceFromTable >= voucher.giaToiThieu
+  //       );
+
+  //       if (voucherNgonGiaTien) {
+  //         setGiaTriGiamGiaTien(voucherNgonGiaTien.giaTriGiam); // Set giaTriGiam here
+  //       } else {
+  //         setGiaTriGiamGiaTien(0); // Reset giaTriGiam if no voucher is selected
+  //       }
+
+  //       const voucherNgonPhanTram = voucherPhanTram.find(
+  //         (voucher) => totalPriceFromTable >= voucher.giaToiThieu
+  //       );
+
+  //       if (voucherNgonPhanTram) {
+  //         let giaTriGiamPhanTram =
+  //           (totalPriceFromTable / 100) * voucherNgonPhanTram.giaTriGiam;
+
+  //         // Kiểm tra xem giaTriGiamPhanTram có vượt quá giaTriGiamToiDa không
+  //         if (giaTriGiamPhanTram > voucherNgonPhanTram.giaTriGiamToiDa) {
+  //           giaTriGiamPhanTram = voucherNgonPhanTram.giaTriGiamToiDa;
+  //         }
+
+  //         // Đặt giaTriGiamPhanTram vào trạng thái
+  //         setGiaTriGiamPhanTram(giaTriGiamPhanTram);
+  //       } else {
+  //         setGiaTriGiamPhanTram(0); // Reset giaTriGiam if no voucher is selected
+  //       }
+
+  //       // Chọn giá trị lớn hơn giữa giaTriGiam và giaTriGiamPhanTram
+  //       const giaTriGiamToUse = Math.max(giaTriGiamGiaTien, giaTriGiamPhanTram);
+
+  //       let selectVoucher;
+
+  //       if (giaTriGiamToUse === giaTriGiamGiaTien) {
+  //         selectVoucher = voucherNgonGiaTien;
+  //       } else {
+  //         selectVoucher = voucherNgonPhanTram;
+  //       }
+
+  //       // Đặt giaTriGiam vào trạng thái hoặc sử dụng nó theo cần thiết
+  //       setGiaTriGiam(giaTriGiamToUse);
+  //       // Đặt trạng thái hoặc tiếp tục xử lý với các danh sách
+  //       setSelectedVoucher(selectVoucher);
+  //     } else {
+  //       message.error("Error fetching vouchers");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching vouchers:", error);
+  //     message.error("Error fetching vouchers");
+  //   }
+  // };
 
   const [customerInfo, setCustomerInfo] = useState({
     // Initialize with default values if needed
@@ -206,7 +279,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       tongTien: tongTien,
       tongTienKhiGiam: tongTienKhiGiam,
       voucher: {
-        id: 1,
+        id: selectedVoucher ? selectedVoucher.id : null, // Include the selected voucher's I
       },
       phiShip: phiShip, // Thêm phiShip vào hoaDonData
       diaChiNguoiNhan: address, // Thêm address vào hoaDonData
@@ -248,6 +321,9 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     const hoaDonThanhToan = {
       ...hoaDonData,
       trangThaiHoaDon: trangThai,
+      voucher: {
+        id: selectedVoucher ? selectedVoucher.id : null, // Include the selected voucher's ID
+      },
     };
 
     try {
@@ -271,6 +347,10 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   };
 
   useEffect(() => {
+    getVouchers();
+  }, [vouchers]);
+
+  useEffect(() => {
     const tienGiam = totalPriceFromTable + phiShip - giaTriGiam;
     setTongTienKhiGiam(tienGiam);
   }, [totalPriceFromTable, phiShip, giaTriGiam]);
@@ -280,7 +360,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     if (!checked) {
       setPhiShip(0);
     }
-  }, [checked]);
+  }, [checked, totalPriceFromTable]);
 
   useEffect(() => {
     const voucher = vouchers.find(
@@ -292,10 +372,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       setGiaTriGiam(0);
     }
   }, []);
-
-  useEffect(() => {
-    getVouchers();
-  }, [vouchers]);
 
   useEffect(() => {
     loadSelectKhachHang();
@@ -452,7 +528,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
             {selectedVoucher && (
               <Row>
                 <span style={{ color: "green" }}>
-                  Đã áp dụng Voucher '{selectedVoucher}'. Cần mua thêm{" "}
+                  Đã áp dụng Voucher '{selectedVoucher.ten}'. Cần mua thêm{" "}
                   {formatCurrency(remainingAmount)} để được giảm{" "}
                   {formatCurrency(
                     nextVoucher == null ? 0 : nextVoucher.giaTriGiam
