@@ -160,10 +160,6 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
       );
       loadData();
       message.success("Thêm sản phẩm vào giỏ hàng thành công !");
-      // Handle the response, e.g., display a success message or update the invoice data
-      console.log("Product added to invoice:", response.data);
-
-      // Close the modal or perform any other necessary actions
       setIsModalVisible(false);
     } catch (error) {
       console.error("Error adding product to invoice:", error);

@@ -149,6 +149,9 @@ public class HoaDonServiceImpl implements HoaDonService {
         if (!timelineRepository.existsTimeLineByTrangThaiAndHoaDonId(hoaDon.getTrangThaiHoaDon(), hoaDon.getId())) {
             updateTrangThaiHoaDon(id, hoaDon.getTrangThaiHoaDon(), hoaDon.getGhiChu());
         }
+        hoaDon.setGhiChu(updatedHoaDonRequest.getGhiChu());
+        hoaDon.setVoucher(updatedHoaDonRequest.getVoucher());
+
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
 
