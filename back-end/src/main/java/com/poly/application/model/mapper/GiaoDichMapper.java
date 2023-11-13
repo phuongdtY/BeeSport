@@ -24,16 +24,18 @@ public class GiaoDichMapper {
     }
 
     public GiaoDichResponse convertGiaoDichEntityToGiaoDichResponse(GiaoDich giaoDich){
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         return modelMapper.map(giaoDich, GiaoDichResponse.class);
     }
 
     public GiaoDich convertCreateGiaoDichRequestToGiaoDichEntity(CreateGiaoDichRequest createGiaoDichRequest){
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         return modelMapper.map(createGiaoDichRequest, GiaoDich.class);
     }
 
-    public GiaoDich convertUpdatedGiaoDichRequestToGiaoDichEntity(UpdatedGiaoDichRequest updatedGiaoDichRequest){
+    public void convertUpdatedGiaoDichRequestToGiaoDichEntity(UpdatedGiaoDichRequest updatedGiaoDichRequest, GiaoDich giaoDich){
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        return modelMapper.map(updatedGiaoDichRequest, GiaoDich.class);
+        modelMapper.map(updatedGiaoDichRequest, giaoDich);
     }
 
     public List<GiaoDichResponse> convertListGiaoDichEntityToGiaoDichResponse(List<GiaoDich> giaoDichList){

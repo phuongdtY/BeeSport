@@ -13,6 +13,10 @@ import com.poly.application.repository.TaiKhoanRepository;
 import com.poly.application.service.GiaoDichService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GiaoDichServiceImpl implements GiaoDichService {
@@ -47,6 +51,14 @@ public class GiaoDichServiceImpl implements GiaoDichService {
 
     @Override
     public GiaoDichResponse update(Long id, UpdatedGiaoDichRequest request) {
+        Optional<GiaoDich> optional = giaoDichRepository.findById(id);
+        GiaoDich giaoDich = optional.get();
+        giaoDichMapper.convertUpdatedGiaoDichRequestToGiaoDichEntity(request, giaoDich);
+        return giaoDichMapper.convertGiaoDichEntityToGiaoDichResponse(giaoDichRepository.save(giaoDich));
+    }
+
+    @Override
+    public List<GiaoDichResponse> getListGiaoDich() {
         return null;
     }
 }
