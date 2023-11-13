@@ -51,7 +51,6 @@ public class Voucher implements Serializable {
     @Column(name = "ngay_bat_dau",columnDefinition = "TIMESTAMP")
     private LocalDateTime ngayBatDau;
 
-
     @Column(name = "ngay_ket_thuc",columnDefinition = "TIMESTAMP")
     private LocalDateTime ngayKetThuc;
 
