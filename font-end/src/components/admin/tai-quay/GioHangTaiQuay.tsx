@@ -83,6 +83,38 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           (voucher) => totalPriceFromTable >= voucher.donToiThieu
         );
 
+        const voucherGiaTien = vouchers.filter(
+          (voucher) =>
+            voucher.hinhThucGiam.id === 1 &&
+            totalPriceFromTable >= voucher.donToiThieu
+        );
+
+        const voucherPhanTram = vouchers.filter(
+          (voucher) =>
+            voucher.hinhThucGiam.id === 2 &&
+            totalPriceFromTable >= voucher.donToiThieu
+        );
+
+        const maxVoucherGiaTien = voucherGiaTien.reduce(
+          (maxVoucher, voucher) =>
+            voucher.donToiThieu > maxVoucher.donToiThieu ? voucher : maxVoucher,
+          voucherGiaTien[0] // Default to the first voucher if the list is not empty
+        );
+
+        const voucherMaxPhanTram = voucherPhanTram.reduce(
+          (maxVoucher, voucher) => {
+            if (voucher.donToiThieu > maxVoucher.donToiThieu) {
+              return {
+                ...voucher,
+                tienGiam: (totalPriceFromTable / 100) * voucher.giaTriGiam,
+              };
+            } else {
+              return maxVoucher;
+            }
+          },
+          voucherPhanTram[0] || { tienGiam: 0 }
+        );
+
         if (selectedVoucher) {
           setSelectedVoucher(selectedVoucher);
           setGiaTriGiam(selectedVoucher.giaTriGiam); // Set giaTriGiam here
@@ -449,18 +481,61 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               </Col>
               <Col span={16}></Col>
               <Col span={3}>
-                <p>{formatCurrency(giaTriGiam)}</p>
+                <p>
+                  {selectedVoucher && selectedVoucher.hinhThucGiam
+                    ? selectedVoucher.hinhThucGiam.id === 1
+                      ? `${formatCurrency(giaTriGiam)}`
+                      : `${
+                          selectedVoucher.giaTriGiam &&
+                          (totalPriceFromTable / 100) *
+                            selectedVoucher.giaTriGiam <=
+                            selectedVoucher.giamToiDa
+                            ? `${formatCurrency(
+                                (totalPriceFromTable / 100) *
+                                  selectedVoucher.giaTriGiam
+                              )}`
+                            : `${formatCurrency(selectedVoucher.giamToiDa)}`
+                        }`
+                    : "Voucher information is not available"}
+                </p>
               </Col>
             </Row>
             {selectedVoucher && (
               <Row>
-                <span style={{ color: "green" }}>
-                  Đã áp dụng Voucher '{selectedVoucher.ten}'. Cần mua thêm{" "}
-                  {formatCurrency(remainingAmount)} để được giảm{" "}
-                  {formatCurrency(
-                    nextVoucher == null ? 0 : nextVoucher.giaTriGiam
-                  )}
-                </span>
+                <Space direction="vertical">
+                  <span style={{ color: "green", fontWeight: "bolder" }}>
+                    Đã áp dụng voucher: {selectedVoucher.ten}
+                    <br />
+                    {selectedVoucher.hinhThucGiam && selectedVoucher.donToiThieu
+                      ? selectedVoucher.hinhThucGiam.id === 2
+                        ? `Giảm: ${
+                            selectedVoucher.giaTriGiam
+                          }% cho đơn hàng từ ${formatCurrency(
+                            selectedVoucher.donToiThieu
+                          )} giảm tối đa ${formatCurrency(
+                            selectedVoucher.giamToiDa
+                          )}`
+                        : `Giảm: ${formatCurrency(
+                            selectedVoucher.giaTriGiam
+                          )} cho đơn hàng từ ${formatCurrency(
+                            selectedVoucher.donToiThieu
+                          )}`
+                      : "Thông tin giảm giá không khả dụng"}
+                  </span>
+                  {nextVoucher ? (
+                    <>
+                      <span style={{ color: "orange", fontStyle: "italic" }}>
+                        Gợi ý: Mua thêm {formatCurrency(remainingAmount)} để
+                        được giảm{" "}
+                        {nextVoucher.hinhThucGiam && nextVoucher.giaTriGiam
+                          ? nextVoucher.hinhThucGiam.id === 2
+                            ? `${nextVoucher.giaTriGiam}%`
+                            : `${formatGiaTienVND(nextVoucher.giaTriGiam)}`
+                          : "Thông tin giảm giá không khả dụng"}
+                      </span>
+                    </>
+                  ) : null}
+                </Space>
               </Row>
             )}
             {/* Tổng tiền */}

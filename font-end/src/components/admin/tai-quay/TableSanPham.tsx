@@ -3,6 +3,7 @@ import {
   Col,
   Input,
   InputNumber,
+  Modal,
   Row,
   Space,
   Table,
@@ -13,7 +14,7 @@ import { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect } from "react";
 import request, { request4s } from "~/utils/request";
 import ModalSanPham from "./ModalSanPham";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 
 interface DataGioHang {
   key: React.Key;
@@ -40,7 +41,7 @@ const TableSanPham: React.FC<{
   passTotalPriceToParent: (price: number) => void;
 }> = ({ id, passTotalPriceToParent }) => {
   const [dataGioHang, setDataGioHang] = useState<DataGioHang[]>([]); // Specify the data type
-  const [soLuong, setSoLuong] = useState({});
+  const { confirm } = Modal;
 
   const tableGioHang: ColumnsType<DataGioHang> = [
     {
@@ -101,21 +102,29 @@ const TableSanPham: React.FC<{
   ];
 
   const handleCapNhatGioHang = async (id) => {
-    console.log(dataGioHang);
-    try {
-      const response = await request4s.put(
-        `/hoa-don/hoa-don-chi-tiet/${id}`,
-        dataGioHang?.map((item) => ({
-          id: item.id,
-          soLuong: item.soLuong,
-        }))
-      );
-      message.success("Đã cập nhật giỏ hàng");
-    } catch (error) {
-      console.error("Error updating cart:", error);
-      // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
-      message.error("Có lỗi xảy ra khi cập nhật giỏ hàng.");
-    }
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn cập nhật Giỏ hàng không?",
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          const response = await request4s.put(
+            `/hoa-don/hoa-don-chi-tiet/${id}`,
+            dataGioHang?.map((item) => ({
+              id: item.id,
+              soLuong: item.soLuong,
+            }))
+          );
+          message.success("Đã cập nhật giỏ hàng");
+        } catch (error) {
+          console.error("Error updating cart:", error);
+          // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
+          message.error("Có lỗi xảy ra khi cập nhật giỏ hàng.");
+        }
+      },
+    });
   };
 
   const handleSoLuongChange = (index, newSoLuong) => {
