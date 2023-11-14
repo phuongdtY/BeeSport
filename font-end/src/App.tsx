@@ -24,7 +24,7 @@ import Home from "./pages/shop/home/Home";
 import GioHang from "./pages/shop/gio-hang/GioHang";
 import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
 import IndexVoucher from "./pages/admin/voucher/index";
-import AddVoucher from "./pages/admin/voucher/add";
+import AddVoucher from "./pages/admin/voucher/addVoucher.tsx";
 import UpdateVoucher from "./pages/admin/voucher/update";
 import Signin from "./pages/login/sign-in/Signin";
 import Signup from "./pages/login/sign-up/Singup";

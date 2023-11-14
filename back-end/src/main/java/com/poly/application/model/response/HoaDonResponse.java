@@ -4,6 +4,9 @@ import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.GiaoDich;
 import com.poly.application.entity.HoaDonChiTiet;
 import com.poly.application.entity.TaiKhoan;
+import com.poly.application.entity.TimeLine;
+import com.poly.application.entity.Voucher;
+import com.poly.application.entity.Voucher;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
@@ -58,6 +61,8 @@ public class HoaDonResponse {
     private CommonEnum.TrangThaiHoaDon trangThaiHoaDon;
 
     private TaiKhoan taiKhoan;
+
+    private Voucher voucher;
 
     private List<GiaoDich> giaoDichList;
 
