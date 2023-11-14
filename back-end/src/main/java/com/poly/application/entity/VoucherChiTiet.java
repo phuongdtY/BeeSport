@@ -1,20 +1,18 @@
 package com.poly.application.entity;
 
 import com.poly.application.common.CommonEnum;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,53 +21,25 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
-@SuppressWarnings("serial")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@Table(name = "voucher")
+@Builder
+@Table(name = "voucher_chi_tiet")
 @Entity
-public class Voucher implements Serializable {
+public class VoucherChiTiet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "ma")
-    private String ma;
-
-    @Column(name = "ten")
-    private String ten;
-
-    @Column(name = "so_luong")
-    private Integer soLuong;
-
-    @Column(name = "ngay_bat_dau",columnDefinition = "TIMESTAMP")
-    private LocalDateTime ngayBatDau;
-
-    @Column(name = "ngay_ket_thuc",columnDefinition = "TIMESTAMP")
-    private LocalDateTime ngayKetThuc;
-
-    @ManyToOne
-    @JoinColumn(name = "hinh_thuc_giam_gia_id", referencedColumnName = "id")
-    private HinhThucGiamGia hinhThucGiamGia;
-
-    @Column(name = "gia_tri_giam")
-    private BigDecimal giaTriGiam;
-
-    @Column(name = "don_toi_thieu")
-    private BigDecimal donToiThieu;
-
-    @Column(name = "giam_toi_da")
-    private BigDecimal giamToiDa;
+    @Column(name = "so_lan_su_dung")
+    private Integer soLanSuDung;
 
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
@@ -83,9 +53,14 @@ public class Voucher implements Serializable {
 
     @Column(name = "trang_thai")
     @Enumerated(EnumType.STRING)
-    private CommonEnum.TrangThaiVoucher trangThai;
+    private CommonEnum.TrangThaiThuocTinh trangThai;
 
-    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<VoucherChiTiet> voucherChiTietList;
+    @ManyToOne
+    @JoinColumn(name = "voucher_id", referencedColumnName = "id")
+    private Voucher voucher;
+
+    @ManyToOne
+    @JoinColumn(name = "tai_khoan_id", referencedColumnName = "id")
+    private TaiKhoan taiKhoan;
 
 }

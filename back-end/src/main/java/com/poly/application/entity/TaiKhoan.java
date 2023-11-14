@@ -111,4 +111,8 @@ public class TaiKhoan implements Serializable {
     @JoinColumn(name = "vai_tro_id", referencedColumnName = "id")
     private VaiTro vaiTro;
 
+    @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<VoucherChiTiet> voucherChiTietList;
+
+
 }
