@@ -4,6 +4,7 @@ import {
   Col,
   Divider,
   InputNumber,
+  Modal,
   Radio,
   Row,
   Select,
@@ -16,7 +17,7 @@ import React, { useState, useEffect } from "react";
 import ThongTinGiaoHang from "./ThongTinGiaoHang";
 import TextArea from "antd/es/input/TextArea";
 import TableSanPham from "./TableSanPham";
-import { PlusOutlined } from "@ant-design/icons";
+import { ExclamationCircleFilled, PlusOutlined } from "@ant-design/icons";
 import request from "~/utils/request";
 import ModalAddKhachHang from "./ModalAddKhachHang";
 import { formatGiaTienVND, formatPhoneNumber } from "~/utils/formatResponse";
@@ -43,6 +44,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [giaTriGiam, setGiaTriGiam] = useState(0); // New state for discount amount
   const [selectedVoucher, setSelectedVoucher] = useState([]);
   const [tongTienKhiGiam, setTongTienKhiGiam] = useState(0);
+  const { confirm } = Modal;
 
   const calculateRemainingAmountForVoucher = () => {
     // Sắp xếp các voucher theo giaToiThieu theo thứ tự tăng dần
@@ -83,41 +85,19 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           (voucher) => totalPriceFromTable >= voucher.donToiThieu
         );
 
-        const voucherGiaTien = vouchers.filter(
-          (voucher) =>
-            voucher.hinhThucGiam.id === 1 &&
-            totalPriceFromTable >= voucher.donToiThieu
-        );
-
-        const voucherPhanTram = vouchers.filter(
-          (voucher) =>
-            voucher.hinhThucGiam.id === 2 &&
-            totalPriceFromTable >= voucher.donToiThieu
-        );
-
-        const maxVoucherGiaTien = voucherGiaTien.reduce(
-          (maxVoucher, voucher) =>
-            voucher.donToiThieu > maxVoucher.donToiThieu ? voucher : maxVoucher,
-          voucherGiaTien[0] // Default to the first voucher if the list is not empty
-        );
-
-        const voucherMaxPhanTram = voucherPhanTram.reduce(
-          (maxVoucher, voucher) => {
-            if (voucher.donToiThieu > maxVoucher.donToiThieu) {
-              return {
-                ...voucher,
-                tienGiam: (totalPriceFromTable / 100) * voucher.giaTriGiam,
-              };
-            } else {
-              return maxVoucher;
-            }
-          },
-          voucherPhanTram[0] || { tienGiam: 0 }
-        );
-
         if (selectedVoucher) {
           setSelectedVoucher(selectedVoucher);
-          setGiaTriGiam(selectedVoucher.giaTriGiam); // Set giaTriGiam here
+          if (selectedVoucher.hinhThucGiam.id === 1) {
+            setGiaTriGiam(selectedVoucher.giaTriGiam);
+          } else {
+            const giam =
+              (totalPriceFromTable / 100) * selectedVoucher.giaTriGiam;
+            setGiaTriGiam(
+              giam > selectedVoucher.giamToiDa
+                ? selectedVoucher.giamToiDa
+                : giam
+            );
+          }
         } else {
           setSelectedVoucher(null); // Reset the selected voucher name if none is selected
           setGiaTriGiam(0); // Reset giaTriGiam if no voucher is selected
@@ -254,23 +234,28 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   };
 
   const handleLuuHoaDon = async (id) => {
-    // Lấy thông tin hóa đơn
-    const hoaDonData = getHoaDonData();
-    try {
-      // Gọi API để cập nhật hóa đơn theo `id`
-      const response = await request.put(`/hoa-don/${id}`, hoaDonData);
-      if (response.status === 200) {
-        loadHoaDon();
-        message.success("Hóa đơn đã được cập nhật thành công.");
-      } else {
-        // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
-        message.error("Có lỗi xảy ra khi cập nhật hóa đơn.");
-      }
-    } catch (error) {
-      console.error("Error updating invoice:", error);
-      // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
-      message.error("Có lỗi xảy ra khi cập nhật hóa đơn.");
-    }
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn lưu hóa đơn không?",
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        const hoaDonData = getHoaDonData();
+        try {
+          const response = await request.put(`/hoa-don/${id}`, hoaDonData);
+          if (response.status === 200) {
+            loadHoaDon();
+            message.success("Hóa đơn đã được lưu thành công.");
+          } else {
+            message.error("Có lỗi xảy ra khi lưu hóa đơn.");
+          }
+        } catch (error) {
+          console.error("Error saving invoice:", error);
+          message.error("Có lỗi xảy ra khi lưu hóa đơn.");
+        }
+      },
+    });
   };
 
   const handleThanhToan = async (id) => {
@@ -330,6 +315,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     } else {
       setGiaTriGiam(0);
     }
+    setSelectedRadio(0);
+    setIsCashSelected(true);
   }, []);
 
   useEffect(() => {
@@ -496,7 +483,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                               )}`
                             : `${formatCurrency(selectedVoucher.giamToiDa)}`
                         }`
-                    : "Voucher information is not available"}
+                    : "0 đ"}
                 </p>
               </Col>
             </Row>
