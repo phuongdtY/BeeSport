@@ -19,7 +19,7 @@ import { UpdatedRequest } from "~/interfaces/voucher.type";
 import request from "~/utils/request";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { DataType } from "~/interfaces/voucher.type";
+// import { DataType } from "~/interfaces/voucher.type";
 import { formatGiaTienVND, formatSoLuong } from "~/utils/formatResponse";
 dayjs.extend(customParseFormat);
 

@@ -86,4 +86,6 @@ public class Voucher implements Serializable {
     @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;
 
+    private boolean cancelled;
+
 }

@@ -4,9 +4,12 @@ import com.poly.application.model.request.create_request.CreatedVoucherRequest;
 import com.poly.application.model.request.update_request.UpdatedVoucherRequest;
 import com.poly.application.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -23,10 +26,13 @@ public class VoucherController {
             @RequestParam(name = "sortOrder", defaultValue = "", required = false) String sortOrder,
             @RequestParam(name = "searchText", defaultValue = "") String searchText,
             @RequestParam(name = "hinhThucGiamGiaId", defaultValue = "") Long hinhThucGiamGiaId,
-            @RequestParam(name = "trangThai", required = false) String trangThaiString
+            @RequestParam(name = "trangThai", required = false) String trangThaiString,
+            @RequestParam(name = "ngayBatDau", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime ngayBatDau,
+            @RequestParam(name = "ngayKetThuc", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime ngayKetThuc
 
     ) {
-        return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, hinhThucGiamGiaId, trangThaiString));
+        return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, hinhThucGiamGiaId,
+                trangThaiString, ngayBatDau, ngayKetThuc));
     }
 
     @GetMapping("/list")

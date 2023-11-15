@@ -40,7 +40,8 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Page<VoucherResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,
-                                        String searchText, Long hinhThucGiamGiaId,String trangThaiString) {
+                                        String searchText, Long hinhThucGiamGiaId, String trangThaiString,
+                                        LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
@@ -56,7 +57,7 @@ public class VoucherServiceImpl implements VoucherService {
             trangThai = CommonEnum.TrangThaiVoucher.valueOf(trangThaiString);
         }
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<Voucher> voucherPage = repository.findByALl(pageable, searchText, hinhThucGiamGiaId, trangThai);
+        Page<Voucher> voucherPage = repository.findByALl(pageable, searchText, hinhThucGiamGiaId, trangThai, ngayBatDau, ngayKetThuc);
         return voucherPage.map(mapper::convertEntityToResponse);
     }
 
@@ -141,6 +142,13 @@ public class VoucherServiceImpl implements VoucherService {
                 }
             } else if (now.isAfter(voucher.getNgayKetThuc())) {
                 voucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
+            } else {
+                // Thêm điều kiện để kiểm tra nếu voucher đã bị hủy
+                if (voucher.isCancelled()) {
+                    voucher.setTrangThai(CommonEnum.TrangThaiVoucher.CANCELLED);
+                } else {
+                    voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ONGOING);
+                }
             }
 
             CommonEnum.TrangThaiVoucher newStatus = voucher.getTrangThai();
