@@ -18,19 +18,36 @@ const contentStyle: React.CSSProperties = {
 const { Title, Text } = Typography;
 const { Meta } = Card;
 const Home: React.FC = () => {
-  const [products, setProducts] = useState([]);
+  const [sanPhamMoiNhat, setSanPhamMoiNhat] = useState([]);
+  const [sanPhamBanChay, setSanPhamBanChay] = useState([]);
   useEffect(() => {
-    const fetchProduct = async () => {
+    // Call API sản phẩm mới nhất
+    const fetchMoiNhat = async () => {
       try {
         const res = await request.get("/san-pham/gia-tien-moi-nhat");
-        setProducts(res.data);
+        setSanPhamMoiNhat(res.data);
         console.log(res.data);
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu địa hình sân thất bại");
       }
     };
-    fetchProduct();
+
+    // Call API Sản phẩm bán chạy nhất
+
+    const fetchBanChayNhat = async () => {
+      try {
+        const res = await request.get("/san-pham/ban-chay-nhat");
+        setSanPhamBanChay(res.data);
+        console.log(res.data);
+      } catch (error) {
+        console.log(error);
+        message.error("Lấy dữ liệu sản phẩm bán chạy nhất thất bại");
+      }
+    };
+
+    fetchMoiNhat();
+    fetchBanChayNhat();
   }, []);
   return (
     <>
@@ -50,7 +67,7 @@ const Home: React.FC = () => {
       </Carousel>
       <Divider style={{ fontSize: 25 }}>SẢN PHẨM MỚI NHẤT</Divider>
       <Row gutter={16}>
-        {products.map((product) => (
+        {sanPhamMoiNhat.map((product) => (
           <Col key={product.id}>
             <Card style={{ width: 267 }}>
               <img
@@ -79,6 +96,35 @@ const Home: React.FC = () => {
         ))}
       </Row>
       <Divider style={{ fontSize: 25 }}>SẢN PHẨM BÁN CHẠY</Divider>
+      <Row gutter={16}>
+        {sanPhamBanChay.map((product) => (
+          <Col key={product.id}>
+            <Card style={{ width: 267 }}>
+              <img
+                style={{ padding: 30, height: 240 }}
+                alt="example"
+                src={`http://localhost:8080/admin/api/file/view/${product.duongDan}`}
+              />
+              <div style={{ textAlign: "left" }}>
+                <Link
+                  to={`/san-pham/detail/${product.id}`}
+                  style={{ fontWeight: "bold", margin: 0 }}
+                >
+                  {product.ten}
+                </Link>
+                <Title level={5} style={{ color: "red", margin: 0 }}>
+                  {product.giaMin === product.giaMax
+                    ? `${formatGiaTien(product.giaMax)}`
+                    : `${formatGiaTien(product.giaMin)} - ${formatGiaTien(
+                        product.giaMax
+                      )}`}
+                </Title>
+              </div>
+              {/* Add your actions, such as Add to Cart and Buy Now buttons here */}
+            </Card>
+          </Col>
+        ))}
+      </Row>
     </>
   );
 };
