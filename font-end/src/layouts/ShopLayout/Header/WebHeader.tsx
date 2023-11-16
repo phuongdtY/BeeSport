@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Badge, Menu, theme } from "antd";
 import { Link } from "react-router-dom";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
-import logo from "~/image/logo.png";
+import logo from "~/image/logo.jpg";
 import request from "~/utils/request";
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -65,7 +65,13 @@ const Header: React.FC = () => {
       }}
     >
       <div className="demo-logo">
-        <img src={logo} alt="" width={"100px"} height={"30px"} />
+        <img
+          style={{ paddingTop: 5 }}
+          src={logo}
+          alt=""
+          width={"180px"}
+          height={"70px"}
+        />
       </div>
       <Menu
         theme="light"
