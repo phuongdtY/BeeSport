@@ -42,7 +42,6 @@ export interface UpdatedRequest {
   phuongXa: number;
   diaChiCuThe: string;
   anhDaiDien: string;
-  matKhau: string;
   ngayTao: string;
   ngaySua: string;
   trangThai: {

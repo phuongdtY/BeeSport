@@ -28,7 +28,7 @@ export interface DataType {
 }
 export interface UpdatedRequest {
   hoVaTen: string;
-  canCuocCongDan: string;
+  // canCuocCongDan: string;
   ngaySinh: string | undefined;
   gioiTinh: {
     ten: string;
@@ -37,12 +37,11 @@ export interface UpdatedRequest {
   };
   soDienThoai: string;
   email: string;
-  thanhPho: string;
-  quanHuyen: string;
-  phuongXa: string;
-  diaChiCuThe: string;
+  // thanhPho: string;
+  // quanHuyen: string;
+  // phuongXa: string;
+  // diaChiCuThe: string;
   anhDaiDien: string;
-  matKhau: string;
   ngayTao: string;
   ngaySua: string;
   trangThai: {

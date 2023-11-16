@@ -50,7 +50,14 @@ const AddKH: React.FC = () => {
         console.log(values);
         try {
           setLoading(true);
-          const response = await requestTimMatKhau.post("khach-hang/add", values);
+          const local123 = localStorage.getItem('refreshToken');
+          const response = await requestTimMatKhau.post("khach-hang/add", values,
+          {
+            headers: {
+              Authorization: `Bearer ${local123}`
+            }
+          }
+          );
           console.log("Response from API:", response); // In dữ liệu từ API
           setLoading(false);
           message.success("Thêm khách hàng thành công");
@@ -67,6 +74,7 @@ const AddKH: React.FC = () => {
       },
     });
   };
+  
   const fetchDistricts = async (idProvince: string) => {
     try {
       const districtRes = await axios.get(
@@ -262,12 +270,6 @@ const AddKH: React.FC = () => {
               <Input />
             </Form.Item>
             <Form.Item
-              name="canCuocCongDan"
-              label="CCCD/Mã định danh:"
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
               name="ngaySinh"
               label="Ngày Sinh:"
             >
@@ -315,47 +317,6 @@ const AddKH: React.FC = () => {
                   message: "E-mail không hợp lệ!",
                 },
               ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="thanhPho"
-              label="Tỉnh / Thành"
-            >
-              <Select
-                options={provinces}
-                placeholder="Tỉnh/ Thành Phố"
-                onChange={(value) => {
-                  form.setFieldsValue({
-                    quanHuyen: undefined,
-                    phuongXa: undefined,
-                  });
-                  fetchDistricts(value);
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              name="quanHuyen"
-              label="Quận / Huyện:"
-            >
-              <Select
-                options={districts}
-                placeholder="Quận / Huyện"
-                onChange={(value) => {
-                  form.setFieldsValue({ phuongXa: undefined });
-                  fetchWards(value);
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              name="phuongXa"
-              label="Phường / Xã"
-            >
-              <Select options={wards} placeholder="Phường / Xã" />
-            </Form.Item>
-            <Form.Item
-              name="diaChiCuThe"
-              label="Địa chỉ cụ thể"
             >
               <Input />
             </Form.Item>

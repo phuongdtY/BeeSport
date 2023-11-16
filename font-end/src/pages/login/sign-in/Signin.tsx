@@ -17,7 +17,7 @@ import * as React from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { DangNhapRequest } from "~/interfaces/taiKhoan.type";
-import {requestTimMatKhau} from "~/utils/request";
+import {requestDangNhap} from "~/utils/request";
 
 const { confirm } = Modal;
 
@@ -26,43 +26,28 @@ const DangNhap: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null); // Thêm state để lưu thông báo lỗi
 
+  
   const onFinish = async (values: DangNhapRequest) => {
-    confirm({
-      title: "Xác Nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn đăng nhập không?",
-      okText: "OK",
-      cancelText: "Hủy",
-      onOk: async () => {
-        try {
-          setLoading(true);
-          setError(null); // Xóa thông báo lỗi trước đó
-
-          const response = await requestTimMatKhau.post(`tai-khoan/dang-nhap/${values.email}/${values.matKhau}`);
-
-          if (response && response.data && response.data.vaiTro) {
-            const vaiTroId = response.data.vaiTro.id;
-            if (vaiTroId === 3) {
-              navigate("/khach-hang");
-            } else if (vaiTroId === 2) {
-              navigate("/nhan-vien");
-            }
-            message.success("Đăng nhập thành công");
-          } else {
-            message.error("Đăng nhập không thành công");
-          }
-        } catch (error:any) {
-          console.log("Error:", error); // In lỗi ra để xác định lý do
-          if (error.response && error.response.data) {
-            message.error(error.response.data.message);
-          } else {
-            message.error("Có lỗi xảy ra khi đăng nhập.");
-          }
-        } finally {
-          setLoading(false);
-        }
-      },
-    });
+    try {
+      const response = await requestDangNhap.post("/sign-in", values);
+      const { refreshToken } = response.data; // Assuming your response contains accessToken and refreshToken
+      localStorage.setItem("refreshToken", refreshToken); // Store the access token
+      console.log("AA  "+ response.data.refreshToken)
+      
+      // Make sure to handle refreshToken as needed (e.g., refresh it before it expires)
+  
+      navigate("/admin");
+      message.success("Đăng nhập thành công");
+    } catch (error: any) {
+      console.log("Error:", error);
+      if (error.response && error.response.data) {
+        message.error(error.response.data.message);
+      } else {
+        message.error("Có lỗi xảy ra khi đăng nhập.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -109,14 +109,14 @@ const index: React.FC = () => {
     //   key: "canCuocCongDan",
     //   sorter: true,
     // },
-    // {
-    //   title: "Ngày Sinh",
-    //   align: "center",
-    //   dataIndex: "ngaySinh",
-    //   key: "ngaySinh",
-    //   sorter: true,
-    //   render: (ngaySinh) => formatNgaySinh(ngaySinh),
-    // },
+    {
+      title: "Ngày Sinh",
+      align: "center",
+      dataIndex: "ngaySinh",
+      key: "ngaySinh",
+      sorter: true,
+      render: (ngaySinh) => formatNgaySinh(ngaySinh),
+    },
     {
       title: "Giới Tính",
       dataIndex: "gioiTinh",
@@ -392,7 +392,7 @@ const index: React.FC = () => {
           <Col span={8}>
             <Input
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Tìm kiếm theo Tên, SĐT, Email, CMT/CCCD,..."
+              placeholder="Tìm kiếm theo Tên, SĐT, Email"
               allowClear
               prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
             />

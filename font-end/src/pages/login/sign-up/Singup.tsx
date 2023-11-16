@@ -16,7 +16,7 @@ import {
   Select,
 } from "antd";
 
-import {requestTimMatKhau} from "~/utils/request";
+import {requestDangKi} from "~/utils/request";
 import {
   ExclamationCircleFilled,
   UserOutlined,
@@ -56,13 +56,13 @@ const dangKiKhachHang: React.FC = () => {
       onOk: async () => {
         try {
           setLoading(true);
-          const response = await requestTimMatKhau.post("khach-hang/dang-ki", {
+          const response = await requestDangKi.post("/sign-up", {
             hoVaTen: values.hoVaTen,
             soDienThoai: values.soDienThoai,
             email: values.email,
             matKhau: values.matKhau,
           });
-          if (response.status === 201) {
+          if (response.status === 200) {
             // Nếu mã trạng thái HTTP là 200, thực hiện các hành động thành công.
             message.success("Tạo tài khoản thành công. Bạn hãy check mail");
             navigate("/sign-in");

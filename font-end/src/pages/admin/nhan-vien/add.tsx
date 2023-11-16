@@ -50,7 +50,14 @@ const AddNV: React.FC = () => {
       onOk: async () => {
         try {
           setLoading(true);
-          const response = await requestTimMatKhau.post("nhan-vien/add", values);
+          const local123 = localStorage.getItem('refreshToken');
+          const response = await requestTimMatKhau.post("nhan-vien/add", values,
+          {
+            headers: {
+              Authorization: `Bearer ${local123}`
+            }
+          }
+          );
           console.log("Response from API:", response); // In dữ liệu từ API
           setLoading(false);
           message.success("Thêm nhân viên thành công");
