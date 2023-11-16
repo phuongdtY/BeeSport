@@ -122,7 +122,14 @@ const UpdateKhachHang: React.FC = () => {
       
       setLoadingForm(true);
       try {
-        const res = await request.get("khach-hang/edit/" + id);
+        const local123 = localStorage.getItem('refreshToken');
+        const res = await request.get("khach-hang/edit/" + id,
+        {
+          headers: {
+            Authorization: `Bearer ${local123}`
+          }
+        }
+        );
         //fix
         fetchProvinces();
         fetchDistricts(res.data?.thanhPho);
@@ -132,16 +139,15 @@ const UpdateKhachHang: React.FC = () => {
           const ngaySinhValue = dayjs(res.data?.ngaySinh);
         form.setFieldsValue({
             hoVaTen: res.data?.hoVaTen,
-            canCuocCongDan: res.data?.canCuocCongDan,
+            // canCuocCongDan: res.data?.canCuocCongDan,
             ngaySinh: ngaySinhValue,
             gioiTinh: gioiTinhValue,
             soDienThoai: res.data?.soDienThoai,
             email: res.data?.email,
-            thanhPho: Number(res.data?.thanhPho) ,
-            quanHuyen: Number(res.data?.quanHuyen),
-            phuongXa: res.data?.phuongXa,
-            diaChiCuThe: res.data?.diaChiCuThe,
-            matKhau:res.data?.matKhau,
+            // thanhPho: Number(res.data?.thanhPho) ,
+            // quanHuyen: Number(res.data?.quanHuyen),
+            // phuongXa: res.data?.phuongXa,
+            // diaChiCuThe: res.data?.diaChiCuThe,
             trangThai: trangThaiValue, // Convert to boolean
         })
         ;
@@ -165,21 +171,26 @@ const UpdateKhachHang: React.FC = () => {
       onOk: async () => {
         try {
           const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
-          
+          const local123 = localStorage.getItem('refreshToken');
           const res = await request.put("khach-hang/update/" + id, {
             hoVaTen: values.hoVaTen,
-            canCuocCongDan: values.canCuocCongDan,
+            // canCuocCongDan: values.canCuocCongDan,
             ngaySinh: values.ngaySinh,
             gioiTinh: values.gioiTinh,
             soDienThoai: values.soDienThoai,
             email: values.email,
-            thanhPho: values.thanhPho,
-            quanHuyen: values.quanHuyen,
-            phuongXa: values.phuongXa,
-            diaChiCuThe: values.diaChiCuThe,
-            matKhau: values.matKhau,
+            // thanhPho: values.thanhPho,
+            // quanHuyen: values.quanHuyen,
+            // phuongXa: values.phuongXa,
+            // diaChiCuThe: values.diaChiCuThe,
             trangThai: trangThai,
-          });
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${local123}`
+            }
+          }
+          );
           if (res.data) {
             message.success("Cập nhật khách hàng thành công");
             navigate("/admin/khach-hang");
@@ -218,19 +229,6 @@ const UpdateKhachHang: React.FC = () => {
                 {
                   required: true,
                   message: "Vui lòng nhập tên khách hàng!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-
-            <Form.Item
-              name="canCuocCongDan"
-              label="Căn cước công dân"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập căn cước công dân!",
                 },
               ]}
             >
@@ -279,72 +277,6 @@ const UpdateKhachHang: React.FC = () => {
             <Form.Item
               name="email"
               label="Email"
-              >
-                <Input/>
-            </Form.Item>
-            <Form.Item
-              name="thanhPho"
-              label="Tỉnh / Thành"
-              rules={[
-                {
-                  required: true,
-                  message: "Bạn chưa điền Tỉnh / Thành !",
-                },
-              ]}
-            >
-              <Select
-                options={provinces}
-                placeholder="Tỉnh/ Thành Phố"
-                onChange={(value) => {
-                  form.setFieldsValue({
-                    quanHuyen: undefined,
-                    phuongXa: undefined,
-                  });
-                  fetchDistricts(value);
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              name="quanHuyen"
-              label="Quận / Huyện:"
-              rules={[
-                {
-                  required: true,
-                  message: "Bạn chưa điền Quận / Huyện!",
-                },
-              ]}
-            >
-              <Select
-                options={districts}
-                placeholder="Quận / Huyện"
-                onChange={(value) => {
-                  form.setFieldsValue({ phuongXa: undefined });
-                  fetchWards(value);
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              name="phuongXa"
-              label="Phường / Xã"
-              rules={[
-                {
-                  required: true,
-                  message: "Bạn chưa điền Phường / Xã !",
-                },
-              ]}
-            >
-              <Select options={wards}
-              placeholder="Phường / Xã" />
-            </Form.Item>
-            <Form.Item
-              name="diaChiCuThe"
-              label="Địa chỉ cụ thể"
-              >
-            <Input/>
-            </Form.Item>
-            <Form.Item
-              name="matKhau"
-              label="Mật khẩu"
               >
                 <Input/>
             </Form.Item>

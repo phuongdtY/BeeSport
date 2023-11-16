@@ -120,7 +120,14 @@ const UpdateNhanVien: React.FC = () => {
       
       setLoadingForm(true);
       try {
-        const res = await request.get("nhan-vien/edit/" + id);
+        const local123 = localStorage.getItem('refreshToken');
+        const res = await request.get("nhan-vien/edit/" + id,
+        {
+          headers: {
+            Authorization: `Bearer ${local123}`
+          }
+        }
+        );
         fetchProvinces();
         fetchDistricts(res.data?.thanhPho);
         fetchWards(res.data?.quanHuyen);
@@ -138,7 +145,7 @@ const UpdateNhanVien: React.FC = () => {
             quanHuyen: Number(res.data?.quanHuyen),
             phuongXa: res.data?.phuongXa,
             diaChiCuThe: res.data?.diaChiCuThe,
-            matKhau:res.data?.matKhau,
+            // matKhau:res.data?.matKhau,
             trangThai: trangThaiValue, // Convert to boolean
         })
         ;
@@ -163,7 +170,7 @@ const UpdateNhanVien: React.FC = () => {
       onOk: async () => {
         try {
           const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
-          
+          const local123 = localStorage.getItem('refreshToken');
           const res = await request.put("nhan-vien/update/" + id, {
             hoVaTen: values.hoVaTen,
             canCuocCongDan: values.canCuocCongDan,
@@ -175,9 +182,15 @@ const UpdateNhanVien: React.FC = () => {
             quanHuyen: values.quanHuyen,
             phuongXa: values.phuongXa,
             diaChiCuThe: values.diaChiCuThe,
-            matKhau: values.matKhau,
+            // matKhau: values.matKhau,
             trangThai: trangThai,
-          });
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${local123}`
+            }
+          }
+          );
           if (res.data) {
             message.success("Cập nhật nhân viên thành công");
             navigate("/admin/nhan-vien");
@@ -340,12 +353,7 @@ const UpdateNhanVien: React.FC = () => {
               >
             <Input/>
             </Form.Item>
-            <Form.Item
-              name="matKhau"
-              label="Mật khẩu"
-              >
-                <Input/>
-            </Form.Item>
+
             <Form.Item
               name="trangThai"
               label="Trạng thái"

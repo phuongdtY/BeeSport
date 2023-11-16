@@ -107,4 +107,11 @@ public class TaiKhoan implements Serializable {
     @JoinColumn(name = "vai_tro_id", referencedColumnName = "id")
     private VaiTro vaiTro;
 
+    public TaiKhoan(String hoVaTen, String email, String matKhau, VaiTro vaiTro) {
+        this.hoVaTen = hoVaTen;
+        this.email = email;
+        this.matKhau = matKhau;
+        this.vaiTro = vaiTro;
+    }
+
 }

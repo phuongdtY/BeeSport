@@ -20,13 +20,11 @@ public interface TaiKhoanService {
 
     TaiKhoanResponse update(Long id, UpdatedTaiKhoanRequest request);
 
+    TaiKhoanResponse updateKhachHang(Long id, UpdatedTaiKhoanRequest request);
+
     void  delete(Long id);
 
     TaiKhoanResponse findById(Long id);
-
-    TaiKhoanResponse findByEmail(String email,String matKhau);
-
-    TaiKhoanResponse khachHangCreat(CreatedTaiKhoanRequest request);
 
     TaiKhoanResponse addKhachHang(CreatedTaiKhoanRequest request);
 

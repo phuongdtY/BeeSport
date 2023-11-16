@@ -40,11 +40,6 @@ public class KhachHangController {
         return new ResponseEntity<>(taiKhoanService.addKhachHang(createTaiKhoanRequest), HttpStatus.CREATED);
     }
 
-    @PostMapping("/dang-ki")
-    public ResponseEntity<?> add(@RequestBody CreatedTaiKhoanRequest createTaiKhoanRequest) {
-        return new ResponseEntity<>(taiKhoanService.khachHangCreat(createTaiKhoanRequest), HttpStatus.CREATED);
-    }
-
 
     @GetMapping("/edit/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id")Long id){
@@ -53,7 +48,7 @@ public class KhachHangController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody UpdatedTaiKhoanRequest request) {
-        TaiKhoanResponse taiKhoan = taiKhoanService.update(id, request);
+        TaiKhoanResponse taiKhoan = taiKhoanService.updateKhachHang(id, request);
         return ResponseEntity.ok(taiKhoan);
     }
 }

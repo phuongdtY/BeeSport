@@ -62,19 +62,6 @@ public class TaiKhoanController {
         return ResponseEntity.ok(taiKhoanService.update(id, request));
     }
 
-    @PostMapping ("/dang-nhap/{email}/{matKhau}")
-    public ResponseEntity<?> findByTaiKhoanEmail(
-            @PathVariable(name = "email") String email,
-            @PathVariable(name = "matKhau") String matKhau
-    ) {
-        TaiKhoanResponse response = taiKhoanService.findByEmail(email, matKhau);
-
-        if (response != null) {
-            return ResponseEntity.ok(response); // Trả về kết quả thành công
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email hoặc mật khẩu không đúng"); // Trả về lỗi 401 Unauthorized nếu không thành công
-        }
-    }
 
 
 }

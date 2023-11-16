@@ -136,40 +136,6 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     }
 
     @Override
-    public TaiKhoanResponse findByEmail(String email, String matKhau) {
-        TaiKhoan taiKhoan = taiKhoanRepository.findTaiKhoanByEmail(email);
-        TaiKhoanResponse taiKhoanResponse = null;
-        if (taiKhoan!=null) {
-            if (taiKhoan.getMatKhau().equals(matKhau)) {
-                taiKhoanResponse = taiKhoanMapper.convertEntityToResponse(taiKhoan);
-
-            } else {
-                throw new BadRequestException("Mật khẩu không khớp");
-            }
-        } else {
-            throw new BadRequestException("Tài khoản không tồn tại");
-        }
-
-        return taiKhoanResponse;
-    }
-
-
-    @Override
-    public TaiKhoanResponse khachHangCreat(CreatedTaiKhoanRequest request) {
-        TaiKhoan soDienThoai = taiKhoanRepository.findBySoDienThoai(request.getSoDienThoai());
-        if (soDienThoai != null) {
-            throw new BadRequestException("Số điện thoại đã tồn tại trong hệ thống!");
-        }
-        TaiKhoan createdTaiKhoan = taiKhoanMapper.convertCreateRequestToEntity(request);
-        createdTaiKhoan.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
-        createdTaiKhoan.setVaiTro(vaiTroRepository.findId(Long.valueOf(3)));
-        TaiKhoan savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
-        TaiKhoanResponse rs = taiKhoanMapper.convertEntityToResponse(savedTaiKhoan);
-        emailSender.sendEmail(savedTaiKhoan);
-        return rs;
-    }
-
-    @Override
     public TaiKhoanResponse addKhachHang(CreatedTaiKhoanRequest request) {
         TaiKhoan soDienThoai = taiKhoanRepository.findBySoDienThoai(request.getSoDienThoai());
         if (soDienThoai != null) {
@@ -211,6 +177,24 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         }
 
 
+        TaiKhoan detail = optional.get();
+        taiKhoanMapper.convertUpdateRequestToEntity(request, detail);
+        return taiKhoanMapper.convertEntityToResponse(taiKhoanRepository.save(detail));
+    }
+
+    @Override
+    public TaiKhoanResponse updateKhachHang(Long id, UpdatedTaiKhoanRequest request) {
+        Optional<TaiKhoan> optional = taiKhoanRepository.findById(id);
+        if (optional.isEmpty()) {
+            throw new NotFoundException("Tài khoản không tồn tại");
+        }
+        TaiKhoan soDienThoai = taiKhoanRepository.findBySoDienThoai(request.getSoDienThoai());
+
+        if (soDienThoai != null && !request.getSoDienThoai().equals(soDienThoai.getSoDienThoai())) {
+            if (taiKhoanRepository.existsBySoDienThoai(request.getSoDienThoai())) {
+                throw new BadRequestException("Số điện thoại đã tồn tại trong hệ thống. Vui lòng sử dụng số điện thoại khác!");
+            }
+        }
         TaiKhoan detail = optional.get();
         taiKhoanMapper.convertUpdateRequestToEntity(request, detail);
         return taiKhoanMapper.convertEntityToResponse(taiKhoanRepository.save(detail));

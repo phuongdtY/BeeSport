@@ -8,6 +8,7 @@ import com.poly.application.utils.EmailSend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -29,11 +30,12 @@ public class QuenMatKhauServiceImpl implements QuenMatKhauService {
         String subject = "[BEE SPORT] Chào mừng bạn đến với bee sport, đây là mật khẩu của bạn";
         String content = "Mật khẩu: " + emailSend.randomPasswords();
         content = content.replace("Mật khẩu: ", "");
-        taiKhoan.setMatKhau(content);
-        taiKhoanRepository.save(taiKhoan);
         message.setTo(taiKhoan.getEmail());
         message.setSubject(subject);
         message.setText("Mật khẩu: " + content);
+        taiKhoan.setMatKhau(new BCryptPasswordEncoder().encode(content));
+        taiKhoanRepository.save(taiKhoan);
+
         emailSender.send(message);
 
     }
