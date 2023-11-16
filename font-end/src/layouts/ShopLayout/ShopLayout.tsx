@@ -2,6 +2,7 @@ import React from "react";
 import { Layout } from "antd";
 import Header from "./Header/WebHeader.tsx";
 import { Outlet } from "react-router-dom";
+import { WebFooter } from "./Footer/WebFooter.tsx";
 
 const { Content, Footer } = Layout;
 
@@ -14,9 +15,7 @@ const ShopLayout: React.FC = () => {
           <Outlet />
         </div>
       </Content>
-      <Footer style={{ textAlign: "center" }}>
-        Ant Design ©2023 Created by Ant UED
-      </Footer>
+      <WebFooter />
     </Layout>
   );
 };
