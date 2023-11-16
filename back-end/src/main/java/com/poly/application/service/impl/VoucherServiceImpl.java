@@ -100,9 +100,11 @@ public class VoucherServiceImpl implements VoucherService {
         CommonEnum.TrangThaiVoucher status = voucherUtils.setTrangThaiVoucher(
                 request.getNgayBatDau(), request.getNgayKetThuc()
         );
+        request.setId(detail.getId());
         request.setTrangThai(status);
         mapper.convertUpdateRequestToEntity(request, detail);
-        Voucher savedVoucher = this.repository.saveAndFlush(detail);
+        Voucher savedVoucher = this.repository.save(detail);
+        System.out.println(detail);
         return mapper.convertEntityToResponse(savedVoucher);
     }
 
@@ -158,6 +160,13 @@ public class VoucherServiceImpl implements VoucherService {
         }
 
         repository.saveAll(vouchers);
+    }
+
+    @Override
+    public void cancelVoucher(Long id) {
+        Voucher voucher = repository.findById(id).orElse(null);
+        voucher.setTrangThai(CommonEnum.TrangThaiVoucher.CANCELLED);
+        repository.save(voucher);
     }
 
 }

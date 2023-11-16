@@ -1,11 +1,11 @@
 package com.poly.application.service;
 
+import com.poly.application.entity.Voucher;
 import com.poly.application.model.request.create_request.CreatedVoucherRequest;
 import com.poly.application.model.request.update_request.UpdatedVoucherRequest;
 import com.poly.application.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface VoucherService {
@@ -26,4 +26,5 @@ public interface VoucherService {
 
     void updateVoucherStatus();
 
+    void cancelVoucher(Long id);
 }

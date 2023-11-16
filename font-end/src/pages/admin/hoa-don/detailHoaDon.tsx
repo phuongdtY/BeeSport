@@ -1,4 +1,5 @@
 import {
+  CheckOutlined,
   DeleteOutlined,
   ExclamationCircleFilled,
   LoadingOutlined,
@@ -114,12 +115,8 @@ const detailHoaDon: React.FC = () => {
   const [orderStatus, setOrderStatus] = useState(data?.trangThaiHoaDon);
   const [diaChiThongTin, setDiaChiThongTin] = useState(data?.diaChiNguoiNhan);
   const [phiShipThongTin, setphiShipThongTin] = useState(data?.phiShip);
-  const [tongTien, setTongTien] = useState(data?.tongTien);
-  const [tienShip, setTienShip] = useState<number>(0);
-  const [idHoaDonTamThoi, setIdHoaDonTamThoi] = useState(data?.id);
-  const [updatedQuantities, setUpdatedQuantities] = useState<
-    DataTypeHoaDonChiTiet[]
-  >([]);
+  const [tongTien, setTongTien] = useState(0);
+  const [tienShip, setTienShip] = useState(0);
 
   const columns: ColumnsType<DataTypeHoaDonChiTiet> = [
     {
@@ -129,6 +126,27 @@ const detailHoaDon: React.FC = () => {
       rowScope: "row",
       width: "5%",
       render: (_, __, index) => index + 1,
+    },
+    {
+      title: "Hình ảnh",
+      dataIndex: "images",
+      render: (item, record) => {
+        const images = record.images;
+
+        if (!images || images.length === 0) {
+          return "Chưa có ảnh";
+        }
+
+        const firstImage = images[0];
+
+        return (
+          <img
+            src={`http://localhost:8080/admin/api/file/view/${firstImage.duongDan}`}
+            alt="Hình ảnh"
+            style={{ maxWidth: "100px" }}
+          />
+        );
+      },
     },
     {
       title: "Sản phẩm",
@@ -155,22 +173,14 @@ const detailHoaDon: React.FC = () => {
       align: "center",
       sorter: true,
       width: "20%",
-      render: (hoaDonChiTietItem: DataTypeHoaDonChiTiet) => (
-        <Space.Compact>
-          <Button
-            icon={<MinusOutlined />}
-            onClick={() => handleMinusSoLuong(hoaDonChiTietItem)}
-          />
-          <Input
-            style={{ textAlign: "center", width: 40 }}
-            value={hoaDonChiTietItem.soLuong}
-            readOnly
-          />
-          <Button
-            icon={<PlusOutlined />}
-            onClick={() => handlePlusSoLuong(hoaDonChiTietItem)}
-          />
-        </Space.Compact>
+      render: (text, record, index) => (
+        <InputNumber
+          value={record.soLuong}
+          inputMode="numeric"
+          onChange={(newSoLuong) => {
+            handleSoLuongChange(index, newSoLuong);
+          }}
+        />
       ),
     },
     {
@@ -183,8 +193,8 @@ const detailHoaDon: React.FC = () => {
     },
     {
       title: "Thành tiền",
-      dataIndex: "thanhTien",
-      key: "thanhTien",
+      dataIndex: "thanhTienFormat",
+      key: "thanhTienFormat",
       align: "center",
       sorter: true,
       width: "15%",
@@ -329,21 +339,47 @@ const detailHoaDon: React.FC = () => {
       setOrderStatus(res.data?.hoaDonResponse.trangThaiHoaDon);
       setDiaChiThongTin(res.data?.hoaDonResponse.diaChiNguoiNhan);
       setphiShipThongTin(res.data?.hoaDonResponse.phiShip);
-      setListHoaDonChiTiet(res.data?.hoaDonChiTietResponsePage.content);
+      handleChagneImage(res.data?.hoaDonChiTietResponsePage.content);
       setLoadingTable(false);
-      setTongTien(res.data?.hoaDonResponse.tongTien);
-      setIdHoaDonTamThoi(res.data.hoaDonResponse.id);
+      setTongTien(
+        tongTien == 0
+          ? res.data?.hoaDonResponse.tongTien
+          : tinhTongTien(Number(tienShip))
+      );
       setTienShip(res.data?.hoaDonResponse.phiShip);
     } catch (error) {
       console.log(error);
-
       setLoadingTable(false);
     }
   };
 
+  const handleChagneImage = async (list: DataTypeHoaDonChiTiet[]) => {
+    const sanPhamData = list;
+
+    const imagePromises = sanPhamData.map((item) =>
+      fetchImages(item.chiTietSanPham.sanPham.id, item.chiTietSanPham.mauSac.id)
+    );
+
+    const images = await Promise.all(imagePromises);
+
+    const updatedSanPhamData = sanPhamData.map((item, index) => ({
+      ...item,
+      maMauSac: item.chiTietSanPham.mauSac.ma,
+      soKichCo: item.chiTietSanPham.kichCo.kichCo,
+      donGiaFromat: formatGiaTien(item.donGia),
+      thanhTienFormat: formatGiaTien(
+        Number(item.soLuong) * Number(item.donGia)
+      ),
+      tongTienSoLuong: Number(item.soLuong) * Number(item.donGia),
+      hoaDonChiTietItem: item,
+      images: images[index],
+    }));
+    setListHoaDonChiTiet(updatedSanPhamData);
+  };
+
   const fetchDataTimeline = async () => {
     try {
-      const timelineRes = await request.get("/timeline/" + 4);
+      const timelineRes = await request.get("/timeline/" + id);
       const timelineItem1: Item[] = timelineRes.data.map((item: any) => ({
         title: item.trangThai.moTa,
         subTitle: formatNgayTao(item.ngayTao),
@@ -363,7 +399,7 @@ const detailHoaDon: React.FC = () => {
       case "CANCELLED":
         return <SolutionOutlined />;
       case "APPROVED":
-        return <SolutionOutlined />;
+        return <CheckOutlined />;
       case "CONFIRMED":
         return <SolutionOutlined />;
       case "SHIPPING":
@@ -427,9 +463,7 @@ const detailHoaDon: React.FC = () => {
       cancelText: "Hủy",
       onOk: async () => {
         try {
-          setLoadingTable(true);
           const res = await request.delete(`hoa-don/${id}`);
-          setLoadingTable(false);
           fetchHoaDonData();
           if (res.data) {
             message.success("Xóa sản phẩm thành công");
@@ -447,6 +481,20 @@ const detailHoaDon: React.FC = () => {
       },
     });
   };
+
+  // lấy ảnh
+  const fetchImages = async (idSanPham: number, idMauSac: number) => {
+    try {
+      const response = await request.get("hinh-anh-san-pham", {
+        params: { idSanPham: idSanPham, idMauSac: idMauSac },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching images:", error);
+      return [];
+    }
+  };
+
   const handleClickDelete = async (id: number) => {
     deleteRequest(id);
   };
@@ -459,9 +507,10 @@ const detailHoaDon: React.FC = () => {
   // load dữ liệu useEffect
   useEffect(() => {
     fetchHoaDonData();
-    fetchDataTimeline();
     fetchProvinces();
-  }, [params]);
+    fetchDataTimeline();
+    // console.log(tongTien + " | onupdate useEff");
+  }, [params, tongTien]);
   // cập nhật hóa đơn
   const onFinish = (values: UpdatedRequest) => {
     confirm({
@@ -485,6 +534,7 @@ const detailHoaDon: React.FC = () => {
             tongTien: tongTien,
           });
           if (res.data) {
+            fetchDataTimeline();
             setData(res.data);
             message.success("Cập nhật hóa đơn thành công");
             navigate("/admin/hoa-don");
@@ -541,7 +591,6 @@ const detailHoaDon: React.FC = () => {
       );
 
       const feeResponse = feeRes.data.data.total;
-
       const res = await request.put("hoa-don/" + id, {
         ma: data?.ma,
         diaChiNguoiNhan:
@@ -570,10 +619,10 @@ const detailHoaDon: React.FC = () => {
           ", " +
           provinceLabel
       );
-      setphiShipThongTin(feeResponse);
-      setTongTien(tinhTongTien(feeResponse));
+      fetchHoaDonData();
+      setTienShip(feeResponse);
+      setTongTien(tinhTongTien(Number(feeResponse)));
       if (res.data) {
-        fetchHoaDonData();
         message.success("Cập nhật địa chỉ hóa đơn thành công");
       } else {
         console.error("Phản hồi API không như mong đợi:", res);
@@ -590,7 +639,6 @@ const detailHoaDon: React.FC = () => {
 
   const handleUpdateSoLuongSanPham = async () => {
     try {
-      setLoadingTable(true);
       await request.put(
         "hoa-don/hoa-don-chi-tiet/" + id,
         listHoaDonChiTiet?.map((item) => ({
@@ -599,27 +647,13 @@ const detailHoaDon: React.FC = () => {
         }))
       );
       fetchHoaDonData();
-      setLoadingTable(false);
       message.success("Cập nhật giỏ hàng thành công");
     } catch (error) {
       message.error("Cập nhật giỏ hàng thất bại");
       console.log(error);
-      setLoadingTable(false);
     }
   };
 
-  // hiển thị danh sách sản phẩm trong cột
-  const dataSourceDanhSachSanPham = () => {
-    return listHoaDonChiTiet?.map((item) => ({
-      ...item,
-      maMauSac: item.chiTietSanPham.mauSac.ma,
-      soKichCo: item.chiTietSanPham.kichCo.kichCo,
-      donGiaFromat: formatGiaTien(item.donGia),
-      thanhTien: formatGiaTien(Number(item.soLuong) * Number(item.donGia)),
-      tongTienSoLuong: Number(item.soLuong) * Number(item.donGia),
-      hoaDonChiTietItem: item,
-    }));
-  };
   // tính tổng tiền của hóa đơn đó cần trả
   const tinhTongTien = (tienShip: number) => {
     return (
@@ -663,9 +697,11 @@ const detailHoaDon: React.FC = () => {
             nguoiNhan: values.nguoiNhan,
             sdtNguoiNhan: values.sdtNguoiNhan,
             phiShip: tienShip,
-            tongTien: tongTien,
+            tongTien: tinhTongTien(Number(tienShip)),
           });
           setLoadingForm(false);
+          setTongTien(tinhTongTien(Number(tienShip)));
+          fetchDataTimeline();
           console.log(values);
           if (res.data) {
             message.success("Cập nhật hóa đơn thành công");
@@ -700,6 +736,7 @@ const detailHoaDon: React.FC = () => {
           tongTien: data?.tongTien,
         });
         if (res.data) {
+          fetchDataTimeline();
           message.success("Cập nhật hóa đơn thành công");
         } else {
           console.error("Phản hồi API không như mong đợi:", res);
@@ -730,6 +767,23 @@ const detailHoaDon: React.FC = () => {
       setListHoaDonChiTiet(newData);
     }
   };
+  const handleSoLuongChange = (index: number, newSoLuong: number | null) => {
+    const newSoLuongValue = typeof newSoLuong === "number" ? newSoLuong : 0;
+
+    // Tìm sản phẩm trong danh sách dựa trên index
+    const hdct = listHoaDonChiTiet[index];
+
+    if (hdct) {
+      // Tạo một bản sao của dataGioHang và cập nhật số lượng và tổng tiền cho sản phẩm cụ thể
+      const newData = [...listHoaDonChiTiet];
+      const index = newData.indexOf(hdct);
+      newData[index] = {
+        ...hdct,
+        soLuong: newSoLuongValue,
+      };
+      setListHoaDonChiTiet(newData);
+    }
+  };
   const handleTienShip = (event: any) => {
     setTienShip(event);
     console.log(tienShip);
@@ -749,7 +803,7 @@ const detailHoaDon: React.FC = () => {
             <Card style={{ marginBottom: "5ps" }}>
               <Row>
                 <Col span={12}>
-                  <h3>Timeline</h3>
+                  <h3>Timeline hóa đơn</h3>
                 </Col>
               </Row>
               <Row>
@@ -775,18 +829,42 @@ const detailHoaDon: React.FC = () => {
                   <Form.Item name="trangThaiHoaDon" label="Trạng thái hóa đơn">
                     <Tag color={orderStatus?.mauSac}>{orderStatus?.moTa}</Tag>
                   </Form.Item>
-                  <Form.Item name="nguoiNhan" label="Người nhận">
+                  <Form.Item
+                    name="nguoiNhan"
+                    label="Người nhận"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng không để trống",
+                      },
+                    ]}
+                  >
                     <Input />
                   </Form.Item>
                   <Form.Item
                     name="sdtNguoiNhan"
                     label="Số điện thoại người nhận"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng không để trống",
+                      },
+                    ]}
                   >
                     <Input />
                   </Form.Item>
                 </Col>
                 <Col span={14}>
-                  <Form.Item name="diaChiNguoiNhan" label="Địa chỉ người nhận">
+                  <Form.Item
+                    name="diaChiNguoiNhan"
+                    label="Địa chỉ người nhận"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng không để trống",
+                      },
+                    ]}
+                  >
                     <Space direction="horizontal">
                       <div style={{ width: "190px" }}>
                         <span>{diaChiThongTin}</span>
@@ -794,10 +872,28 @@ const detailHoaDon: React.FC = () => {
                       <Button onClick={showDiaChiModal}>Tùy chỉnh</Button>
                     </Space>
                   </Form.Item>
-                  <Form.Item name="emailNguoiNhan" label="Email người nhận">
+                  <Form.Item
+                    name="emailNguoiNhan"
+                    label="Email người nhận"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng không để trống",
+                      },
+                    ]}
+                  >
                     <Input />
                   </Form.Item>
-                  <Form.Item name="ghiChu" label="Ghi chú">
+                  <Form.Item
+                    name="ghiChu"
+                    label="Ghi chú"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng không để trống",
+                      },
+                    ]}
+                  >
                     <TextArea />
                   </Form.Item>
                   <Form.Item
@@ -805,17 +901,13 @@ const detailHoaDon: React.FC = () => {
                     label="Phí ship"
                     // initialValue={tienShip}
                   >
-                    <div style={{ width: "190px" }}>
-                      <span>{formatGiaTien(Number(phiShipThongTin))}</span>
-                    </div>
                     <InputNumber
                       value={tienShip}
-                      onChange={(e) => handleTienShip(e.target.value)}
                       style={{ width: "100%" }}
-                      min={10000}
                       step={10000}
                       formatter={(value) => `${formatGiaTienVND(value)}`}
                       parser={(value: any) => value.replace(/\D/g, "")}
+                      onChange={handleTienShip}
                     />
                   </Form.Item>
                   <Form.Item name="tongTien" label="Tổng tiền">
@@ -872,7 +964,7 @@ const detailHoaDon: React.FC = () => {
                     `${range[0]}-${range[1]} of ${total} items`,
                 }}
                 columns={columns}
-                dataSource={dataSourceDanhSachSanPham()}
+                dataSource={listHoaDonChiTiet}
                 onChange={onChangeTable}
                 loading={loadingTable}
                 showSorterTooltip={false}
@@ -891,18 +983,18 @@ const detailHoaDon: React.FC = () => {
         wards={wards}
         onProvinceChange={handleProvinceChange}
         onDistrictChange={handleDistrictChange}
-        fee={Number(phiShipThongTin)}
+        fee={Number(tienShip)}
       />
       <HoaDonChiTietComponent
-        open={sanPhamOpen}
-        onCancel={handleCancelSanPham}
-        idHoaDon={idHoaDonTamThoi}
-        setLoading={fetchHoaDonData}
+        isModalVisible={sanPhamOpen}
+        setIsModalVisible={setSanPhamOpen}
+        idHoaDon={Number(id)}
+        loadData={fetchHoaDonData}
       />
       <ExportHoaDonPDF
         open={hoaDonOpen}
         onCancel={handleCancelExportHoaDon}
-        id={data?.id}
+        id={Number(id)}
       />
     </>
   );

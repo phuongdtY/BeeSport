@@ -1,15 +1,18 @@
 package com.poly.application.entity;
 
 import com.poly.application.common.CommonEnum;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +27,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @SuppressWarnings("serial")
 @AllArgsConstructor
@@ -33,7 +37,6 @@ import java.time.LocalDateTime;
 @ToString
 @Table(name = "voucher")
 @Entity
-
 public class Voucher implements Serializable {
 
     @Id
@@ -51,12 +54,9 @@ public class Voucher implements Serializable {
     private Integer soLuong;
 
     @Column(name = "ngay_bat_dau",columnDefinition = "TIMESTAMP")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ngayBatDau;
 
-
     @Column(name = "ngay_ket_thuc",columnDefinition = "TIMESTAMP")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ngayKetThuc;
 
     @ManyToOne
@@ -74,7 +74,7 @@ public class Voucher implements Serializable {
 
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")
+    @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP", updatable = false)
     private LocalDateTime ngayTao;
 
     @UpdateTimestamp
@@ -85,6 +85,9 @@ public class Voucher implements Serializable {
     @Column(name = "trang_thai")
     @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;
+
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<VoucherChiTiet> voucherChiTietList;
 
     private boolean cancelled;
 

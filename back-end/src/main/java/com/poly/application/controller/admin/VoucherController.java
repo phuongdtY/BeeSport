@@ -55,6 +55,11 @@ public class VoucherController {
         return ResponseEntity.ok(service.findById(id));
     }
 
+    @PutMapping("/cancel-voucher/{id}")
+    public ResponseEntity<?> cancelVoucher(@PathVariable(name = "id") Long id) {
+        service.cancelVoucher(id);
+        return ResponseEntity.noContent().build();
+    }
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable(name = "id") Long id,@RequestBody UpdatedVoucherRequest request) {
         return ResponseEntity.ok(service.update(id, request));

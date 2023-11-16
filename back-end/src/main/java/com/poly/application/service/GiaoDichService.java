@@ -1,5 +1,6 @@
 package com.poly.application.service;
 
+import com.poly.application.entity.GiaoDich;
 import com.poly.application.model.request.create_request.CreateGiaoDichRequest;
 import com.poly.application.model.request.create_request.CreatedGioHangChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedGiaoDichRequest;
@@ -18,6 +19,8 @@ public interface GiaoDichService {
     void delete(Long id);
 
     GiaoDichResponse update(Long id, UpdatedGiaoDichRequest request);
+
+    List<GiaoDichResponse> getListGiaoDich();
 
 
 }

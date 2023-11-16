@@ -20,16 +20,6 @@ interface DiaChiProps {
   onProvinceChange: (value: string) => void;
   onDistrictChange: (value: string) => void;
 }
-// const onChange = (value: string) => {
-//   console.log(`selected ${value}`);
-// };
-// const onSearch = (value: string) => {
-//   console.log("search:", value);
-// };
-// const filterOption = (
-//   input: string,
-//   option?: { label: string; value: string }
-// ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 const DiaChiComponent: React.FC<DiaChiProps> = ({
   open,
   fee,
@@ -67,7 +57,12 @@ const DiaChiComponent: React.FC<DiaChiProps> = ({
         <Row>
           <Col span={7} style={{ marginRight: "15px" }}>
             <span style={{ fontWeight: "bold" }}>Tỉnh/ Thành Phố:</span>
-            <Form.Item name="thanhPho">
+            <Form.Item name="thanhPho" rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa điền Tỉnh / Thành ",
+                },
+              ]}>
               <Select
                 options={provinces}
                 placeholder="Tỉnh/ Thành Phố"
@@ -78,7 +73,12 @@ const DiaChiComponent: React.FC<DiaChiProps> = ({
           </Col>
           <Col span={7} style={{ marginRight: "15px" }}>
             <span style={{ fontWeight: "bold" }}>Quận / Huyện:</span>
-            <Form.Item name="quanHuyen">
+            <Form.Item name="quanHuyen" rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa điền Quận / Huyện",
+                },
+              ]}>
               <Select
                 options={districts}
                 placeholder="Quận / Huyện"
@@ -89,7 +89,12 @@ const DiaChiComponent: React.FC<DiaChiProps> = ({
           </Col>
           <Col span={7} style={{ width: "100px" }}>
             <span style={{ fontWeight: "bold" }}>Phường / Xã:</span>
-            <Form.Item name="phuongXa">
+            <Form.Item name="phuongXa" rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa điền Phường / Xã",
+                },
+              ]}>
               <Select
                 options={wards}
                 placeholder="Phường / Xã"
