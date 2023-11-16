@@ -7,6 +7,7 @@ import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.SanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
+import com.poly.application.model.response.SanPhamBanChayResponse;
 import com.poly.application.model.response.SanPhamDetailResponse;
 import com.poly.application.model.response.SanPhamMoiNhatResponse;
 import com.poly.application.model.response.SanPhamResponse;
@@ -178,6 +179,20 @@ public class SanPhamServiceImpl implements SanPhamService {
         List<SanPham> listSanPham = repository.getAllSanPhamNullCTSP();
         return listSanPham.stream()
                 .map(sanPham -> mapper.convertEntityToResponse(sanPham))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SanPhamBanChayResponse> get5SanPhamBanChayNhat() {
+        List<SanPhamBanChayResponse> banChayNhat = repository.findAllSanPhamBanChay();
+
+        List<SanPhamBanChayResponse> chiTietSanPhamResponse = banChayNhat
+                .stream()
+                .collect(Collectors.toList());
+
+        return chiTietSanPhamResponse
+                .stream()
+                .limit(5)
                 .collect(Collectors.toList());
     }
 

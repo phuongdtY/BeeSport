@@ -4,6 +4,7 @@ import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.PhuongThucThanhToan;
 import com.poly.application.entity.TaiKhoan;
+import com.poly.application.entity.Voucher;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
@@ -30,6 +31,8 @@ public class CreateGiaoDichRequest {
     private CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich;
 
     private HoaDon hoaDon;
+
+    private Voucher voucher;
 
     private TaiKhoan taiKhoan;
 

@@ -27,6 +27,7 @@ import HinhAnhModal from "./HinhAnhModal";
 import { DataTypeCTSP } from "~/interfaces/ctsp.type";
 // import ModalAddMauSac from "./ModalAddMauSac";
 import TableAllSanpham from "./TableAllSanPham";
+import ModalAddMauSac from "./ModalAddMauSac";
 
 function TableUpdateSanpham({ idSanPham }) {
   const [openModal, setOpenModal] = useState(false);
@@ -349,7 +350,10 @@ function TableUpdateSanpham({ idSanPham }) {
   const onAddMauSac = (idMauSac, listKichCo, soLuong, giaTien) => {
     const updatedList: DataTypeCTSP[] = [...dataFake];
     const newSelectedKeys = [];
-
+    const mauSac = {
+      id: idMauSac,
+      ten: mauSacMappingTen[idMauSac],
+    };
     listKichCo.forEach((kichCo) => {
       const uniqueId = `${idMauSac}-${kichCo}`;
       updatedList.push({
@@ -496,7 +500,7 @@ function TableUpdateSanpham({ idSanPham }) {
       />
       <HinhAnhModal
         sanPham={idSanPham}
-        mauSac={idMauSac}
+        mauSac={mauSac}
         openModal={openModal}
         closeModal={() => setOpenModal(false)}
       />

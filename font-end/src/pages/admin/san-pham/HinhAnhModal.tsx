@@ -57,7 +57,7 @@ function HinhAnhModal({ openModal, closeModal, mauSac, sanPham }) {
           id: sanPham,
         },
         mauSac: {
-          id: mauSac,
+          id: mauSac.id,
         },
         duongDan: item.response,
       }));
@@ -118,10 +118,7 @@ function HinhAnhModal({ openModal, closeModal, mauSac, sanPham }) {
   return (
     <Spin spinning={loading}>
       <Modal
-        title={`HÌNH ẢNH SẢN PHẨM MÀU ${
-          // mauSac !== undefined ? mauSac.ten.toUpperCase() : null
-          null
-        }`}
+        title={`HÌNH ẢNH SẢN PHẨM MÀU `}
         open={openModal}
         onCancel={closeModal}
         okText={
