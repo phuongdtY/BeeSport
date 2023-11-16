@@ -164,7 +164,7 @@ public class SanPhamServiceImpl implements SanPhamService {
 
         return chiTietSanPhamResponse
                 .stream()
-                .limit(5)
+                .limit(10)
                 .collect(Collectors.toList());
     }
 

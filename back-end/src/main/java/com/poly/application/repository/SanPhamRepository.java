@@ -43,22 +43,6 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "ORDER BY MAX(cps.ngayTao) DESC")
     List<SanPhamMoiNhatResponse> findAllSanPhamMoiNhat();
 
-//    @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(ctsp.giaTien), MAX(ctsp2.giaTien), ha.duongDan) " +
-//            "FROM SanPham sp " +
-//            "JOIN ChiTietSanPham ctsp ON sp.id = ctsp.sanPham.id " +
-//            "JOIN ChiTietSanPham ctsp2 ON sp.id = ctsp2.sanPham.id " +
-//            "JOIN HoaDonChiTiet hdct ON ctsp.id = hdct.chiTietSanPham.id " +
-//            "JOIN HoaDon hd ON hdct.hoaDon.id = hd.id " +
-//            "JOIN HinhAnhSanPham ha ON sp.id = ha.sanPham.id " +
-//            "WHERE hd.trangThaiHoaDon = 'APPROVED' " +
-//            "AND ctsp.trangThai = 'ACTIVE' " +
-//            "AND ha.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
-//            "AND ctsp.giaTien = (SELECT MIN(ctsp3.giaTien) FROM ChiTietSanPham ctsp3 WHERE ctsp3.sanPham.id = sp.id) " +
-//            "AND ctsp2.giaTien = (SELECT MAX(ctsp4.giaTien) FROM ChiTietSanPham ctsp4 WHERE ctsp4.sanPham.id = sp.id) " +
-//            "GROUP BY sp.id, sp.ten, ha.duongDan " +
-//            "ORDER BY SUM(hdct.soLuong) DESC")
-//    List<SanPhamMoiNhatResponse> findAllSanPhamBanChay();
-
     @Query("SELECT NEW com.poly.application.model.response.SanPhamBanChayResponse(sp.id, sp.ten, MIN(ctsp.giaTien), MAX(ctsp2.giaTien), ha.duongDan, SUM(hdct.soLuong)) " +
             "FROM SanPham sp " +
             "JOIN ChiTietSanPham ctsp ON sp.id = ctsp.sanPham.id " +
@@ -72,11 +56,8 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "AND ctsp.giaTien = (SELECT MIN(ctsp3.giaTien) FROM ChiTietSanPham ctsp3 WHERE ctsp3.sanPham.id = sp.id) " +
             "AND ctsp2.giaTien = (SELECT MAX(ctsp4.giaTien) FROM ChiTietSanPham ctsp4 WHERE ctsp4.sanPham.id = sp.id) " +
             "GROUP BY sp.id, sp.ten, ha.duongDan " +
-            "HAVING SUM(hdct.soLuong) > 0 " + // Lọc ra các sản phẩm có tổng soLuong > 0
             "ORDER BY SUM(hdct.soLuong) DESC")
     List<SanPhamBanChayResponse> findAllSanPhamBanChay();
-
-
 
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamDetailResponse(sp.id, sp.ma, sp.ten, sp.moTa, MIN(cps.giaTien), MAX(cps.giaTien), sp.trangThai) " +
