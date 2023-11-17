@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Badge, Menu, theme } from "antd";
+import { Badge, Menu, MenuProps, theme } from "antd";
 import { Link } from "react-router-dom";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
-import logo from "~/image/logo.png";
+import logo from "~/image/logo.jpg";
 import request from "~/utils/request";
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -45,11 +45,10 @@ const Header: React.FC = () => {
   } = theme.useToken();
 
   const items: MenuItem[] = [
-    getItem(<Link to="/">HOME</Link>, "1"),
-    getItem(<Link to="/admin">SHOP</Link>, "2"),
-    getItem(<Link to="/">CONTACT</Link>, "3"),
-    getItem(<Link to="/">GROUP</Link>, "4"),
-    getItem(<Link to="/">TIN TỨC</Link>, "5"),
+    getItem(<Link to="/">Trang chủ</Link>, "1"),
+    getItem(<Link to="/san-pham">Sản phẩm</Link>, "2"),
+    getItem(<Link to="/admin">Về chúng tôi</Link>, "3"),
+    getItem(<Link to="/admin"></Link>, "4"),
   ];
 
   return (
@@ -65,12 +64,18 @@ const Header: React.FC = () => {
       }}
     >
       <div className="demo-logo">
-        <img src={logo} alt="" width={"100px"} height={"30px"} />
+        <img
+          src={logo}
+          alt=""
+          style={{ marginLeft: 10, paddingTop: 5 }}
+          width={"150px"}
+          height={"60px"}
+        />
       </div>
       <Menu
         theme="light"
         mode="horizontal"
-        defaultSelectedKeys={["2"]}
+        defaultSelectedKeys={["1"]}
         items={items}
       />
       <Link
