@@ -36,12 +36,13 @@ function App() {
   return (
     <Routes>
       <Route path="/thanh-toan" element={<ThanhToan />} />
+      <Route path="/sign-in" element={<Signin />} />
+      <Route path="/sign-up" element={<Signup />} />
+      <Route path="/forgot-password" element={<Forgotpassword />} />
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/gio-hang" element={<GioHang />} />
-        <Route path="/sign-in" element={<Signin />} />
-        <Route path="/sign-up" element={<Signup />} />
-        <Route path="/forgot-password" element={<Forgotpassword />} />
+        
       </Route>
       <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />

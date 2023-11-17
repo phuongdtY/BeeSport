@@ -62,6 +62,11 @@ public class TaiKhoanController {
         return ResponseEntity.ok(taiKhoanService.update(id, request));
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getAll11() {
+        return ResponseEntity.ok(taiKhoanService.getAllTaiKhoan());
+    }
+
 
 
 }

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -153,6 +154,30 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         emailSender.sendEmail(savedTaiKhoan);
         return taiKhoanMapper.convertEntityToResponse(savedTaiKhoan);
     }
+
+    @Override
+    public List<TaiKhoanResponse> getAllTaiKhoan() {
+        List<TaiKhoan> listTaiKhoan = taiKhoanRepository.findAll();
+            List<TaiKhoanResponse> listTaiKhoanResponse = new ArrayList<>();
+            for (TaiKhoan taiKhoan: listTaiKhoan ){
+                TaiKhoanResponse taiKhoanResponse = new TaiKhoanResponse();
+                taiKhoanResponse.setId(taiKhoan.getId());
+                taiKhoanResponse.setHoVaTen(taiKhoan.getHoVaTen());
+                taiKhoanResponse.setEmail(taiKhoan.getEmail());
+                taiKhoanResponse.setMatKhau(taiKhoan.getMatKhau());
+                listTaiKhoanResponse.add(taiKhoanResponse);
+            }
+        return listTaiKhoanResponse;
+    }
+
+//    public TaiKhoanResponse converToResponse(TaiKhoan taiKhoan){
+//        return TaiKhoanResponse.builder()
+//                .id(taiKhoan.getId())
+//                .hoVaTen(taiKhoan.getHoVaTen())
+//                .email(taiKhoan.getEmail())
+//                .matKhau(taiKhoan.getMatKhau())
+//                .build();
+//    }
 
     @Override
     public TaiKhoanResponse update(Long id, UpdatedTaiKhoanRequest request) {

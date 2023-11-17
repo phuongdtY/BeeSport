@@ -17,6 +17,7 @@ import * as React from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { DangNhapRequest } from "~/interfaces/taiKhoan.type";
+import { useAuth } from "~/pages/admin/component/AuthContext";
 import {requestDangNhap} from "~/utils/request";
 
 const { confirm } = Modal;
@@ -26,6 +27,7 @@ const DangNhap: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null); // Thêm state để lưu thông báo lỗi
 
+  // const {login,isAuthenticated} = useAuth();
   
   const onFinish = async (values: DangNhapRequest) => {
     try {
@@ -70,6 +72,7 @@ const DangNhap: React.FC = () => {
           onFinish={onFinish}
           layout="horizontal"
         >
+
           <Form.Item
             name="email"
             rules={[
