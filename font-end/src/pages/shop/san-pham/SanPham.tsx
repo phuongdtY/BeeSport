@@ -28,13 +28,15 @@ const SanPham: React.FC = () => {
   const [sanPhams, setSanPhams] = useState([]);
   const [giaTienRange, setGiaTienRange] = useState([0, 10000000]);
 
-  const kichCoLength = Math.ceil(kichCos.length / 2);
+  const kichCoLength = Math.ceil(kichCos.length / 3);
   const leftKichCo = kichCos.slice(0, kichCoLength);
-  const rightKichCo = kichCos.slice(kichCoLength);
+  const middleKichCo = kichCos.slice(kichCoLength, 2 * kichCoLength);
+  const rightKichCo = kichCos.slice(2 * kichCoLength);
 
-  const mauSacLength = Math.ceil(mauSacs.length / 2);
+  const mauSacLength = Math.ceil(mauSacs.length / 3);
   const leftMauSac = mauSacs.slice(0, mauSacLength);
-  const rightMauSac = mauSacs.slice(mauSacLength);
+  const middleMauSac = mauSacs.slice(mauSacLength, 2 * mauSacLength);
+  const rightMauSac = mauSacs.slice(2 * mauSacLength);
 
   const items: CollapseProps["items"] = [
     {
@@ -103,14 +105,21 @@ const SanPham: React.FC = () => {
       children: (
         <p>
           <Row style={{ marginTop: 10 }}>
-            <Col span={5}>
+            <Col span={8}>
               {leftKichCo.map((item, index) => (
                 <div key={index} style={{ marginBottom: 10 }}>
                   <Checkbox>{item.kichCo}</Checkbox>
                 </div>
               ))}
             </Col>
-            <Col span={12}>
+            <Col span={8}>
+              {middleKichCo.map((item, index) => (
+                <div key={index} style={{ marginBottom: 10 }}>
+                  <Checkbox>{item.kichCo}</Checkbox>
+                </div>
+              ))}
+            </Col>
+            <Col span={8}>
               {rightKichCo.map((item, index) => (
                 <div key={index} style={{ marginBottom: 10 }}>
                   <Checkbox>{item.kichCo}</Checkbox>
@@ -127,7 +136,7 @@ const SanPham: React.FC = () => {
       children: (
         <p>
           <Row style={{ marginTop: 10 }}>
-            <Col span={7}>
+            <Col span={8}>
               {leftMauSac.map((item, index) => (
                 <div key={index} style={{ marginBottom: 10 }}>
                   <Checkbox>
@@ -137,14 +146,24 @@ const SanPham: React.FC = () => {
                 </div>
               ))}
             </Col>
-            <Col span={12}>
-              {rightMauSac.map((item, index) => (
-                <Space key={index} style={{ marginBottom: 10 }}>
+            <Col span={8}>
+              {middleMauSac.map((item, index) => (
+                <div key={index} style={{ marginBottom: 10 }}>
                   <Checkbox>
                     <ColorPicker value={item.ma} size="small" disabled />
                     {item.ten}
                   </Checkbox>
-                </Space>
+                </div>
+              ))}
+            </Col>
+            <Col span={8}>
+              {rightMauSac.map((item, index) => (
+                <div key={index} style={{ marginBottom: 10 }}>
+                  <Checkbox>
+                    <ColorPicker value={item.ma} size="small" disabled />
+                    {item.ten}
+                  </Checkbox>
+                </div>
               ))}
             </Col>
           </Row>
