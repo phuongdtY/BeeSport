@@ -23,21 +23,12 @@ public class SanPhamMapper {
 
     public SanPham convertCreateRequestToEntity(CreatedSanPhamRequest request) {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-
-        // Cấu hình ánh xạ tự động các thuộc tính id từ request vào SanPham
-        PropertyMap<CreatedSanPhamRequest, SanPham> idMapping = new PropertyMap<CreatedSanPhamRequest, SanPham>() {
-            protected void configure() {
-                map().getThuongHieu().setId(source.getThuongHieu().getId());
-            }
-        };
-        mapper.addMappings(idMapping);
-
         return mapper.map(request, SanPham.class);
     }
 
-    public void convertUpdateRequestToEntity(UpdatedSanPhamRequest request, SanPham sanPham) {
-        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        mapper.map(request, sanPham);
+    public SanPham convertUpdateRequestToEntity(UpdatedSanPhamRequest request,SanPham sanPham) {
+         mapper.map(request, sanPham);
+        return sanPham;
     }
 
 }

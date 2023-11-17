@@ -38,4 +38,6 @@ public class SanPhamMoiNhatResponse {
 
     private BigDecimal giaMax;
 
+    private String duongDan;
+
 }

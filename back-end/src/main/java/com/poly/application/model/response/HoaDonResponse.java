@@ -1,12 +1,19 @@
 package com.poly.application.model.response;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.GiaoDich;
+import com.poly.application.entity.HoaDonChiTiet;
 import com.poly.application.entity.TaiKhoan;
+import com.poly.application.entity.TimeLine;
+import com.poly.application.entity.Voucher;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,6 +23,7 @@ public class HoaDonResponse {
 
     private String ma;
 
+    @Enumerated(EnumType.STRING)
     private CommonEnum.LoaiHoaDon loaiHoaDon;
 
     private LocalDateTime ngayThanhToan;
@@ -40,8 +48,6 @@ public class HoaDonResponse {
 
     private LocalDateTime ngayNhan;
 
-    private LocalDateTime ngayMongMuon;
-
     private LocalDateTime ngayTao;
 
     private LocalDateTime ngaySua;
@@ -50,6 +56,17 @@ public class HoaDonResponse {
 
     private String nguoiSua;
 
+    @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiHoaDon trangThaiHoaDon;
+
+    private Voucher voucher;
+
+    private TaiKhoan taiKhoan;
+
+    private List<GiaoDich> giaoDichList;
+
+    private List<HoaDonChiTiet> hoaDonChiTietList;
+
+    private List<TimeLine> timeLineList;
 
 }

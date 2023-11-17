@@ -33,6 +33,14 @@ public class DiaHinhSanServiceImpl implements DiaHinhSanService {
     private DiaHinhSanMapper mapper;
 
     @Override
+    public List<DiaHinhSanResponse> listDiaHinhSan() {
+        List<DiaHinhSan> list = repository.getDiaHinhSanByNgayTaoDESC();
+        return list.stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Page<DiaHinhSanResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String trangThaiString) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {

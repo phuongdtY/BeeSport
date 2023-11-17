@@ -21,7 +21,6 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -65,6 +64,10 @@ public class SanPham {
     @ManyToOne
     @JoinColumn(name = "thuong_hieu_id", referencedColumnName = "id")
     private ThuongHieu thuongHieu;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY)
+    private List<HinhAnhSanPham> listHinhAnhSanPham;
 
     @JsonIgnore
     @OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY)

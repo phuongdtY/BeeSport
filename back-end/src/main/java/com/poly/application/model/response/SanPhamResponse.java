@@ -3,6 +3,7 @@ package com.poly.application.model.response;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.ChiTietSanPham;
 import com.poly.application.entity.DiaHinhSan;
+import com.poly.application.entity.HinhAnhSanPham;
 import com.poly.application.entity.LoaiDe;
 import com.poly.application.entity.ThuongHieu;
 import lombok.Getter;
@@ -32,5 +33,7 @@ public class SanPhamResponse {
     private ThuongHieu thuongHieu;
 
     private List<ChiTietSanPham> listChiTietSanPham;
+
+    private List<HinhAnhSanPham> listHinhAnhSanPham;
 
 }

@@ -25,6 +25,11 @@ public class MauSacController {
     @Autowired
     private MauSacService service;
 
+    @GetMapping("/list")
+    public ResponseEntity<?> list() {
+        return ResponseEntity.ok(service.getMauSacByNgayTaoDESC());
+    }
+
     @GetMapping()
     public ResponseEntity<?> getAll(
             @RequestParam(name = "page", defaultValue = "1") Integer page,

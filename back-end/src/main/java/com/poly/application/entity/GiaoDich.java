@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
+@ToString
 @Table(name = "giao_dich")
 public class GiaoDich {
 
@@ -38,9 +40,6 @@ public class GiaoDich {
 
     @Column(name = "ma_giao_dich")
     private String maGiaoDich;
-
-    @Column(name = "nhan_vien_giao_dich")
-    private String nhanVienGiaoDich;
 
     @Column(name = "so_tien_giao_dich")
     private BigDecimal soTienGiaoDich;
@@ -55,8 +54,9 @@ public class GiaoDich {
     @Column(name = "ngay_sua", columnDefinition = "TIMESTAMP")
     private LocalDateTime ngaySua;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai_giao_dich")
-    private Integer trangThaiGiaoDich;
+    private CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich;
 
     @ManyToOne
     @JoinColumn(name = "hoa_don_id",referencedColumnName = "id")

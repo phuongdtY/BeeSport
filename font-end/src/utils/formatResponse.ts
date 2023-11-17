@@ -58,10 +58,26 @@ export function calculateAge(birthDate: string) {
   // Giảm tuổi nếu chưa đến ngày sinh trong năm hiện tại
   return isBirthdayPassed ? age : age - 1;
 }
-
+export function formatGiaTienVND(value: any) {
+  const formatter = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
+  return formatter.format(value).replace("₫", "đ");
+}
+export function formatSoLuong(value: number | undefined) {
+  return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 export function formatNgayTao(dateString: string | undefined) {
+  if (!dateString) {
+    return "...";
+  }
 
   const date = new Date(dateString);
+
+  if (isNaN(date.getTime())) {
+    return "...";
+  }
 
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Đảm bảo rằng ngày và tháng có đủ 2 chữ số

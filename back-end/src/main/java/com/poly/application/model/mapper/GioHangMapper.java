@@ -34,6 +34,9 @@ public class GioHangMapper {
 
     public void convertUpdateRequestToEntity(UpdatedGioHangRequest request, GioHang gioHang) {
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+        mapper.typeMap(UpdatedGioHangRequest.class, GioHang.class).addMappings(mapping -> {
+            mapping.skip(GioHang::setId);
+        });
         mapper.map(request, gioHang);
     }
 

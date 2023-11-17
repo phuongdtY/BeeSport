@@ -1,5 +1,6 @@
 package com.poly.application.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.poly.application.common.CommonEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -80,9 +81,6 @@ public class HoaDon {
     @Column(name = "ngay_nhan")
     private LocalDateTime ngayNhan;
 
-    @Column(name = "ngay_mong_muon")
-    private LocalDateTime ngayMongMuon;
-
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")
@@ -104,13 +102,22 @@ public class HoaDon {
     private CommonEnum.TrangThaiHoaDon trangThaiHoaDon;
 
     @ManyToOne
+    @JoinColumn(name = "voucher_id", referencedColumnName = "id")
+    private Voucher voucher;
+
+    @ManyToOne
     @JoinColumn(name = "tai_khoan_id", referencedColumnName = "id")
     private TaiKhoan taiKhoan;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "hoaDon",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<GiaoDich> giaoDichList;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "hoaDon",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<HoaDonChiTiet> hoaDonChiTietList;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "hoaDon",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<TimeLine> timeLineList;
 }

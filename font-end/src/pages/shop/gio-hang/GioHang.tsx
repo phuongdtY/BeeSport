@@ -32,8 +32,9 @@ import { formatGiaTien } from "~/utils/formatResponse";
 const { Title, Text } = Typography;
 
 const index: React.FC = () => {
-  const [totalAmount, setTotalAmount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [note, setNote] = useState("");
+  const [noteUpdated, setNoteUpdated] = useState(false);
   const [data, setData] = useState<DataType[]>([]);
   const { confirm } = Modal;
   const confirmDelete = (id) => {
@@ -58,8 +59,18 @@ const index: React.FC = () => {
       setLoading(false);
     }
   };
+  const gioHang = async () => {
+    try {
+      setLoading(true);
+      const res = await request.get(`gio-hang/${id}`);
+      setNote(res.data.ghiChu);
+      setLoading(false);
+    } catch (error) {
+      message.error("Xóa sản phẩm thất bại");
+      setLoading(false);
+    }
+  };
 
-  const [quantity, setQuantity] = useState<number[]>([]);
   const [updatedQuantities, setUpdatedQuantities] = useState([]);
   const handleIncrement = (record: DataType) => {
     const newData = [...data];
@@ -91,6 +102,12 @@ const index: React.FC = () => {
     page: 1,
     pageSize: 10,
   });
+  const totalAmount = data.reduce((acc, item) => {
+    const itemPrice = item.chiTietSanPham.giaTien; // Unit price
+    const itemQuantity = item.soLuong; // Quantity
+    const itemTotalPrice = itemPrice * itemQuantity; // Total price for the item
+    return acc + itemTotalPrice;
+  }, 0);
 
   const columns: ColumnsType<DataType> = [
     {
@@ -98,7 +115,7 @@ const index: React.FC = () => {
       dataIndex: "chiTietSanPham", // dataIndex sẽ trỏ đến thuộc tính chứa tên sản phẩm
       key: "ten",
       align: "left",
-      width: "30%",
+      width: "50%",
       render: (chiTietSanPham) => (
         <Space>
           <Image
@@ -196,6 +213,7 @@ const index: React.FC = () => {
     }
   };
   useEffect(() => {
+    gioHang();
     fetchData();
   }, [params]);
   const onChangeTable = (
@@ -216,6 +234,19 @@ const index: React.FC = () => {
     });
   };
   const onUpdateCart = async () => {
+    if (noteUpdated === true) {
+      try {
+        setLoading(true);
+        await request.put(`gio-hang/${id}`, { ghiChu: note });
+        setNoteUpdated(false);
+        gioHang();
+        setLoading(false);
+        message.success("Cập nhật giỏ hàng thành công");
+      } catch (error) {
+        message.error("sửa ghi chú thất bại");
+        setLoading(false);
+      }
+    }
     if (updatedQuantities.length === 0) {
       return;
     }
@@ -225,15 +256,11 @@ const index: React.FC = () => {
         id: item.id,
         soLuong: item.soLuong,
       }));
-    console.log(updatedData);
-
     try {
       setLoading(true);
       await request.put("/gio-hang-chi-tiet/update/" + id, updatedData);
       fetchData();
-
       setLoading(false);
-
       message.success("Cập nhật giỏ hàng thành công");
     } catch (error) {
       message.error("Cập nhật giỏ hàng thất bại");
@@ -277,19 +304,24 @@ const index: React.FC = () => {
             </Card>
           </Col>
           <Col span={1}></Col>
-          {/* tổng tiền */}
           <Col span={6}>
             <Card title="TỔNG ĐƠN HÀNG">
-              <Row>
-                <Col span={18}>
-                  <span style={{ fontWeight: "bold" }}>TỔNG TIỀN</span>
-                </Col>
-                <Col span={6}>
-                  <span style={{ color: "red", fontWeight: "bold" }}>
-                    {formatGiaTien(totalAmount)}
-                  </span>
-                </Col>
-              </Row>
+              <Text>Ghi chú</Text>
+              <Input.TextArea
+                value={note}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                  setNoteUpdated(true);
+                }}
+              />
+              <Space>
+                <Title level={4} style={{ fontWeight: "bold" }}>
+                  TỔNG TIỀN
+                </Title>
+                <Title level={4} style={{ color: "red", fontWeight: "bold" }}>
+                  {formatGiaTien(totalAmount)}
+                </Title>
+              </Space>
             </Card>
             <Link to={"/thanh-toan"}>
               <Button

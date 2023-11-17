@@ -1,82 +1,61 @@
-import type { TablePaginationConfig } from "antd/es/table";
-import type { FilterValue } from "antd/es/table/interface";
-
 export interface DataType {
+  id: number;
+  ma: string;
+  ten: string;
+  ngayBatDau: string;
+  ngayKetThuc: string;
+  hinhThucGiam: {
     id: number;
-    ma: string;
     ten: string;
-    ngayBatDau: string;
-    ngayKetThuc: string;
-    hinhThucGiam : {
-        ten: string;
-        mota: string;
-        voucher: string;
-      };
-    giaToiThieu : string;
-    giaTriGiam : string;
-    giaTriGiamToiDa : string;
-    ngayTao: string;
-    ngaySua: string;
-    trangThai: {
-      ten: string;
-      mota: string;
-      voucher: string;
-    };
-  }
-
-export interface Sorter {
-    field: string;
-    order: "ascend" | "descend";
+    mota: string;
+    hinhThucGiam: string;
+  };
+  giaToiThieu: string;
+  giaTriGiam: string;
+  giaTriGiamToiDa: string;
+  soLuong: number | null;
+  ngayTao: string;
+  ngaySua: string;
+  trangThai: {
+    ten: string;
+    mota: string;
+    mauSac: string;
+  };
 }
 
 export interface DataParams {
-    currentPage: number;
-    pageSize: number;
-    searchText: string;
-    filterStatus: string;
-    filterGender: string;
-    sorter: string;
-    sortOrder: string;
-    trangThai: string;
-}
-  
-  export interface CreatedRequest {
-    ma: string;
-    ten: string;
-    ngayBatDau: string;
-    ngayKetThuc: string;
-    hinhThucGiam : string;
-    giaToiThieu : string;
-    giaTriGiam : string;
-    giaTriGiamToiDa : string;
-    // ngayTao: string;
-    // trangThai: boolean;
-  }
-  export interface UpdatedRequest {
-    ma: string;
-    ten: string;
-    ngayBatDau: string;
-    ngayKetThuc: string;
-    hinhThucGiam : string;
-    giaToiThieu : string;
-    giaTriGiam : string;
-    giaTriGiamToiDa : string;
-    // ngaySua: string;
-    // trangThai: string;
-  }
-
-export interface TableParams {
-    pagination?: TablePaginationConfig;
-    searchText?: string;
-    trangThai?: string;
-    sortField?: string;
-    sortOrder?: string;
-    filters?: Record<string, FilterValue>;
+  page: number;
+  pageSize: number;
+  searchText: string;
+  filterStatus: string;
+  filterGender: string;
+  sorter: string;
+  sortOrder: string;
 }
 
-export interface DescriptionItemProps {
-    title?: string;
-    content?: React.ReactNode;
-    children?: React.ReactNode;
+export interface CreatedRequest {
+  id: number;
+  ma: string;
+  ten: string;
+  ngayBatDau: string;
+  ngayKetThuc: string;
+  hinhThucGiam: number;
+  donToiThieu: number;
+  giaTriGiam: number;
+  giamToiDa: number;
+  dateRange: any;
+  soLuong: number | null;
 }
-  
+export interface UpdatedRequest {
+  id: number;
+  ma: string;
+  ten: string;
+  ngayBatDau: string;
+  ngayKetThuc: string;
+  hinhThucGiam: number;
+  donToiThieu: number;
+  giaTriGiam: number;
+  giamToiDa: number;
+  dateRange: any;
+  soLuong: number | null;
+}

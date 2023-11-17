@@ -39,6 +39,11 @@ public class KichCoController {
         return ResponseEntity.ok(service.getAll(page, pageSize, sortField, sortOrder, searchText, trangThaiString));
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<?> list() {
+        return ResponseEntity.ok(service.listKichCo());
+    }
+
     @PostMapping()
     public ResponseEntity<?> add(@RequestBody CreatedKichCoRequest request) {
         return new ResponseEntity<>(service.add(request), HttpStatus.CREATED);

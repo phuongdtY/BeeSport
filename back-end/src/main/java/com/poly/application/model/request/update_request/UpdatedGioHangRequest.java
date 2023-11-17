@@ -1,6 +1,5 @@
 package com.poly.application.model.request.update_request;
 
-import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.TaiKhoan;
 import lombok.Getter;
 import lombok.Setter;

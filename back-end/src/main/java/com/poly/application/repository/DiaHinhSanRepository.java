@@ -15,12 +15,15 @@ import java.util.List;
 @Repository
 public interface DiaHinhSanRepository extends JpaRepository<DiaHinhSan, Long> {
 
+    @Query("SELECT dhs FROM DiaHinhSan dhs WHERE dhs.trangThai = 'ACTIVE' ORDER BY dhs.ngayTao DESC")
+    List<DiaHinhSan> getDiaHinhSanByNgayTaoDESC();
+
     @Query("SELECT obj FROM DiaHinhSan obj WHERE (obj.ten LIKE %:searchText%) AND (:trangThai IS NULL OR obj.trangThai = :trangThai)")
     Page<DiaHinhSan> findByAll(Pageable pageable, String searchText, CommonEnum.TrangThaiThuocTinh trangThai);
 
-    boolean existsByTen( String ten);
+    boolean existsByTen(String ten);
 
-    @Query("SELECT DISTINCT dhs FROM ChiTietSanPham ctsp JOIN DiaHinhSan dhs ON ctsp.diaHinhSan.id = dhs.id  WHERE ctsp.sanPham.id = :idSanPham")
+    @Query("SELECT DISTINCT dhs FROM ChiTietSanPham ctsp JOIN DiaHinhSan dhs ON ctsp.diaHinhSan.id = dhs.id  WHERE ctsp.sanPham.id = :idSanPham AND dhs.trangThai = 'ACTIVE'")
     List<DiaHinhSan> getDiaHinhSanKhongLap(Long idSanPham);
 
 }

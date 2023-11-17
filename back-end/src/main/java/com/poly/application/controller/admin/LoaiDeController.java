@@ -25,6 +25,11 @@ public class LoaiDeController {
     @Autowired
     private LoaiDeService service;
 
+    @GetMapping("/list")
+    public ResponseEntity<?> list() {
+        return ResponseEntity.ok(service.getLoaiDeByNgayTaoDESC());
+    }
+
     @GetMapping()
     public ResponseEntity<?> getAll(
             @RequestParam(name = "page", defaultValue = "1") Integer page,

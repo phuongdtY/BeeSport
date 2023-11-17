@@ -1,15 +1,14 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
-import com.poly.application.entity.ChiTietSanPham;
-import com.poly.application.entity.MauSac;
 import com.poly.application.entity.SanPham;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.SanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
-import com.poly.application.model.response.ChiTietSanPhamResponse;
+import com.poly.application.model.response.SanPhamBanChayResponse;
+import com.poly.application.model.response.SanPhamDetailResponse;
 import com.poly.application.model.response.SanPhamMoiNhatResponse;
 import com.poly.application.model.response.SanPhamResponse;
 import com.poly.application.repository.SanPhamRepository;
@@ -101,17 +100,25 @@ public class SanPhamServiceImpl implements SanPhamService {
         if (optional.isEmpty()) {
             throw new NotFoundException("Sản phẩm không tồn tại!");
         }
-        if (!request.getTen().equals(optional.get().getTen())&&repository.existsByTen(request.getTen())) {
+        SanPham detail = optional.get();
+
+        if (!request.getTen().equals(detail.getTen()) && repository.existsByTen(request.getTen())) {
             throw new BadRequestException("Tên sản phẩm đã tồn tại trong hệ thống!");
         }
 
-        SanPham sanPham = optional.get();
-        sanPham.setTen(request.getTen());
-        sanPham.setMoTa(request.getMoTa());
-        sanPham.setThuongHieu(request.getThuongHieu());
-        sanPham.setTrangThai(CommonEnum.TrangThaiSanPham.valueOf(request.getTrangThai()));
-        return mapper.convertEntityToResponse(repository.save(sanPham));
+        // Ánh xạ các trường từ UpdatedSanPhamRequest sang SanPham
+        mapper.convertUpdateRequestToEntity(request,detail);
+
+        // Lưu thay đổi vào cơ sở dữ liệu
+        detail = repository.save(detail);
+        System.out.println(detail);
+        // Trả về thông tin sản phẩm sau khi cập nhật
+        SanPhamResponse response = new SanPhamResponse();
+        // Điền thông tin sản phẩm vào response dựa trên detail
+
+        return response;
     }
+
 
     @Override
     public void delete(Long id) {
@@ -152,6 +159,34 @@ public class SanPhamServiceImpl implements SanPhamService {
         List<SanPhamMoiNhatResponse> giaTien5SanPhamMoiNhat = repository.findAllSanPhamMoiNhat();
 
         List<SanPhamMoiNhatResponse> chiTietSanPhamResponse = giaTien5SanPhamMoiNhat
+                .stream()
+                .collect(Collectors.toList());
+
+        return chiTietSanPhamResponse
+                .stream()
+                .limit(10)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public SanPhamDetailResponse getSanPhamDetail(Long id) {
+        SanPhamDetailResponse detail = repository.getDetailSanPham(id);
+        return detail;
+    }
+
+    @Override
+    public List<SanPhamResponse> getAllSanPhamNullCTSP() {
+        List<SanPham> listSanPham = repository.getAllSanPhamNullCTSP();
+        return listSanPham.stream()
+                .map(sanPham -> mapper.convertEntityToResponse(sanPham))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SanPhamBanChayResponse> get5SanPhamBanChayNhat() {
+        List<SanPhamBanChayResponse> banChayNhat = repository.findAllSanPhamBanChay();
+
+        List<SanPhamBanChayResponse> chiTietSanPhamResponse = banChayNhat
                 .stream()
                 .collect(Collectors.toList());
 

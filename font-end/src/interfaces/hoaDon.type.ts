@@ -4,11 +4,11 @@ export interface DataType {
   loaiHoaDon: {
     ten: string;
     moTa: string;
-    mauSac: String;
+    mauSac: string;
   };
   ngayThanhToan: string;
   phiShip: string;
-  tongTien: string;
+  tongTien: number;
   tongTienKhiGiam: string;
   ghiChu: string;
   nguoiNhan: string;
@@ -27,6 +27,58 @@ export interface DataType {
     moTa: string;
     mauSac: string;
   };
+  taiKhoan: {
+    id: number;
+    hoVaTen: string;
+    canCuocCongDan: string;
+    ngaySinh: string | undefined;
+    gioiTinh: {
+      ten: string;
+      moTa: string;
+      mauSac: string;
+    };
+    soDienThoai: string;
+    email: string;
+    thanhPho: string;
+    quanHuyen: string;
+    phuongXa: string;
+    diaChiCuThe: string;
+    anhDaiDien: string;
+    ngayTao: string;
+    ngaySua: string;
+    trangThai: {
+      ten: string;
+      mota: string;
+      mauSac: string;
+    };
+  };
+}
+
+export interface UpdatedRequest {
+  ma: String;
+  diaChiNguoiNhan: String;
+  phiShip: string;
+  loaiHoaDon: {
+    ten: string;
+    moTa: string;
+    mauSac: string;
+  };
+  trangThaiHoaDon: {
+    ten: string;
+    moTa: string;
+    mauSac: string;
+  };
+  emailNguoiNhan: string;
+  nguoiNhan: string;
+  sdtNguoiNhan: string;
+  ghiChu: string;
+}
+
+export interface UpdateDiaChiHoaDon {
+  thanhPho: number;
+  quanHuyen: number;
+  phuongXa: number;
+  diaChiCuThe: string;
 }
 
 export interface Sorter {

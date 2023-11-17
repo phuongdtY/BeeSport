@@ -1,6 +1,6 @@
 export interface DataType {
   id: number;
-  ten: string;
+  kichCo: number;
   ngayTao: string;
   ngaySua: string;
   trangThai: {

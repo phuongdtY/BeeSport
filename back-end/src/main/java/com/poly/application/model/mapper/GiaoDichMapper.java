@@ -33,9 +33,9 @@ public class GiaoDichMapper {
         return modelMapper.map(createGiaoDichRequest, GiaoDich.class);
     }
 
-    public GiaoDich convertUpdatedGiaoDichRequestToGiaoDichEntity(UpdatedGiaoDichRequest updatedGiaoDichRequest){
+    public void convertUpdatedGiaoDichRequestToGiaoDichEntity(UpdatedGiaoDichRequest updatedGiaoDichRequest, GiaoDich giaoDich){
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        return modelMapper.map(updatedGiaoDichRequest, GiaoDich.class);
+        modelMapper.map(updatedGiaoDichRequest, giaoDich);
     }
 
     public List<GiaoDichResponse> convertListGiaoDichEntityToGiaoDichResponse(List<GiaoDich> giaoDichList){

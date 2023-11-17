@@ -1,7 +1,7 @@
 import axios from "axios";
 const request = axios.create({
   baseURL: "http://localhost:8080/admin/api",
-  timeout: 3000,
+  timeout: 5000,
 });
 export const requestTimMatKhau = axios.create({
   baseURL: "http://localhost:8080/admin/api",
@@ -20,6 +20,10 @@ export const requestDangNhap = axios.create({
 });
 export const requestDangKi = axios.create({
   baseURL: "http://localhost:8080/api",
+  timeout: 5000,
+});
+export const request4s = axios.create({
+  baseURL: "http://localhost:8080/admin/api",
   timeout: 5000,
 });
 

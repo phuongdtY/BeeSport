@@ -27,6 +27,11 @@ public class ThuongHieuController {
     @Autowired
     private ThuongHieuService service;
 
+    @GetMapping("/list")
+    public ResponseEntity<?> list() {
+        return ResponseEntity.ok(service.getThuongHieuByNgayTaoDESC());
+    }
+
     @GetMapping()
     public ResponseEntity<?> getAll(
             @RequestParam(name = "page", defaultValue = "1") Integer page,

@@ -1,6 +1,10 @@
 package com.poly.application.model.request.create_request;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.HoaDon;
+import com.poly.application.entity.PhuongThucThanhToan;
+import com.poly.application.entity.TaiKhoan;
+import com.poly.application.entity.Voucher;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
@@ -17,19 +21,22 @@ public class CreateGiaoDichRequest {
 
     private String maGiaoDich;
 
-    private String nhanVienGiaoDich;
-
     private BigDecimal soTienGiaoDich;
-
-    @Enumerated(EnumType.STRING)
-    private CommonEnum.PhuongThucThanhToan phuongThucThanhToan;
-
-    private String ghiChu;
 
     private LocalDateTime ngayTao;
 
     private LocalDateTime ngaySua;
 
-    private Integer trangThaiGiaoDich;
+    @Enumerated(EnumType.STRING)
+    private CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich;
+
+    private HoaDon hoaDon;
+
+    private Voucher voucher;
+
+    private TaiKhoan taiKhoan;
+
+    private PhuongThucThanhToan phuongThucThanhToan;
+
 
 }
