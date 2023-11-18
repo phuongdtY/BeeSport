@@ -4,6 +4,7 @@ import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.SanPham;
 import com.poly.application.model.response.SanPhamBanChayResponse;
 import com.poly.application.model.response.SanPhamDetailResponse;
+import com.poly.application.model.response.SanPhamFilterResponse;
 import com.poly.application.model.response.SanPhamMoiNhatResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -33,6 +35,26 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
     @Query("SELECT sp FROM SanPham sp WHERE sp.trangThai = 'ACTIVE' ORDER BY sp.ngayTao DESC")
     List<SanPham> get5SanPhamMoiNhat();
 
+    @Query("SELECT NEW com.poly.application.model.response.SanPhamFilterResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien), hi.duongDan, sp.ngayTao) " +
+            "FROM SanPham sp " +
+            "JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id " +
+            "JOIN HinhAnhSanPham hi ON sp.id = hi.sanPham.id " +
+            "WHERE cps.trangThai = 'ACTIVE' " +
+            "AND hi.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
+            "AND cps.giaTien BETWEEN :minPrice AND :maxPrice " +
+            "AND sp.thuongHieu.id IN :listThuongHieu " +
+            "AND cps.diaHinhSan.id IN :listDiaHinhSan " +
+            "AND cps.loaiDe.id IN :listLoaiDe " +
+            "AND cps.kichCo.id IN :listKichCo " +
+            "AND cps.mauSac.id IN :listMauSac " +
+            "GROUP BY sp.id, sp.ten, hi.duongDan ")
+    Page<SanPhamFilterResponse> filterSanPham(Pageable pageable, @Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice,
+                                              @Param("listThuongHieu") List<Long> listThuongHieu,
+                                              @Param("listMauSac") List<Long> listMauSac,
+                                              @Param("listDiaHinhSan") List<Long> listDiaHinhSan,
+                                              @Param("listKichCo") List<Long> listKichCo,
+                                              @Param("listLoaiDe") List<Long> listLoaiDe);
+
     @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien), hi.duongDan) " +
             "FROM SanPham sp " +
             "JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id " +
@@ -42,22 +64,6 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "GROUP BY sp.id, sp.ten, hi.duongDan " +
             "ORDER BY MAX(cps.ngayTao) DESC")
     List<SanPhamMoiNhatResponse> findAllSanPhamMoiNhat();
-
-//    @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(ctsp.giaTien), MAX(ctsp2.giaTien), ha.duongDan) " +
-//            "FROM SanPham sp " +
-//            "JOIN ChiTietSanPham ctsp ON sp.id = ctsp.sanPham.id " +
-//            "JOIN ChiTietSanPham ctsp2 ON sp.id = ctsp2.sanPham.id " +
-//            "JOIN HoaDonChiTiet hdct ON ctsp.id = hdct.chiTietSanPham.id " +
-//            "JOIN HoaDon hd ON hdct.hoaDon.id = hd.id " +
-//            "JOIN HinhAnhSanPham ha ON sp.id = ha.sanPham.id " +
-//            "WHERE hd.trangThaiHoaDon = 'APPROVED' " +
-//            "AND ctsp.trangThai = 'ACTIVE' " +
-//            "AND ha.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
-//            "AND ctsp.giaTien = (SELECT MIN(ctsp3.giaTien) FROM ChiTietSanPham ctsp3 WHERE ctsp3.sanPham.id = sp.id) " +
-//            "AND ctsp2.giaTien = (SELECT MAX(ctsp4.giaTien) FROM ChiTietSanPham ctsp4 WHERE ctsp4.sanPham.id = sp.id) " +
-//            "GROUP BY sp.id, sp.ten, ha.duongDan " +
-//            "ORDER BY SUM(hdct.soLuong) DESC")
-//    List<SanPhamMoiNhatResponse> findAllSanPhamBanChay();
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamBanChayResponse(sp.id, sp.ten, MIN(ctsp.giaTien), MAX(ctsp2.giaTien), ha.duongDan, SUM(hdct.soLuong)) " +
             "FROM SanPham sp " +
@@ -71,12 +77,9 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "AND ha.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
             "AND ctsp.giaTien = (SELECT MIN(ctsp3.giaTien) FROM ChiTietSanPham ctsp3 WHERE ctsp3.sanPham.id = sp.id) " +
             "AND ctsp2.giaTien = (SELECT MAX(ctsp4.giaTien) FROM ChiTietSanPham ctsp4 WHERE ctsp4.sanPham.id = sp.id) " +
-            "GROUP BY sp.id, sp.ten, ha.duongDan " +
-            "HAVING SUM(hdct.soLuong) > 0 " + // Lọc ra các sản phẩm có tổng soLuong > 0
+            "GROUP BY sp.id, sp.ten, ha.duongDan, sp.ngayTao " +
             "ORDER BY SUM(hdct.soLuong) DESC")
     List<SanPhamBanChayResponse> findAllSanPhamBanChay();
-
-
 
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamDetailResponse(sp.id, sp.ma, sp.ten, sp.moTa, MIN(cps.giaTien), MAX(cps.giaTien), sp.trangThai) " +
