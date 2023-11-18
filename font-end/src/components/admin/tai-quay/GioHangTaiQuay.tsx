@@ -323,6 +323,13 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     loadSelectKhachHang();
   }, [selectedRadio]);
 
+  useEffect(() => {
+    // When the component mounts, trigger the selection manually
+    setSelectedRadio(0); // Assuming the 'Tiền mặt' radio has a value of 0
+    setIsCashSelected(true);
+    setIsPaymentSelected(true); // Set to true to display the 'Thanh toán' button
+  }, []); // Empty dependency array to run this effect only once on mount
+
   const onChangeGiaoHang = (checked: boolean) => {
     setIsChecked(checked);
     setChecked(checked);

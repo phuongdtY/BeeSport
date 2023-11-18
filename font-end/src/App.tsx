@@ -39,6 +39,7 @@ import DetailHoaDon from "./pages/admin/hoa-don/detailHoaDon";
 import DetailSanPham from "./pages/shop/san-pham/detail";
 import BanHangTaiQuay from "./pages/admin/ban-hang-tai-quay/BanHangTaiQuay.tsx";
 import UpdateSanPham from "./pages/admin/san-pham/UpdateSanPham.tsx";
+import SanPham from "./pages/shop/san-pham/SanPham.tsx";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
       <Route path="/thanh-toan" element={<ThanhToan />} />
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/san-pham" element={<SanPham />} />
         <Route path="/gio-hang" element={<GioHang />} />
         <Route path="/san-pham/detail/:id" element={<DetailSanPham />} />
       </Route>
