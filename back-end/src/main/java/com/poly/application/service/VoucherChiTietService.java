@@ -9,13 +9,14 @@ import java.util.List;
 
 public interface VoucherChiTietService {
 
-    List<VoucherChiTietResponse> getAllList();
+    List<VoucherChiTietResponse> getAllList(Long idVoucher);
+
 
     Page<VoucherChiTietResponse> getAllPage(Integer page,Integer pageSize);
 
-    List<VoucherChiTietResponse> addList(CreatedVoucherChiTietRequest request);
+    List<VoucherChiTietResponse> addList(List<CreatedVoucherChiTietRequest> requests);
 
-    VoucherChiTietResponse update(Long id, UpdatedVoucherChiTietRequest request);
+    VoucherChiTietResponse update(List<UpdatedVoucherChiTietRequest> requests);
 
     void delete(Long id);
 

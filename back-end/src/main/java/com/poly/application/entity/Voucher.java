@@ -1,5 +1,6 @@
 package com.poly.application.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.poly.application.common.CommonEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -33,7 +34,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Table(name = "voucher")
 @Entity
 public class Voucher implements Serializable {
@@ -86,6 +86,7 @@ public class Voucher implements Serializable {
     @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<VoucherChiTiet> voucherChiTietList;
 

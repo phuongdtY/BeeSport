@@ -17,7 +17,11 @@ import {
   Tooltip,
   Tag,
   Divider,
+  Steps,
+  Typography,
 } from "antd";
+const { Text, Link } = Typography;
+
 import dayjs from "dayjs";
 import request from "~/utils/request";
 import {
@@ -29,9 +33,15 @@ import { CreatedRequest } from "~/interfaces/voucher.type";
 import { formatGiaTienVND, formatSoLuong } from "~/utils/formatResponse";
 import { ColumnsType } from "antd/es/table";
 import { DataType } from "~/interfaces/khachHang.type";
+import ModalKhachHang from "./ModalKhachHang";
 const { Option } = Select;
 
 function AddVoucherKhachHang() {
+  const [openModal, setOpenModal] = useState(false);
+  const [dataTable, setDataTable] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const [form] = Form.useForm();
   const { confirm } = Modal;
   const navigate = useNavigate();
@@ -43,7 +53,6 @@ function AddVoucherKhachHang() {
       try {
         const res = await request.get("hinh-thuc-giam-gia");
         setDataHinhThucGiamGia(res.data.content);
-        console.log(res.data.content);
       } catch (error) {
         console.log(error);
       }
@@ -53,6 +62,10 @@ function AddVoucherKhachHang() {
   }, []);
 
   const onFinish = (values: CreatedRequest) => {
+    if (dataTable.length === 0) {
+      message.warning("Bạn chưa chọn khách hàng muốn thêm");
+      return;
+    }
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -71,14 +84,26 @@ function AddVoucherKhachHang() {
           giamToiDa: values.giamToiDa,
           soLuong: values.soLuong,
         };
-        console.log(data);
-
         try {
           setLoading(true);
-          await request.post("voucher", data);
-          setLoading(false);
-          message.success("Thêm voucher thành công");
-          navigate("/admin/voucher");
+          const res = await request.post("voucher", data);
+          try {
+            setLoading(true);
+            console.log(fakeList(res.data.id));
+
+            await request.post("/voucher-chi-tiet/add", fakeList(res.data.id), {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            setLoading(false);
+            message.success("Thêm voucher thành công");
+            navigate("/admin/voucher");
+          } catch (error) {
+            console.log(error);
+            message.error(error.response.data.message);
+            setLoading(false);
+          }
         } catch (error: any) {
           console.log(error);
           message.error(error.response.data.message);
@@ -108,41 +133,121 @@ function AddVoucherKhachHang() {
       align: "center",
       rowScope: "row",
       width: "60px",
-      render: (_, __, index) => (params.page - 1) * params.pageSize + index + 1,
+      render: (_, __, index) => (page - 1) * pageSize + index + 1,
     },
     {
       title: "Tên",
       dataIndex: "ten",
       key: "ten",
+      ellipsis: true,
     },
     {
       title: "Liên hệ",
-      dataIndex: "ten",
-      key: "ten",
+      dataIndex: "lienHe",
+      key: "lienHe",
+      ellipsis: true,
+      render: (lienHe, record) => (
+        <Space direction="vertical">
+          <Text type="success">{record.soDienThoai}</Text>
+          <Text type="warning">{record.email}</Text>
+        </Space>
+      ),
     },
     {
       title: "Số lần sử dụng",
-      dataIndex: "ten",
-      key: "ten",
-      width: 150,
-    },
-    {
-      dataIndex: "key",
-      align: "center",
-      width: "1px",
-      render: (key, record) => (
-        <Button type="link" style={{ padding: 0 }}>
-          <Tooltip title="Xóa">
-            <DeleteOutlined
-              style={{ color: "red" }}
-              // onClick={() => deleteItem(key, record)}
-            />
-          </Tooltip>
-        </Button>
+      dataIndex: "soLanSuDung",
+      key: "soLanSuDung",
+      width: 130,
+      render: (soLanSuDung, record) => (
+        <Space>
+          <InputNumber
+            value={soLanSuDung}
+            min={1}
+            style={{ width: "100%" }}
+            formatter={(value) => `${formatSoLuong(value)}`}
+            parser={(value) => value.replace(/,/g, "")}
+            onChange={(newSoLuong) =>
+              handleEditSoLuong(record.idKH, newSoLuong)
+            }
+          />
+          <Button type="link" style={{ padding: 0 }}>
+            <Tooltip title="Xóa">
+              <DeleteOutlined
+                style={{ color: "red" }}
+                onClick={() => deleteItem(record.idKH)}
+              />
+            </Tooltip>
+          </Button>
+        </Space>
       ),
     },
   ];
 
+  const listKhachHang = (data: any) => {
+    setDataTable((prevDataTable) => {
+      const updatedDataTable = [...prevDataTable];
+
+      // Update existing items and add new items
+      data.forEach((item: any) => {
+        const existingIndex = updatedDataTable.findIndex(
+          (existingItem) => existingItem.id === item.id
+        );
+
+        if (existingIndex !== -1) {
+          updatedDataTable[existingIndex] = {
+            ...updatedDataTable[existingIndex],
+            soLanSuDung: updatedDataTable[existingIndex].soLanSuDung + 1,
+          };
+        } else {
+          updatedDataTable.push({
+            idKH: item.id,
+            key: item.id,
+            ten: item.hoVaTen,
+            soDienThoai: item.soDienThoai,
+            email: item.email,
+            soLanSuDung: 1,
+          });
+        }
+      });
+
+      return updatedDataTable;
+    });
+  };
+
+  const handleEditSoLuong = (id, value) => {
+    // Find the index of the item with the given id
+    const index = dataTable.findIndex((item) => item.idKH === id);
+
+    // Update the soLanSuDung value for the item at the found index
+    if (index !== -1) {
+      setDataTable((prevDataTable) => {
+        const updatedDataTable = [...prevDataTable];
+        updatedDataTable[index] = {
+          ...updatedDataTable[index],
+          soLanSuDung: value,
+        };
+        return updatedDataTable;
+      });
+    }
+  };
+  const deleteItem = (id) => {
+    setDataTable((prevDataTable) =>
+      prevDataTable.filter((item) => item.idKH !== id)
+    );
+  };
+
+  const fakeList = (idVoucher) => {
+    const dataFake = dataTable.map((item) => ({
+      voucher: {
+        id: idVoucher,
+      },
+      taiKhoan: {
+        id: item.idKH,
+      },
+      soLanSuDung: item.soLanSuDung,
+    }));
+    return dataFake;
+  };
   return (
     <Row>
       <Col span={12}>
@@ -164,12 +269,6 @@ function AddVoucherKhachHang() {
             ]}
           >
             <Input />
-          </Form.Item>
-          <Form.Item name="soLanSuDung" label="Khách hàng">
-            <Select defaultValue={0}>
-              <Option value={0}>Không giới hạn</Option>
-              <Option value={1}>Giới hạn</Option>
-            </Select>
           </Form.Item>
           <Form.Item
             noStyle
@@ -379,7 +478,10 @@ function AddVoucherKhachHang() {
               ) : null
             }
           </Form.Item>
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Form.Item name="soLanSuDung" label="Khách hàng">
+            <Button onClick={() => setOpenModal(true)}>Chọn khách hàng</Button>
+          </Form.Item>
+          <Form.Item wrapperCol={{ offset: 8, span: 15 }}>
             <Space style={{ float: "right" }}>
               <Button
                 type="dashed"
@@ -396,11 +498,25 @@ function AddVoucherKhachHang() {
         </Form>
       </Col>
       <Col span={12}>
-        <div style={{ width: "600px" }}>
-          <Divider>Danh Sách Khách Hàng</Divider>
-          <Table columns={columns} />
-        </div>
+        <Table
+          pagination={{
+            defaultPageSize: 5,
+            onChange(page, pageSize) {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+          }}
+          bordered
+          columns={columns}
+          dataSource={dataTable}
+        />
       </Col>
+      <ModalKhachHang
+        list={dataTable}
+        listKhachHang={listKhachHang}
+        openModal={openModal}
+        closeModal={() => setOpenModal(false)}
+      />
     </Row>
   );
 }

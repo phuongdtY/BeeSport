@@ -4,17 +4,20 @@ import com.poly.application.entity.TaiKhoan;
 import com.poly.application.entity.Voucher;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class CreatedVoucherChiTietRequest {
 
-    private Integer SoLanSuDung;
+    private Integer soLanSuDung;
 
     private Voucher voucher;
 
-    private List<TaiKhoan> taiKhoan;
+    private TaiKhoan taiKhoan;
+
 
 }

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,7 +75,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     }
 
     @Override
-    public Page<TaiKhoanResponse> getAllKhachHang(Integer page, Integer pageSize, String sortField, String sortOrder, String gioiTinhString, String searchText, String trangThaiString) {
+    public Page<TaiKhoanResponse> getAllKhachHang(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String ngaySinhStart, String ngaySinhEnd, String gioiTinhString, String trangThaiString) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
@@ -98,8 +99,10 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         } else {
             trangThai = CommonEnum.TrangThaiThuocTinh.valueOf(trangThaiString);
         }
+        LocalDate ngaySinhStartDate = ngaySinhStart != null ? LocalDate.parse(ngaySinhStart) : null;
+        LocalDate ngaySinhEndDate = ngaySinhEnd != null ? LocalDate.parse(ngaySinhEnd) : null;
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<TaiKhoan> taiKhoanPage = taiKhoanRepository.findAllByVaiTro2(pageable, searchText,trangThai,gioiTinh);
+        Page<TaiKhoan> taiKhoanPage = taiKhoanRepository.findAllByVaiTro2(pageable, searchText,ngaySinhStartDate,ngaySinhEndDate,gioiTinh,trangThai);
         return taiKhoanPage.map(taiKhoanMapper::convertEntityToResponse);
     }
 
