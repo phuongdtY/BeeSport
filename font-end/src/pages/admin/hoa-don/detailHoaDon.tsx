@@ -214,10 +214,14 @@ const detailHoaDon: React.FC = () => {
       align: "center",
       sorter: true,
       width: "20%",
-      render:(id) => (
+      render: (id) => (
         <Space>
           <Tooltip title="Xóa">
-            <Button type="link" disabled={orderStatus?.ten === "PENDING" ? false : true}  style={{ padding: 0 }}>
+            <Button
+              type="link"
+              disabled={orderStatus?.ten === "PENDING" ? false : true}
+              style={{ padding: 0 }}
+            >
               <DeleteOutlined
                 onClick={() => handleClickDelete(id)}
                 style={{ color: "red" }}
@@ -225,7 +229,7 @@ const detailHoaDon: React.FC = () => {
             </Button>
           </Tooltip>
         </Space>
-      )
+      ),
     },
   ];
   const [showExportButton, setShowExportButton] = useState(true);
@@ -728,8 +732,13 @@ const detailHoaDon: React.FC = () => {
           fetchDataTimeline();
           fetchHoaDonData();
           console.log(values);
+          if (status.ten == "PENDING" && data?.loaiHoaDon.ten == "ONLINE") {
+          }
           if (res.data) {
             message.success("Đã " + title + " hóa đơn thành công");
+            if (status.ten == "PENDING" && data?.loaiHoaDon.ten == "ONLINE") {
+              showExportHoaDonModal();
+            }
           } else {
             console.error("Phản hồi API không như mong đợi:", res);
           }
@@ -905,13 +914,13 @@ const detailHoaDon: React.FC = () => {
                       <span>{formatGiaTienVND(data?.phiShip)}</span>
                     ) : (
                       <InputNumber
-                      value={tienShip}
-                      style={{ width: "100%" }}
-                      step={10000}
-                      formatter={(value) => `${formatGiaTienVND(value)}`}
-                      parser={(value: any) => value.replace(/\D/g, "")}
-                      onChange={handleTienShip}
-                    />
+                        value={tienShip}
+                        style={{ width: "100%" }}
+                        step={10000}
+                        formatter={(value) => `${formatGiaTienVND(value)}`}
+                        parser={(value: any) => value.replace(/\D/g, "")}
+                        onChange={handleTienShip}
+                      />
                     )}
                   </Form.Item>
                   <Form.Item name="tongTien" label="Tổng tiền">
@@ -1000,14 +1009,14 @@ const detailHoaDon: React.FC = () => {
                     allowClear
                     prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
                   />
-                {orderStatus?.ten === "PENDING" && (
-                  <Button onClick={handleUpdateSoLuongSanPham}>
-                    Cập nhật lại giỏ hàng
-                  </Button>
-                )}
-                {orderStatus?.ten === "PENDING" && (
-                  <Button onClick={showSanPhamModal}>Thêm sản phẩm</Button>
-                )}
+                  {orderStatus?.ten === "PENDING" && (
+                    <Button onClick={handleUpdateSoLuongSanPham}>
+                      Cập nhật lại giỏ hàng
+                    </Button>
+                  )}
+                  {orderStatus?.ten === "PENDING" && (
+                    <Button onClick={showSanPhamModal}>Thêm sản phẩm</Button>
+                  )}
                 </Space>
               </Row>
               <Table

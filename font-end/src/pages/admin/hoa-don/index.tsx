@@ -223,6 +223,7 @@ const index: React.FC = () => {
                   { value: "PENDING", label: "Chờ xác nhận" },
                   { value: "CONFIRMED", label: "Đã xác nhận" },
                   { value: "SHIPPING", label: "Đang vận chuyển" },
+                  { value: "PICKUP", label: "Đang lấy hàng" },
                   { value: "CANCELLED", label: "Đã hủy" },
                   { value: "APPROVED", label: "Thành công" },
                 ]}
