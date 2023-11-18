@@ -57,7 +57,7 @@ import {
   formatNgayTao,
 } from "~/utils/formatResponse";
 import React from "react";
-import { FaShippingFast } from "react-icons/fa";
+import { FaBoxOpen, FaShippingFast } from "react-icons/fa";
 
 const optionPrintPDF: Options = {
   filename: "hoa-don.pdf",
@@ -214,10 +214,10 @@ const detailHoaDon: React.FC = () => {
       align: "center",
       sorter: true,
       width: "20%",
-      render: (id) => (
+      render:(id) => (
         <Space>
           <Tooltip title="Xóa">
-            <Button type="link" style={{ padding: 0 }}>
+            <Button type="link" disabled={orderStatus?.ten === "PENDING" ? false : true}  style={{ padding: 0 }}>
               <DeleteOutlined
                 onClick={() => handleClickDelete(id)}
                 style={{ color: "red" }}
@@ -225,7 +225,7 @@ const detailHoaDon: React.FC = () => {
             </Button>
           </Tooltip>
         </Space>
-      ),
+      )
     },
   ];
   const [showExportButton, setShowExportButton] = useState(true);
@@ -383,7 +383,10 @@ const detailHoaDon: React.FC = () => {
       const timelineItem1: Item[] = timelineRes.data.map((item: any) => ({
         title: item.trangThai.moTa,
         subTitle: formatNgayTao(item.ngayTao),
-        description: item.ghiChu,
+        description:
+          (item.ghiChu === null ? "" : item.ghiChu) +
+          "    " +
+          item.hoaDon.nguoiSua,
         icon: handleIconTimeline(item.trangThai.ten),
       }));
       setItemTimeline(timelineItem1);
@@ -404,6 +407,8 @@ const detailHoaDon: React.FC = () => {
         return <SolutionOutlined />;
       case "SHIPPING":
         return <FaShippingFast />;
+      case "PICKUP":
+        return <FaBoxOpen />;
       default:
         return null;
     }
@@ -676,23 +681,42 @@ const detailHoaDon: React.FC = () => {
     moTa: "Đang vận chuyển",
     mauSac: "geekblue",
   };
+  const pickupStatus = {
+    ten: "PICKUP",
+    moTa: "Đang lấy hàng",
+    mauSac: "info",
+  };
+  const cancelledStatus = {
+    ten: "CANCELLED",
+    moTa: "Đã hủy",
+    mauSac: "volcano",
+  };
+  const approvedStatus = {
+    ten: "APPROVED",
+    moTa: "Đã hoàn thành",
+    mauSac: "magenta",
+  };
   // xử lý button xác nhận và vận chuyển
-  const handleConfirm = async (values: UpdatedRequest) => {
+  const handleStatus = async (
+    values: UpdatedRequest,
+    status: any,
+    title: string
+  ) => {
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc cập nhật hóa đơn này không?",
+      content: title + " hóa đơn này ?",
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
-        setOrderStatus(confirmedStatus);
+        setOrderStatus(status);
         try {
           const res = await request.put("hoa-don/" + id, {
             ma: data?.ma,
             diaChiNguoiNhan: data?.diaChiNguoiNhan,
             emailNguoiNhan: values.emailNguoiNhan,
             ghiChu: values.ghiChu,
-            trangThaiHoaDon: "CONFIRMED",
+            trangThaiHoaDon: status.ten,
             loaiHoaDon: data?.loaiHoaDon.ten,
             nguoiNhan: values.nguoiNhan,
             sdtNguoiNhan: values.sdtNguoiNhan,
@@ -702,9 +726,10 @@ const detailHoaDon: React.FC = () => {
           setLoadingForm(false);
           setTongTien(tinhTongTien(Number(tienShip)));
           fetchDataTimeline();
+          fetchHoaDonData();
           console.log(values);
           if (res.data) {
-            message.success("Cập nhật hóa đơn thành công");
+            message.success("Đã " + title + " hóa đơn thành công");
           } else {
             console.error("Phản hồi API không như mong đợi:", res);
           }
@@ -713,68 +738,16 @@ const detailHoaDon: React.FC = () => {
             message.error(error.response.data.message);
           } else {
             console.error("Lỗi không xác định:", error);
-            message.error("Cập nhật hóa đơn thất bại");
+            message.error(title + " hóa đơn thất bại");
           }
         }
       },
     });
   };
-  const handleDeliver = async (values: UpdatedRequest) => {
-    if (orderStatus?.ten === "CONFIRMED") {
-      setShowExportButton(false);
-      try {
-        const res = await request.put("hoa-don/" + id, {
-          ma: data?.ma,
-          diaChiNguoiNhan: values.diaChiNguoiNhan,
-          emailNguoiNhan: values.emailNguoiNhan,
-          ghiChu: values.ghiChu,
-          trangThaiHoaDon: "SHIPPING",
-          loaiHoaDon: data?.loaiHoaDon.ten,
-          nguoiNhan: values.nguoiNhan,
-          sdtNguoiNhan: data?.sdtNguoiNhan,
-          phiShip: Number(values.phiShip),
-          tongTien: data?.tongTien,
-        });
-        if (res.data) {
-          fetchDataTimeline();
-          message.success("Cập nhật hóa đơn thành công");
-        } else {
-          console.error("Phản hồi API không như mong đợi:", res);
-        }
-      } catch (error: any) {
-        if (error.response && error.response.status === 400) {
-          message.error(error.response.data.message);
-        } else {
-          console.error("Lỗi không xác định:", error);
-          message.error("Cập nhật hóa đơn thất bại");
-        }
-      }
-      // downloadPdf();
-      setOrderStatus(shipingStatus);
-    }
-  };
-  const handlePlusSoLuong = async (hdct: DataTypeHoaDonChiTiet) => {
-    const newData = [...listHoaDonChiTiet];
-    const index = newData.indexOf(hdct);
-    newData[index].soLuong += 1;
-    setListHoaDonChiTiet(newData);
-  };
-  const handleMinusSoLuong = async (hdct: DataTypeHoaDonChiTiet) => {
-    if (hdct.soLuong > 1) {
-      const newData = [...listHoaDonChiTiet];
-      const index = newData.indexOf(hdct);
-      newData[index].soLuong -= 1;
-      setListHoaDonChiTiet(newData);
-    }
-  };
   const handleSoLuongChange = (index: number, newSoLuong: number | null) => {
     const newSoLuongValue = typeof newSoLuong === "number" ? newSoLuong : 0;
-
-    // Tìm sản phẩm trong danh sách dựa trên index
     const hdct = listHoaDonChiTiet[index];
-
     if (hdct) {
-      // Tạo một bản sao của dataGioHang và cập nhật số lượng và tổng tiền cho sản phẩm cụ thể
       const newData = [...listHoaDonChiTiet];
       const index = newData.indexOf(hdct);
       newData[index] = {
@@ -788,7 +761,6 @@ const detailHoaDon: React.FC = () => {
     setTienShip(event);
     console.log(tienShip);
   };
-  const [container, setContainer] = React.useState<HTMLDivElement | null>(null);
   return (
     <>
       <Card title="Hóa đơn chi tiết">
@@ -807,7 +779,17 @@ const detailHoaDon: React.FC = () => {
                 </Col>
               </Row>
               <Row>
-                <Steps current={4} items={itemTimeline} />
+                <Col span={24} style={{ overflowX: "auto" }}>
+                  <Steps
+                    current={itemTimeline.length}
+                    style={
+                      itemTimeline.length > 3
+                        ? { width: 1500, height: 140 }
+                        : {}
+                    }
+                    items={itemTimeline}
+                  />
+                </Col>
               </Row>
             </Card>
             <Card style={{ marginBottom: "5px" }}>
@@ -839,7 +821,11 @@ const detailHoaDon: React.FC = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    {orderStatus?.ten === "APPROVED" ? (
+                      <span>{data?.nguoiNhan}</span>
+                    ) : (
+                      <Input />
+                    )}
                   </Form.Item>
                   <Form.Item
                     name="sdtNguoiNhan"
@@ -851,7 +837,11 @@ const detailHoaDon: React.FC = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    {orderStatus?.ten === "APPROVED" ? (
+                      <span>{data?.sdtNguoiNhan}</span>
+                    ) : (
+                      <Input />
+                    )}
                   </Form.Item>
                 </Col>
                 <Col span={14}>
@@ -869,7 +859,9 @@ const detailHoaDon: React.FC = () => {
                       <div style={{ width: "190px" }}>
                         <span>{diaChiThongTin}</span>
                       </div>
-                      <Button onClick={showDiaChiModal}>Tùy chỉnh</Button>
+                      {orderStatus?.ten !== "APPROVED" && (
+                        <Button onClick={showDiaChiModal}>Tùy chỉnh</Button>
+                      )}
                     </Space>
                   </Form.Item>
                   <Form.Item
@@ -882,7 +874,11 @@ const detailHoaDon: React.FC = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    {orderStatus?.ten === "APPROVED" ? (
+                      <span>{data?.emailNguoiNhan}</span>
+                    ) : (
+                      <Input />
+                    )}
                   </Form.Item>
                   <Form.Item
                     name="ghiChu"
@@ -894,14 +890,21 @@ const detailHoaDon: React.FC = () => {
                       },
                     ]}
                   >
-                    <TextArea />
+                    {orderStatus?.ten === "APPROVED" ? (
+                      <span>{data?.ghiChu}</span>
+                    ) : (
+                      <TextArea />
+                    )}
                   </Form.Item>
                   <Form.Item
                     name="phiShip"
                     label="Phí ship"
                     // initialValue={tienShip}
                   >
-                    <InputNumber
+                    {orderStatus?.ten === "APPROVED" ? (
+                      <span>{formatGiaTienVND(data?.phiShip)}</span>
+                    ) : (
+                      <InputNumber
                       value={tienShip}
                       style={{ width: "100%" }}
                       step={10000}
@@ -909,6 +912,7 @@ const detailHoaDon: React.FC = () => {
                       parser={(value: any) => value.replace(/\D/g, "")}
                       onChange={handleTienShip}
                     />
+                    )}
                   </Form.Item>
                   <Form.Item name="tongTien" label="Tổng tiền">
                     <div style={{ width: "190px" }}>
@@ -917,17 +921,64 @@ const detailHoaDon: React.FC = () => {
                   </Form.Item>
                   <Form.Item>
                     <Space>
-                      {/* {orderStatus?.ten === "PENDING" && ( */}
-                      <Button
-                        type="primary"
-                        onClick={async () => {
-                          await handleConfirm(form.getFieldsValue());
-                        }}
-                      >
-                        Xác nhận
-                      </Button>
-                      {/* )} */}
+                      {orderStatus?.ten === "PENDING" && (
+                        <Button
+                          type="primary"
+                          onClick={async () => {
+                            await handleStatus(
+                              form.getFieldsValue(),
+                              confirmedStatus,
+                              "Xác nhận"
+                            );
+                          }}
+                        >
+                          Xác nhận
+                        </Button>
+                      )}
 
+                      {orderStatus?.ten === "PENDING" && (
+                        <Button
+                          type="primary"
+                          danger
+                          onClick={async () => {
+                            await handleStatus(
+                              form.getFieldsValue(),
+                              cancelledStatus,
+                              "Hủy"
+                            );
+                          }}
+                        >
+                          Hủy
+                        </Button>
+                      )}
+                      {orderStatus?.ten === "PICKUP" && (
+                        <Button
+                          type="primary"
+                          onClick={async () => {
+                            await handleStatus(
+                              form.getFieldsValue(),
+                              shipingStatus,
+                              "Giao hàng"
+                            );
+                          }}
+                        >
+                          Giao hàng
+                        </Button>
+                      )}
+                      {orderStatus?.ten === "SHIPPING" && (
+                        <Button
+                          type="primary"
+                          onClick={async () => {
+                            await handleStatus(
+                              form.getFieldsValue(),
+                              approvedStatus,
+                              "Hoàn thành"
+                            );
+                          }}
+                        >
+                          Hoàn thành
+                        </Button>
+                      )}
                       {orderStatus?.ten === "CONFIRMED" && showExportButton && (
                         <Button type="primary" onClick={showExportHoaDonModal}>
                           Export PDF
@@ -949,10 +1000,14 @@ const detailHoaDon: React.FC = () => {
                     allowClear
                     prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
                   />
+                {orderStatus?.ten === "PENDING" && (
                   <Button onClick={handleUpdateSoLuongSanPham}>
                     Cập nhật lại giỏ hàng
                   </Button>
+                )}
+                {orderStatus?.ten === "PENDING" && (
                   <Button onClick={showSanPhamModal}>Thêm sản phẩm</Button>
+                )}
                 </Space>
               </Row>
               <Table
