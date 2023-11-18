@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@ToString
 public class UpdatedVoucherRequest {
 
     private Long id;

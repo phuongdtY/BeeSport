@@ -64,8 +64,7 @@ export interface DataParams {
   currentPage: number;
   pageSize: number;
   searchText: string;
-  filterStatus: string;
-  filterGender: string;
+  gioiTinh: string;
   sorter: string;
   sortOrder: string;
 }
@@ -75,6 +74,8 @@ export interface TableParams {
   searchText?: string;
   trangThai?: string;
   gioiTinh?: string;
+  ngaySinhStart: string;
+  ngaySinhEnd: string;
   sortField?: string;
   sortOrder?: string;
   filters?: Record<string, FilterValue>;

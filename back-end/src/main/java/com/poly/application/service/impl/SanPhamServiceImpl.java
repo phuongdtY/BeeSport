@@ -111,7 +111,6 @@ public class SanPhamServiceImpl implements SanPhamService {
 
         // Lưu thay đổi vào cơ sở dữ liệu
         detail = repository.save(detail);
-        System.out.println(detail);
         // Trả về thông tin sản phẩm sau khi cập nhật
         SanPhamResponse response = new SanPhamResponse();
         // Điền thông tin sản phẩm vào response dựa trên detail

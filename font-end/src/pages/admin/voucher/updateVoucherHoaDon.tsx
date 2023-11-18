@@ -1,51 +1,36 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 import {
   Button,
-  Col,
-  DatePicker,
+  Card,
   Form,
   Input,
   Modal,
-  Row,
+  Skeleton,
   Space,
+  DatePicker,
   message,
-  InputNumber,
   Select,
+  InputNumber,
   TimeRangePickerProps,
-  Table,
-  Tooltip,
-  Tag,
-  Divider,
-  Steps,
-  Typography,
 } from "antd";
-const { Text, Link } = Typography;
-
-import dayjs from "dayjs";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { UpdatedRequest } from "~/interfaces/voucher.type";
 import request from "~/utils/request";
-import {
-  DeleteOutlined,
-  ExclamationCircleFilled,
-  EyeOutlined,
-} from "@ant-design/icons";
-import { CreatedRequest } from "~/interfaces/voucher.type";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { DataType } from "~/interfaces/voucher.type";
 import { formatGiaTienVND, formatSoLuong } from "~/utils/formatResponse";
-import { ColumnsType } from "antd/es/table";
-import { DataType } from "~/interfaces/khachHang.type";
-import ModalKhachHang from "./ModalKhachHang";
+dayjs.extend(customParseFormat);
+
+const { confirm } = Modal;
 const { Option } = Select;
 
-function AddVoucherKhachHang() {
-  const [openModal, setOpenModal] = useState(false);
-  const [dataTable, setDataTable] = useState([]);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-
-  const [form] = Form.useForm();
-  const { confirm } = Modal;
+export function UpdateVoucherHoaDon() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loadingForm, setLoadingForm] = useState(false);
+  const [form] = Form.useForm();
+  let { id } = useParams();
   const [dataHinhThucGiamGia, setDataHinhThucGiamGia] = useState([]);
 
   useEffect(() => {
@@ -53,63 +38,84 @@ function AddVoucherKhachHang() {
       try {
         const res = await request.get("hinh-thuc-giam-gia");
         setDataHinhThucGiamGia(res.data.content);
+        console.log(res.data.content);
       } catch (error) {
         console.log(error);
       }
     };
-
+    const getOne = async () => {
+      setLoadingForm(true);
+      try {
+        const res = await request.get("voucher/" + id);
+        const ngayBatDau = dayjs(res.data?.ngayBatDau, "YYYY-MM-DD HH:mm:ss");
+        const ngayKetThuc = dayjs(res.data?.ngayKetThuc, "YYYY-MM-DD HH:mm:ss");
+        form.setFieldsValue({
+          id: res.data?.id,
+          ma: res.data?.ma,
+          ten: res.data?.ten,
+          soLanSuDung: res.data.soLuong !== null ? 1 : 0,
+          soLuong: res.data?.soLuong,
+          dateRange: [ngayBatDau, ngayKetThuc],
+          hinhThucGiam: res.data?.hinhThucGiam.id,
+          donToiThieu: res.data?.donToiThieu,
+          giaTriGiam: res.data?.giaTriGiam,
+          giamToiDa: res.data?.giamToiDa,
+        });
+        setLoadingForm(false);
+      } catch (error) {
+        console.log(error);
+        setLoadingForm(false);
+      }
+    };
+    getOne();
     fetchData();
-  }, []);
+  }, [id]);
 
-  const onFinish = (values: CreatedRequest) => {
-    if (dataTable.length === 0) {
-      message.warning("Bạn chưa chọn khách hàng muốn thêm");
-      return;
-    }
+  const onFinish = (values: UpdatedRequest) => {
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc thêm voucher này không?",
+      content: "Bạn có chắc cập nhật voucher này không?",
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
-        const data = {
-          ten: values.ten,
-          ngayBatDau: values.dateRange[0].format("YYYY-MM-DD HH:mm:ss"),
-          ngayKetThuc: values.dateRange[1].format("YYYY-MM-DD HH:mm:ss"),
-          hinhThucGiam: { id: values.hinhThucGiam },
-          donToiThieu: values.donToiThieu,
-          giaTriGiam:
-            values.hinhThucGiam === 2 ? values.giaTriGiam : values.giamToiDa,
-          giamToiDa: values.giamToiDa,
-          soLuong: values.soLuong,
-        };
         try {
-          setLoading(true);
-          const res = await request.post("voucher", data);
-          try {
-            setLoading(true);
-            console.log(fakeList(res.data.id));
-
-            await request.post("/voucher-chi-tiet/add", fakeList(res.data.id), {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
-            setLoading(false);
-            message.success("Thêm voucher thành công");
+          const data = {
+            ten: values.ten,
+            ngayBatDau: values.dateRange[0].format("YYYY-MM-DD HH:mm:ss"),
+            ngayKetThuc: values.dateRange[1].format("YYYY-MM-DD HH:mm:ss"),
+            hinhThucGiam: { id: values.hinhThucGiam },
+            donToiThieu: values.donToiThieu,
+            giaTriGiam:
+              values.hinhThucGiam === 2 ? values.giaTriGiam : values.giamToiDa,
+            giamToiDa: values.giamToiDa,
+            soLuong: values.soLuong,
+          };
+          const res = await request.put("voucher/" + id, data);
+          console.log(values);
+          if (res.data) {
+            message.success("Cập nhật voucher thành công");
             navigate("/admin/voucher");
-          } catch (error) {
-            console.log(error);
-            message.error(error.response.data.message);
-            setLoading(false);
+          } else {
+            console.error("Phản hồi API không như mong đợi:", res);
           }
         } catch (error: any) {
-          console.log(error);
-          message.error(error.response.data.message);
-          setLoading(false);
+          console.log(values);
+          if (error.response && error.response.status === 400) {
+            message.error(error.response.data.message);
+          } else {
+            console.error("Lỗi không xác định:", error);
+            message.error("Cập nhật voucher thất bại");
+          }
         }
       },
+    });
+  };
+  const onChangeHinhThucGiamGia = () => {
+    form.setFieldsValue({
+      donToiThieu: 0,
+      giaTriGiam: 0,
+      giamToiDa: 0,
     });
   };
   const rangePresets: TimeRangePickerProps["presets"] = [
@@ -118,144 +124,34 @@ function AddVoucherKhachHang() {
     { label: "Hạn 30 ngày", value: [dayjs(), dayjs().add(+30, "d")] },
     { label: "Hạn 90 ngày", value: [dayjs(), dayjs().add(+90, "d")] },
   ];
-  const onChangeHinhThucGiamGia = () => {
-    form.setFieldsValue({
-      donToiThieu: 0,
-      giaTriGiam: 0,
-      giamToiDa: 0,
-    });
-  };
-
-  // con
-  const columns: ColumnsType<DataType> = [
-    {
-      title: "STT",
-      align: "center",
-      rowScope: "row",
-      width: "60px",
-      render: (_, __, index) => (page - 1) * pageSize + index + 1,
-    },
-    {
-      title: "Tên",
-      dataIndex: "ten",
-      key: "ten",
-      ellipsis: true,
-    },
-    {
-      title: "Liên hệ",
-      dataIndex: "lienHe",
-      key: "lienHe",
-      ellipsis: true,
-      render: (lienHe, record) => (
-        <Space direction="vertical">
-          <Text type="success">{record.soDienThoai}</Text>
-          <Text type="warning">{record.email}</Text>
-        </Space>
-      ),
-    },
-    {
-      title: "Số lần sử dụng",
-      dataIndex: "soLanSuDung",
-      key: "soLanSuDung",
-      width: 130,
-      render: (soLanSuDung, record) => (
-        <Space>
-          <InputNumber
-            value={soLanSuDung}
-            min={1}
-            style={{ width: "100%" }}
-            formatter={(value) => `${formatSoLuong(value)}`}
-            parser={(value) => value.replace(/,/g, "")}
-            onChange={(newSoLuong) =>
-              handleEditSoLuong(record.idKH, newSoLuong)
-            }
-          />
-          <Button type="link" style={{ padding: 0 }}>
-            <Tooltip title="Xóa">
-              <DeleteOutlined
-                style={{ color: "red" }}
-                onClick={() => deleteItem(record.idKH)}
-              />
-            </Tooltip>
-          </Button>
-        </Space>
-      ),
-    },
-  ];
-
-  const listKhachHang = (data: any) => {
-    setDataTable((prevDataTable) => {
-      const updatedDataTable = [...prevDataTable];
-
-      // Update existing items and add new items
-      data.forEach((item: any) => {
-        const existingIndex = updatedDataTable.findIndex(
-          (existingItem) => existingItem.id === item.id
-        );
-
-        if (existingIndex !== -1) {
-          updatedDataTable[existingIndex] = {
-            ...updatedDataTable[existingIndex],
-            soLanSuDung: updatedDataTable[existingIndex].soLanSuDung + 1,
-          };
-        } else {
-          updatedDataTable.push({
-            idKH: item.id,
-            key: item.id,
-            ten: item.hoVaTen,
-            soDienThoai: item.soDienThoai,
-            email: item.email,
-            soLanSuDung: 1,
-          });
+  const clickHuyBo = () => {
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc hủy bỏ voucher này không?",
+      okText: "Có",
+      cancelText: "Không",
+      onOk: async () => {
+        try {
+          await request.put("voucher/cancel-voucher/" + id);
+          message.success("Hủy bỏ voucher thành công");
+          navigate("/admin/voucher");
+        } catch (error) {
+          message.error("Hủy bỏ voucher thất bại");
+          console.log(error);
         }
-      });
-
-      return updatedDataTable;
+      },
     });
-  };
-
-  const handleEditSoLuong = (id, value) => {
-    // Find the index of the item with the given id
-    const index = dataTable.findIndex((item) => item.idKH === id);
-
-    // Update the soLanSuDung value for the item at the found index
-    if (index !== -1) {
-      setDataTable((prevDataTable) => {
-        const updatedDataTable = [...prevDataTable];
-        updatedDataTable[index] = {
-          ...updatedDataTable[index],
-          soLanSuDung: value,
-        };
-        return updatedDataTable;
-      });
-    }
-  };
-  const deleteItem = (id) => {
-    setDataTable((prevDataTable) =>
-      prevDataTable.filter((item) => item.idKH !== id)
-    );
-  };
-
-  const fakeList = (idVoucher) => {
-    const dataFake = dataTable.map((item) => ({
-      voucher: {
-        id: idVoucher,
-      },
-      taiKhoan: {
-        id: item.idKH,
-      },
-      soLanSuDung: item.soLanSuDung,
-    }));
-    return dataFake;
   };
   return (
-    <Row>
-      <Col span={12}>
+    <>
+      <Skeleton loading={loadingForm}>
         <Form
           form={form}
           onFinish={onFinish}
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 17 }}
+          labelCol={{ span: 9 }}
+          wrapperCol={{ span: 16 }}
+          style={{ maxWidth: 750 }}
         >
           <Form.Item
             name="ten"
@@ -269,6 +165,13 @@ function AddVoucherKhachHang() {
             ]}
           >
             <Input />
+          </Form.Item>
+
+          <Form.Item name="soLanSuDung" label="Số lần sử dụng">
+            <Select>
+              <Option value={0}>Không giới hạn</Option>
+              <Option value={1}>Giới hạn</Option>
+            </Select>
           </Form.Item>
           <Form.Item
             noStyle
@@ -381,7 +284,7 @@ function AddVoucherKhachHang() {
                     ]}
                   >
                     <InputNumber
-                      // defaultValue={0}
+                      defaultValue={0}
                       style={{ width: "100%" }}
                       min={1000}
                       step={5000}
@@ -478,47 +381,25 @@ function AddVoucherKhachHang() {
               ) : null
             }
           </Form.Item>
-          <Form.Item name="soLanSuDung" label="Khách hàng">
-            <Button onClick={() => setOpenModal(true)}>Chọn khách hàng</Button>
-          </Form.Item>
-          <Form.Item wrapperCol={{ offset: 8, span: 15 }}>
+          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Space style={{ float: "right" }}>
-              <Button
-                type="dashed"
-                htmlType="reset"
-                style={{ margin: "0 12px" }}
-              >
-                Reset
+              <Button type="primary" htmlType="submit">
+                Cập nhật
               </Button>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                Thêm
+              <Button
+                type="primary"
+                htmlType="button"
+                danger
+                onClick={clickHuyBo}
+              >
+                Hủy bỏ
               </Button>
             </Space>
           </Form.Item>
         </Form>
-      </Col>
-      <Col span={12}>
-        <Table
-          pagination={{
-            defaultPageSize: 5,
-            onChange(page, pageSize) {
-              setPage(page);
-              setPageSize(pageSize);
-            },
-          }}
-          bordered
-          columns={columns}
-          dataSource={dataTable}
-        />
-      </Col>
-      <ModalKhachHang
-        list={dataTable}
-        listKhachHang={listKhachHang}
-        openModal={openModal}
-        closeModal={() => setOpenModal(false)}
-      />
-    </Row>
+      </Skeleton>
+    </>
   );
 }
 
-export default AddVoucherKhachHang;
+export default UpdateVoucherHoaDon;

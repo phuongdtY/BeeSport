@@ -2,6 +2,7 @@ package com.poly.application.model.response;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HinhThucGiamGia;
+import com.poly.application.entity.VoucherChiTiet;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -40,5 +42,7 @@ public class VoucherResponse {
     private LocalDateTime ngaySua;
 
     private CommonEnum.TrangThaiVoucher trangThai;
+
+    private List<VoucherChiTiet> voucherChiTietList;
 
 }

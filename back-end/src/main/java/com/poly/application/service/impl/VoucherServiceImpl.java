@@ -102,7 +102,6 @@ public class VoucherServiceImpl implements VoucherService {
         request.setTrangThai(status);
         mapper.convertUpdateRequestToEntity(request, detail);
         Voucher savedVoucher = this.repository.save(detail);
-        System.out.println(detail);
         return mapper.convertEntityToResponse(savedVoucher);
     }
 

@@ -176,7 +176,6 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
         }
 
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        System.out.println(searchText);
         Page<ChiTietSanPham> pageSanPham = repository.filterChiTietSanPham(pageable, searchText, minGiaTien, maxGiaTien, idLoaiDe, idMauSac, idKichCo, idDiaHinhSan, idThuongHieu);
         return pageSanPham.map(mapper::convertEntityToResponse);
     }

@@ -71,7 +71,6 @@ public class ChiTietSanPhamController {
 
     @PostMapping()
     public ResponseEntity<?> add(@RequestBody List<CreatedChiTietSanPhamRequest> request) {
-        System.out.println(request);
         return new ResponseEntity<>(service.addList(request), HttpStatus.CREATED);
     }
 

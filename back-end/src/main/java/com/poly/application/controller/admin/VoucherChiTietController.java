@@ -1,9 +1,7 @@
 package com.poly.application.controller.admin;
 
-import com.poly.application.model.request.create_request.CreatedChiTietSanPhamRequest;
 import com.poly.application.model.request.create_request.CreatedVoucherChiTietRequest;
-import com.poly.application.model.request.update_request.UpdatedChiTietSanPhamRequest;
-import com.poly.application.service.ChiTietSanPhamService;
+import com.poly.application.model.request.update_request.UpdatedVoucherChiTietRequest;
 import com.poly.application.service.VoucherChiTietService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -39,18 +36,18 @@ public class VoucherChiTietController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> getAllList() {
-        return ResponseEntity.ok(service.getAllList());
+    public ResponseEntity<?> getAllList(@RequestParam(name = "idVoucher",required = false)Long idVoucher) {
+        return ResponseEntity.ok(service.getAllList(idVoucher));
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody CreatedVoucherChiTietRequest request) {
-        System.out.println(request);
-        return new ResponseEntity<>(service.addList(request), HttpStatus.CREATED);
+    public ResponseEntity<?> add(@RequestBody List<CreatedVoucherChiTietRequest> requests) {
+        return new ResponseEntity<>(service.addList(requests), HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody List<UpdatedChiTietSanPhamRequest> request) {
+    public ResponseEntity<?> update(@RequestBody List<UpdatedVoucherChiTietRequest> request) {
+        service.update(request);
         return ResponseEntity.ok("Danh sách ChiTietSanPham đã được cập nhật thành công.");
     }
 
