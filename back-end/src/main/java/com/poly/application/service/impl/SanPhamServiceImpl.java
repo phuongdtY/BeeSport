@@ -74,9 +74,10 @@ public class SanPhamServiceImpl implements SanPhamService {
         }
 
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, listThuongHieu, listDiaHinhSan, listLoaiDe, listKichCo, listMauSac);
+        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, listThuongHieu, listMauSac, listDiaHinhSan, listKichCo, listLoaiDe);
         return sanPhamPage;
     }
+
 
     @Override
     public SanPhamResponse add(CreatedSanPhamRequest request) {
