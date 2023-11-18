@@ -76,7 +76,7 @@ const Home: React.FC = () => {
       <Row gutter={16}>
         {sanPhamMoiNhat.map((product) => (
           <Col key={product.id}>
-            <Card style={{ width: 267 }}>
+            <Card style={{ width: 267, marginBottom: 10 }}>
               <img
                 style={{ padding: 30, height: 240 }}
                 alt="example"
@@ -221,7 +221,7 @@ const Home: React.FC = () => {
       <Divider style={{ fontSize: 25, fontWeight: "bold", marginTop: 20 }}>
         CHỌN GIÀY THEO ĐỊA HÌNH SÂN
       </Divider>
-      <Row style={{ marginTop: 30 }}>
+      <Row style={{ marginTop: 30, marginBottom: 30 }}>
         <Col span={5} style={{ marginRight: 75 }}>
           <a href="">
             <img src={santunhien} alt="" width={"100%"} height={"300px"} />
