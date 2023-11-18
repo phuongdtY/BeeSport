@@ -7,10 +7,14 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 public interface VoucherService {
 
     Page<VoucherResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,
-                                 String searchText, Long hinhThucGiamGiaId, String trangThaiString);
+                                 String searchText, Long hinhThucGiamGiaId, String trangThaiString,
+                                 LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc);
 
     List<VoucherResponse> getListVoucher();
 
