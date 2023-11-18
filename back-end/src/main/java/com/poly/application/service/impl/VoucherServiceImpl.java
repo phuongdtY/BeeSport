@@ -39,9 +39,8 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Page<VoucherResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,
-                                        String searchText, Long hinhThucGiamGiaId, String trangThaiString) {
                                         String searchText, Long hinhThucGiamGiaId, String trangThaiString,
-                                        LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc) {
+                                        LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc){
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
