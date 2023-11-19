@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
                                 @ColumnResult(name = "ten", type = String.class),
                                 @ColumnResult(name = "giaMin", type = BigDecimal.class),
                                 @ColumnResult(name = "giaMax", type = BigDecimal.class),
+                                @ColumnResult(name = "duongDan", type = String.class),
                                 @ColumnResult(name = "ngayTao", type = LocalDateTime.class)
                         }
                 )
