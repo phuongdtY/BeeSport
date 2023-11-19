@@ -5,6 +5,8 @@ import {
   Collapse,
   CollapseProps,
   ColorPicker,
+  Pagination,
+  PaginationProps,
   Row,
   Select,
   Slider,
@@ -16,6 +18,7 @@ import React, { useEffect, useState } from "react";
 import { formatGiaTien, formatGiaTienVND } from "~/utils/formatResponse";
 import request from "~/utils/request";
 import { Link } from "react-router-dom";
+import { DataParam } from "~/interfaces/filterSanPham.type";
 
 const { Title } = Typography;
 
@@ -27,6 +30,9 @@ const SanPham: React.FC = () => {
   const [mauSacs, setMauSacs] = useState([]);
   const [sanPhams, setSanPhams] = useState([]);
   const [giaTienRange, setGiaTienRange] = useState([0, 10000000]);
+  const [dataParams, setDataParams] = useState<DataParam>();
+  const [totalElements, setTotalElements] = useState(1);
+  const [selectedThuongHieu, setSelectedThuongHieu] = useState([]);
 
   const kichCoLength = Math.ceil(kichCos.length / 3);
   const leftKichCo = kichCos.slice(0, kichCoLength);
@@ -37,6 +43,34 @@ const SanPham: React.FC = () => {
   const leftMauSac = mauSacs.slice(0, mauSacLength);
   const middleMauSac = mauSacs.slice(mauSacLength, 2 * mauSacLength);
   const rightMauSac = mauSacs.slice(2 * mauSacLength);
+
+  const handleThuongHieuChange = (item) => {
+    const currentIndex = selectedThuongHieu.indexOf(item);
+    const newSelectedThuongHieu = [...selectedThuongHieu];
+
+    if (currentIndex === -1) {
+      newSelectedThuongHieu.push(item);
+    } else {
+      newSelectedThuongHieu.splice(currentIndex, 1);
+    }
+
+    setSelectedThuongHieu(newSelectedThuongHieu);
+    setDataParams({
+      ...dataParams,
+      listThuongHieu: newSelectedThuongHieu,
+    });
+  };
+
+  const onShowSizeChange: PaginationProps["onShowSizeChange"] = (
+    current,
+    pageSize
+  ) => {
+    setDataParams({
+      ...dataParams,
+      page: current,
+      pageSize: pageSize,
+    });
+  };
 
   const items: CollapseProps["items"] = [
     {
@@ -67,7 +101,9 @@ const SanPham: React.FC = () => {
         <p>
           {thuongHieus.map((item, index) => (
             <div key={index} style={{ marginBottom: 10 }}>
-              <Checkbox>{item.ten}</Checkbox>
+              <Checkbox onChange={() => handleThuongHieuChange(item.id)}>
+                {item.ten}
+              </Checkbox>
             </div>
           ))}
         </p>
@@ -233,8 +269,11 @@ const SanPham: React.FC = () => {
 
     const fetchSanPham = async () => {
       try {
-        const res = await request.get("/san-pham/gia-tien-moi-nhat");
-        setSanPhams(res.data);
+        const res = await request.get("/san-pham/filter", {
+          params: dataParams,
+        });
+        setSanPhams(res.data.content);
+        setTotalElements(res.data.totalElements);
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu sản phẩm thất bại");
@@ -247,7 +286,7 @@ const SanPham: React.FC = () => {
     fetchSize();
     fetchMauSac();
     fetchSanPham();
-  }, []);
+  }, [dataParams]);
   return (
     <>
       <div
@@ -326,6 +365,14 @@ const SanPham: React.FC = () => {
               </Col>
             ))}
           </Row>
+          <Pagination
+            style={{ marginLeft: 260, marginBottom: 50 }}
+            defaultPageSize={9}
+            showSizeChanger={false}
+            onChange={onShowSizeChange}
+            defaultCurrent={1}
+            total={totalElements}
+          />
         </Col>
       </Row>
     </>
