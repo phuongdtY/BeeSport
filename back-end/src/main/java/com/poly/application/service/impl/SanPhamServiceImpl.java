@@ -73,8 +73,28 @@ public class SanPhamServiceImpl implements SanPhamService {
             sort = Sort.by("ngayTao").descending();
         }
 
+        String th = Optional.ofNullable(listThuongHieu)
+                .map(ids -> ids.stream().map(String::valueOf).collect(Collectors.joining(",")))
+                .orElse(null);
+        String ms = Optional.ofNullable(listMauSac)
+                .map(ids -> ids.stream().map(String::valueOf).collect(Collectors.joining(",")))
+                .orElse(null);
+        String dhs = Optional.ofNullable(listDiaHinhSan)
+                .map(ids -> ids.stream().map(String::valueOf).collect(Collectors.joining(",")))
+                .orElse(null);
+        String kc = Optional.ofNullable(listKichCo)
+                .map(ids -> ids.stream().map(String::valueOf).collect(Collectors.joining(",")))
+                .orElse(null);
+        String ld = Optional.ofNullable(listLoaiDe)
+                .map(ids -> ids.stream().map(String::valueOf).collect(Collectors.joining(",")))
+                .orElse(null);
+        System.out.println("TH :"+th);
+        System.out.println("MS :"+ms);
+        System.out.println("DHS :"+dhs);
+        System.out.println("KC :"+kc);
+        System.out.println("LD :"+ld);
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, listThuongHieu, listMauSac, listDiaHinhSan, listKichCo, listLoaiDe);
+        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, th, ms, dhs, kc, ld);
         return sanPhamPage;
     }
 
