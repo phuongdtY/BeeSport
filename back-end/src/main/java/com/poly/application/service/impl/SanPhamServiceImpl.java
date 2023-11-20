@@ -72,7 +72,6 @@ public class SanPhamServiceImpl implements SanPhamService {
         } else {
             sort = Sort.by("ngayTao").descending();
         }
-
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
         Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, listThuongHieu, listMauSac, listDiaHinhSan, listKichCo, listLoaiDe);
         return sanPhamPage;

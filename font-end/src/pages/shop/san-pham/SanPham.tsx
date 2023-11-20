@@ -23,6 +23,18 @@ import { DataParam } from "~/interfaces/filterSanPham.type";
 const { Title } = Typography;
 
 const SanPham: React.FC = () => {
+  const useLocalStorage = (key, initialValue) => {
+    const [value, setValue] = useState(() => {
+      const storedValue = localStorage.getItem(key);
+      return storedValue ? JSON.parse(storedValue) : initialValue;
+    });
+
+    useEffect(() => {
+      localStorage.setItem(key, JSON.stringify(value));
+    }, [key, value]);
+
+    return [value, setValue];
+  };
   const [thuongHieus, setThuongHieus] = useState([]);
   const [diaHinhSans, setDiaHinhSans] = useState([]);
   const [loaiDes, setLoaiDes] = useState([]);
@@ -32,7 +44,26 @@ const SanPham: React.FC = () => {
   const [giaTienRange, setGiaTienRange] = useState([0, 10000000]);
   const [dataParams, setDataParams] = useState<DataParam>();
   const [totalElements, setTotalElements] = useState(1);
-  const [selectedThuongHieu, setSelectedThuongHieu] = useState([]);
+  const [selectedDiaHinhSan, setSelectedDiaHinhSan] = useLocalStorage(
+    "selectedDiaHinhSan",
+    []
+  );
+  const [selectedKichCo, setSelectedKichCo] = useLocalStorage(
+    "selectedKichCo",
+    []
+  );
+  const [selectedLoaiDe, setSelectedLoaiDe] = useLocalStorage(
+    "selectedLoaiDe",
+    []
+  );
+  const [selectedThuongHieu, setSelectedThuongHieu] = useLocalStorage(
+    "selectedThuongHieu",
+    []
+  );
+  const [selectedMauSac, setSelectedMauSac] = useLocalStorage(
+    "selectedMauSac",
+    []
+  );
 
   const kichCoLength = Math.ceil(kichCos.length / 3);
   const leftKichCo = kichCos.slice(0, kichCoLength);
@@ -43,23 +74,6 @@ const SanPham: React.FC = () => {
   const leftMauSac = mauSacs.slice(0, mauSacLength);
   const middleMauSac = mauSacs.slice(mauSacLength, 2 * mauSacLength);
   const rightMauSac = mauSacs.slice(2 * mauSacLength);
-
-  const handleThuongHieuChange = (item) => {
-    const currentIndex = selectedThuongHieu.indexOf(item);
-    const newSelectedThuongHieu = [...selectedThuongHieu];
-
-    if (currentIndex === -1) {
-      newSelectedThuongHieu.push(item);
-    } else {
-      newSelectedThuongHieu.splice(currentIndex, 1);
-    }
-
-    setSelectedThuongHieu(newSelectedThuongHieu);
-    setDataParams({
-      ...dataParams,
-      listThuongHieu: newSelectedThuongHieu,
-    });
-  };
 
   const onShowSizeChange: PaginationProps["onShowSizeChange"] = (
     current,
@@ -101,9 +115,7 @@ const SanPham: React.FC = () => {
         <p>
           {thuongHieus.map((item, index) => (
             <div key={index} style={{ marginBottom: 10 }}>
-              <Checkbox onChange={() => handleThuongHieuChange(item.id)}>
-                {item.ten}
-              </Checkbox>
+              <Checkbox>{item.ten}</Checkbox>
             </div>
           ))}
         </p>
@@ -208,19 +220,34 @@ const SanPham: React.FC = () => {
     },
   ];
 
-  const onChange = (key: string | string[]) => {
-    console.log(key);
-  };
+  const onChange = (key: string | string[]) => {};
 
-  const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
-  };
+  const handleChange = (value: string) => {};
+
+  useEffect(() => {
+    const formatParams = (selectedData) => {
+      return selectedData.join(",");
+    };
+
+    setDataParams((prevDataParams) => {
+      const updatedDataParams = {
+        ...prevDataParams,
+        listDiaHinhSan: formatParams(selectedDiaHinhSan),
+        listKichCo: formatParams(selectedKichCo),
+        listLoaiDe: formatParams(selectedLoaiDe),
+        listThuongHieu: formatParams(selectedThuongHieu),
+        listMauSac: formatParams(selectedMauSac),
+      };
+      return updatedDataParams;
+    });
+  }, []);
 
   useEffect(() => {
     const fetchThuongHieu = async () => {
       try {
         const res = await request.get("/thuong-hieu/list");
         setThuongHieus(res.data);
+        setSelectedThuongHieu(res.data.map((item) => item.id));
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu thương hiệu thất bại");
@@ -231,6 +258,7 @@ const SanPham: React.FC = () => {
       try {
         const res = await request.get("/dia-hinh-san/list");
         setDiaHinhSans(res.data);
+        setSelectedDiaHinhSan(res.data.map((item) => item.id));
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu địa hình sân thất bại");
@@ -241,6 +269,7 @@ const SanPham: React.FC = () => {
       try {
         const res = await request.get("/loai-de/list");
         setLoaiDes(res.data);
+        setSelectedLoaiDe(res.data.map((item) => item.id));
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu loại đế thất bại");
@@ -251,6 +280,7 @@ const SanPham: React.FC = () => {
       try {
         const res = await request.get("/kich-co/list");
         setKichCos(res.data);
+        setSelectedKichCo(res.data.map((item) => item.id));
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu kích cỡ thất bại");
@@ -261,6 +291,7 @@ const SanPham: React.FC = () => {
       try {
         const res = await request.get("/mau-sac/list");
         setMauSacs(res.data);
+        setSelectedMauSac(res.data.map((item) => item.id));
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu màu sắc thất bại");

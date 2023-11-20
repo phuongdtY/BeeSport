@@ -42,11 +42,11 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "WHERE cps.trangThai = 'ACTIVE' " +
             "AND hi.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
             "AND cps.giaTien BETWEEN :minPrice AND :maxPrice " +
-            "AND (:listThuongHieu IS NULL OR sp.thuongHieu.id IN (:listThuongHieu)) " +
-            "AND (:listMauSac IS NULL OR cps.mauSac.id IN (:listMauSac)) " +
-            "AND (:listDiaHinhSan IS NULL OR cps.diaHinhSan.id IN (:listDiaHinhSan)) " +
-            "AND (:listKichCo IS NULL OR cps.kichCo.id IN (:listKichCo)) " +
-            "AND (:listLoaiDe IS NULL OR cps.loaiDe.id IN (:listLoaiDe)) " +
+            "AND (sp.thuongHieu.id IN :listThuongHieu) " +
+            "AND (cps.mauSac.id IN :listMauSac) " +
+            "AND (cps.diaHinhSan.id IN :listDiaHinhSan) " +
+            "AND (cps.kichCo.id IN :listKichCo) " +
+            "AND (cps.loaiDe.id IN :listLoaiDe) " +
             "GROUP BY sp.id, sp.ten, hi.duongDan, sp.ngayTao ")
     Page<SanPhamFilterResponse> filterSanPham(Pageable pageable, @Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice,
                                               @Param("listThuongHieu") List<Long> listThuongHieu,
