@@ -21,8 +21,11 @@ public interface HoaDonService {
 
     HoaDonResponse update(Long id,UpdatedHoaDonRequest updatedHoaDonRequest);
 
+    HoaDonResponse updateHuyHoaDon(Long id, UpdatedHoaDonRequest updatedHoaDonRequest);
+
     void delete(Long id);
 
     void updateTrangThaiHoaDon(Long idHoadon, CommonEnum.TrangThaiHoaDon trangThaiHoaDon, String ghiChu);
+
 
 }

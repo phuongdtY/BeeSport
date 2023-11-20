@@ -35,18 +35,18 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
     @Query("SELECT sp FROM SanPham sp WHERE sp.trangThai = 'ACTIVE' ORDER BY sp.ngayTao DESC")
     List<SanPham> get5SanPhamMoiNhat();
 
-    @Query("SELECT NEW com.poly.application.model.response.SanPhamFilterResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien), hi.duongDan, sp.ngayTao) " +
+    @Query(value = "SELECT NEW com.poly.application.model.response.SanPhamFilterResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien), hi.duongDan, sp.ngayTao) " +
             "FROM SanPham sp " +
             "JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id " +
             "JOIN HinhAnhSanPham hi ON sp.id = hi.sanPham.id " +
             "WHERE cps.trangThai = 'ACTIVE' " +
             "AND hi.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
             "AND cps.giaTien BETWEEN :minPrice AND :maxPrice " +
-            "AND (sp.thuongHieu.id IN :listThuongHieu) " +
-            "AND (cps.mauSac.id IN :listMauSac) " +
-            "AND (cps.diaHinhSan.id IN :listDiaHinhSan) " +
-            "AND (cps.kichCo.id IN :listKichCo) " +
-            "AND (cps.loaiDe.id IN :listLoaiDe) " +
+            "AND (COALESCE(:listThuongHieu, NULL) IS NULL OR  CAST(sp.thuongHieu.id as long) IN (CAST(:listThuongHieu as long) )) " +
+            "AND (COALESCE(:listMauSac, NULL) IS NULL OR CAST(cps.mauSac.id as long) IN (CAST(:listMauSac as long))) " +
+            "AND (COALESCE(:listDiaHinhSan, NULL) IS NULL OR CAST(cps.diaHinhSan.id as long) IN (CAST(:listDiaHinhSan as long))) " +
+            "AND (COALESCE(:listKichCo, NULL) IS NULL OR CAST(cps.kichCo.id as long) IN (CAST(:listKichCo as long))) " +
+            "AND (COALESCE(:listLoaiDe, NULL) IS NULL OR CAST(cps.loaiDe.id as long) IN (CAST(:listLoaiDe as long))) " +
             "GROUP BY sp.id, sp.ten, hi.duongDan, sp.ngayTao ")
     Page<SanPhamFilterResponse> filterSanPham(Pageable pageable, @Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice,
                                               @Param("listThuongHieu") List<Long> listThuongHieu,

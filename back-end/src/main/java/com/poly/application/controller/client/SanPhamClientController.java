@@ -29,11 +29,11 @@ public class SanPhamClientController {
             @RequestParam(name = "sapXep",  defaultValue = "6") String sapXep,
             @RequestParam(name = "minPrice", defaultValue = "0")BigDecimal minPrice,
             @RequestParam(name = "maxPrice", defaultValue = "10000000")BigDecimal maxPrice,
-            @RequestParam(name = "listThuongHieu",required = false)List<Long> listThuongHieu,
+            @RequestParam(name = "listThuongHieu", required = false)List<Long> listThuongHieu,
             @RequestParam(name = "listDiaHinhSan", required = false)List<Long> listDiaHinhSan,
-            @RequestParam(name = "listLoaiDe",required = false) List<Long> listLoaiDe,
+            @RequestParam(name = "listLoaiDe",  required = false) List<Long> listLoaiDe,
             @RequestParam(name = "listKichCo", required = false)List<Long> listKichCo,
-            @RequestParam(name = "listMauSac", required = false) List<Long> listMauSac
+            @RequestParam(name = "listMauSac",  required = false) List<Long> listMauSac
             ) {
         return ResponseEntity.ok(service.filterSanPham(page, pageSize, sapXep, minPrice, maxPrice, listThuongHieu, listMauSac, listDiaHinhSan, listKichCo, listLoaiDe));
     }
