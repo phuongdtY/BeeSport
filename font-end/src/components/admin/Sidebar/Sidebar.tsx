@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Divider, Layout, Menu } from "antd";
+import { FaChartBar } from "react-icons/fa";
+
 import {
   ContainerOutlined,
   TeamOutlined,
@@ -67,6 +69,7 @@ const CustomSider: React.FC<{
       "13",
       <GiftOutlined />
     ),
+    getItem(<Link to="/admin/thong-ke">Thống kê</Link>, "14", <FaChartBar />),
   ];
 
   return (
