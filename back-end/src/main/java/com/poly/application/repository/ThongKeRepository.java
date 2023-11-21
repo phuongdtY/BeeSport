@@ -31,10 +31,11 @@ public class ThongKeRepository {
                 .setParameter("ngayThanhToan", ngayThanhToan)
                 .getSingleResult();
 
-        Long tongTien = ((Number) result[0]).longValue();
-        Long soDonThanhCong = ((Number) result[1]).longValue();
-        Long soDonHuy = ((Number) result[2]).longValue();
-        Long soSanPhamDaBan = ((Number) result[3]).longValue();
+        Long tongTien = result[0] != null ? ((Number) result[0]).longValue() : 0L;
+        Long soDonThanhCong = result[1] != null ? ((Number) result[1]).longValue() : 0L;
+        Long soDonHuy = result[2] != null ? ((Number) result[2]).longValue() : 0L;
+        Long soSanPhamDaBan = result[3] != null ? ((Number) result[3]).longValue() : 0L;
+
 
         ThongKeTheoDMYResponse response = new ThongKeTheoDMYResponse();
         response.setTongDoanhThu(tongTien);
