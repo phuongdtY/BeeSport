@@ -88,13 +88,8 @@ public class SanPhamServiceImpl implements SanPhamService {
         String ld = Optional.ofNullable(listLoaiDe)
                 .map(ids -> ids.stream().map(String::valueOf).collect(Collectors.joining(",")))
                 .orElse(null);
-        System.out.println("TH :"+th);
-        System.out.println("MS :"+ms);
-        System.out.println("DHS :"+dhs);
-        System.out.println("KC :"+kc);
-        System.out.println("LD :"+ld);
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, th, ms, dhs, kc, ld);
+        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, listThuongHieu, ms, dhs, kc, ld);
         return sanPhamPage;
     }
 

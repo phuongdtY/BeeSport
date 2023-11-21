@@ -23,17 +23,24 @@ import { DataParam } from "~/interfaces/filterSanPham.type";
 const { Title } = Typography;
 
 const SanPham: React.FC = () => {
-  const useLocalStorage = (key, initialValue) => {
-    const [value, setValue] = useState(() => {
-      const storedValue = localStorage.getItem(key);
-      return storedValue ? JSON.parse(storedValue) : initialValue;
-    });
-
-    useEffect(() => {
-      localStorage.setItem(key, JSON.stringify(value));
-    }, [key, value]);
-
-    return [value, setValue];
+  const handleThuongHieuChange = (brandId: string, checked: boolean) => {
+    let updatedSelectedThuongHieu = [...selectedThuongHieu];
+    if (checked) {
+      // If checked, add the brand ID to selectedThuongHieu
+      const selectedBrand = thuongHieus.find((item) => item.id === brandId);
+      if (selectedBrand) {
+        updatedSelectedThuongHieu = [
+          ...updatedSelectedThuongHieu,
+          selectedBrand,
+        ];
+      }
+    } else {
+      // If unchecked, remove the brand ID from selectedThuongHieu
+      updatedSelectedThuongHieu = updatedSelectedThuongHieu.filter(
+        (brand) => brand.id !== brandId
+      );
+    }
+    setSelectedThuongHieu(updatedSelectedThuongHieu);
   };
   const [thuongHieus, setThuongHieus] = useState([]);
   const [diaHinhSans, setDiaHinhSans] = useState([]);
@@ -44,26 +51,11 @@ const SanPham: React.FC = () => {
   const [giaTienRange, setGiaTienRange] = useState([0, 10000000]);
   const [dataParams, setDataParams] = useState<DataParam>();
   const [totalElements, setTotalElements] = useState(1);
-  const [selectedDiaHinhSan, setSelectedDiaHinhSan] = useLocalStorage(
-    "selectedDiaHinhSan",
-    []
-  );
-  const [selectedKichCo, setSelectedKichCo] = useLocalStorage(
-    "selectedKichCo",
-    []
-  );
-  const [selectedLoaiDe, setSelectedLoaiDe] = useLocalStorage(
-    "selectedLoaiDe",
-    []
-  );
-  const [selectedThuongHieu, setSelectedThuongHieu] = useLocalStorage(
-    "selectedThuongHieu",
-    []
-  );
-  const [selectedMauSac, setSelectedMauSac] = useLocalStorage(
-    "selectedMauSac",
-    []
-  );
+  const [selectedDiaHinhSan, setSelectedDiaHinhSan] = useState([]);
+  const [selectedKichCo, setSelectedKichCo] = useState([]);
+  const [selectedLoaiDe, setSelectedLoaiDe] = useState([]);
+  const [selectedThuongHieu, setSelectedThuongHieu] = useState([]);
+  const [selectedMauSac, setSelectedMauSac] = useState([]);
 
   const kichCoLength = Math.ceil(kichCos.length / 3);
   const leftKichCo = kichCos.slice(0, kichCoLength);
@@ -115,7 +107,13 @@ const SanPham: React.FC = () => {
         <p>
           {thuongHieus.map((item, index) => (
             <div key={index} style={{ marginBottom: 10 }}>
-              <Checkbox>{item.ten}</Checkbox>
+              <Checkbox
+                onChange={(e) =>
+                  handleThuongHieuChange(item.id, e.target.checked)
+                }
+              >
+                {item.ten}
+              </Checkbox>
             </div>
           ))}
         </p>
@@ -225,29 +223,10 @@ const SanPham: React.FC = () => {
   const handleChange = (value: string) => {};
 
   useEffect(() => {
-    const formatParams = (selectedData) => {
-      return selectedData.join(",");
-    };
-
-    setDataParams((prevDataParams) => {
-      const updatedDataParams = {
-        ...prevDataParams,
-        listDiaHinhSan: formatParams(selectedDiaHinhSan),
-        listKichCo: formatParams(selectedKichCo),
-        listLoaiDe: formatParams(selectedLoaiDe),
-        listThuongHieu: formatParams(selectedThuongHieu),
-        listMauSac: formatParams(selectedMauSac),
-      };
-      return updatedDataParams;
-    });
-  }, []);
-
-  useEffect(() => {
     const fetchThuongHieu = async () => {
       try {
         const res = await request.get("/thuong-hieu/list");
         setThuongHieus(res.data);
-        setSelectedThuongHieu(res.data.map((item) => item.id));
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu thương hiệu thất bại");
@@ -258,7 +237,6 @@ const SanPham: React.FC = () => {
       try {
         const res = await request.get("/dia-hinh-san/list");
         setDiaHinhSans(res.data);
-        setSelectedDiaHinhSan(res.data.map((item) => item.id));
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu địa hình sân thất bại");
@@ -269,7 +247,6 @@ const SanPham: React.FC = () => {
       try {
         const res = await request.get("/loai-de/list");
         setLoaiDes(res.data);
-        setSelectedLoaiDe(res.data.map((item) => item.id));
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu loại đế thất bại");
@@ -280,7 +257,6 @@ const SanPham: React.FC = () => {
       try {
         const res = await request.get("/kich-co/list");
         setKichCos(res.data);
-        setSelectedKichCo(res.data.map((item) => item.id));
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu kích cỡ thất bại");
@@ -291,7 +267,6 @@ const SanPham: React.FC = () => {
       try {
         const res = await request.get("/mau-sac/list");
         setMauSacs(res.data);
-        setSelectedMauSac(res.data.map((item) => item.id));
       } catch (error) {
         console.log(error);
         message.error("Lấy dữ liệu màu sắc thất bại");
@@ -299,10 +274,16 @@ const SanPham: React.FC = () => {
     };
 
     const fetchSanPham = async () => {
+      const params = {
+        // other params
+        listThuongHieu: selectedThuongHieu.map((item) => item.id).join(","), // Collecting selected brand IDs
+      };
+
       try {
         const res = await request.get("/san-pham/filter", {
-          params: dataParams,
+          params: { ...dataParams, ...params },
         });
+
         setSanPhams(res.data.content);
         setTotalElements(res.data.totalElements);
       } catch (error) {
@@ -317,7 +298,7 @@ const SanPham: React.FC = () => {
     fetchSize();
     fetchMauSac();
     fetchSanPham();
-  }, [dataParams]);
+  }, [dataParams, selectedThuongHieu]);
   return (
     <>
       <div

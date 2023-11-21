@@ -49,7 +49,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "AND (COALESCE(:listLoaiDe, NULL) IS NULL OR CAST(cps.loaiDe.id as long) IN (CAST(:listLoaiDe as long))) " +
             "GROUP BY sp.id, sp.ten, hi.duongDan, sp.ngayTao ")
     Page<SanPhamFilterResponse> filterSanPham(Pageable pageable, @Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice,
-                                              @Param("listThuongHieu") String listThuongHieu,
+                                              @Param("listThuongHieu") List<Long> listThuongHieu,
                                               @Param("listMauSac") String listMauSac,
                                               @Param("listDiaHinhSan") String listDiaHinhSan,
                                               @Param("listKichCo") String listKichCo,

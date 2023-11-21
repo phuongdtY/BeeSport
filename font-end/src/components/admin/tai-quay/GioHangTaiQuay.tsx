@@ -21,6 +21,7 @@ import { ExclamationCircleFilled, PlusOutlined } from "@ant-design/icons";
 import request from "~/utils/request";
 import ModalAddKhachHang from "./ModalAddKhachHang";
 import { formatGiaTienVND, formatPhoneNumber } from "~/utils/formatResponse";
+import dayjs from "dayjs";
 
 const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   id,
@@ -242,6 +243,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       cancelText: "Hủy",
       onOk: async () => {
         const hoaDonData = getHoaDonData();
+        hoaDonData.trangThaiHoaDon = "CONFIRMED";
+
         try {
           const response = await request.put(`/hoa-don/${id}`, hoaDonData);
           if (response.status === 200) {
@@ -262,12 +265,14 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     // Tạo đối tượng hóa đơn với trạng thái APPROVE
     const hoaDonData = getHoaDonData();
     const trangThai = isChecked ? "CONFIRMED" : "APPROVED";
+    const ngayHomNay = dayjs().endOf("day");
     const hoaDonThanhToan = {
       ...hoaDonData,
       trangThaiHoaDon: trangThai,
       voucher: {
         id: selectedVoucher ? selectedVoucher.id : null, // Include the selected voucher's ID
       },
+      ngayThanhToan: ngayHomNay,
     };
 
     try {
