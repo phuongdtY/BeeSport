@@ -1,7 +1,13 @@
 package com.poly.application.repository;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.ChiTietSanPham;
+import com.poly.application.entity.DiaHinhSan;
+import com.poly.application.entity.KichCo;
+import com.poly.application.entity.LoaiDe;
+import com.poly.application.entity.MauSac;
 import com.poly.application.entity.SanPham;
+import com.poly.application.entity.ThuongHieu;
 import com.poly.application.model.response.SanPhamBanChayResponse;
 import com.poly.application.model.response.SanPhamDetailResponse;
 import com.poly.application.model.response.SanPhamFilterResponse;
@@ -26,7 +32,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "INNER JOIN obj.listChiTietSanPham ctsp " +
             "WHERE (obj.ma LIKE %:searchText% OR obj.ten LIKE %:searchText%) " +
             "AND (:thuongHieuId IS NULL OR obj.thuongHieu.id = :thuongHieuId OR :thuongHieuId = '') " +
-            "AND (:trangThai IS NULL OR obj.trangThai = :trangThai) "+
+            "AND (:trangThai IS NULL OR obj.trangThai = :trangThai) " +
             "ORDER BY obj.ngayTao DESC")
     Page<SanPham> findByAll(Pageable pageable, String searchText, Long thuongHieuId, CommonEnum.TrangThaiSanPham trangThai);
 
@@ -42,20 +48,22 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "WHERE cps.trangThai = 'ACTIVE' " +
             "AND hi.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
             "AND cps.giaTien BETWEEN :minPrice AND :maxPrice " +
-            "AND (COALESCE(:listThuongHieu, NULL) IS NULL OR  CAST(sp.thuongHieu.id as long) IN (CAST(:listThuongHieu as long) )) " +
-            "AND (COALESCE(:listMauSac, NULL) IS NULL OR CAST(cps.mauSac.id as long) IN (CAST(:listMauSac as long))) " +
-            "AND (COALESCE(:listDiaHinhSan, NULL) IS NULL OR CAST(cps.diaHinhSan.id as long) IN (CAST(:listDiaHinhSan as long))) " +
-            "AND (COALESCE(:listKichCo, NULL) IS NULL OR CAST(cps.kichCo.id as long) IN (CAST(:listKichCo as long))) " +
-            "AND (COALESCE(:listLoaiDe, NULL) IS NULL OR CAST(cps.loaiDe.id as long) IN (CAST(:listLoaiDe as long))) " +
+            "AND ( sp.thuongHieu.id  IN  :listThuongHieu  ) " +
+            "AND ( cps.mauSac.id   IN :listMauSac ) " +
+            "AND ( cps.diaHinhSan.id   IN :listDiaHinhSan  ) " +
+            "AND ( cps.kichCo.id   IN  :listKichCo  ) " +
+            "AND ( cps.loaiDe.id   IN  :listLoaiDe  ) " +
             "GROUP BY sp.id, sp.ten, hi.duongDan, sp.ngayTao ")
-    Page<SanPhamFilterResponse> filterSanPham(Pageable pageable,
-                                              @Param("minPrice") BigDecimal minPrice,
-                                              @Param("maxPrice") BigDecimal maxPrice,
-                                              @Param("listThuongHieu") String listThuongHieu,
-                                              @Param("listMauSac") String listMauSac,
-                                              @Param("listDiaHinhSan") String listDiaHinhSan,
-                                              @Param("listKichCo") String listKichCo,
-                                              @Param("listLoaiDe") String listLoaiDe);
+    Page<SanPhamFilterResponse> filterSanPham(Pageable pageable, @Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice,
+                                              @Param("listThuongHieu") List<Long> listThuongHieu,
+                                              @Param("listMauSac") List<Long> listMauSac,
+                                              @Param("listDiaHinhSan") List<Long> listDiaHinhSan,
+                                              @Param("listKichCo") List<Long> listKichCo,
+                                              @Param("listLoaiDe") List<Long> listLoaiDe);
+
+//    @Query(value = "SELECT cps FROM MauSac cps WHERE " +
+//            "(cps.id IN ( case when :listMauSac is null then  (SELECT ms.id FROM MauSac ms)))")
+//    List<MauSac> testSanPham(@Param("listMauSac") List<Long> listMauSac);
 
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien), hi.duongDan) " +

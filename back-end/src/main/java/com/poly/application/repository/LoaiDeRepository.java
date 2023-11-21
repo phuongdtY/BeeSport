@@ -4,6 +4,7 @@ import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.DiaHinhSan;
 import com.poly.application.entity.KichCo;
 import com.poly.application.entity.LoaiDe;
+import com.poly.application.entity.MauSac;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,5 +26,8 @@ public interface LoaiDeRepository extends JpaRepository<LoaiDe, Long> {
 
     @Query("SELECT DISTINCT ld FROM ChiTietSanPham ctsp JOIN LoaiDe ld ON ctsp.loaiDe.id = ld.id  WHERE ctsp.sanPham.id = :idSanPham AND ld.trangThai = 'ACTIVE'")
     List<LoaiDe> getLoaiDeKhongLap(Long idSanPham);
+
+    @Query(value = "SELECT ld.id FROM LoaiDe ld WHERE ld.trangThai = 'ACTIVE' ")
+    List<Long> findByIdIn();
 
 }

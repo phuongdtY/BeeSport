@@ -1,14 +1,25 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.ChiTietSanPham;
+import com.poly.application.entity.DiaHinhSan;
+import com.poly.application.entity.KichCo;
+import com.poly.application.entity.LoaiDe;
+import com.poly.application.entity.MauSac;
 import com.poly.application.entity.SanPham;
+import com.poly.application.entity.ThuongHieu;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.SanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
 import com.poly.application.model.response.*;
+import com.poly.application.repository.DiaHinhSanRepository;
+import com.poly.application.repository.KichCoRepository;
+import com.poly.application.repository.LoaiDeRepository;
+import com.poly.application.repository.MauSacRepository;
 import com.poly.application.repository.SanPhamRepository;
+import com.poly.application.repository.ThuongHieuRepository;
 import com.poly.application.service.SanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +29,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -28,6 +41,21 @@ public class SanPhamServiceImpl implements SanPhamService {
 
     @Autowired
     private SanPhamRepository repository;
+
+    @Autowired
+    private ThuongHieuRepository thuongHieuRepository;
+
+    @Autowired
+    private MauSacRepository mauSacRepository;
+
+    @Autowired
+    private DiaHinhSanRepository diaHinhSanRepository;
+
+    @Autowired
+    private LoaiDeRepository loaiDeRepository;
+
+    @Autowired
+    private KichCoRepository kichCoRepository;
 
     @Autowired
     private SanPhamMapper mapper;
@@ -72,29 +100,25 @@ public class SanPhamServiceImpl implements SanPhamService {
         } else {
             sort = Sort.by("ngayTao").descending();
         }
+        if (listThuongHieu == null || listThuongHieu.isEmpty()){
+             listThuongHieu = thuongHieuRepository.findByIdIn();
+        }
+        if (listDiaHinhSan == null || listDiaHinhSan.isEmpty()){
+             listDiaHinhSan = diaHinhSanRepository.findByIdIn();
+        }
+        if (listMauSac == null || listMauSac.isEmpty()){
+            listMauSac = mauSacRepository.findByIdIn();
+        }
+        if (listKichCo == null || listKichCo.isEmpty()){
+            listKichCo = kichCoRepository.findByIdIn();
+        }
+        if (listLoaiDe == null || listLoaiDe.isEmpty()){
+            listLoaiDe = loaiDeRepository.findByIdIn();
+        }
 
-        String th = Optional.ofNullable(listThuongHieu)
-                .map(ids -> ids.stream().map(String::valueOf).collect(Collectors.joining(",")))
-                .orElse(null);
-        String ms = Optional.ofNullable(listMauSac)
-                .map(ids -> ids.stream().map(String::valueOf).collect(Collectors.joining(",")))
-                .orElse(null);
-        String dhs = Optional.ofNullable(listDiaHinhSan)
-                .map(ids -> ids.stream().map(String::valueOf).collect(Collectors.joining(",")))
-                .orElse(null);
-        String kc = Optional.ofNullable(listKichCo)
-                .map(ids -> ids.stream().map(String::valueOf).collect(Collectors.joining(",")))
-                .orElse(null);
-        String ld = Optional.ofNullable(listLoaiDe)
-                .map(ids -> ids.stream().map(String::valueOf).collect(Collectors.joining(",")))
-                .orElse(null);
-        System.out.println("TH :"+th);
-        System.out.println("MS :"+ms);
-        System.out.println("DHS :"+dhs);
-        System.out.println("KC :"+kc);
-        System.out.println("LD :"+ld);
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, th, ms, dhs, kc, ld);
+
+        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, listThuongHieu,listMauSac, listDiaHinhSan, listKichCo, listLoaiDe);
         return sanPhamPage;
     }
 
