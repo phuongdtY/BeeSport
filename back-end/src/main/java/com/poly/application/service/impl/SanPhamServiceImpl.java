@@ -87,11 +87,7 @@ public class SanPhamServiceImpl implements SanPhamService {
     @Override
     public Page<SanPhamFilterResponse> filterSanPham(Integer page, Integer pageSize, Integer sapXep, BigDecimal minPrice, BigDecimal maxPrice, List<Long> listThuongHieu, List<Long> listMauSac, List<Long> listDiaHinhSan, List<Long> listKichCo, List<Long> listLoaiDe) {
         Sort sort;
-        if (sapXep == 1) {
-            sort = Sort.by("cps.giaMin").ascending();
-        } else if (sapXep == 2) {
-            sort = Sort.by("cps.giaMin").descending();
-        } else if (sapXep == 3) {
+        if (sapXep == 3) {
             sort = Sort.by("ten").ascending();
         } else if (sapXep == 4) {
             sort = Sort.by("ten").descending();

@@ -8,10 +8,7 @@ import com.poly.application.entity.LoaiDe;
 import com.poly.application.entity.MauSac;
 import com.poly.application.entity.SanPham;
 import com.poly.application.entity.ThuongHieu;
-import com.poly.application.model.response.SanPhamBanChayResponse;
-import com.poly.application.model.response.SanPhamDetailResponse;
-import com.poly.application.model.response.SanPhamFilterResponse;
-import com.poly.application.model.response.SanPhamMoiNhatResponse;
+import com.poly.application.model.response.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -53,7 +50,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "AND ( cps.diaHinhSan.id   IN :listDiaHinhSan  ) " +
             "AND ( cps.kichCo.id   IN  :listKichCo  ) " +
             "AND ( cps.loaiDe.id   IN  :listLoaiDe  ) " +
-            "GROUP BY sp.id, sp.ten, hi.duongDan, sp.ngayTao ")
+            "GROUP BY sp.id, sp.ten, hi.duongDan, sp.ngayTao")
     Page<SanPhamFilterResponse> filterSanPham(Pageable pageable,
                                               @Param("minPrice") BigDecimal minPrice,
                                               @Param("maxPrice") BigDecimal maxPrice,
@@ -62,7 +59,6 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
                                               @Param("listDiaHinhSan") List<Long> listDiaHinhSan,
                                               @Param("listKichCo") List<Long> listKichCo,
                                               @Param("listLoaiDe") List<Long> listLoaiDe);
-
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien), hi.duongDan) " +
             "FROM SanPham sp " +

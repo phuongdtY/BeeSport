@@ -15,9 +15,49 @@ public class ThongKeController {
     @Autowired
     private ThongKeService service;
 
-    @GetMapping()
+    @GetMapping("ngay")
     public ResponseEntity<?> thongKeTheoNgay(@RequestParam(name = "ngay", required = false)LocalDate ngay) {
         return ResponseEntity.ok(service.thongKeTheoNgay(ngay));
+    }
+
+    @GetMapping("tuan")
+    public ResponseEntity<?> thongKeTheoTuan(
+            @RequestParam(name = "startOfWeek", required = false)LocalDate startOfWeek,
+            @RequestParam(name = "endOfWeek", required = false)LocalDate endOfWeek
+    ) {
+        return ResponseEntity.ok(service.thongKeTheoTuan(startOfWeek, endOfWeek));
+    }
+
+    @GetMapping("thang")
+    public ResponseEntity<?> thongKeTheoThang(
+            @RequestParam(name = "startOfMonth", required = false)LocalDate startOfMonth,
+            @RequestParam(name = "endOfMonth", required = false)LocalDate endOfMonth
+    ) {
+        return ResponseEntity.ok(service.thongKeTheoThang(startOfMonth, endOfMonth));
+    }
+
+    @GetMapping("nam")
+    public ResponseEntity<?> thongKeTheoNam(
+            @RequestParam(name = "startOfYear", required = false)LocalDate startOfYear,
+            @RequestParam(name = "endOfYear", required = false)LocalDate endOfYear
+    ) {
+        return ResponseEntity.ok(service.thongKeTheoNam(startOfYear, endOfYear));
+    }
+
+    @GetMapping("khoang-ngay")
+    public ResponseEntity<?> thongKeTheoKhoangNgay(
+            @RequestParam(name = "start", required = false)LocalDate start,
+            @RequestParam(name = "end", required = false)LocalDate end
+    ) {
+        return ResponseEntity.ok(service.thongKeTheoKhoangNgay(start, end));
+    }
+
+    @GetMapping("so-luong-ton")
+    public ResponseEntity<?> thongKeSoLuongTon(
+            @RequestParam(name = "page", defaultValue = "1") Integer page,
+            @RequestParam(name = "pageSize", defaultValue = "5") Integer pageSize
+    ) {
+        return ResponseEntity.ok(service.thongKeSoLuongTon(page, pageSize));
     }
 
 }
