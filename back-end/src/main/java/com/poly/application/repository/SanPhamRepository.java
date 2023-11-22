@@ -57,11 +57,11 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
     Page<SanPhamFilterResponse> filterSanPham(Pageable pageable,
                                               @Param("minPrice") BigDecimal minPrice,
                                               @Param("maxPrice") BigDecimal maxPrice,
-                                              @Param("listThuongHieu") String listThuongHieu,
-                                              @Param("listMauSac") String listMauSac,
-                                              @Param("listDiaHinhSan") String listDiaHinhSan,
-                                              @Param("listKichCo") String listKichCo,
-                                              @Param("listLoaiDe") String listLoaiDe);
+                                              @Param("listThuongHieu") List<Long> listThuongHieu,
+                                              @Param("listMauSac") List<Long> listMauSac,
+                                              @Param("listDiaHinhSan") List<Long> listDiaHinhSan,
+                                              @Param("listKichCo") List<Long> listKichCo,
+                                              @Param("listLoaiDe") List<Long> listLoaiDe);
 
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien), hi.duongDan) " +

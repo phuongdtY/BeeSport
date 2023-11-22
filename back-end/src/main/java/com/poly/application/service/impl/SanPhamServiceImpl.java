@@ -85,17 +85,17 @@ public class SanPhamServiceImpl implements SanPhamService {
     }
 
     @Override
-    public Page<SanPhamFilterResponse> filterSanPham(Integer page, Integer pageSize, String sapXep, BigDecimal minPrice, BigDecimal maxPrice, List<Long> listThuongHieu, List<Long> listMauSac, List<Long> listDiaHinhSan, List<Long> listKichCo, List<Long> listLoaiDe) {
+    public Page<SanPhamFilterResponse> filterSanPham(Integer page, Integer pageSize, Integer sapXep, BigDecimal minPrice, BigDecimal maxPrice, List<Long> listThuongHieu, List<Long> listMauSac, List<Long> listDiaHinhSan, List<Long> listKichCo, List<Long> listLoaiDe) {
         Sort sort;
-        if (sapXep.equalsIgnoreCase("1")) {
-            sort = Sort.by("giaMin").ascending();
-        } else if (sapXep.equalsIgnoreCase("2")) {
-            sort = Sort.by("giaMin").descending();
-        } else if (sapXep.equalsIgnoreCase("3")) {
+        if (sapXep == 1) {
+            sort = Sort.by("cps.giaMin").ascending();
+        } else if (sapXep == 2) {
+            sort = Sort.by("cps.giaMin").descending();
+        } else if (sapXep == 3) {
             sort = Sort.by("ten").ascending();
-        } else if (sapXep.equalsIgnoreCase("4")) {
+        } else if (sapXep == 4) {
             sort = Sort.by("ten").descending();
-        } else if (sapXep.equalsIgnoreCase("5")) {
+        } else if (sapXep == 5) {
             sort = Sort.by("ngayTao").ascending();
         } else {
             sort = Sort.by("ngayTao").descending();

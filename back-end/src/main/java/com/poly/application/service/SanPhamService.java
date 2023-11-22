@@ -26,7 +26,7 @@ public interface SanPhamService {
     Page<SanPhamFilterResponse> filterSanPham(
             Integer page,
             Integer pageSize,
-            String sapXep,
+            Integer sapXep,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             List<Long> listThuongHieu,
