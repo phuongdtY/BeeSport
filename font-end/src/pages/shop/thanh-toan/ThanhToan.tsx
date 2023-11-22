@@ -36,7 +36,7 @@ interface Option {
   children?: Option[];
   isLeaf?: boolean;
 }
-const ThanhToan = ({ tamTinh }) => {
+const ThanhToan = ({ tamTinh, dataSanPham }) => {
   const [radioOnchageValue, setRadioOnchageValue] = useState(1);
   const [form] = Form.useForm();
   const [provinces, setProvinces] = useState<Option[]>([]);
@@ -47,10 +47,16 @@ const ThanhToan = ({ tamTinh }) => {
   const { confirm } = Modal;
   const [idQuanHuyen, setIdQuanHuyen] = useState(false);
   const [idPhuongXa, setIdPhuongXa] = useState(false);
+  const [maVoucher, setMavoucher] = useState("");
+  const [statusInput, setStatusInput] = useState("");
   const [phiShip, setPhiShip] = useState(0);
 
   const tongTien = () => {
     return tamTinh - phiShip;
+  };
+
+  const addVoucher = () => {
+    console.log(maVoucher);
   };
 
   useEffect(() => {
@@ -95,8 +101,35 @@ const ThanhToan = ({ tamTinh }) => {
     };
     getPhiShip();
   }, [idPhuongXa]);
+  const dataHoaDonChiTiet = (idHoaDon) => {
+    return dataSanPham.map((item) => ({
+      hoaDon: { id: idHoaDon },
+      chiTietSanPham: { id: item.chiTietSanPham.id },
+      soLuong: item.soLuong,
+      donGia: item.chiTietSanPham.giaTien,
+      trangThaiHoaDonChiTiet: "APPROVED",
+    }));
+  };
+
   const onSubmit = async (values: any) => {
     console.log(values);
+    const getProvinceLabelFromId = () => {
+      const province = provinces.find((p) => p.value === values.thanhPho);
+      return province?.label;
+    };
+    const getDistrictLabelFromId = () => {
+      const district = districts.find((d) => d.value === values.quanHuyen);
+      return district?.label;
+    };
+    const getWardLabelFromId = () => {
+      const ward = wards.find((w) => w.value === values.phuongXa);
+      return ward?.label;
+    };
+
+    const diaChi = `${
+      values.diaChiCuThe
+    }, ${getWardLabelFromId()}, ${getDistrictLabelFromId()}, ${getProvinceLabelFromId()}`;
+    console.log(dataSanPham);
 
     confirm({
       title: "Xác Nhận",
@@ -107,10 +140,33 @@ const ThanhToan = ({ tamTinh }) => {
       onOk: async () => {
         try {
           setLoading(true);
-          const response = await request.post("hoa-don", values);
+          const res = await request.post("hoa-don", {
+            loaiHoaDon: "ONLINE",
+            phiShip: phiShip,
+            tongTien: tamTinh,
+            tongTienKhiGiam: tongTien(),
+            ghiChu: values.ghiChu,
+            nguoiNhan: values.hoVaTen,
+            sdtNguoiNhan: values.soDienThoai,
+            emailNguoiNhan: values.email,
+            diaChiNguoiNhan: diaChi,
+            trangThaiHoaDon: "PENDING",
+          });
+          try {
+            console.log(dataHoaDonChiTiet(res.data.id));
+
+            const response = await request.post(
+              "hoa-don-chi-tiet/add-list",
+              dataHoaDonChiTiet(res.data.id)
+            );
+            console.log(response);
+          } catch (error) {
+            console.log(error);
+          }
+
           setLoading(false);
-          message.success("Thêm nhân viên thành công");
-          navigate("/admin/nhan-vien");
+          message.success("Đặt hàng thành công");
+          // navigate("/admin/nhan-vien");
         } catch (error: any) {
           message.error(error.response.data.message);
           setLoading(false);
@@ -348,7 +404,7 @@ const ThanhToan = ({ tamTinh }) => {
           </Space>
           <Form.Item label="Địa chỉ cụ thể">
             <Form.Item
-              name="diaChi"
+              name="diaChiCuThe"
               noStyle
               rules={[
                 {
@@ -383,14 +439,24 @@ const ThanhToan = ({ tamTinh }) => {
         <Card title="Đơn hàng (4 sản phẩm)">
           <Space>
             <Input
+              status={statusInput}
               size="large"
               placeholder="Nhập mã giảm giá"
+              value={maVoucher}
+              onChange={(value) => setMavoucher(value.target.value)}
               style={{ width: 370, borderRadius: 3 }}
             />
-            <Button size="large" type="primary" style={{ borderRadius: 5 }}>
+            {/* <Text type="danger">Mã khuyến mãi không hợp lệ</Text> */}
+            <Button
+              size="large"
+              type="primary"
+              style={{ borderRadius: 5 }}
+              onClick={addVoucher}
+            >
               Áp dụng
             </Button>
           </Space>
+          <Text type="danger">Mã khuyến mãi không hợp lệ</Text>
           <Divider />
           <div>
             <div>

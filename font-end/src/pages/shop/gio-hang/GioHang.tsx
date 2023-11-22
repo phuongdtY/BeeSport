@@ -232,19 +232,6 @@ const index: React.FC = () => {
     });
   };
   const onUpdateCart = async () => {
-    if (noteUpdated === true) {
-      try {
-        setLoading(true);
-        await request.put(`gio-hang/${id}`, { ghiChu: note });
-        setNoteUpdated(false);
-        gioHang();
-        setLoading(false);
-        message.success("Cập nhật giỏ hàng thành công");
-      } catch (error) {
-        message.error("sửa ghi chú thất bại");
-        setLoading(false);
-      }
-    }
     if (updatedQuantities.length === 0) {
       return;
     }
@@ -303,7 +290,7 @@ const index: React.FC = () => {
           </Col>
           <Col span={1}></Col>
           <Col span={8}>
-            <ThanhToan tamTinh={totalAmount} />
+            <ThanhToan tamTinh={totalAmount} dataSanPham={data} />
           </Col>
         </Row>
       </Card>
