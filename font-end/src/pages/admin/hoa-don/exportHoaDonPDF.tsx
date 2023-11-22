@@ -97,15 +97,8 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
     }
   };
 
-  useEffect(() => {
-    fetchHoaDonData();
-    if (open) {
-      fetchHoaDonData();
-    }
-  }, [open, id]);
-
   const optionPrintPDF: Options = {
-    filename: "hoa-don.pdf",
+    filename: "hoa-don" + id + data?.ma,
     page: {
       // margin is in MM, default is Margin.NONE = 0
       margin: 20,
@@ -118,9 +111,25 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
   const getTargetElement = () => document.getElementById("pdfReaderHoaDon");
   const downloadPdf = () => generatePDF(getTargetElement, optionPrintPDF);
 
-  const handleCancel = () => {
-    onCancel(false);
+  const handleCancel = (open: boolean) => {
+    if (open) {
+      onCancel(!open);
+    }
+    onCancel(open);
   };
+
+  const handleCancelV2 = () => {
+    handleCancel(open);
+  };
+
+  useEffect(() => {
+    fetchHoaDonData();
+    if (open) {
+      fetchHoaDonData();
+      downloadPdf();
+      handleCancelV2();
+    }
+  }, [open, id]);
 
   const tinhTongTien = () => {
     return (listHoaDonChiTiet || [])
@@ -158,12 +167,9 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
       footer={null}
       title={"Export Hóa đơn to PDF"}
       open={open}
-      onCancel={handleCancel}
+      onCancel={handleCancelV2}
     >
       <Container style={{ margin: "0px auto", width: "100%" }}>
-        <Row>
-          <Button onClick={downloadPdf}>Ok</Button>
-        </Row>
         <div id="pdfReaderHoaDon">
           <Row>
             <Col span={9}>

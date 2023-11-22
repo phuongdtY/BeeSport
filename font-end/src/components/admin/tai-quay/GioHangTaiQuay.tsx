@@ -4,6 +4,7 @@ import {
   Col,
   Divider,
   InputNumber,
+  Modal,
   Radio,
   Row,
   Select,
@@ -16,7 +17,7 @@ import React, { useState, useEffect } from "react";
 import ThongTinGiaoHang from "./ThongTinGiaoHang";
 import TextArea from "antd/es/input/TextArea";
 import TableSanPham from "./TableSanPham";
-import { PlusOutlined } from "@ant-design/icons";
+import { ExclamationCircleFilled, PlusOutlined } from "@ant-design/icons";
 import request from "~/utils/request";
 import ModalAddKhachHang from "./ModalAddKhachHang";
 import { formatGiaTienVND, formatPhoneNumber } from "~/utils/formatResponse";
@@ -43,6 +44,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [giaTriGiam, setGiaTriGiam] = useState(0); // New state for discount amount
   const [selectedVoucher, setSelectedVoucher] = useState([]);
   const [tongTienKhiGiam, setTongTienKhiGiam] = useState(0);
+  const { confirm } = Modal;
 
   const calculateRemainingAmountForVoucher = () => {
     // Sắp xếp các voucher theo giaToiThieu theo thứ tự tăng dần
@@ -85,7 +87,17 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
 
         if (selectedVoucher) {
           setSelectedVoucher(selectedVoucher);
-          setGiaTriGiam(selectedVoucher.giaTriGiam); // Set giaTriGiam here
+          if (selectedVoucher.hinhThucGiam.id === 1) {
+            setGiaTriGiam(selectedVoucher.giaTriGiam);
+          } else {
+            const giam =
+              (totalPriceFromTable / 100) * selectedVoucher.giaTriGiam;
+            setGiaTriGiam(
+              giam > selectedVoucher.giamToiDa
+                ? selectedVoucher.giamToiDa
+                : giam
+            );
+          }
         } else {
           setSelectedVoucher(null); // Reset the selected voucher name if none is selected
           setGiaTriGiam(0); // Reset giaTriGiam if no voucher is selected
@@ -222,23 +234,28 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   };
 
   const handleLuuHoaDon = async (id) => {
-    // Lấy thông tin hóa đơn
-    const hoaDonData = getHoaDonData();
-    try {
-      // Gọi API để cập nhật hóa đơn theo `id`
-      const response = await request.put(`/hoa-don/${id}`, hoaDonData);
-      if (response.status === 200) {
-        loadHoaDon();
-        message.success("Hóa đơn đã được cập nhật thành công.");
-      } else {
-        // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
-        message.error("Có lỗi xảy ra khi cập nhật hóa đơn.");
-      }
-    } catch (error) {
-      console.error("Error updating invoice:", error);
-      // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
-      message.error("Có lỗi xảy ra khi cập nhật hóa đơn.");
-    }
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn lưu hóa đơn không?",
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        const hoaDonData = getHoaDonData();
+        try {
+          const response = await request.put(`/hoa-don/${id}`, hoaDonData);
+          if (response.status === 200) {
+            loadHoaDon();
+            message.success("Hóa đơn đã được lưu thành công.");
+          } else {
+            message.error("Có lỗi xảy ra khi lưu hóa đơn.");
+          }
+        } catch (error) {
+          console.error("Error saving invoice:", error);
+          message.error("Có lỗi xảy ra khi lưu hóa đơn.");
+        }
+      },
+    });
   };
 
   const handleThanhToan = async (id) => {
@@ -298,11 +315,20 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     } else {
       setGiaTriGiam(0);
     }
+    setSelectedRadio(0);
+    setIsCashSelected(true);
   }, []);
 
   useEffect(() => {
     loadSelectKhachHang();
   }, [selectedRadio]);
+
+  useEffect(() => {
+    // When the component mounts, trigger the selection manually
+    setSelectedRadio(0); // Assuming the 'Tiền mặt' radio has a value of 0
+    setIsCashSelected(true);
+    setIsPaymentSelected(true); // Set to true to display the 'Thanh toán' button
+  }, []); // Empty dependency array to run this effect only once on mount
 
   const onChangeGiaoHang = (checked: boolean) => {
     setIsChecked(checked);
@@ -449,18 +475,61 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               </Col>
               <Col span={16}></Col>
               <Col span={3}>
-                <p>{formatCurrency(giaTriGiam)}</p>
+                <p>
+                  {selectedVoucher && selectedVoucher.hinhThucGiam
+                    ? selectedVoucher.hinhThucGiam.id === 1
+                      ? `${formatCurrency(giaTriGiam)}`
+                      : `${
+                          selectedVoucher.giaTriGiam &&
+                          (totalPriceFromTable / 100) *
+                            selectedVoucher.giaTriGiam <=
+                            selectedVoucher.giamToiDa
+                            ? `${formatCurrency(
+                                (totalPriceFromTable / 100) *
+                                  selectedVoucher.giaTriGiam
+                              )}`
+                            : `${formatCurrency(selectedVoucher.giamToiDa)}`
+                        }`
+                    : "0 đ"}
+                </p>
               </Col>
             </Row>
             {selectedVoucher && (
               <Row>
-                <span style={{ color: "green" }}>
-                  Đã áp dụng Voucher '{selectedVoucher.ten}'. Cần mua thêm{" "}
-                  {formatCurrency(remainingAmount)} để được giảm{" "}
-                  {formatCurrency(
-                    nextVoucher == null ? 0 : nextVoucher.giaTriGiam
-                  )}
-                </span>
+                <Space direction="vertical">
+                  <span style={{ color: "green", fontWeight: "bolder" }}>
+                    Đã áp dụng voucher: {selectedVoucher.ten}
+                    <br />
+                    {selectedVoucher.hinhThucGiam && selectedVoucher.donToiThieu
+                      ? selectedVoucher.hinhThucGiam.id === 2
+                        ? `Giảm: ${
+                            selectedVoucher.giaTriGiam
+                          }% cho đơn hàng từ ${formatCurrency(
+                            selectedVoucher.donToiThieu
+                          )} giảm tối đa ${formatCurrency(
+                            selectedVoucher.giamToiDa
+                          )}`
+                        : `Giảm: ${formatCurrency(
+                            selectedVoucher.giaTriGiam
+                          )} cho đơn hàng từ ${formatCurrency(
+                            selectedVoucher.donToiThieu
+                          )}`
+                      : "Thông tin giảm giá không khả dụng"}
+                  </span>
+                  {nextVoucher ? (
+                    <>
+                      <span style={{ color: "orange", fontStyle: "italic" }}>
+                        Gợi ý: Mua thêm {formatCurrency(remainingAmount)} để
+                        được giảm{" "}
+                        {nextVoucher.hinhThucGiam && nextVoucher.giaTriGiam
+                          ? nextVoucher.hinhThucGiam.id === 2
+                            ? `${nextVoucher.giaTriGiam}%`
+                            : `${formatGiaTienVND(nextVoucher.giaTriGiam)}`
+                          : "Thông tin giảm giá không khả dụng"}
+                      </span>
+                    </>
+                  ) : null}
+                </Space>
               </Row>
             )}
             {/* Tổng tiền */}

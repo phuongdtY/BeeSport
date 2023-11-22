@@ -147,13 +147,23 @@ public class HoaDonServiceImpl implements HoaDonService {
         hoaDon.setEmailNguoiNhan(updatedHoaDonRequest.getEmailNguoiNhan());
         hoaDon.setTaiKhoan(updatedHoaDonRequest.getTaiKhoan());
         hoaDon.setVoucher(updatedHoaDonRequest.getVoucher());
-        if (!timelineRepository.existsTimeLineByTrangThaiAndHoaDonId(hoaDon.getTrangThaiHoaDon(), hoaDon.getId())) {
+        boolean isExistTimeLine = timelineRepository.existsTimeLineByTrangThaiAndHoaDonId(hoaDon.getTrangThaiHoaDon(), hoaDon.getId());
+        boolean isExistConfirmedTimeLine = timelineRepository.existsTimeLineByTrangThaiAndHoaDonId(CommonEnum.TrangThaiHoaDon.CONFIRMED, hoaDon.getId());
+        if (!isExistTimeLine) {
+            if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CANCELLED && !isExistConfirmedTimeLine) {
+                updateTrangThaiHoaDon(id, CommonEnum.TrangThaiHoaDon.CONFIRMED, hoaDon.getGhiChu());
+            }
             updateTrangThaiHoaDon(id, hoaDon.getTrangThaiHoaDon(), hoaDon.getGhiChu());
         }
         hoaDon.setGhiChu(updatedHoaDonRequest.getGhiChu());
         hoaDon.setVoucher(updatedHoaDonRequest.getVoucher());
 
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(hoaDonRepository.save(hoaDon));
+    }
+
+    @Override
+    public HoaDonResponse updateHuyHoaDon(Long id, UpdatedHoaDonRequest updatedHoaDonRequest) {
+        return null;
     }
 
     @Override
@@ -174,17 +184,17 @@ public class HoaDonServiceImpl implements HoaDonService {
             case SHIPPING:
                 timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.SHIPPING);
                 timeLine.setGhiChu(ghiChu);
-                if (hoaDon.getLoaiHoaDon() != CommonEnum.LoaiHoaDon.ONLINE) {
-                    for (HoaDonChiTiet hdct : hoaDon.getHoaDonChiTietList()) {
-                        ChiTietSanPham ctsp = chiTietSanPhamRepository.findById(hdct.getChiTietSanPham().getId()).get();
-                        ctsp.setSoLuong(ctsp.getSoLuong() - hdct.getSoLuong());
-                        chiTietSanPhamRepository.save(ctsp);
-                    }
-                }
+                hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
                 break;
             case APPROVED:
                 timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.APPROVED);
                 timeLine.setGhiChu(ghiChu);
+                hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
+                break;
+            case PICKUP:
+                timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.PICKUP);
+                timeLine.setGhiChu(ghiChu);
+                hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
                 break;
             case CANCELLED:
                 timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.CANCELLED);
@@ -194,10 +204,38 @@ public class HoaDonServiceImpl implements HoaDonService {
                     ctsp.setSoLuong(ctsp.getSoLuong() + hdct.getSoLuong());
                     chiTietSanPhamRepository.save(ctsp);
                 }
+                hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
                 break;
             case CONFIRMED:
                 timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.CONFIRMED);
                 timeLine.setGhiChu(ghiChu);
+                timelineRepository.save(timeLine);
+                for (HoaDonChiTiet hdct : hoaDon.getHoaDonChiTietList()) {
+                    ChiTietSanPham ctsp = chiTietSanPhamRepository.findById(hdct.getChiTietSanPham().getId()).get();
+                    ctsp.setSoLuong(ctsp.getSoLuong() - hdct.getSoLuong());
+                    if (ctsp.getSoLuong() <= 0) {
+                        ctsp.setSoLuong(0);
+                        ctsp.getSanPham().setTrangThai(CommonEnum.TrangThaiSanPham.INACTIVE);
+                    }
+                    chiTietSanPhamRepository.save(ctsp);
+                }
+                if (hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.COUNTER) {
+                    TimeLine timeLine2 = new TimeLine();
+                    timeLine2.setHoaDon(hoaDon);
+                    timeLine2.setTrangThai(CommonEnum.TrangThaiHoaDon.APPROVED);
+                    timeLine2.setGhiChu(ghiChu);
+                    timelineRepository.save(timeLine2);
+                    hoaDonRepository.updateTrangThaiHoaDon(CommonEnum.TrangThaiHoaDon.APPROVED, idHoadon);
+                } else if (hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE){
+                    TimeLine timeLine2 = new TimeLine();
+                    timeLine2.setHoaDon(hoaDon);
+                    timeLine2.setTrangThai(CommonEnum.TrangThaiHoaDon.PICKUP);
+                    timeLine2.setGhiChu(ghiChu);
+                    timelineRepository.save(timeLine2);
+                    hoaDonRepository.updateTrangThaiHoaDon(CommonEnum.TrangThaiHoaDon.PICKUP, idHoadon);
+                } else {
+                    hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
+                }
                 break;
             default:
                 break;
@@ -207,7 +245,6 @@ public class HoaDonServiceImpl implements HoaDonService {
 //            timelineRepository.save(timeLine);
 //        }
         timelineRepository.save(timeLine);
-        hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
     }
 
 }

@@ -7,9 +7,7 @@ import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.SanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
-import com.poly.application.model.response.SanPhamDetailResponse;
-import com.poly.application.model.response.SanPhamMoiNhatResponse;
-import com.poly.application.model.response.SanPhamResponse;
+import com.poly.application.model.response.*;
 import com.poly.application.repository.SanPhamRepository;
 import com.poly.application.service.SanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -56,6 +55,29 @@ public class SanPhamServiceImpl implements SanPhamService {
         Page<SanPham> pageSanPham = repository.findByAll(pageable, searchText, thuongHieuId, trangThai);
         return pageSanPham.map(mapper::convertEntityToResponse);
     }
+
+    @Override
+    public Page<SanPhamFilterResponse> filterSanPham(Integer page, Integer pageSize, String sapXep, BigDecimal minPrice, BigDecimal maxPrice, List<Long> listThuongHieu, List<Long> listMauSac, List<Long> listDiaHinhSan, List<Long> listKichCo, List<Long> listLoaiDe) {
+        Sort sort;
+        if (sapXep.equalsIgnoreCase("1")) {
+            sort = Sort.by("giaMin").ascending();
+        } else if (sapXep.equalsIgnoreCase("2")) {
+            sort = Sort.by("giaMin").descending();
+        } else if (sapXep.equalsIgnoreCase("3")) {
+            sort = Sort.by("ten").ascending();
+        } else if (sapXep.equalsIgnoreCase("4")) {
+            sort = Sort.by("ten").descending();
+        } else if (sapXep.equalsIgnoreCase("5")) {
+            sort = Sort.by("ngayTao").ascending();
+        } else {
+            sort = Sort.by("ngayTao").descending();
+        }
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
+        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, listThuongHieu, listMauSac, listDiaHinhSan, listKichCo, listLoaiDe);
+        return sanPhamPage;
+    }
+
 
     @Override
     public SanPhamResponse add(CreatedSanPhamRequest request) {
@@ -110,7 +132,6 @@ public class SanPhamServiceImpl implements SanPhamService {
 
         // Lưu thay đổi vào cơ sở dữ liệu
         detail = repository.save(detail);
-        System.out.println(detail);
         // Trả về thông tin sản phẩm sau khi cập nhật
         SanPhamResponse response = new SanPhamResponse();
         // Điền thông tin sản phẩm vào response dựa trên detail
@@ -138,6 +159,8 @@ public class SanPhamServiceImpl implements SanPhamService {
         return mapper.convertEntityToResponse(optional.get());
     }
 
+
+
     @Override
     public List<SanPhamResponse> get5SanPhamMoiNhat() {
         List<SanPham> sanPhamMoiNhat = repository.get5SanPhamMoiNhat();
@@ -163,7 +186,7 @@ public class SanPhamServiceImpl implements SanPhamService {
 
         return chiTietSanPhamResponse
                 .stream()
-                .limit(5)
+                .limit(10)
                 .collect(Collectors.toList());
     }
 
@@ -178,6 +201,20 @@ public class SanPhamServiceImpl implements SanPhamService {
         List<SanPham> listSanPham = repository.getAllSanPhamNullCTSP();
         return listSanPham.stream()
                 .map(sanPham -> mapper.convertEntityToResponse(sanPham))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SanPhamBanChayResponse> get5SanPhamBanChayNhat() {
+        List<SanPhamBanChayResponse> banChayNhat = repository.findAllSanPhamBanChay();
+
+        List<SanPhamBanChayResponse> chiTietSanPhamResponse = banChayNhat
+                .stream()
+                .collect(Collectors.toList());
+
+        return chiTietSanPhamResponse
+                .stream()
+                .limit(5)
                 .collect(Collectors.toList());
     }
 

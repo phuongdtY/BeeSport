@@ -1,13 +1,11 @@
 package com.poly.application.service;
 
-import com.poly.application.entity.SanPham;
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
-import com.poly.application.model.response.SanPhamDetailResponse;
-import com.poly.application.model.response.SanPhamMoiNhatResponse;
-import com.poly.application.model.response.SanPhamResponse;
+import com.poly.application.model.response.*;
 import org.springframework.data.domain.Page;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface SanPhamService {
@@ -21,13 +19,28 @@ public interface SanPhamService {
 
     SanPhamResponse update(Long id, UpdatedSanPhamRequest request);
 
-    void  delete(Long id);
+    void delete(Long id);
 
     SanPhamResponse findById(Long id);
+
+    Page<SanPhamFilterResponse> filterSanPham(
+            Integer page,
+            Integer pageSize,
+            String sapXep,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            List<Long> listThuongHieu,
+            List<Long> listMauSac,
+            List<Long> listDiaHinhSan,
+            List<Long> listKichCo,
+            List<Long> listLoaiDe
+    );
 
     List<SanPhamResponse> get5SanPhamMoiNhat();
 
     List<SanPhamMoiNhatResponse> giaTien5SanPhamMoiNhat();
+
+    List<SanPhamBanChayResponse> get5SanPhamBanChayNhat();
 
     SanPhamDetailResponse getSanPhamDetail(Long id);
 

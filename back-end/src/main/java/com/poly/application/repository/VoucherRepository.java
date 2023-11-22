@@ -24,7 +24,7 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
 
     boolean existsByTen(String ten);
 
-    @Query("SELECT v FROM Voucher v WHERE v.trangThai = 'ACTIVE' ORDER BY v.ngayTao DESC")
+    @Query("SELECT v FROM Voucher v WHERE v.trangThai = 'ONGOING' ORDER BY v.ngayTao DESC")
     List<Voucher> getListVoucherActive();
 
 }

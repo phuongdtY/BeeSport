@@ -64,6 +64,7 @@ public class CommonEnum {
 
         PENDING("PENDING", "Chờ xác nhận", "warning"),
         CONFIRMED("CONFIRMED", "Đã xác nhận", "success"),
+        PICKUP("PICKUP", "Đang lấy hàng", "#eaff8f"),
         SHIPPING("SHIPPING", "Đang vận chuyển", "geekblue"),
         CANCELLED("CANCELLED", "Đã hủy", "volcano"),
         APPROVED("APPROVED", "Đã hoàn thành", "magenta");
