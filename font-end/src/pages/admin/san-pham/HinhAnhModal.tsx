@@ -118,7 +118,7 @@ function HinhAnhModal({ openModal, closeModal, mauSac, sanPham }) {
   return (
     <Spin spinning={loading}>
       <Modal
-        title={`HÌNH ẢNH SẢN PHẨM MÀU `}
+        title={`HÌNH ẢNH SẢN PHẨM`}
         open={openModal}
         onCancel={closeModal}
         okText={
