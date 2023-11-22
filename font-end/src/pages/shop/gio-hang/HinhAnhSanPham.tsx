@@ -21,11 +21,10 @@ const HinhAnhSanPham = ({ chiTietSanPham }) => {
   };
 
   useEffect(() => {
-    // Fetch the image source when chiTietSanPham changes
     if (chiTietSanPham) {
       hinhAnh(chiTietSanPham.sanPham.id, chiTietSanPham.mauSac.id);
     }
-  }, [chiTietSanPham]); // Run the effect when chiTietSanPham changes
+  }, [chiTietSanPham]);
 
   return (
     <Image

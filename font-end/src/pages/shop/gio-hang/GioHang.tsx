@@ -11,6 +11,7 @@ import {
   Button,
   Card,
   Col,
+  Divider,
   Image,
   Input,
   Modal,
@@ -29,12 +30,15 @@ import { DataParams, DataType } from "~/interfaces/diaHinhSan.type";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import request from "~/utils/request";
 import { formatGiaTien } from "~/utils/formatResponse";
+import HinhAnhSanPham from "./HinhAnhSanPham";
+import ThanhToan from "../thanh-toan/ThanhToan";
 const { Title, Text } = Typography;
 
 const index: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [note, setNote] = useState("");
   const [noteUpdated, setNoteUpdated] = useState(false);
+
   const [data, setData] = useState<DataType[]>([]);
   const { confirm } = Modal;
   const confirmDelete = (id) => {
@@ -115,22 +119,13 @@ const index: React.FC = () => {
       dataIndex: "chiTietSanPham",
       key: "ten",
       align: "left",
-      width: "50%",
       render: (chiTietSanPham) => (
         <Space>
-          <Image
-            width={80}
-            height={80}
-            src="https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRUKrIF74VaGT5GEgMYDiNh7EUJOWo6VmDC_pxi2pEj7z87m93yRc3TqDCxxhucROPdWoRZC-8j_c59XQVGh1KmixzEgoII97htTdCeJqWKUufGwsDVQV6AWg&usqp=CAE"
-            fallback="http://localhost:8080/admin/api/file/view/fallback.jpg"
-          />
-          <span>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: `${chiTietSanPham.sanPham.ten}<br />[${chiTietSanPham.mauSac.ten}-${chiTietSanPham.kichCo.kichCo}-${chiTietSanPham.loaiDe.ten}-${chiTietSanPham.diaHinhSan.ten}]`,
-              }}
-            />
-          </span>
+          <HinhAnhSanPham chiTietSanPham={chiTietSanPham} />
+          <Space direction="vertical">
+            <Text strong>{chiTietSanPham.sanPham.ten}</Text>
+            <Text>{`[${chiTietSanPham.mauSac.ten} - ${chiTietSanPham.kichCo.kichCo} - ${chiTietSanPham.loaiDe.ten} - ${chiTietSanPham.diaHinhSan.ten}]`}</Text>
+          </Space>
         </Space>
       ),
     },
@@ -205,6 +200,8 @@ const index: React.FC = () => {
     try {
       const res = await request.get("/gio-hang-chi-tiet/detail-gio-hang/" + id);
       setData(res.data);
+      console.log(res.data);
+
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -216,6 +213,7 @@ const index: React.FC = () => {
     gioHang();
     fetchData();
   }, [params]);
+
   const onChangeTable = (
     pagination: TablePaginationConfig,
     filters: Record<string, FilterValue | null>,
@@ -278,7 +276,7 @@ const index: React.FC = () => {
         }
       >
         <Row>
-          <Col span={17}>
+          <Col span={15}>
             <Card>
               <Table
                 columns={columns}
@@ -304,38 +302,8 @@ const index: React.FC = () => {
             </Card>
           </Col>
           <Col span={1}></Col>
-          <Col span={6}>
-            <Card title="TỔNG ĐƠN HÀNG| 3 SẢN PHẨM">
-              <Text>Ghi chú</Text>
-              <Input.TextArea
-                value={note}
-                onChange={(e) => {
-                  setNote(e.target.value);
-                  setNoteUpdated(true);
-                }}
-              />
-              <Space>
-                <Title level={4} style={{ fontWeight: "bold" }}>
-                  TỔNG TIỀN
-                </Title>
-                <Title level={4} style={{ color: "red", fontWeight: "bold" }}>
-                  {formatGiaTien(totalAmount)}
-                </Title>
-              </Space>
-            </Card>
-            <Link to={"/thanh-toan"}>
-              <Button
-                type="primary"
-                style={{
-                  width: "100%",
-                  height: "50px",
-                  marginTop: "10px",
-                  fontSize: "20px",
-                }}
-              >
-                Thanh toán
-              </Button>
-            </Link>
+          <Col span={8}>
+            <ThanhToan tamTinh={totalAmount} />
           </Col>
         </Row>
       </Card>
