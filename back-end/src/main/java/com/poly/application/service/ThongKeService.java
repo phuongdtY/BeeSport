@@ -2,6 +2,7 @@ package com.poly.application.service;
 
 import com.poly.application.model.response.ThongKeSoLuongTonResponse;
 import com.poly.application.model.response.ThongKeTheoDMYResponse;
+import com.poly.application.model.response.ThongKeTheoDoanhThuResponse;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
@@ -19,6 +20,8 @@ public interface ThongKeService {
     ThongKeTheoDMYResponse thongKeTheoKhoangNgay(LocalDate start, LocalDate end);
 
     Page<ThongKeSoLuongTonResponse> thongKeSoLuongTon(Integer page, Integer pageSize);
+
+    Page<ThongKeTheoDoanhThuResponse> thongKeTheoDoanhThu(Integer page, Integer pageSize);
 
 
 }

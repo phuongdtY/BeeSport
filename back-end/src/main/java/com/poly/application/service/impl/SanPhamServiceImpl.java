@@ -85,7 +85,7 @@ public class SanPhamServiceImpl implements SanPhamService {
     }
 
     @Override
-    public Page<SanPhamFilterResponse> filterSanPham(Integer page, Integer pageSize, Integer sapXep, BigDecimal minPrice, BigDecimal maxPrice, List<Long> listThuongHieu, List<Long> listMauSac, List<Long> listDiaHinhSan, List<Long> listKichCo, List<Long> listLoaiDe) {
+    public Page<SanPhamFilterResponse> filterSanPham(Integer page, Integer pageSize, Integer sapXep, BigDecimal minPrice, BigDecimal maxPrice, List<Long> listThuongHieu, List<Long> listMauSac, List<Long> listDiaHinhSan, List<Long> listKichCo, List<Long> listLoaiDe, String search) {
         Sort sort;
         if (sapXep == 3) {
             sort = Sort.by("ten").ascending();
@@ -96,6 +96,7 @@ public class SanPhamServiceImpl implements SanPhamService {
         } else {
             sort = Sort.by("ngayTao").descending();
         }
+
         if (listThuongHieu == null || listThuongHieu.isEmpty()){
              listThuongHieu = thuongHieuRepository.findByIdIn();
         }
@@ -112,9 +113,11 @@ public class SanPhamServiceImpl implements SanPhamService {
             listLoaiDe = loaiDeRepository.findByIdIn();
         }
 
+        System.out.println(search);
+
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
 
-        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, listThuongHieu,listMauSac, listDiaHinhSan, listKichCo, listLoaiDe);
+        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, listThuongHieu,listMauSac, listDiaHinhSan, listKichCo, listLoaiDe, search);
         return sanPhamPage;
     }
 

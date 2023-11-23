@@ -1,16 +1,17 @@
-import { FileExcelOutlined } from "@ant-design/icons";
-import { Button, Col, Row, Table } from "antd";
+import { Col, Row, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect } from "react";
+import { formatGiaTienVND } from "~/utils/formatResponse";
 import request from "~/utils/request";
 
 interface DataType {
   key: string;
   ten: string;
-  soLuongTon: number;
+  soLuongDaBan: number;
+  doanhThu: number;
 }
 
-const TableSoLuongTon: React.FC = () => {
+const TableThongKeDoanhThu: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -33,22 +34,29 @@ const TableSoLuongTon: React.FC = () => {
       },
     },
     {
-      title: "Số lượng tồn",
-      dataIndex: "soLuongTon",
-      key: "soLuongTonge",
+      title: "Số lượng sản phẩm đã bán",
+      dataIndex: "soLuongDaBan",
+      key: "soLuongDaBan",
       render: (_, record) => {
-        return record.soLuongTon;
+        return record.soLuongDaBan;
+      },
+    },
+    {
+      title: "Doanh thu",
+      dataIndex: "doanhThu",
+      key: "doanhThu",
+      render: (_, record) => {
+        return formatGiaTienVND(record.doanhThu);
       },
     },
   ];
-
   useEffect(() => {
     fetchData();
   }, [page, pageSize]);
 
   const fetchData = async () => {
     try {
-      const response = await request.get("thong-ke/so-luong-ton", {
+      const response = await request.get("thong-ke/doanh-thu", {
         params: { page: page, pageSize: pageSize },
       });
       setData(response.data.content);
@@ -57,6 +65,7 @@ const TableSoLuongTon: React.FC = () => {
       console.error("Error fetching data: ", error);
     }
   };
+
   return (
     <>
       <Row style={{ marginRight: 25 }}>
@@ -66,14 +75,8 @@ const TableSoLuongTon: React.FC = () => {
             title={() => (
               <>
                 <span style={{ fontWeight: "bold" }}>
-                  DANH SÁCH SẢN PHẨM TỒN
+                  THỐNG KÊ DOANH THU THEO SẢN PHẨM
                 </span>
-                <Button
-                  style={{ float: "right", backgroundColor: "green" }}
-                  type="primary"
-                >
-                  <FileExcelOutlined /> Xuất File Excel
-                </Button>
               </>
             )}
             pagination={{
@@ -94,4 +97,4 @@ const TableSoLuongTon: React.FC = () => {
   );
 };
 
-export default TableSoLuongTon;
+export default TableThongKeDoanhThu;

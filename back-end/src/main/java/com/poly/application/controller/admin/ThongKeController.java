@@ -60,4 +60,12 @@ public class ThongKeController {
         return ResponseEntity.ok(service.thongKeSoLuongTon(page, pageSize));
     }
 
+    @GetMapping("doanh-thu")
+    public ResponseEntity<?> thongKeTheoDoanhThu(
+            @RequestParam(name = "page", defaultValue = "1") Integer page,
+            @RequestParam(name = "pageSize", defaultValue = "5") Integer pageSize
+    ) {
+        return ResponseEntity.ok(service.thongKeTheoDoanhThu(page, pageSize));
+    }
+
 }

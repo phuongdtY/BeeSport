@@ -33,7 +33,8 @@ public interface SanPhamService {
             List<Long> listMauSac,
             List<Long> listDiaHinhSan,
             List<Long> listKichCo,
-            List<Long> listLoaiDe
+            List<Long> listLoaiDe,
+            String search
     );
 
     List<SanPhamResponse> get5SanPhamMoiNhat();

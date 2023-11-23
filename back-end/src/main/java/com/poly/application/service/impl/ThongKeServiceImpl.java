@@ -2,6 +2,7 @@ package com.poly.application.service.impl;
 
 import com.poly.application.model.response.ThongKeSoLuongTonResponse;
 import com.poly.application.model.response.ThongKeTheoDMYResponse;
+import com.poly.application.model.response.ThongKeTheoDoanhThuResponse;
 import com.poly.application.repository.ThongKeRepository;
 import com.poly.application.service.ThongKeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,14 @@ public class ThongKeServiceImpl implements ThongKeService {
     public Page<ThongKeSoLuongTonResponse> thongKeSoLuongTon(Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page - 1, pageSize);
         Page<ThongKeSoLuongTonResponse> pageThongKe = repository.thongKeSoLuongTon(pageable);
+        return pageThongKe;
+    }
+
+    @Override
+    public Page<ThongKeTheoDoanhThuResponse> thongKeTheoDoanhThu(Integer page, Integer pageSize) {
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        Page<ThongKeTheoDoanhThuResponse> pageThongKe = repository.thongKeTheoDoanhThu(pageable);
         return pageThongKe;
     }
 

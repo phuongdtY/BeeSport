@@ -1,10 +1,13 @@
 import {
+  Affix,
+  Button,
   Card,
   Checkbox,
   Col,
   Collapse,
   CollapseProps,
   ColorPicker,
+  Input,
   Pagination,
   PaginationProps,
   Row,
@@ -38,6 +41,8 @@ const SanPham: React.FC = () => {
   const [selectedThuongHieu, setSelectedThuongHieu] = useState([]);
   const [selectedMauSac, setSelectedMauSac] = useState([]);
   const [selectedSapXep, setSelectedSapXep] = useState([]);
+  const [top, setTop] = React.useState<number>(100);
+  const [search, setSearch] = useState("");
 
   const kichCoLength = Math.ceil(kichCos.length / 3);
   const leftKichCo = kichCos.slice(0, kichCoLength);
@@ -396,6 +401,7 @@ const SanPham: React.FC = () => {
         listLoaiDe: selectedLoaiDe.map((item) => item.id).join(","),
         listKichCo: selectedKichCo.map((item) => item.id).join(","),
         listMauSac: selectedMauSac.map((item) => item.id).join(","),
+        search: search,
       };
 
       try {
@@ -426,6 +432,7 @@ const SanPham: React.FC = () => {
     selectedMauSac,
     giaTienRange,
     selectedSapXep,
+    search,
   ]);
   return (
     <>
@@ -454,9 +461,17 @@ const SanPham: React.FC = () => {
             <p style={{ fontWeight: "bold", float: "left" }}>
               DANH SÁCH SẢN PHẨM
             </p>
+            <Affix offsetTop={top}>
+              <Input
+                style={{ width: 400, marginLeft: 60 }}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Tìm kiếm Sản phẩm ..."
+              />
+            </Affix>
             <Select
               defaultValue={"6"}
-              style={{ width: 140, marginLeft: 620 }}
+              style={{ width: 140, marginLeft: 125 }}
               onChange={handleChange}
               options={[
                 { value: "3", label: "Tên: A-Z" },
@@ -498,7 +513,6 @@ const SanPham: React.FC = () => {
                       </Title>
                     </p>
                   </Link>
-                  {/* Add your actions, such as Add to Cart and Buy Now buttons here */}
                 </Card>
               </Col>
             ))}

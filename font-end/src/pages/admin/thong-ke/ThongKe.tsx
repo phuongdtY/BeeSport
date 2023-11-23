@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import request from "~/utils/request";
 import { formatGiaTienVND } from "~/utils/formatResponse";
 import TableSoLuongTon from "./TableSoLuongTon";
+import TableThongKeDoanhThu from "./TableThongKeDoanhThu";
 
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -397,6 +398,7 @@ const ThongKe: React.FC = () => {
         </Col>
       </Row>
       <TableSoLuongTon />
+      <TableThongKeDoanhThu />
     </>
   );
 };

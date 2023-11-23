@@ -43,6 +43,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id " +
             "JOIN HinhAnhSanPham hi ON sp.id = hi.sanPham.id " +
             "WHERE cps.trangThai = 'ACTIVE' " +
+            "AND (sp.ten LIKE %:search% OR CAST(cps.kichCo.kichCo as string) LIKE %:search% OR cps.diaHinhSan.ten LIKE %:search% OR cps.loaiDe.ten LIKE %:search% OR cps.mauSac.ten LIKE %:search% OR sp.thuongHieu.ten LIKE %:search%) " +
             "AND hi.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
             "AND cps.giaTien BETWEEN :minPrice AND :maxPrice " +
             "AND ( sp.thuongHieu.id  IN  :listThuongHieu  ) " +
@@ -58,7 +59,9 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
                                               @Param("listMauSac") List<Long> listMauSac,
                                               @Param("listDiaHinhSan") List<Long> listDiaHinhSan,
                                               @Param("listKichCo") List<Long> listKichCo,
-                                              @Param("listLoaiDe") List<Long> listLoaiDe);
+                                              @Param("listLoaiDe") List<Long> listLoaiDe,
+                                              @Param("search") String search);
+
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien), hi.duongDan) " +
             "FROM SanPham sp " +
