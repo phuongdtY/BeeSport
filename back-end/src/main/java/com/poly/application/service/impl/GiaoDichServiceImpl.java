@@ -4,6 +4,8 @@ import com.poly.application.common.GenCode;
 import com.poly.application.entity.GiaoDich;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.TaiKhoan;
+import com.poly.application.exception.BadRequestException;
+import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.GiaoDichMapper;
 import com.poly.application.model.request.create_request.CreateGiaoDichRequest;
 import com.poly.application.model.request.update_request.UpdatedGiaoDichRequest;
@@ -51,12 +53,28 @@ public class GiaoDichServiceImpl implements GiaoDichService {
 
     @Override
     public GiaoDichResponse update(Long id, UpdatedGiaoDichRequest request) {
-        Optional<GiaoDich> optional = giaoDichRepository.findById(id);
-        GiaoDich giaoDich = optional.get();
-        giaoDichMapper.convertUpdatedGiaoDichRequestToGiaoDichEntity(request, giaoDich);
+        GiaoDich giaoDich = giaoDichRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Giao dich không tồn tại"));
+        if (request.getMaGiaoDich() != null) {
+            giaoDich.setMaGiaoDich(request.getMaGiaoDich());
+        }
+        if (request.getSoTienGiaoDich() != null) {
+            giaoDich.setSoTienGiaoDich(request.getSoTienGiaoDich());
+        }
+        if (request.getTrangThaiGiaoDich() != null) {
+            giaoDich.setTrangThaiGiaoDich(request.getTrangThaiGiaoDich());
+        }
+        if (request.getHoaDon() != null) {
+            giaoDich.setHoaDon(request.getHoaDon());
+        }
+        if (request.getTaiKhoan() != null) {
+            giaoDich.setTaiKhoan(request.getTaiKhoan());
+        }
+        if (request.getPhuongThucThanhToan() != null) {
+            giaoDich.setPhuongThucThanhToan(request.getPhuongThucThanhToan());
+        }
         return giaoDichMapper.convertGiaoDichEntityToGiaoDichResponse(giaoDichRepository.save(giaoDich));
     }
-
     @Override
     public List<GiaoDichResponse> getListGiaoDich() {
         return null;

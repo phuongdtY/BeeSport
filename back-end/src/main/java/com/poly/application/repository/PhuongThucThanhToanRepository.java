@@ -15,4 +15,6 @@ public interface PhuongThucThanhToanRepository extends JpaRepository<PhuongThucT
     @Query("SELECT obj FROM PhuongThucThanhToan obj WHERE (obj.ten LIKE %:searchText%) AND (:trangThai IS NULL OR obj.trangThai = :trangThai)")
     Page<PhuongThucThanhToan> findByAll(Pageable pageable, String searchText, CommonEnum.TrangThaiThuocTinh trangThai);
 
+    PhuongThucThanhToan findPhuongThucThanhToanById(Long id);
+
 }

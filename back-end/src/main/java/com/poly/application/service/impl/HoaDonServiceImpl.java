@@ -3,6 +3,7 @@ package com.poly.application.service.impl;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.common.GenCode;
 import com.poly.application.entity.ChiTietSanPham;
+import com.poly.application.entity.GiaoDich;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.HoaDonChiTiet;
 import com.poly.application.entity.SanPham;
@@ -17,8 +18,10 @@ import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
 import com.poly.application.model.response.SanPhamResponse;
 import com.poly.application.repository.ChiTietSanPhamRepository;
+import com.poly.application.repository.GiaoDichRepository;
 import com.poly.application.repository.HoaDonChiTietRepository;
 import com.poly.application.repository.HoaDonRepository;
+import com.poly.application.repository.PhuongThucThanhToanRepository;
 import com.poly.application.repository.TaiKhoanRepository;
 import com.poly.application.repository.TimelineRepository;
 import com.poly.application.service.HoaDonService;
@@ -48,6 +51,12 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Autowired
     private TimelineRepository timelineRepository;
+
+    @Autowired
+    private GiaoDichRepository giaoDichRepository;
+
+    @Autowired
+    private PhuongThucThanhToanRepository phuongThucThanhToanRepository;
 
     @Autowired
     private HoaDonMapper hoaDonMapper;
@@ -110,6 +119,16 @@ public class HoaDonServiceImpl implements HoaDonService {
         timeLine.setHoaDon(savedHoaDon);
         timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.PENDING);
         timelineRepository.save(timeLine);
+        if (createHoaDonRequest.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE
+                && createHoaDonRequest.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.PENDING){
+            GiaoDich giaoDich = new GiaoDich();
+            giaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
+            giaoDich.setSoTienGiaoDich(savedHoaDon.getTongTienKhiGiam());
+            giaoDich.setTrangThaiGiaoDich(CommonEnum.TrangThaiGiaoDich.SUCCESS);
+            giaoDich.setPhuongThucThanhToan(phuongThucThanhToanRepository.findPhuongThucThanhToanById(1L));
+            giaoDich.setHoaDon(savedHoaDon);
+            giaoDich.setTaiKhoan(savedHoaDon.getTaiKhoan());
+        }
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(savedHoaDon);
     }
 
@@ -215,7 +234,7 @@ public class HoaDonServiceImpl implements HoaDonService {
                     ctsp.setSoLuong(ctsp.getSoLuong() - hdct.getSoLuong());
                     if (ctsp.getSoLuong() <= 0) {
                         ctsp.setSoLuong(0);
-                        ctsp.getSanPham().setTrangThai(CommonEnum.TrangThaiSanPham.INACTIVE);
+                        ctsp.setTrangThai(CommonEnum.TrangThaiChiTietSanPham.OUT_OF_STOCK);
                     }
                     chiTietSanPhamRepository.save(ctsp);
                 }
