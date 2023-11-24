@@ -173,7 +173,7 @@ public class CommonEnum {
         ENDING_SOON("ENDING_SOON", "Sắp hết hạn","volcano"),
         EXPIRED("EXPIRED", "Hết hạn","blue"),
         OUT_OF_STOCK("OUT_OF_STOCK", "Đã hết","purple"),
-        CANCELLED("CANCELLED", "Hủy bỏ","default");
+        CANCELLED("CANCELLED", "Hủy bỏ","red");
 
         private final String ten;
         private final String moTa;
