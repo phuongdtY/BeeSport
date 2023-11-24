@@ -148,4 +148,28 @@ public class ThongKeRepository {
         return new PageImpl<>(dtos.subList(start, end), pageable, dtos.size());
     }
 
+    public List<ThongKeSoLuongTonResponse> thongKeSoLuongTonList() {
+        String queryString = "SELECT sp.id AS sanPhamId, sp.ten AS tenSanPham, SUM(ct.so_luong) AS tongSoLuong " +
+                "FROM chi_tiet_san_pham ct " +
+                "INNER JOIN san_pham sp ON ct.san_pham_id = sp.id " +
+                "GROUP BY sp.id, sp.ten " +
+                "ORDER BY tongSoLuong ASC";
+
+        List<Object[]> results = entityManager.createNativeQuery(queryString)
+                .getResultList();
+
+        // Chuyển đổi kết quả sang ThongKeSoLuongTonResponse
+        List<ThongKeSoLuongTonResponse> dtos = new ArrayList<>();
+        for (Object[] result : results) {
+            ThongKeSoLuongTonResponse dto = new ThongKeSoLuongTonResponse();
+            dto.setId(result[0] != null ? ((Number) result[0]).longValue() : 0L);
+            dto.setTen(result[1] != null ? (String) result[1] : "");
+            dto.setSoLuongTon(result[2] != null ? ((Number) result[2]).intValue() : 0);
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
+
 }

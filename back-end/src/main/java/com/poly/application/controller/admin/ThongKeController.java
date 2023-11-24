@@ -1,10 +1,12 @@
 package com.poly.application.controller.admin;
 
 import com.poly.application.service.ThongKeService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 @CrossOrigin("*")
@@ -67,5 +69,14 @@ public class ThongKeController {
     ) {
         return ResponseEntity.ok(service.thongKeTheoDoanhThu(page, pageSize));
     }
+
+    @GetMapping("excel")
+    public void exportExcel(HttpServletResponse response) throws IOException {
+        byte[] excelFile = service.exportExcelThongKe();
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=so_luong_ton.xlsx");
+        response.getOutputStream().write(excelFile);
+    }
+
 
 }

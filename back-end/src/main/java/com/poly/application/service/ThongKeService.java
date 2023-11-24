@@ -5,6 +5,7 @@ import com.poly.application.model.response.ThongKeTheoDMYResponse;
 import com.poly.application.model.response.ThongKeTheoDoanhThuResponse;
 import org.springframework.data.domain.Page;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 public interface ThongKeService {
@@ -22,6 +23,8 @@ public interface ThongKeService {
     Page<ThongKeSoLuongTonResponse> thongKeSoLuongTon(Integer page, Integer pageSize);
 
     Page<ThongKeTheoDoanhThuResponse> thongKeTheoDoanhThu(Integer page, Integer pageSize);
+
+    byte[] exportExcelThongKe() throws IOException;
 
 
 }
