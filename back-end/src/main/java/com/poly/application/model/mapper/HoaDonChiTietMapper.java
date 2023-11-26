@@ -29,7 +29,6 @@ public class HoaDonChiTietMapper {
     }
 
     public HoaDonChiTiet convertCreateHoaDonChiTietRequestToHoaDonChiTietEntity(CreateHoaDonChiTietRequest createHoaDonChiTietRequest) {
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         return modelMapper.map(createHoaDonChiTietRequest, HoaDonChiTiet.class);
     }
 

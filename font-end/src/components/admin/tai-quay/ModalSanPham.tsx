@@ -1,4 +1,4 @@
-import { ReloadOutlined } from "@ant-design/icons";
+import { ExclamationCircleFilled, ReloadOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -14,6 +14,8 @@ import {
 import { Option } from "antd/es/mentions";
 import React, { useState, useEffect } from "react";
 import request, { request4s } from "~/utils/request";
+
+const { confirm } = Modal;
 
 interface ModalSanPhamProps {
   isModalVisible: boolean;
@@ -145,26 +147,35 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
   ];
 
   const handleChonSanPham = async (idHoaDonChiTiet, donGia) => {
-    try {
-      // Make an API call to add the product to the invoice
-      const response = await request4s.post(
-        `hoa-don/add-san-pham/${idHoaDon}`,
-        {
-          chiTietSanPham: {
-            id: idHoaDonChiTiet,
-          },
-          soLuong: 1,
-          trangThaiHoaDonChiTiet: "APPROVED",
-          donGia: donGia,
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn thêm sản phẩm không?",
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          // Make an API call to add the product to the invoice
+          const response = await request4s.post(
+            `hoa-don/add-san-pham/${idHoaDon}`,
+            {
+              chiTietSanPham: {
+                id: idHoaDonChiTiet,
+              },
+              soLuong: 1,
+              trangThaiHoaDonChiTiet: "APPROVED",
+              donGia: donGia,
+            }
+          );
+          loadData();
+          message.success("Thêm sản phẩm vào giỏ hàng thành công !");
+          setIsModalVisible(false);
+        } catch (error) {
+          console.error("Error adding product to invoice:", error);
+          // Handle errors, e.g., display an error message
         }
-      );
-      loadData();
-      message.success("Thêm sản phẩm vào giỏ hàng thành công !");
-      setIsModalVisible(false);
-    } catch (error) {
-      console.error("Error adding product to invoice:", error);
-      // Handle errors, e.g., display an error message
-    }
+      },
+    });
   };
 
   const handleCancel = () => {

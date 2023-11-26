@@ -52,6 +52,8 @@ export interface DataType {
       mauSac: string;
     };
   };
+  ghiChuTimeLine: string;
+  idPhuongThuc: number;
 }
 
 export interface UpdatedRequest {
@@ -72,6 +74,8 @@ export interface UpdatedRequest {
   nguoiNhan: string;
   sdtNguoiNhan: string;
   ghiChu: string;
+  ghiChuTimeLine: string;
+  idPhuongThuc: number;
 }
 
 export interface UpdateDiaChiHoaDon {

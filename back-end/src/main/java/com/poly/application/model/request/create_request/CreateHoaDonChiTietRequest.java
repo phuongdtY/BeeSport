@@ -5,12 +5,14 @@ import com.poly.application.entity.ChiTietSanPham;
 import com.poly.application.entity.HoaDon;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@ToString
 public class CreateHoaDonChiTietRequest {
 
     private Long id;
@@ -20,10 +22,6 @@ public class CreateHoaDonChiTietRequest {
     private BigDecimal donGia;
 
     private String ghiChu;
-
-    private LocalDateTime ngayTao;
-
-    private LocalDateTime ngaySua;
 
     private String nguoiTao;
 

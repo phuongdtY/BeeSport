@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@ToString
 public class UpdatedVoucherRequest {
 
     private Long id;
@@ -39,4 +38,6 @@ public class UpdatedVoucherRequest {
 
     @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;
+
+    private boolean cancelled;
 }

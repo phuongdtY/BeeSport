@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -30,6 +31,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Entity
 @Table(name = "hoa_don_chi_tiet")
 public class HoaDonChiTiet {
@@ -50,7 +52,7 @@ public class HoaDonChiTiet {
 
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")
+    @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP", updatable = false)
     private LocalDateTime ngayTao;
 
     @UpdateTimestamp

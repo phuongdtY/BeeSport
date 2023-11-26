@@ -64,6 +64,7 @@ public class CommonEnum {
 
         PENDING("PENDING", "Chờ xác nhận", "warning"),
         CONFIRMED("CONFIRMED", "Đã xác nhận", "success"),
+        PICKUP("PICKUP", "Đang lấy hàng", "#ED5AB3"),
         SHIPPING("SHIPPING", "Đang vận chuyển", "geekblue"),
         CANCELLED("CANCELLED", "Đã hủy", "volcano"),
         APPROVED("APPROVED", "Đã hoàn thành", "magenta");
@@ -172,7 +173,7 @@ public class CommonEnum {
         ENDING_SOON("ENDING_SOON", "Sắp hết hạn","volcano"),
         EXPIRED("EXPIRED", "Hết hạn","blue"),
         OUT_OF_STOCK("OUT_OF_STOCK", "Đã hết","purple"),
-        CANCELLED("CANCELLED", "Hủy bỏ","default");
+        CANCELLED("CANCELLED", "Hủy bỏ","red");
 
         private final String ten;
         private final String moTa;

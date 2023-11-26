@@ -21,6 +21,7 @@ import {
   Tag,
   Tooltip,
   message,
+  DatePicker,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
@@ -76,7 +77,7 @@ const index: React.FC = () => {
       key: "ngayBatDau",
       sorter: true,
       render: (ngayBatDau) => {
-        return dayjs(ngayBatDau).format("DD/MM/YYYY HH:mm:ss"); // Định dạng ngày theo ý muốn của bạn
+        return dayjs(ngayBatDau).format("YYYY-MM-DD HH:mm:ss"); // Định dạng ngày theo ý muốn của bạn
       },
     },
     {
@@ -86,7 +87,7 @@ const index: React.FC = () => {
       key: "ngayKetThuc",
       sorter: true,
       render: (ngayKetThuc) => {
-        return dayjs(ngayKetThuc).format("DD/MM/YYYY HH:mm:ss"); // Định dạng ngày theo ý muốn của bạn
+        return dayjs(ngayKetThuc).format("YYYY-MM-DD HH:mm:ss"); // Định dạng ngày theo ý muốn của bạn
       },
     },
     {
@@ -154,6 +155,8 @@ const index: React.FC = () => {
     pageSize: params.pageSize,
     searchText: params.searchText,
     trangThai: params.trangThai,
+    ngayBatDau: params.ngayBatDau,
+    ngayKetThuc: params.ngayKetThuc,
     sortField: params.sortField,
     sortOrder: params.sortOrder,
   });
@@ -178,8 +181,8 @@ const index: React.FC = () => {
     fetchData();
     const intervalId = setInterval(fetchData, 1000);
     return () => clearInterval(intervalId);
-    data.map((ii) => console.log(ii));
   }, [params]);
+
   const handleSearch = (value: string) => {
     setParams({
       ...params,
@@ -187,6 +190,7 @@ const index: React.FC = () => {
     });
     console.log(value);
   };
+
   const onChangeStatus = (value: string) => {
     setParams({
       ...params,
@@ -194,6 +198,34 @@ const index: React.FC = () => {
     });
     console.log(value);
   };
+  const onChangeNgayBatDau = (value: dayjs.Dayjs | null) => {
+    if (value) {
+      setParams({
+        ...params,
+        ngayBatDau: value.format("YYYY-MM-DD HH:mm:ss"),
+      });
+    } else {
+      setParams({
+        ...params,
+        ngayBatDau: "", // hoặc giá trị mặc định nếu không có ngày được chọn
+      });
+    }
+  };
+
+  const onChangeNgayKetThuc = (value: dayjs.Dayjs | null) => {
+    if (value) {
+      setParams({
+        ...params,
+        ngayKetThuc: value.format("YYYY-MM-DD HH:mm:ss"),
+      });
+    } else {
+      setParams({
+        ...params,
+        ngayKetThuc: "", // hoặc giá trị mặc định nếu không có ngày được chọn
+      });
+    }
+  };
+
   const onChangeTable = (
     pagination: TablePaginationConfig,
     filters: Record<string, FilterValue | null>,
@@ -211,31 +243,72 @@ const index: React.FC = () => {
       sortOrder: sorter.order,
     });
   };
+
+  //
+  const [defaultTrangThai, setDefaultTrangThai] = useState("");
+  const [defaultText, setDefaultText] = useState("");
+  const [defaultNgayBatDau, setDefaultNgayBatDau] =
+    useState<dayjs.Dayjs | null>(null);
+  const [defaultNgayKetThuc, setDefaultNgayKetThuc] =
+    useState<dayjs.Dayjs | null>(null);
+
+  // ...
+
+  const getDefaultParams = () => ({
+    page: 1,
+    pageSize: 10,
+    searchText: defaultText,
+    trangThai: defaultTrangThai,
+    ngayBatDau: defaultNgayBatDau
+      ? defaultNgayBatDau.format("YYYY-MM-DD HH:mm:ss")
+      : "",
+    ngayKetThuc: defaultNgayKetThuc
+      ? defaultNgayKetThuc.format("YYYY-MM-DD HH:mm:ss")
+      : "",
+    sortField: "",
+    sortOrder: "",
+  });
+
+  const handleReset = () => {
+    setParams(getDefaultParams());
+  };
+
+  const resetData = () => {
+    setParams(getDefaultParams());
+    setDefaultTrangThai("");
+    setDefaultText("");
+    setDefaultNgayBatDau(null); // Reset Ngày bắt đầu
+    setDefaultNgayKetThuc(null); // Reset Ngày kết thúc
+  };
+
   return (
     <>
       <Card title="DANH SÁCH VOUCHER">
         <Row>
           <Col span={8}>
             <Input
+              value={params.searchText || defaultText}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder="Tìm kiếm theo Tên, Mã..."
               allowClear
               prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
             />
           </Col>
-          <Col span={8}></Col>
-          <Col span={5}>
+          <Col span={2}></Col>
+          <Col span={10}>
             <Form.Item label="Trạng thái" style={{ fontWeight: "bold" }}>
               <Select
-                defaultValue=""
-                style={{ width: 150 }}
+                value={params.trangThai || defaultTrangThai}
+                style={{ width: 230 }}
                 onChange={onChangeStatus}
                 options={[
                   { value: "", label: "Tất cả" },
-                  { value: "ACTIVE", label: "Đang hoạt động" },
-                  { value: "EXPIRED", label: "Hết hạn" },
-                  { value: "INACTIVE", label: "Ngừng hoạt động" },
                   { value: "UPCOMING", label: "Sắp diễn ra" },
+                  { value: "ONGOING", label: "Đang diễn ra" },
+                  { value: "ENDING_SOON", label: "Sắp hết hạn" },
+                  { value: "EXPIRED", label: "Đã hết" },
+                  { value: "OUT_OF_STOCK", label: "Sắp diễn ra" },
+                  { value: "CANCELLED", label: "Hủy bỏ" },
                 ]}
               />
             </Form.Item>
@@ -246,6 +319,39 @@ const index: React.FC = () => {
                 Thêm voucher
               </Button>
             </Link>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={10}>
+            <Form.Item label="Ngày bắt đầu">
+              <DatePicker
+                showTime
+                onChange={onChangeNgayBatDau}
+                value={
+                  params.ngayBatDau
+                    ? dayjs(params.ngayBatDau)
+                    : defaultNgayBatDau
+                }
+              />
+            </Form.Item>
+          </Col>
+          <Col span={10}>
+            <Form.Item label="Ngày kết thúc">
+              <DatePicker
+                showTime
+                onChange={onChangeNgayKetThuc}
+                value={
+                  params.ngayKetThuc
+                    ? dayjs(params.ngayKetThuc)
+                    : defaultNgayKetThuc
+                }
+              />
+            </Form.Item>
+          </Col>
+          <Col span={3}>
+            <Button type="dashed" onClick={handleReset} style={{ width: 141 }}>
+              Làm mới
+            </Button>
           </Col>
         </Row>
         <Table

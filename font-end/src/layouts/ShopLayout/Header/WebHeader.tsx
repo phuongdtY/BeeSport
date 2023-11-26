@@ -66,18 +66,24 @@ const Header: React.FC = () => {
       <div className="demo-logo">
         <img
 <<<<<<< HEAD
+<<<<<<< HEAD
           style={{ paddingTop: 5 }}
           src={logo}
           alt=""
           width={"180px"}
           height={"70px"}
 =======
+=======
+>>>>>>> c226648b5e8e385859e2b7375484c7ad8c4a2203
           src={logo}
           alt=""
           style={{ marginLeft: 10, paddingTop: 5 }}
           width={"150px"}
           height={"60px"}
+<<<<<<< HEAD
 >>>>>>> origin/canh
+=======
+>>>>>>> c226648b5e8e385859e2b7375484c7ad8c4a2203
         />
       </div>
       <Menu

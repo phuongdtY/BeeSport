@@ -24,4 +24,7 @@ public interface KichCoRepository extends JpaRepository<KichCo, Long> {
     @Query("SELECT DISTINCT kc FROM ChiTietSanPham ctsp JOIN KichCo kc ON ctsp.kichCo.id = kc.id  WHERE ctsp.sanPham.id = :idSanPham AND kc.trangThai = 'ACTIVE'")
     List<KichCo> getKichCoKhongLap(Long idSanPham);
 
+    @Query(value = "SELECT kc.id FROM KichCo kc WHERE kc.trangThai = 'ACTIVE' ")
+    List<Long> findByIdIn();
+
 }

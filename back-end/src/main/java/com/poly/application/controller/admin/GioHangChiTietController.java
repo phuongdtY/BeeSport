@@ -1,5 +1,6 @@
 package com.poly.application.controller.admin;
 
+import com.poly.application.entity.GioHangChiTiet;
 import com.poly.application.model.request.create_request.CreatedGioHangChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedGioHangChiTietRequest;
 import com.poly.application.service.GioHangChiTietService;
@@ -34,6 +35,11 @@ public class GioHangChiTietController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(name = "id") Long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+    @DeleteMapping("/delete-all")
+    public ResponseEntity<?> deleteALL() {
+        service.deleteAll();
         return ResponseEntity.noContent().build();
     }
 
