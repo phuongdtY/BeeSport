@@ -40,7 +40,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Page<VoucherResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,
                                         String searchText, Long hinhThucGiamGiaId, String trangThaiString,
-                                        LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc){
+                                        LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
@@ -62,7 +62,8 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public List<VoucherResponse> getListVoucher() {
-        List<Voucher> list = repository.getListVoucherActive();
+
+        List<Voucher> list = repository.getListVoucher();
         return list
                 .stream()
                 .map(mapper::convertEntityToResponse)
@@ -119,6 +120,15 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public VoucherResponse findById(Long id) {
         Optional<Voucher> optional = repository.findById(id);
+        if (optional.isEmpty()) {
+            throw new NotFoundException("Voucher không tồn tại");
+        }
+        return mapper.convertEntityToResponse(optional.get());
+    }
+
+    @Override
+    public VoucherResponse findByMa(String ma) {
+        Optional<Voucher> optional = repository.findByMa(ma);
         if (optional.isEmpty()) {
             throw new NotFoundException("Voucher không tồn tại");
         }

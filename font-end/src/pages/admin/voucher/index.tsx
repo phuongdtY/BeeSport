@@ -21,7 +21,7 @@ import {
   Tag,
   Tooltip,
   message,
-  DatePicker
+  DatePicker,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
@@ -97,9 +97,9 @@ const index: React.FC = () => {
       align: "center",
       sorter: true,
       render: (giaTriGiam, object: any) => {
-        if (object.hinhThucGiam.id === 2) {
+        if (object.hinhThucGiam.id === 1) {
           return formatGiaTienVND(giaTriGiam);
-        } else if (object.hinhThucGiam.id === 1) {
+        } else if (object.hinhThucGiam.id === 2) {
           return giaTriGiam + "%";
         } else {
           return "";
@@ -226,7 +226,6 @@ const index: React.FC = () => {
     }
   };
 
-
   const onChangeTable = (
     pagination: TablePaginationConfig,
     filters: Record<string, FilterValue | null>,
@@ -245,13 +244,13 @@ const index: React.FC = () => {
     });
   };
 
-
   //
   const [defaultTrangThai, setDefaultTrangThai] = useState("");
   const [defaultText, setDefaultText] = useState("");
-  const [defaultNgayBatDau, setDefaultNgayBatDau] = useState<dayjs.Dayjs | null>(null);
-  const [defaultNgayKetThuc, setDefaultNgayKetThuc] = useState<dayjs.Dayjs | null>(null);
-
+  const [defaultNgayBatDau, setDefaultNgayBatDau] =
+    useState<dayjs.Dayjs | null>(null);
+  const [defaultNgayKetThuc, setDefaultNgayKetThuc] =
+    useState<dayjs.Dayjs | null>(null);
 
   // ...
 
@@ -260,12 +259,15 @@ const index: React.FC = () => {
     pageSize: 10,
     searchText: defaultText,
     trangThai: defaultTrangThai,
-    ngayBatDau: defaultNgayBatDau ? defaultNgayBatDau.format("YYYY-MM-DD HH:mm:ss") : "",
-    ngayKetThuc: defaultNgayKetThuc ? defaultNgayKetThuc.format("YYYY-MM-DD HH:mm:ss") : "",
+    ngayBatDau: defaultNgayBatDau
+      ? defaultNgayBatDau.format("YYYY-MM-DD HH:mm:ss")
+      : "",
+    ngayKetThuc: defaultNgayKetThuc
+      ? defaultNgayKetThuc.format("YYYY-MM-DD HH:mm:ss")
+      : "",
     sortField: "",
     sortOrder: "",
   });
-
 
   const handleReset = () => {
     setParams(getDefaultParams());
@@ -278,7 +280,6 @@ const index: React.FC = () => {
     setDefaultNgayBatDau(null); // Reset Ngày bắt đầu
     setDefaultNgayKetThuc(null); // Reset Ngày kết thúc
   };
-
 
   return (
     <>
@@ -314,7 +315,7 @@ const index: React.FC = () => {
           </Col>
           <Col span={3}>
             <Link to="/admin/voucher/add">
-              <Button type="primary" icon={<PlusOutlined />} >
+              <Button type="primary" icon={<PlusOutlined />}>
                 Thêm voucher
               </Button>
             </Link>
@@ -326,7 +327,11 @@ const index: React.FC = () => {
               <DatePicker
                 showTime
                 onChange={onChangeNgayBatDau}
-                value={params.ngayBatDau ? dayjs(params.ngayBatDau) : defaultNgayBatDau}
+                value={
+                  params.ngayBatDau
+                    ? dayjs(params.ngayBatDau)
+                    : defaultNgayBatDau
+                }
               />
             </Form.Item>
           </Col>
@@ -335,7 +340,11 @@ const index: React.FC = () => {
               <DatePicker
                 showTime
                 onChange={onChangeNgayKetThuc}
-                value={params.ngayKetThuc ? dayjs(params.ngayKetThuc) : defaultNgayKetThuc}
+                value={
+                  params.ngayKetThuc
+                    ? dayjs(params.ngayKetThuc)
+                    : defaultNgayKetThuc
+                }
               />
             </Form.Item>
           </Col>
@@ -344,7 +353,7 @@ const index: React.FC = () => {
               Làm mới
             </Button>
           </Col>
-        </Row >
+        </Row>
         <Table
           columns={columns}
           pagination={{

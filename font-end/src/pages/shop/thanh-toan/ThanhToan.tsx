@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { LuTicket } from "react-icons/lu";
 import {
   Button,
   Card,
@@ -26,6 +27,7 @@ import { Option } from "antd/es/mentions";
 import { Content, Header } from "antd/es/layout/layout";
 import TextArea from "antd/es/input/TextArea";
 import { formatGiaTienVND } from "~/utils/formatResponse";
+import KhoVoucher from "./KhoVoucher";
 const { Text } = Typography;
 const tailLayout = {
   wrapperCol: { offset: 15, span: 9 },
@@ -44,19 +46,16 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
   const [wards, setWards] = useState<Option[]>([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [openModalVoucher, setOpenModalVoucher] = useState(false);
   const { confirm } = Modal;
   const [idQuanHuyen, setIdQuanHuyen] = useState(false);
   const [idPhuongXa, setIdPhuongXa] = useState(false);
-  const [maVoucher, setMavoucher] = useState("");
-  const [statusInput, setStatusInput] = useState("");
   const [phiShip, setPhiShip] = useState(0);
+  const [giamGiam, setGiamGia] = useState(0);
+  const [idVoucher, setIdVoucher] = useState(null);
 
   const tongTien = () => {
-    return tamTinh - phiShip;
-  };
-
-  const addVoucher = () => {
-    console.log(maVoucher);
+    return tamTinh - giamGiam + phiShip;
   };
 
   useEffect(() => {
@@ -140,8 +139,11 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
       onOk: async () => {
         try {
           setLoading(true);
+          console.log(idVoucher);
+
           const res = await request.post("hoa-don", {
             loaiHoaDon: "ONLINE",
+            voucher: idVoucher !== null || undefined ? { id: idVoucher } : null,
             phiShip: phiShip,
             tongTien: tamTinh,
             tongTienKhiGiam: tongTien(),
@@ -159,14 +161,13 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
               "hoa-don-chi-tiet/add-list",
               dataHoaDonChiTiet(res.data.id)
             );
-            console.log(response);
+            // console.log(response);
+            await request.delete("gio-hang-chi-tiet/delete-all");
+            message.success("Đặt hàng thành công");
+            navigate("/");
           } catch (error) {
             console.log(error);
           }
-
-          setLoading(false);
-          message.success("Đặt hàng thành công");
-          // navigate("/admin/nhan-vien");
         } catch (error: any) {
           message.error(error.response.data.message);
           setLoading(false);
@@ -262,6 +263,11 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
     setRadioOnchageValue(e.target.value);
   };
 
+  const voucher = (id, value) => {
+    setIdVoucher(id);
+    setGiamGia(value);
+    setOpenModalVoucher(false);
+  };
   return (
     <Content style={{ width: 509 }}>
       <Form
@@ -437,26 +443,27 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
           </Radio.Group>
         </Card>
         <Card title="Đơn hàng (4 sản phẩm)">
-          <Space>
-            <Input
-              status={statusInput}
-              size="large"
-              placeholder="Nhập mã giảm giá"
-              value={maVoucher}
-              onChange={(value) => setMavoucher(value.target.value)}
-              style={{ width: 370, borderRadius: 3 }}
-            />
-            {/* <Text type="danger">Mã khuyến mãi không hợp lệ</Text> */}
+          <div>
+            <Space.Compact>
+              <LuTicket style={{ fontSize: 23, color: "#1677ff" }} />
+              <Text strong>BeeSport Voucher</Text>
+            </Space.Compact>
             <Button
               size="large"
-              type="primary"
-              style={{ borderRadius: 5 }}
-              onClick={addVoucher}
+              type="link"
+              style={{ float: "right", padding: 0 }}
+              onClick={() => setOpenModalVoucher(true)}
             >
-              Áp dụng
+              Chọn hoặc nhập mã
             </Button>
-          </Space>
-          <Text type="danger">Mã khuyến mãi không hợp lệ</Text>
+            <KhoVoucher
+              open={openModalVoucher}
+              close={() => setOpenModalVoucher(false)}
+              onOK={voucher}
+              tongTien={tamTinh}
+            />
+          </div>
+
           <Divider />
           <div>
             <div>
@@ -472,7 +479,9 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
               <Text type="secondary" strong>
                 Giảm giá:
               </Text>
-              <Text style={{ float: "right" }}>{formatGiaTienVND(0)}</Text>
+              <Text style={{ float: "right" }}>
+                {formatGiaTienVND(giamGiam)}
+              </Text>
             </div>
             <div>
               <Text type="secondary" strong>

@@ -54,6 +54,11 @@ public class GioHangChiTietServiceImpl implements GioHangChiTietService {
     }
 
     @Override
+    public void deleteAll() {
+        repository.deleteAll();
+    }
+
+    @Override
     public GioHangChiTietResponse update(Long idGioHangChiTiet, UpdatedGioHangChiTietRequest request) {
         Optional<GioHangChiTiet> optional = repository.findById(idGioHangChiTiet);
         if (optional.isEmpty()) {

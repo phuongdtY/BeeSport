@@ -26,6 +26,8 @@ public interface VoucherService {
 
     VoucherResponse findById(Long id);
 
+    VoucherResponse findByMa(String ma);
+
     void updateVoucherStatus();
 
     void cancelVoucher(Long id);

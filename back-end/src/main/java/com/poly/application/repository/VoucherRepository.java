@@ -6,10 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VoucherRepository extends JpaRepository<Voucher, Long> {
@@ -24,7 +26,10 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
 
     boolean existsByTen(String ten);
 
-    @Query("SELECT v FROM Voucher v WHERE v.trangThai = 'ONGOING' ORDER BY v.ngayTao DESC")
-    List<Voucher> getListVoucherActive();
+//    @Query("SELECT v FROM Voucher v WHERE v.trangThai IN (:trangThaiList) ORDER BY v.ngaySua DESC")
+//    List<Voucher> getListVoucher(@Param("trangThaiList") List<CommonEnum.TrangThaiVoucher> trangThaiList);
+    @Query("SELECT v FROM Voucher v WHERE v.trangThai IN ('ONGOING', 'UPCOMING', 'ENDING_SOON', 'OUT_OF_STOCK') ORDER BY v.ngayTao DESC")
+    List<Voucher> getListVoucher();
 
+    Optional<Voucher> findByMa(String ma);
 }

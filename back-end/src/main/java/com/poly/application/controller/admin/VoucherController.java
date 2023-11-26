@@ -55,6 +55,11 @@ public class VoucherController {
         return ResponseEntity.ok(service.findById(id));
     }
 
+    @GetMapping("/maVoucher")
+    public ResponseEntity<?> getOneMa(@RequestParam(name = "maVoucher") String ma) {
+        return ResponseEntity.ok(service.findByMa(ma));
+    }
+
     @PutMapping("/cancel-voucher/{id}")
     public ResponseEntity<?> cancelVoucher(@PathVariable(name = "id") Long id) {
         service.cancelVoucher(id);

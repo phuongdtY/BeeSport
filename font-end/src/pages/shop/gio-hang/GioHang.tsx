@@ -12,6 +12,7 @@ import {
   Card,
   Col,
   Divider,
+  Empty,
   Image,
   Input,
   Modal,
@@ -262,37 +263,50 @@ const index: React.FC = () => {
           </Title>
         }
       >
-        <Row>
-          <Col span={15}>
-            <Card>
-              <Table
-                columns={columns}
-                dataSource={data}
-                onChange={onChangeTable}
-                loading={loading}
-                showSorterTooltip={false}
-                pagination={false}
-                footer={() => (
-                  <Space>
-                    <Link to="/">
-                      <Button type="dashed">
-                        <ArrowLeftOutlined />
-                        TIẾP TỤC MUA SẮM
+        {data.length > 0 ? (
+          <Row>
+            <Col span={15}>
+              <Card>
+                <Table
+                  columns={columns}
+                  dataSource={data}
+                  onChange={onChangeTable}
+                  loading={loading}
+                  showSorterTooltip={false}
+                  pagination={false}
+                  footer={() => (
+                    <Space>
+                      <Link to="/">
+                        <Button type="dashed">
+                          <ArrowLeftOutlined />
+                          TIẾP TỤC MUA SẮM
+                        </Button>
+                      </Link>
+                      <Button onClick={onUpdateCart} type="primary">
+                        CẬP NHẬT GIỎ HÀNG
                       </Button>
-                    </Link>
-                    <Button onClick={onUpdateCart} type="primary">
-                      CẬP NHẬT GIỎ HÀNG
-                    </Button>
-                  </Space>
-                )}
-              />
-            </Card>
-          </Col>
-          <Col span={1}></Col>
-          <Col span={8}>
-            <ThanhToan tamTinh={totalAmount} dataSanPham={data} />
-          </Col>
-        </Row>
+                    </Space>
+                  )}
+                />
+              </Card>
+            </Col>
+            <Col span={1}></Col>
+            <Col span={8}>
+              <ThanhToan tamTinh={totalAmount} dataSanPham={data} />
+            </Col>
+          </Row>
+        ) : (
+          <Empty
+            description={
+              <>
+                <Title level={5}>Giỏ hàng của bạn còn trống</Title>
+                <Link to="/san-pham">
+                  <Button type="dashed">MUA NGAY</Button>
+                </Link>
+              </>
+            }
+          />
+        )}
       </Card>
     </>
   );
