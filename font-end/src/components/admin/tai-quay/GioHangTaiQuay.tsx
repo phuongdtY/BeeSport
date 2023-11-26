@@ -277,11 +277,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
-        const hoaDonData1 = getHoaDonData();
-        if (
-          !hoaDonData1.hoaDonChiTiet ||
-          hoaDonData1.hoaDonChiTiet.length === 0
-        ) {
+        if (totalPriceFromTable == 0) {
           // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
           message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
           return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
