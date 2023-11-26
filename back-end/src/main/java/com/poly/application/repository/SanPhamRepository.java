@@ -8,10 +8,7 @@ import com.poly.application.entity.LoaiDe;
 import com.poly.application.entity.MauSac;
 import com.poly.application.entity.SanPham;
 import com.poly.application.entity.ThuongHieu;
-import com.poly.application.model.response.SanPhamBanChayResponse;
-import com.poly.application.model.response.SanPhamDetailResponse;
-import com.poly.application.model.response.SanPhamFilterResponse;
-import com.poly.application.model.response.SanPhamMoiNhatResponse;
+import com.poly.application.model.response.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,6 +43,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id " +
             "JOIN HinhAnhSanPham hi ON sp.id = hi.sanPham.id " +
             "WHERE cps.trangThai = 'ACTIVE' " +
+            "AND (sp.ten LIKE %:search% OR CAST(cps.kichCo.kichCo as string) LIKE %:search% OR cps.diaHinhSan.ten LIKE %:search% OR cps.loaiDe.ten LIKE %:search% OR cps.mauSac.ten LIKE %:search% OR sp.thuongHieu.ten LIKE %:search%) " +
             "AND hi.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
             "AND cps.giaTien BETWEEN :minPrice AND :maxPrice " +
             "AND ( sp.thuongHieu.id  IN  :listThuongHieu  ) " +
@@ -53,17 +51,16 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "AND ( cps.diaHinhSan.id   IN :listDiaHinhSan  ) " +
             "AND ( cps.kichCo.id   IN  :listKichCo  ) " +
             "AND ( cps.loaiDe.id   IN  :listLoaiDe  ) " +
-            "GROUP BY sp.id, sp.ten, hi.duongDan, sp.ngayTao ")
-    Page<SanPhamFilterResponse> filterSanPham(Pageable pageable, @Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice,
+            "GROUP BY sp.id, sp.ten, hi.duongDan, sp.ngayTao")
+    Page<SanPhamFilterResponse> filterSanPham(Pageable pageable,
+                                              @Param("minPrice") BigDecimal minPrice,
+                                              @Param("maxPrice") BigDecimal maxPrice,
                                               @Param("listThuongHieu") List<Long> listThuongHieu,
                                               @Param("listMauSac") List<Long> listMauSac,
                                               @Param("listDiaHinhSan") List<Long> listDiaHinhSan,
                                               @Param("listKichCo") List<Long> listKichCo,
-                                              @Param("listLoaiDe") List<Long> listLoaiDe);
-
-//    @Query(value = "SELECT cps FROM MauSac cps WHERE " +
-//            "(cps.id IN ( case when :listMauSac is null then  (SELECT ms.id FROM MauSac ms)))")
-//    List<MauSac> testSanPham(@Param("listMauSac") List<Long> listMauSac);
+                                              @Param("listLoaiDe") List<Long> listLoaiDe,
+                                              @Param("search") String search);
 
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamMoiNhatResponse(sp.id, sp.ten, MIN(cps.giaTien), MAX(cps.giaTien), hi.duongDan) " +

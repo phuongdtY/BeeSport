@@ -1,10 +1,13 @@
 import {
+  Affix,
+  Button,
   Card,
   Checkbox,
   Col,
   Collapse,
   CollapseProps,
   ColorPicker,
+  Input,
   Pagination,
   PaginationProps,
   Row,
@@ -32,7 +35,14 @@ const SanPham: React.FC = () => {
   const [giaTienRange, setGiaTienRange] = useState([0, 10000000]);
   const [dataParams, setDataParams] = useState<DataParam>();
   const [totalElements, setTotalElements] = useState(1);
+  const [selectedDiaHinhSan, setSelectedDiaHinhSan] = useState([]);
+  const [selectedKichCo, setSelectedKichCo] = useState([]);
+  const [selectedLoaiDe, setSelectedLoaiDe] = useState([]);
   const [selectedThuongHieu, setSelectedThuongHieu] = useState([]);
+  const [selectedMauSac, setSelectedMauSac] = useState([]);
+  const [selectedSapXep, setSelectedSapXep] = useState([]);
+  const [top, setTop] = React.useState<number>(100);
+  const [search, setSearch] = useState("");
 
   const kichCoLength = Math.ceil(kichCos.length / 3);
   const leftKichCo = kichCos.slice(0, kichCoLength);
@@ -44,23 +54,6 @@ const SanPham: React.FC = () => {
   const middleMauSac = mauSacs.slice(mauSacLength, 2 * mauSacLength);
   const rightMauSac = mauSacs.slice(2 * mauSacLength);
 
-  const handleThuongHieuChange = (item) => {
-    const currentIndex = selectedThuongHieu.indexOf(item);
-    const newSelectedThuongHieu = [...selectedThuongHieu];
-
-    if (currentIndex === -1) {
-      newSelectedThuongHieu.push(item);
-    } else {
-      newSelectedThuongHieu.splice(currentIndex, 1);
-    }
-
-    setSelectedThuongHieu(newSelectedThuongHieu);
-    setDataParams({
-      ...dataParams,
-      listThuongHieu: newSelectedThuongHieu,
-    });
-  };
-
   const onShowSizeChange: PaginationProps["onShowSizeChange"] = (
     current,
     pageSize
@@ -70,6 +63,95 @@ const SanPham: React.FC = () => {
       page: current,
       pageSize: pageSize,
     });
+  };
+
+  const handleThuongHieuChange = (brandId: string, checked: boolean) => {
+    let updatedSelectedThuongHieu = [...selectedThuongHieu];
+    if (checked) {
+      // If checked, add the brand ID to selectedThuongHieu
+      const selectedBrand = thuongHieus.find((item) => item.id === brandId);
+      if (selectedBrand) {
+        updatedSelectedThuongHieu = [
+          ...updatedSelectedThuongHieu,
+          selectedBrand,
+        ];
+      }
+    } else {
+      updatedSelectedThuongHieu = updatedSelectedThuongHieu.filter(
+        (brand) => brand.id !== brandId
+      );
+    }
+
+    setSelectedThuongHieu(updatedSelectedThuongHieu);
+  };
+
+  const handleDiaHinhSanChange = (diaHinhSanId: string, checked: boolean) => {
+    let updateSelectedDiaHinhSan = [...selectedDiaHinhSan];
+    if (checked) {
+      const selectedDiaHinh = diaHinhSans.find(
+        (item) => item.id === diaHinhSanId
+      );
+      if (selectedDiaHinh) {
+        updateSelectedDiaHinhSan = [
+          ...updateSelectedDiaHinhSan,
+          selectedDiaHinh,
+        ];
+      }
+    } else {
+      updateSelectedDiaHinhSan = updateSelectedDiaHinhSan.filter(
+        (dhs) => dhs.id !== diaHinhSanId
+      );
+    }
+
+    setSelectedDiaHinhSan(updateSelectedDiaHinhSan);
+  };
+
+  const handleLoaiDeChange = (loaiDeId: string, checked: boolean) => {
+    let updateSelectedLoaiDe = [...selectedLoaiDe];
+    if (checked) {
+      const selectedDe = loaiDes.find((item) => item.id === loaiDeId);
+      if (selectedDe) {
+        updateSelectedLoaiDe = [...updateSelectedLoaiDe, selectedDe];
+      }
+    } else {
+      updateSelectedLoaiDe = updateSelectedLoaiDe.filter(
+        (ld) => ld.id !== loaiDeId
+      );
+    }
+
+    setSelectedLoaiDe(updateSelectedLoaiDe);
+  };
+
+  const handleKichCoChange = (kichCoId: string, checked: boolean) => {
+    let updatedSelectedKichCo = [...selectedKichCo];
+    if (checked) {
+      const selectCo = kichCos.find((item) => item.id === kichCoId);
+      if (selectCo) {
+        updatedSelectedKichCo = [...updatedSelectedKichCo, selectCo];
+      }
+    } else {
+      updatedSelectedKichCo = updatedSelectedKichCo.filter(
+        (kc) => kc.id !== kichCoId
+      );
+    }
+
+    setSelectedKichCo(updatedSelectedKichCo);
+  };
+
+  const handleMauSacChange = (mauSacId: string, checked: boolean) => {
+    let updateSelectedMauSac = [...selectedMauSac];
+    if (checked) {
+      const selectMau = mauSacs.find((item) => item.id === mauSacId);
+      if (selectMau) {
+        updateSelectedMauSac = [...updateSelectedMauSac, selectMau];
+      }
+    } else {
+      updateSelectedMauSac = updateSelectedMauSac.filter(
+        (kc) => kc.id !== mauSacId
+      );
+    }
+
+    setSelectedMauSac(updateSelectedMauSac);
   };
 
   const items: CollapseProps["items"] = [
@@ -101,7 +183,11 @@ const SanPham: React.FC = () => {
         <p>
           {thuongHieus.map((item, index) => (
             <div key={index} style={{ marginBottom: 10 }}>
-              <Checkbox onChange={() => handleThuongHieuChange(item.id)}>
+              <Checkbox
+                onChange={(e) =>
+                  handleThuongHieuChange(item.id, e.target.checked)
+                }
+              >
                 {item.ten}
               </Checkbox>
             </div>
@@ -116,7 +202,13 @@ const SanPham: React.FC = () => {
         <p>
           {diaHinhSans.map((item, index) => (
             <div key={index} style={{ marginBottom: 10 }}>
-              <Checkbox>{item.ten}</Checkbox>
+              <Checkbox
+                onChange={(e) =>
+                  handleDiaHinhSanChange(item.id, e.target.checked)
+                }
+              >
+                {item.ten}
+              </Checkbox>
             </div>
           ))}
         </p>
@@ -129,7 +221,11 @@ const SanPham: React.FC = () => {
         <p>
           {loaiDes.map((item, index) => (
             <div key={index} style={{ marginBottom: 10 }}>
-              <Checkbox>{item.ten}</Checkbox>
+              <Checkbox
+                onChange={(e) => handleLoaiDeChange(item.id, e.target.checked)}
+              >
+                {item.ten}
+              </Checkbox>
             </div>
           ))}
         </p>
@@ -144,21 +240,39 @@ const SanPham: React.FC = () => {
             <Col span={8}>
               {leftKichCo.map((item, index) => (
                 <div key={index} style={{ marginBottom: 10 }}>
-                  <Checkbox>{item.kichCo}</Checkbox>
+                  <Checkbox
+                    onChange={(e) =>
+                      handleKichCoChange(item.id, e.target.checked)
+                    }
+                  >
+                    {item.kichCo}
+                  </Checkbox>
                 </div>
               ))}
             </Col>
             <Col span={8}>
               {middleKichCo.map((item, index) => (
                 <div key={index} style={{ marginBottom: 10 }}>
-                  <Checkbox>{item.kichCo}</Checkbox>
+                  <Checkbox
+                    onChange={(e) =>
+                      handleKichCoChange(item.id, e.target.checked)
+                    }
+                  >
+                    {item.kichCo}
+                  </Checkbox>
                 </div>
               ))}
             </Col>
             <Col span={8}>
               {rightKichCo.map((item, index) => (
                 <div key={index} style={{ marginBottom: 10 }}>
-                  <Checkbox>{item.kichCo}</Checkbox>
+                  <Checkbox
+                    onChange={(e) =>
+                      handleKichCoChange(item.id, e.target.checked)
+                    }
+                  >
+                    {item.kichCo}
+                  </Checkbox>
                 </div>
               ))}
             </Col>
@@ -175,7 +289,11 @@ const SanPham: React.FC = () => {
             <Col span={8}>
               {leftMauSac.map((item, index) => (
                 <div key={index} style={{ marginBottom: 10 }}>
-                  <Checkbox>
+                  <Checkbox
+                    onChange={(e) =>
+                      handleMauSacChange(item.id, e.target.checked)
+                    }
+                  >
                     <ColorPicker value={item.ma} size="small" disabled />
                     {item.ten}
                   </Checkbox>
@@ -185,7 +303,11 @@ const SanPham: React.FC = () => {
             <Col span={8}>
               {middleMauSac.map((item, index) => (
                 <div key={index} style={{ marginBottom: 10 }}>
-                  <Checkbox>
+                  <Checkbox
+                    onChange={(e) =>
+                      handleMauSacChange(item.id, e.target.checked)
+                    }
+                  >
                     <ColorPicker value={item.ma} size="small" disabled />
                     {item.ten}
                   </Checkbox>
@@ -195,7 +317,11 @@ const SanPham: React.FC = () => {
             <Col span={8}>
               {rightMauSac.map((item, index) => (
                 <div key={index} style={{ marginBottom: 10 }}>
-                  <Checkbox>
+                  <Checkbox
+                    onChange={(e) =>
+                      handleMauSacChange(item.id, e.target.checked)
+                    }
+                  >
                     <ColorPicker value={item.ma} size="small" disabled />
                     {item.ten}
                   </Checkbox>
@@ -208,12 +334,10 @@ const SanPham: React.FC = () => {
     },
   ];
 
-  const onChange = (key: string | string[]) => {
-    console.log(key);
-  };
+  const onChange = (key: string | string[]) => {};
 
   const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
+    setSelectedSapXep(value);
   };
 
   useEffect(() => {
@@ -268,10 +392,23 @@ const SanPham: React.FC = () => {
     };
 
     const fetchSanPham = async () => {
+      const params = {
+        minPrice: giaTienRange[0],
+        maxPrice: giaTienRange[1],
+        sapXep: selectedSapXep,
+        listThuongHieu: selectedThuongHieu.map((item) => item.id).join(","),
+        listDiaHinhSan: selectedDiaHinhSan.map((item) => item.id).join(","),
+        listLoaiDe: selectedLoaiDe.map((item) => item.id).join(","),
+        listKichCo: selectedKichCo.map((item) => item.id).join(","),
+        listMauSac: selectedMauSac.map((item) => item.id).join(","),
+        search: search,
+      };
+
       try {
         const res = await request.get("/san-pham/filter", {
-          params: dataParams,
+          params: { ...dataParams, ...params },
         });
+
         setSanPhams(res.data.content);
         setTotalElements(res.data.totalElements);
       } catch (error) {
@@ -286,7 +423,17 @@ const SanPham: React.FC = () => {
     fetchSize();
     fetchMauSac();
     fetchSanPham();
-  }, [dataParams]);
+  }, [
+    dataParams,
+    selectedThuongHieu,
+    selectedDiaHinhSan,
+    selectedLoaiDe,
+    selectedKichCo,
+    selectedMauSac,
+    giaTienRange,
+    selectedSapXep,
+    search,
+  ]);
   return (
     <>
       <div
@@ -314,13 +461,19 @@ const SanPham: React.FC = () => {
             <p style={{ fontWeight: "bold", float: "left" }}>
               DANH SÁCH SẢN PHẨM
             </p>
+            <Affix offsetTop={top}>
+              <Input
+                style={{ width: 400, marginLeft: 60 }}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Tìm kiếm Sản phẩm ..."
+              />
+            </Affix>
             <Select
               defaultValue={"6"}
-              style={{ width: 140, marginLeft: 620 }}
+              style={{ width: 140, marginLeft: 125 }}
               onChange={handleChange}
               options={[
-                { value: "1", label: "Giá: Tăng dần" },
-                { value: "2", label: "Giá: Giảm dần" },
                 { value: "3", label: "Tên: A-Z" },
                 { value: "4", label: "Tên: Z-A" },
                 { value: "5", label: "Cũ nhất" },
@@ -360,13 +513,12 @@ const SanPham: React.FC = () => {
                       </Title>
                     </p>
                   </Link>
-                  {/* Add your actions, such as Add to Cart and Buy Now buttons here */}
                 </Card>
               </Col>
             ))}
           </Row>
           <Pagination
-            style={{ marginLeft: 260, marginBottom: 50 }}
+            style={{ marginLeft: 390, marginBottom: 50 }}
             defaultPageSize={9}
             showSizeChanger={false}
             onChange={onShowSizeChange}
