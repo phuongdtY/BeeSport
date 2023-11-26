@@ -10,12 +10,8 @@ import java.time.LocalDateTime;
 @Primary
 public class VoucherUtils {
 
-    public static CommonEnum.TrangThaiVoucher setTrangThaiVoucher(LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc, boolean isCancelled) {
+    public static CommonEnum.TrangThaiVoucher setTrangThaiVoucher(LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc) {
         // Kiểm tra xem voucher đã bị hủy chưa
-        if (isCancelled) {
-            return CommonEnum.TrangThaiVoucher.CANCELLED;
-        }
-
         LocalDateTime currentDate = LocalDateTime.now();
 
         if (currentDate.isBefore(ngayBatDau)) {
