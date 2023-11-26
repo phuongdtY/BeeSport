@@ -37,7 +37,13 @@ const TableSoLuongTon: React.FC = () => {
       dataIndex: "soLuongTon",
       key: "soLuongTonge",
       render: (_, record) => {
-        return record.soLuongTon;
+        return record.soLuongTon < 10 ? (
+          <div style={{ color: "red", fontWeight: "bold" }}>
+            {record.soLuongTon}
+          </div>
+        ) : (
+          <div>{record.soLuongTon}</div>
+        );
       },
     },
   ];
@@ -57,6 +63,43 @@ const TableSoLuongTon: React.FC = () => {
       console.error("Error fetching data: ", error);
     }
   };
+  const exportToExcel = async () => {
+    try {
+      const currentTime = new Date();
+      const dateString = currentTime
+        .toISOString()
+        .slice(0, 10)
+        .replace(/-/g, "");
+      const timeString = currentTime
+        .toTimeString()
+        .slice(0, 8)
+        .replace(/:/g, "");
+
+      const fileName = `so_luong_ton_${dateString}_${timeString}.xlsx`;
+
+      const response = await request.get("thong-ke/excel", {
+        responseType: "blob", // Yêu cầu response là dạng blob
+      });
+
+      const blob = new Blob([response.data], {
+        type: "application/octet-stream",
+      });
+
+      // Tạo một URL tạm thời để download file Excel
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+
+      // Xoá URL tạm thời
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error exporting to Excel: ", error);
+    }
+  };
+
   return (
     <>
       <Row style={{ marginRight: 25 }}>
@@ -71,6 +114,7 @@ const TableSoLuongTon: React.FC = () => {
                 <Button
                   style={{ float: "right", backgroundColor: "green" }}
                   type="primary"
+                  onClick={exportToExcel}
                 >
                   <FileExcelOutlined /> Xuất File Excel
                 </Button>
