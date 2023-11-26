@@ -71,7 +71,7 @@ const DangNhap: React.FC = () => {
         minHeight: "70vh",
       }}
     >
-      <Card title="Log in">
+      <Card title="Đăng nhập">
         <Form
           labelCol={{ flex: "110px" }}
           labelAlign="left"
@@ -123,7 +123,7 @@ const DangNhap: React.FC = () => {
                   htmlType="submit"
                   loading={loading}
                 >
-                  Log in
+                  Đăng nhập
                 </Button>
               </Col>
             </Row>
@@ -136,7 +136,7 @@ const DangNhap: React.FC = () => {
                     htmlType="submit"
                     loading={loading}
                   >
-                    Register
+                    Đăng ký
                   </Button>
                 </Link>
               </Col>
@@ -149,7 +149,7 @@ const DangNhap: React.FC = () => {
                     htmlType="submit"
                     loading={loading}
                   >
-                    Forgot your password?
+                    Quên mật khẩu?
                   </Button>
                 </Link>
               </Col>

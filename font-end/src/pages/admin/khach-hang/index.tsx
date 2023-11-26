@@ -217,14 +217,14 @@ const index: React.FC = () => {
           {
             type: "divider",
           },
-          {
-            icon: <DeleteOutlined />,
-            danger: true,
-            label: (
-              <Link to={`/admin/khach-hang/status/${id}`}>Ngưng kích hoạt</Link>
-            ),
-            key: "3",
-          },
+          // {
+          //   icon: <DeleteOutlined />,
+          //   danger: true,
+          //   label: (
+          //     <Link to={`/admin/khach-hang/status/${id}`}>Ngưng kích hoạt</Link>
+          //   ),
+          //   key: "3",
+          // },
         ];
 
         return (

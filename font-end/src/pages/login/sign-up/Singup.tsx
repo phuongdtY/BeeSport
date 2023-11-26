@@ -171,6 +171,7 @@ const dangKiKhachHang: React.FC = () => {
         <Card
           title="Đăng ký tài khoản"
           style={{
+            width:"700px",
             display: "grid",
             placeItems: "center",
             minHeight: "60vh",
@@ -191,7 +192,7 @@ const dangKiKhachHang: React.FC = () => {
                     message: "Họ và tên không hợp lệ!",
                   },
                 ]}
-                style={{ width: "100%" }} // Đặt chiều rộng 100%
+                style={{ width: "500px" }} // Đặt chiều rộng 100%
               >
                 <Input prefix={<UserOutlined />} placeholder="Họ và Tên" />
               </Form.Item>

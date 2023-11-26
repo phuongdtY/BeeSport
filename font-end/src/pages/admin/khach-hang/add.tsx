@@ -66,7 +66,9 @@ const AddKH: React.FC = () => {
           console.log("Error:", error); // In lỗi ra để xác định lý do
           if (error.response && error.response.data) {
             message.error(error.response.data.message);
-          } else {
+          } else if(error.response && error.response.status === 403) {
+            message.error("Số điện thoại đã tồn tại.");
+          } else{
             message.error("Có lỗi xảy ra khi thêm khách hàng.");
           }
           setLoading(false);
