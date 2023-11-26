@@ -8,13 +8,14 @@ type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 const TaiQuay: React.FC = () => {
   const [activeKey, setActiveKey] = useState<string | undefined>(undefined);
   const [items, setItems] = useState<React.ReactNode[]>([]);
+  const [hoaDonCho, setHoaDonCho] = useState(0);
   const newTabIndex = useRef(1);
 
   const fetchRecentInvoices = async () => {
     try {
       const response = await request.get("hoa-don/hoa-don-cho");
       const recentInvoices = response.data;
-
+      setHoaDonCho(response.data.length);
       // Cập nhật danh sách các tab với hóa đơn mới nhất
       const newPanes = recentInvoices.map((invoice: any) => {
         const newActiveKey = `newTab${newTabIndex.current++}`;
