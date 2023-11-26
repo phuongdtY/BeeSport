@@ -173,10 +173,17 @@ public class HoaDonServiceImpl implements HoaDonService {
         boolean isExistTimeLine = timelineRepository.existsTimeLineByTrangThaiAndHoaDonId(hoaDon.getTrangThaiHoaDon(), hoaDon.getId());
         boolean isExistConfirmedTimeLine = timelineRepository.existsTimeLineByTrangThaiAndHoaDonId(CommonEnum.TrangThaiHoaDon.CONFIRMED, hoaDon.getId());
         if (!isExistTimeLine) {
-            if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CANCELLED && !isExistConfirmedTimeLine) {
-                updateTrangThaiHoaDon(id, CommonEnum.TrangThaiHoaDon.CONFIRMED, updatedHoaDonRequest.getGhiChuTimeLine(), updatedHoaDonRequest.getIdPhuongThuc());
+            if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CANCELLED) {
+                TimeLine timeLine = new TimeLine();
+                timeLine.setGhiChu(updatedHoaDonRequest.getGhiChuTimeLine());
+                timeLine.setHoaDon(hoaDon);
+                timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.CANCELLED);
+                timelineRepository.save(timeLine);
             }
-            updateTrangThaiHoaDon(id, hoaDon.getTrangThaiHoaDon(), updatedHoaDonRequest.getGhiChuTimeLine(), updatedHoaDonRequest.getIdPhuongThuc());
+            if (hoaDon.getTrangThaiHoaDon() != CommonEnum.TrangThaiHoaDon.CANCELLED) {
+                updateTrangThaiHoaDon(id, hoaDon.getTrangThaiHoaDon(), updatedHoaDonRequest.getGhiChuTimeLine(), updatedHoaDonRequest.getIdPhuongThuc());
+
+            }
         }
 
         if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CONFIRMED && isExistConfirmedTimeLine){
@@ -253,6 +260,13 @@ public class HoaDonServiceImpl implements HoaDonService {
                         chiTietSanPhamRepository.save(ctsp);
                     }
                 }
+                giaoDich.setTrangThaiGiaoDich(CommonEnum.TrangThaiGiaoDich.SUCCESS);
+                giaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
+                giaoDich.setSoTienGiaoDich(hoaDon.getTongTienKhiGiam());
+                giaoDich.setHoaDon(hoaDon);
+                giaoDich.setTaiKhoan(hoaDon.getTaiKhoan());
+                giaoDich.setPhuongThucThanhToan(phuongThucThanhToan);
+                giaoDichRepository.save(giaoDich);
                 hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
                 break;
             case PICKUP:
