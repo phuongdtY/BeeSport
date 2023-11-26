@@ -1,15 +1,24 @@
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  LeftOutlined,
+  MinusOutlined,
+  PlusOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   Card,
+  Carousel,
   Col,
   ColorPicker,
+  Divider,
   Form,
   Image,
   Input,
+  Popover,
   Radio,
   Row,
   Space,
+  Tooltip,
   Typography,
   message,
 } from "antd";
@@ -29,9 +38,23 @@ const detailSanPham: React.FC = () => {
   const [dataKichCo, setDataKichCo] = useState<any[]>([]);
   const [dataLoaiDe, setDataLoaiDe] = useState<DataType[]>([]);
   const [dataDHS, setDataDHS] = useState<any[]>([]);
+  const [dataHinhAnh, setDataHinhAnh] = useState<any[]>([]);
+  const [titleMauSac, setTitleMauSac] = useState("");
+  const [titleKichCo, setTitleKichCo] = useState("");
+  const [titleLoaiDe, setTitleLoaiDe] = useState("");
+  const [titleDiaHinhSan, setTitleDiaHinhSan] = useState("");
+  const [idMauSac, setIdMauSac] = useState(null);
+  const [idKichCo, setIdKichCo] = useState(null);
+  const [idLoaiDe, setIdLoaiDe] = useState(null);
+  const [idDiaHinhSan, setIdDiaHinhSan] = useState(null);
+
+  const [anhDaiDien, setAnhDaiDien] = useState("");
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
   const [giaTienMin, setGiaTienMin] = useState(0);
   const [giaTienMax, setGiaTienMax] = useState(0);
   const [quantity, setQuantity] = useState(1); // Số lượng sản phẩm, mặc định là 1
+  const [form] = Form.useForm();
   const { id } = useParams();
   const [selecteds, setSelecteds] = useState<DataParams>({});
   // Hàm xử lý khi bấm nút cộng
@@ -90,14 +113,29 @@ const detailSanPham: React.FC = () => {
       console.log(error);
     }
   };
+  const hinhAnh = async () => {
+    try {
+      const res = await request.get("hinh-anh-san-pham", {
+        params: {
+          idSanPham: id,
+          idMauSac: idMauSac,
+        },
+      });
+      setAnhDaiDien(res.data[0].duongDan);
+      setDataHinhAnh(res.data);
+      setCurrentPage(1);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const sanPhamChiTiet = async () => {
     try {
       const res = await request.get("/chi-tiet-san-pham/" + id, {
         params: {
-          idMauSac: selecteds.idMauSac,
-          idKichCo: selecteds.idKichCo,
-          idLoaiDe: selecteds.idLoaiDe,
-          idDiaHinhSan: selecteds.idDiaHinhSan,
+          idMauSac: idMauSac,
+          idKichCo: idKichCo,
+          idLoaiDe: idLoaiDe,
+          idDiaHinhSan: idDiaHinhSan,
         },
       });
       const sanPhamList = res.data;
@@ -119,16 +157,25 @@ const detailSanPham: React.FC = () => {
   };
   const totalQuantity = data.reduce((total, item) => total + item.soLuong, 0);
 
-  const onFinish = async (values: any) => {
+  const onFinish = async () => {
+    if (
+      idMauSac === null ||
+      idKichCo === null ||
+      idLoaiDe === null ||
+      idDiaHinhSan === null
+    ) {
+      message.error("Bạn chưa thông tin sản phẩm muốn thêm vào giỏ hàng");
+      return;
+    }
     try {
       const productResponse = await request.get(
         "/chi-tiet-san-pham/get-one/" + id,
         {
           params: {
-            idMauSac: values.mauSac,
-            idKichCo: values.kichCo,
-            idDiaHinhSan: values.diaHinhSan,
-            idLoaiDe: values.loaiDe,
+            idMauSac: idMauSac,
+            idKichCo: idKichCo,
+            idDiaHinhSan: idLoaiDe,
+            idLoaiDe: idDiaHinhSan,
           },
         }
       );
@@ -148,36 +195,25 @@ const detailSanPham: React.FC = () => {
   };
 
   const handleMauSac = (event) => {
+    setIdMauSac(event.id !== idMauSac ? event.id : null);
+    setTitleMauSac(event.ten);
     setQuantity(1);
-    const selectedValue = event.target.value;
-    setSelecteds({
-      ...selecteds,
-      idMauSac: selectedValue,
-    });
   };
   const handleKichCo = (event) => {
+    setTitleKichCo(event.kichCo);
+    setIdKichCo(event.id === idKichCo ? null : event.id);
     setQuantity(1);
-    const selectedValue = event.target.value;
-    setSelecteds({
-      ...selecteds,
-      idKichCo: selectedValue,
-    });
   };
-  const [selectedValue, setSelectedValue] = useState(null);
-  const handleLoaiDe = (e) => {
+  const handleLoaiDe = (event) => {
     setQuantity(1);
-    const value = e.target.value;
-    setSelectedValue((prevValue) => (prevValue === value ? null : value));
+    setIdLoaiDe(event.id === idLoaiDe ? null : event.id);
+    setTitleLoaiDe(event.ten);
   };
 
   const handleDiaHinhSan = (event) => {
     setQuantity(1);
-    const selectedValue = event.target.value;
-
-    setSelecteds({
-      ...selecteds,
-      idDiaHinhSan: selectedValue,
-    });
+    setTitleDiaHinhSan(event.ten);
+    setIdDiaHinhSan(event.id === idDiaHinhSan ? null : event.id);
   };
 
   useEffect(() => {
@@ -187,96 +223,192 @@ const detailSanPham: React.FC = () => {
     fetchDataLoaiDe();
     fetchDataSize();
     fetchDataDHS();
-  }, [selecteds]);
+  }, [idMauSac, idKichCo, idLoaiDe, idDiaHinhSan]);
+  useEffect(() => {
+    hinhAnh();
+  }, [idMauSac]);
+  const onChangeHinhAnh = (event) => {
+    const selectedImageIndex = dataHinhAnh.findIndex(
+      (image) => image.id === event.id
+    );
+
+    setAnhDaiDien(event.duongDan);
+    setSelectedImageIndex(selectedImageIndex);
+  };
+
+  const handleNextImage = () => {
+    const nextIndex = (selectedImageIndex + 1) % dataHinhAnh.length;
+    setSelectedImageIndex(nextIndex);
+    onChangeHinhAnh(dataHinhAnh[nextIndex]);
+  };
+
+  // Function to handle the previous image
+  const handlePrevImage = () => {
+    const prevIndex =
+      (selectedImageIndex - 1 + dataHinhAnh.length) % dataHinhAnh.length;
+    setSelectedImageIndex(prevIndex);
+    onChangeHinhAnh(dataHinhAnh[prevIndex]);
+  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const imagesPerPage = 5;
+
+  // Function to get the current set of images based on the current page
+  const getCurrentImages = () => {
+    const startIndex = (currentPage - 1) * imagesPerPage;
+    const endIndex = startIndex + imagesPerPage;
+    return dataHinhAnh.slice(startIndex, endIndex);
+  };
+
+  // Function to handle next page
+  const handleNextPage = () => {
+    const totalPages = Math.ceil(dataHinhAnh.length / imagesPerPage);
+    setCurrentPage((prevPage) =>
+      prevPage < totalPages ? prevPage + 1 : prevPage
+    );
+  };
+
+  // Function to handle previous page
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+  };
+
   return (
     <>
-      <Row>
+      <Row style={{ margin: 40 }}>
         <Col span={2}></Col>
         <Col span={9}>
-          <Image
-            width={500}
-            height={500}
-            src="https://product.hstatic.net/1000061481/product/7e1178b4f9d64788a9cfafdcab4fbd42_e1416ce4bfdc48e5bed9e6a1b76d24b7_1024x1024.jpeg"
-          />
+          <div
+            style={{ position: "relative", width: "100%", marginBottom: 10 }}
+          >
+            <Image
+              preview={false}
+              width={500}
+              height={500}
+              fallback="http://localhost:8080/admin/api/file/view/fallback.jpg"
+              src={`http://localhost:8080/admin/api/file/view/${anhDaiDien}`}
+            />
+            <Button
+              type="default"
+              shape="circle"
+              style={{ position: "absolute", top: 250, left: 10 }}
+              onClick={handlePrevImage}
+            >
+              <LeftOutlined />
+            </Button>
+            <Button
+              shape="circle"
+              style={{ position: "absolute", top: 250, right: 75 }}
+              onClick={handleNextImage}
+            >
+              <RightOutlined />
+            </Button>
+          </div>
+          {dataHinhAnh.length > 0 && (
+            <>
+              <Space>
+                {currentPage > 1 && (
+                  <Button
+                    type="link"
+                    style={{ margin: 0, padding: 0 }}
+                    onClick={handlePrevPage}
+                  >
+                    <LeftOutlined style={{ fontSize: 25 }} />
+                  </Button>
+                )}
+                <Radio.Group
+                  // style={{ margin: "15px 0px" }}
+                  buttonStyle="solid"
+                  defaultValue={dataHinhAnh[selectedImageIndex]?.id}
+                  value={dataHinhAnh[selectedImageIndex]?.id}
+                >
+                  <Row gutter={[15, 15]}>
+                    {/* Only render the images for the current page */}
+                    {getCurrentImages().map((record) => (
+                      <Col key={record.id}>
+                        <Radio.Button
+                          value={record.id}
+                          style={{ margin: 0, padding: 0, height: 71.5 }}
+                          onClick={() => onChangeHinhAnh(record)}
+                        >
+                          <Image
+                            preview={false}
+                            width={70}
+                            height={70}
+                            fallback="http://localhost:8080/admin/api/file/view/fallback.jpg"
+                            src={`http://localhost:8080/admin/api/file/view/${record.duongDan}`}
+                          />
+                        </Radio.Button>
+                      </Col>
+                    ))}
+                  </Row>
+                </Radio.Group>
+
+                {/* Add buttons to navigate to the next and previous pages */}
+
+                {currentPage <
+                  Math.ceil(dataHinhAnh.length / imagesPerPage) && (
+                  <Button
+                    type="link"
+                    style={{ margin: 0, padding: 0 }}
+                    onClick={handleNextPage}
+                  >
+                    <RightOutlined style={{ fontSize: 25 }} />
+                  </Button>
+                )}
+              </Space>
+            </>
+          )}
         </Col>
-        <Col span={8}>
-          <Title level={4} style={{ margin: 0 }}>
+        <Col span={10}>
+          <Title level={3} style={{ margin: 0 }}>
             {dataSanPham.ten}
           </Title>
+          <Divider style={{ margin: 5, padding: 0 }} />
           <Title level={3} style={{ color: "red", margin: 10 }}>
             {giaTienMin === giaTienMax
               ? `${formatGiaTien(giaTienMax)}`
               : `${formatGiaTien(giaTienMin)} - ${formatGiaTien(giaTienMax)}`}
           </Title>
-          <Text>Mã sản phẩm: {dataSanPham.ma}</Text>
-          <br />
-          <Text>
-            Nhà cung cấp: {dataSanPham.thuongHieu && dataSanPham.thuongHieu.ten}
-          </Text>
-          <Title level={4} style={{ color: "red" }}>
-            CAM KẾT SẢN PHẨM CHÍNH HÃNG 100%. ĐƯỢC BỒI HOÀN GẤP 10 LẦN NẾU KHÔNG
-            PHẢI CHÍNH HÃNG
-          </Title>
-          <Form
-            // form={form}
-            onFinish={onFinish}
-            layout="vertical"
-            name="form_in_modal"
-          >
-            <Form.Item
-              name="mauSac"
-              label="Màu sắc"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn màu sắc!",
-                },
-              ]}
-            >
-              <Radio.Group buttonStyle="solid" onChange={handleMauSac}>
+          <Space direction="vertical">
+            <Text>Thông tin sản phẩm</Text>
+            <Text> - Mã sản phẩm: {dataSanPham.ma}</Text>
+            <Text>
+              - Nhà cung cấp:{" "}
+              {dataSanPham.thuongHieu && dataSanPham.thuongHieu.ten}
+            </Text>
+          </Space>
+          <Form layout="vertical">
+            <Space direction="vertical">
+              <Text>Màu sắc: {idMauSac !== null ? titleMauSac : ""}</Text>
+              <Radio.Group buttonStyle="solid" value={idMauSac}>
                 <Row gutter={[15, 15]}>
                   {dataMauSac.map((record: any) => (
-                    <Col key={record.id}>
-                      <Radio.Button
-                        value={record.id}
-                        disabled={
-                          !data.some((item) => item.mauSac.id === record.id)
-                        }
-                      >
-                        <Space>
+                    <Tooltip title={record.ten}>
+                      <Col key={record.id}>
+                        <Radio.Button
+                          onClick={() => handleMauSac(record)}
+                          value={record.id}
+                          style={{ margin: 0, padding: 0, border: "0" }}
+                        >
                           <ColorPicker
                             value={record.ma}
-                            size="small"
+                            size="middle"
                             disabled
-                            style={{ marginTop: 3 }}
                           />
-                          <span>{record.ten}</span>
-                        </Space>
-                      </Radio.Button>
-                    </Col>
+                        </Radio.Button>
+                      </Col>
+                    </Tooltip>
                   ))}
                 </Row>
               </Radio.Group>
-            </Form.Item>
-            <Form.Item
-              name="kichCo"
-              label="Kích cỡ"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn kích cỡ!",
-                },
-              ]}
-            >
-              <Radio.Group buttonStyle="solid" onChange={handleKichCo}>
+              <Text>Kích cỡ: {idKichCo !== null ? titleKichCo : ""}</Text>
+              <Radio.Group buttonStyle="solid" value={idKichCo}>
                 <Row gutter={[15, 15]}>
                   {dataKichCo.map((record: any) => (
                     <Col key={record.id}>
                       <Radio.Button
+                        onClick={() => handleKichCo(record)}
                         value={record.id}
-                        disabled={
-                          !data.some((item) => item.kichCo.id === record.id)
-                        }
                       >
                         {record.kichCo}
                       </Radio.Button>
@@ -284,27 +416,18 @@ const detailSanPham: React.FC = () => {
                   ))}
                 </Row>
               </Radio.Group>
-            </Form.Item>
-            <Form.Item
-              label="Loại đế"
-              name="loaiDe"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn loại đế!",
-                },
-              ]}
-            >
-              <Radio.Group buttonStyle="solid" onChange={handleLoaiDe}>
+
+              <Text>Loại đế: {idLoaiDe !== null ? titleLoaiDe : ""}</Text>
+              <Radio.Group buttonStyle="solid" value={idLoaiDe}>
                 <Row gutter={[15, 15]}>
                   {dataLoaiDe.map((record) => (
                     <Col key={record.id}>
                       <Radio.Button
+                        onClick={() => handleLoaiDe(record)}
                         value={record.id}
                         disabled={
                           !data.some((item) => item.loaiDe.id === record.id)
                         }
-                        checked={record.id === selectedValue} // Đánh dấu radio button đã chọn
                       >
                         {record.ten}
                       </Radio.Button>
@@ -312,23 +435,15 @@ const detailSanPham: React.FC = () => {
                   ))}
                 </Row>
               </Radio.Group>
-            </Form.Item>
-
-            <Form.Item
-              label="Địa hình sân"
-              name="diaHinhSan"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn địa hình sân!",
-                },
-              ]}
-            >
-              <Radio.Group buttonStyle="solid" onChange={handleDiaHinhSan}>
+              <Text>
+                Địa hình sân: {idDiaHinhSan !== null ? titleDiaHinhSan : ""}
+              </Text>
+              <Radio.Group buttonStyle="solid" value={idDiaHinhSan}>
                 <Row gutter={[15, 15]}>
                   {dataDHS.map((record: any) => (
                     <Col key={record.id}>
                       <Radio.Button
+                        onClick={() => handleDiaHinhSan(record)}
                         value={record.id}
                         disabled={
                           !data.some((item) => item.diaHinhSan.id === record.id)
@@ -340,8 +455,8 @@ const detailSanPham: React.FC = () => {
                   ))}
                 </Row>
               </Radio.Group>
-            </Form.Item>
-            <Form.Item label="Số lượng">
+
+              <Text>Số lượng:</Text>
               <Space>
                 <Space.Compact block>
                   <Button icon={<MinusOutlined />} onClick={handleDecrement} />
@@ -356,22 +471,20 @@ const detailSanPham: React.FC = () => {
                   {totalQuantity} sản phẩm có sẵn
                 </Text>
               </Space>
-            </Form.Item>
-            <Form.Item>
-              <Space>
-                <Button type="primary" danger htmlType="submit">
+              <Space style={{ marginTop: 8 }}>
+                <Button type="primary" danger>
                   MUA NGAY
                 </Button>
                 <Button
                   type="primary"
                   style={{ background: "#b5bdbd" }}
                   danger
-                  htmlType="submit"
+                  onClick={onFinish}
                 >
                   THÊM VÀO GIỎ HÀNG
                 </Button>
               </Space>
-            </Form.Item>
+            </Space>
           </Form>
         </Col>
       </Row>

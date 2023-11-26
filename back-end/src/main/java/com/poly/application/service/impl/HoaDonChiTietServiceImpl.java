@@ -1,18 +1,21 @@
 package com.poly.application.service.impl;
 
+import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.HoaDonChiTiet;
-import com.poly.application.exception.BadRequestException;
+import com.poly.application.entity.VoucherChiTiet;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.HoaDonChiTietMapper;
 import com.poly.application.model.mapper.HoaDonMapper;
 import com.poly.application.model.request.create_request.CreateHoaDonChiTietRequest;
+import com.poly.application.model.request.create_request.CreatedVoucherChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonChiTietRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
 import com.poly.application.repository.HoaDonChiTietRepository;
 import com.poly.application.service.HoaDonChiTietService;
 import com.poly.application.service.HoaDonService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,9 +60,9 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     @Override
     public HoaDonChiTietResponse add(CreateHoaDonChiTietRequest createHoaDonChiTietRequest, Long id) {
         if (hoaDonChiTietRepository.existsHoaDonChiTietByChiTietSanPhamIdAndHoaDonId(createHoaDonChiTietRequest.getChiTietSanPham().getId(), id)) {
-        HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findHoaDonChiTietByChiTietSanPhamIdAndHoaDonId(createHoaDonChiTietRequest.getChiTietSanPham().getId(),id);
-        hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + 1);
-        return hoaDonChiTietMapper.convertHoaDonChiTietEntityToHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
+            HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findHoaDonChiTietByChiTietSanPhamIdAndHoaDonId(createHoaDonChiTietRequest.getChiTietSanPham().getId(), id);
+            hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + 1);
+            return hoaDonChiTietMapper.convertHoaDonChiTietEntityToHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
         }
         HoaDonChiTiet createHoaDonChiTiet = hoaDonChiTietMapper.convertCreateHoaDonChiTietRequestToHoaDonChiTietEntity(createHoaDonChiTietRequest);
         HoaDonResponse hoaDonResponse = hoaDonService.findById(id);
@@ -66,6 +70,17 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
         createHoaDonChiTiet.setHoaDon(hoaDon);
         HoaDonChiTiet savedHoaDonChiTiet = hoaDonChiTietRepository.save(createHoaDonChiTiet);
         return hoaDonChiTietMapper.convertHoaDonChiTietEntityToHoaDonChiTietResponse(savedHoaDonChiTiet);
+    }
+
+    @Override
+    @Transactional
+    public void addList(List<CreateHoaDonChiTietRequest> requestList) {
+        List<HoaDonChiTiet> list = new ArrayList<>();
+        for (CreateHoaDonChiTietRequest request : requestList) {
+            list.add(hoaDonChiTietMapper.convertCreateHoaDonChiTietRequestToHoaDonChiTietEntity(request));
+        }
+        System.out.println(list);
+     hoaDonChiTietRepository.saveAll(list);
     }
 
     @Override

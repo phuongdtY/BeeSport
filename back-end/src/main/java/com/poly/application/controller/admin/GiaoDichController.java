@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,6 +32,11 @@ public class GiaoDichController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable("id")Long id,  @RequestBody UpdatedGiaoDichRequest updatedGiaoDichRequest) {
         return ResponseEntity.ok(giaoDichService.update(id,updatedGiaoDichRequest));
+    }
+
+    @GetMapping("/list/{id}")
+    public ResponseEntity<?> listGiaoDich(@PathVariable("id")Long idHhoaDon) {
+        return ResponseEntity.ok(giaoDichService.getListGiaoDich(idHhoaDon));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.poly.application.entity;
 
 import com.poly.application.common.CommonEnum;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -27,8 +28,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
-@Builder
 @Table(name = "voucher_chi_tiet")
 @Entity
 public class VoucherChiTiet {

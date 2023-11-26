@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,14 +32,17 @@ public interface    TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
 
     @Query("SELECT tk FROM TaiKhoan tk " +
             "WHERE (tk.hoVaTen LIKE %:searchText% OR tk.soDienThoai LIKE %:searchText% OR tk.email LIKE %:searchText% OR tk.canCuocCongDan LIKE %:searchText%) " +
-            "AND (:trangThai IS NULL OR tk.trangThai = :trangThai) " +
+            "AND (:ngaySinhStart IS NULL OR :ngaySinhEnd IS NULL OR tk.ngaySinh BETWEEN :ngaySinhStart AND :ngaySinhEnd) " +
             "AND (:gioiTinh IS NULL OR tk.gioiTinh = :gioiTinh)"+
+            "AND (:trangThai IS NULL OR tk.trangThai = :trangThai) " +
             "AND tk.vaiTro.id = 3")
     Page<TaiKhoan> findAllByVaiTro2(
             Pageable pageable,
             @Param("searchText") String searchText,
-            @Param("trangThai") CommonEnum.TrangThaiThuocTinh trangThai,
-            @Param("gioiTinh") CommonEnum.GioiTinh gioiTinh
+            @Param("ngaySinhStart") LocalDate ngaySinhStart,
+            @Param("ngaySinhEnd") LocalDate ngaySinhEnd,
+            @Param("gioiTinh") CommonEnum.GioiTinh gioiTinh,
+            @Param("trangThai") CommonEnum.TrangThaiThuocTinh trangThai
     );
 
     @Query("SELECT tk FROM TaiKhoan tk " +

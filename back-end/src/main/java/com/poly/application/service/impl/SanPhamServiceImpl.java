@@ -1,17 +1,25 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.ChiTietSanPham;
+import com.poly.application.entity.DiaHinhSan;
+import com.poly.application.entity.KichCo;
+import com.poly.application.entity.LoaiDe;
+import com.poly.application.entity.MauSac;
 import com.poly.application.entity.SanPham;
+import com.poly.application.entity.ThuongHieu;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.SanPhamMapper;
 import com.poly.application.model.request.create_request.CreatedSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedSanPhamRequest;
-import com.poly.application.model.response.SanPhamBanChayResponse;
-import com.poly.application.model.response.SanPhamDetailResponse;
-import com.poly.application.model.response.SanPhamMoiNhatResponse;
-import com.poly.application.model.response.SanPhamResponse;
+import com.poly.application.model.response.*;
+import com.poly.application.repository.DiaHinhSanRepository;
+import com.poly.application.repository.KichCoRepository;
+import com.poly.application.repository.LoaiDeRepository;
+import com.poly.application.repository.MauSacRepository;
 import com.poly.application.repository.SanPhamRepository;
+import com.poly.application.repository.ThuongHieuRepository;
 import com.poly.application.service.SanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +28,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -30,6 +41,21 @@ public class SanPhamServiceImpl implements SanPhamService {
 
     @Autowired
     private SanPhamRepository repository;
+
+    @Autowired
+    private ThuongHieuRepository thuongHieuRepository;
+
+    @Autowired
+    private MauSacRepository mauSacRepository;
+
+    @Autowired
+    private DiaHinhSanRepository diaHinhSanRepository;
+
+    @Autowired
+    private LoaiDeRepository loaiDeRepository;
+
+    @Autowired
+    private KichCoRepository kichCoRepository;
 
     @Autowired
     private SanPhamMapper mapper;
@@ -57,6 +83,44 @@ public class SanPhamServiceImpl implements SanPhamService {
         Page<SanPham> pageSanPham = repository.findByAll(pageable, searchText, thuongHieuId, trangThai);
         return pageSanPham.map(mapper::convertEntityToResponse);
     }
+
+    @Override
+    public Page<SanPhamFilterResponse> filterSanPham(Integer page, Integer pageSize, Integer sapXep, BigDecimal minPrice, BigDecimal maxPrice, List<Long> listThuongHieu, List<Long> listMauSac, List<Long> listDiaHinhSan, List<Long> listKichCo, List<Long> listLoaiDe, String search) {
+        Sort sort;
+        if (sapXep == 3) {
+            sort = Sort.by("ten").ascending();
+        } else if (sapXep == 4) {
+            sort = Sort.by("ten").descending();
+        } else if (sapXep == 5) {
+            sort = Sort.by("ngayTao").ascending();
+        } else {
+            sort = Sort.by("ngayTao").descending();
+        }
+
+        if (listThuongHieu == null || listThuongHieu.isEmpty()){
+             listThuongHieu = thuongHieuRepository.findByIdIn();
+        }
+        if (listDiaHinhSan == null || listDiaHinhSan.isEmpty()){
+             listDiaHinhSan = diaHinhSanRepository.findByIdIn();
+        }
+        if (listMauSac == null || listMauSac.isEmpty()){
+            listMauSac = mauSacRepository.findByIdIn();
+        }
+        if (listKichCo == null || listKichCo.isEmpty()){
+            listKichCo = kichCoRepository.findByIdIn();
+        }
+        if (listLoaiDe == null || listLoaiDe.isEmpty()){
+            listLoaiDe = loaiDeRepository.findByIdIn();
+        }
+
+        System.out.println(search);
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
+
+        Page<SanPhamFilterResponse> sanPhamPage = repository.filterSanPham(pageable, minPrice, maxPrice, listThuongHieu,listMauSac, listDiaHinhSan, listKichCo, listLoaiDe, search);
+        return sanPhamPage;
+    }
+
 
     @Override
     public SanPhamResponse add(CreatedSanPhamRequest request) {
@@ -111,7 +175,6 @@ public class SanPhamServiceImpl implements SanPhamService {
 
         // Lưu thay đổi vào cơ sở dữ liệu
         detail = repository.save(detail);
-        System.out.println(detail);
         // Trả về thông tin sản phẩm sau khi cập nhật
         SanPhamResponse response = new SanPhamResponse();
         // Điền thông tin sản phẩm vào response dựa trên detail
@@ -138,6 +201,8 @@ public class SanPhamServiceImpl implements SanPhamService {
 
         return mapper.convertEntityToResponse(optional.get());
     }
+
+
 
     @Override
     public List<SanPhamResponse> get5SanPhamMoiNhat() {

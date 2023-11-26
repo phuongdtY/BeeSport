@@ -11,6 +11,8 @@ import {
   Button,
   Card,
   Col,
+  Divider,
+  Empty,
   Image,
   Input,
   Modal,
@@ -29,12 +31,15 @@ import { DataParams, DataType } from "~/interfaces/diaHinhSan.type";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import request from "~/utils/request";
 import { formatGiaTien } from "~/utils/formatResponse";
+import HinhAnhSanPham from "./HinhAnhSanPham";
+import ThanhToan from "../thanh-toan/ThanhToan";
 const { Title, Text } = Typography;
 
 const index: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [note, setNote] = useState("");
   const [noteUpdated, setNoteUpdated] = useState(false);
+
   const [data, setData] = useState<DataType[]>([]);
   const { confirm } = Modal;
   const confirmDelete = (id) => {
@@ -111,42 +116,33 @@ const index: React.FC = () => {
 
   const columns: ColumnsType<DataType> = [
     {
-      title: "SẢN PHẨM",
-      dataIndex: "chiTietSanPham", // dataIndex sẽ trỏ đến thuộc tính chứa tên sản phẩm
+      title: "Thông tin sản phẩm",
+      dataIndex: "chiTietSanPham",
       key: "ten",
       align: "left",
-      width: "50%",
       render: (chiTietSanPham) => (
         <Space>
-          <Image
-            width={80}
-            height={80}
-            src="https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRUKrIF74VaGT5GEgMYDiNh7EUJOWo6VmDC_pxi2pEj7z87m93yRc3TqDCxxhucROPdWoRZC-8j_c59XQVGh1KmixzEgoII97htTdCeJqWKUufGwsDVQV6AWg&usqp=CAE"
-            fallback="data:image/png;base64,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"
-          />{" "}
-          <span>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: `${chiTietSanPham.sanPham.ten}<br />[${chiTietSanPham.mauSac.ten}-${chiTietSanPham.kichCo.kichCo}-${chiTietSanPham.loaiDe.ten}-${chiTietSanPham.diaHinhSan.ten}]`,
-              }}
-            />
-          </span>
+          <HinhAnhSanPham chiTietSanPham={chiTietSanPham} />
+          <Space direction="vertical">
+            <Text strong>{chiTietSanPham.sanPham.ten}</Text>
+            <Text>{`[${chiTietSanPham.mauSac.ten} - ${chiTietSanPham.kichCo.kichCo} - ${chiTietSanPham.loaiDe.ten} - ${chiTietSanPham.diaHinhSan.ten}]`}</Text>
+          </Space>
         </Space>
       ),
     },
     {
-      title: "ĐƠN GIÁ",
+      title: "Đơn giá",
       dataIndex: "chiTietSanPham",
       key: "giaTien",
       align: "center",
-      render: (chiTietSanPham) => (
-        <span style={{ color: "red", fontWeight: "bolder" }}>
-          {formatGiaTien(chiTietSanPham.giaTien)}
-        </span>
+      render: (_, record) => (
+        <Text type="danger" style={{ fontWeight: "bold" }}>
+          {formatGiaTien(record.chiTietSanPham.giaTien)}
+        </Text>
       ),
     },
     {
-      title: "SỐ LƯỢNG",
+      title: "Số lượng",
       dataIndex: "soLuong",
       key: "soLuong",
       align: "center",
@@ -169,14 +165,14 @@ const index: React.FC = () => {
       ),
     },
     {
-      title: "THÀNH TIỀN",
+      title: "Thành tiền",
       dataIndex: "thanhTien",
       key: "thanhTien",
       align: "center",
       render: (text, record) => (
-        <span style={{ color: "red", fontWeight: "bold" }}>
+        <Text type="danger" style={{ fontWeight: "bold" }}>
           {formatGiaTien(record.chiTietSanPham.giaTien * record.soLuong)}
-        </span>
+        </Text>
       ),
     },
 
@@ -205,6 +201,8 @@ const index: React.FC = () => {
     try {
       const res = await request.get("/gio-hang-chi-tiet/detail-gio-hang/" + id);
       setData(res.data);
+      console.log(res.data);
+
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -216,6 +214,7 @@ const index: React.FC = () => {
     gioHang();
     fetchData();
   }, [params]);
+
   const onChangeTable = (
     pagination: TablePaginationConfig,
     filters: Record<string, FilterValue | null>,
@@ -234,19 +233,6 @@ const index: React.FC = () => {
     });
   };
   const onUpdateCart = async () => {
-    if (noteUpdated === true) {
-      try {
-        setLoading(true);
-        await request.put(`gio-hang/${id}`, { ghiChu: note });
-        setNoteUpdated(false);
-        gioHang();
-        setLoading(false);
-        message.success("Cập nhật giỏ hàng thành công");
-      } catch (error) {
-        message.error("sửa ghi chú thất bại");
-        setLoading(false);
-      }
-    }
     if (updatedQuantities.length === 0) {
       return;
     }
@@ -267,77 +253,59 @@ const index: React.FC = () => {
       setLoading(false);
     }
   };
-
   return (
     <>
       <Card
         title={
           <Title level={4} style={{ fontWeight: "bold" }}>
-            GIỎ HÀNG
+            Giỏ hàng của bạn
           </Title>
         }
       >
-        <Row>
-          <Col span={17}>
-            <Card>
-              <Table
-                columns={columns}
-                dataSource={data}
-                onChange={onChangeTable}
-                loading={loading}
-                showSorterTooltip={false}
-                pagination={false}
-                footer={() => (
-                  <Space>
-                    <Link to="/">
-                      <Button type="dashed">
-                        <ArrowLeftOutlined />
-                        TIẾP TỤC MUA SẮM
+        {data.length > 0 ? (
+          <Row>
+            <Col span={15}>
+              <Card>
+                <Table
+                  columns={columns}
+                  dataSource={data}
+                  onChange={onChangeTable}
+                  loading={loading}
+                  showSorterTooltip={false}
+                  pagination={false}
+                  footer={() => (
+                    <Space>
+                      <Link to="/">
+                        <Button type="dashed">
+                          <ArrowLeftOutlined />
+                          TIẾP TỤC MUA SẮM
+                        </Button>
+                      </Link>
+                      <Button onClick={onUpdateCart} type="primary">
+                        CẬP NHẬT GIỎ HÀNG
                       </Button>
-                    </Link>
-                    <Button onClick={onUpdateCart} type="primary">
-                      CẬP NHẬT GIỎ HÀNG
-                    </Button>
-                  </Space>
-                )}
-              />
-            </Card>
-          </Col>
-          <Col span={1}></Col>
-          <Col span={6}>
-            <Card title="TỔNG ĐƠN HÀNG">
-              <Text>Ghi chú</Text>
-              <Input.TextArea
-                value={note}
-                onChange={(e) => {
-                  setNote(e.target.value);
-                  setNoteUpdated(true);
-                }}
-              />
-              <Space>
-                <Title level={4} style={{ fontWeight: "bold" }}>
-                  TỔNG TIỀN
-                </Title>
-                <Title level={4} style={{ color: "red", fontWeight: "bold" }}>
-                  {formatGiaTien(totalAmount)}
-                </Title>
-              </Space>
-            </Card>
-            <Link to={"/thanh-toan"}>
-              <Button
-                type="primary"
-                style={{
-                  width: "100%",
-                  height: "50px",
-                  marginTop: "10px",
-                  fontSize: "20px",
-                }}
-              >
-                Thanh toán
-              </Button>
-            </Link>
-          </Col>
-        </Row>
+                    </Space>
+                  )}
+                />
+              </Card>
+            </Col>
+            <Col span={1}></Col>
+            <Col span={8}>
+              <ThanhToan tamTinh={totalAmount} dataSanPham={data} />
+            </Col>
+          </Row>
+        ) : (
+          <Empty
+            description={
+              <>
+                <Title level={5}>Giỏ hàng của bạn còn trống</Title>
+                <Link to="/san-pham">
+                  <Button type="dashed">MUA NGAY</Button>
+                </Link>
+              </>
+            }
+          />
+        )}
       </Card>
     </>
   );

@@ -13,6 +13,8 @@ public interface HoaDonChiTietService {
 
     HoaDonChiTietResponse add(CreateHoaDonChiTietRequest createHoaDonChiTietRequest, Long id);
 
+   void addList(List<CreateHoaDonChiTietRequest> requestList);
+
     HoaDonChiTietResponse findById(Long id);
 
     HoaDonChiTietResponse update(Long id,UpdatedHoaDonChiTietRequest updatedHoaDonChiTietRequest);

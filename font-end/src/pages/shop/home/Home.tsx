@@ -76,29 +76,34 @@ const Home: React.FC = () => {
       <Row gutter={16}>
         {sanPhamMoiNhat.map((product) => (
           <Col key={product.id}>
-            <Card style={{ width: 267 }}>
-              <img
-                style={{ padding: 30, height: 240 }}
-                alt="example"
-                src={`http://localhost:8080/admin/api/file/view/${product.duongDan}`}
-              />
-              <div style={{ textAlign: "left" }}>
-                <Link
-                  to={`/san-pham/detail/${product.id}`}
-                  style={{ fontWeight: "bold", margin: 0 }}
-                >
+            <Link
+              to={`/san-pham/detail/${product.id}`}
+              style={{ color: "black", fontWeight: "bold", margin: 0 }}
+            >
+              <Card
+                hoverable
+                style={{ width: 267, marginBottom: 10 }}
+                cover={
+                  <img
+                    style={{ padding: "0px 10px" }}
+                    alt="example"
+                    src={`http://localhost:8080/admin/api/file/view/${product.duongDan}`}
+                  />
+                }
+              >
+                <Divider style={{ margin: 0, padding: 0 }} />
+                <div style={{ textAlign: "left" }}>
                   {product.ten}
-                </Link>
-                <Title level={5} style={{ color: "red", margin: 0 }}>
-                  {product.giaMin === product.giaMax
-                    ? `${formatGiaTien(product.giaMax)}`
-                    : `${formatGiaTien(product.giaMin)} - ${formatGiaTien(
-                        product.giaMax
-                      )}`}
-                </Title>
-              </div>
-              {/* Add your actions, such as Add to Cart and Buy Now buttons here */}
-            </Card>
+                  <Title level={5} style={{ color: "red", margin: 0 }}>
+                    {product.giaMin === product.giaMax
+                      ? `${formatGiaTien(product.giaMax)}`
+                      : `${formatGiaTien(product.giaMin)} - ${formatGiaTien(
+                          product.giaMax
+                        )}`}
+                  </Title>
+                </div>
+              </Card>
+            </Link>
           </Col>
         ))}
       </Row>
@@ -108,29 +113,34 @@ const Home: React.FC = () => {
       <Row gutter={16}>
         {sanPhamBanChay.map((product) => (
           <Col key={product.id}>
-            <Card style={{ width: 267 }}>
-              <img
-                style={{ padding: 30, height: 240 }}
-                alt="example"
-                src={`http://localhost:8080/admin/api/file/view/${product.duongDan}`}
-              />
-              <div style={{ textAlign: "left" }}>
-                <Link
-                  to={`/san-pham/detail/${product.id}`}
-                  style={{ fontWeight: "bold", margin: 0 }}
-                >
+            <Link
+              to={`/san-pham/detail/${product.id}`}
+              style={{ color: "black", fontWeight: "bold", margin: 0 }}
+            >
+              <Card
+                hoverable
+                style={{ width: 267, marginBottom: 10 }}
+                cover={
+                  <img
+                    style={{ padding: "0px 10px" }}
+                    alt="example"
+                    src={`http://localhost:8080/admin/api/file/view/${product.duongDan}`}
+                  />
+                }
+              >
+                <Divider style={{ margin: 0, padding: 0 }} />
+                <div style={{ textAlign: "left" }}>
                   {product.ten}
-                </Link>
-                <Title level={5} style={{ color: "red", margin: 0 }}>
-                  {product.giaMin === product.giaMax
-                    ? `${formatGiaTien(product.giaMax)}`
-                    : `${formatGiaTien(product.giaMin)} - ${formatGiaTien(
-                        product.giaMax
-                      )}`}
-                </Title>
-              </div>
-              {/* Add your actions, such as Add to Cart and Buy Now buttons here */}
-            </Card>
+                  <Title level={5} style={{ color: "red", margin: 0 }}>
+                    {product.giaMin === product.giaMax
+                      ? `${formatGiaTien(product.giaMax)}`
+                      : `${formatGiaTien(product.giaMin)} - ${formatGiaTien(
+                          product.giaMax
+                        )}`}
+                  </Title>
+                </div>
+              </Card>
+            </Link>
           </Col>
         ))}
       </Row>
@@ -139,7 +149,7 @@ const Home: React.FC = () => {
       </Divider>
       <Row>
         <Col span={7} style={{ marginRight: 85 }}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={nike} alt="" width={"100%"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               GIÀY ĐÁ BÓNG NIKE{" "}
@@ -221,7 +231,7 @@ const Home: React.FC = () => {
       <Divider style={{ fontSize: 25, fontWeight: "bold", marginTop: 20 }}>
         CHỌN GIÀY THEO ĐỊA HÌNH SÂN
       </Divider>
-      <Row style={{ marginTop: 30 }}>
+      <Row style={{ marginTop: 30, marginBottom: 30 }}>
         <Col span={5} style={{ marginRight: 75 }}>
           <a href="">
             <img src={santunhien} alt="" width={"100%"} height={"300px"} />

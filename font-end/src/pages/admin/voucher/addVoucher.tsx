@@ -7,11 +7,12 @@ const AddVoucher: React.FC = () => {
   return (
     <Card title="THÊM VOUCHER">
       <Tabs
-        defaultActiveKey="2"
+        defaultActiveKey="1"
         items={[
           {
             key: "1",
             label: "Voucher Hóa Đơn",
+
             children: <AddVoucherHoaDon />,
           },
           {

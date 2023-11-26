@@ -25,7 +25,7 @@ import GioHang from "./pages/shop/gio-hang/GioHang";
 import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
 import IndexVoucher from "./pages/admin/voucher/index";
 import AddVoucher from "./pages/admin/voucher/addVoucher.tsx";
-import UpdateVoucher from "./pages/admin/voucher/update";
+import UpdateVoucher from "./pages/admin/voucher/updateVoucher.tsx";
 import Signin from "./pages/login/sign-in/Signin";
 import Signup from "./pages/login/sign-up/Singup";
 import Forgotpassword from "./pages/login/forgot-password/Forgotpassword";
@@ -41,6 +41,8 @@ import BanHangTaiQuay from "./pages/admin/ban-hang-tai-quay/BanHangTaiQuay.tsx";
 import UpdateSanPham from "./pages/admin/san-pham/UpdateSanPham.tsx";
 import ProtectedRoute from "./pages/admin/component/ProtextedRoute.tsx";
 import ProtectedRoute1 from "./pages/admin/component/ProtectedRoute1.tsx";
+import SanPham from "./pages/shop/san-pham/SanPham.tsx";
+import ThongKe from "./pages/admin/thong-ke/ThongKe.tsx";
 
 function App() {
   return (
@@ -51,6 +53,7 @@ function App() {
       <Route path="/thanh-toan" element={<ThanhToan />} />
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/san-pham" element={<SanPham />} />
         <Route path="/gio-hang" element={<GioHang />} />
         <Route path="/san-pham/detail/:id" element={<DetailSanPham />} />
       </Route>
@@ -86,6 +89,7 @@ function App() {
         <Route path="khach-hang/add" element={<AddKH />} />
         <Route path="khach-hang/edit/:id" element={<UpdateKhachHang />} />
         <Route path="voucher/update/:id" element={<UpdateVoucher />} />
+        <Route path="thong-ke" element={<ThongKe />} />
       </Route>
     </Routes>
   );

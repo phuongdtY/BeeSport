@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -36,6 +37,7 @@ import java.util.List;
 @Setter
 @Table(name = "tai_khoan")
 @Entity
+@ToString
 @Builder
 public class TaiKhoan implements Serializable {
 
@@ -111,6 +113,7 @@ public class TaiKhoan implements Serializable {
     @JoinColumn(name = "vai_tro_id", referencedColumnName = "id")
     private VaiTro vaiTro;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<VoucherChiTiet> voucherChiTietList;
 

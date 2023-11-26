@@ -11,6 +11,7 @@ public interface GioHangChiTietService {
     GioHangChiTietResponse add(CreatedGioHangChiTietRequest request);
 
     void delete(Long idGioHangChiTiet);
+    void deleteAll();
 
     GioHangChiTietResponse update(Long idGioHangChiTiet, UpdatedGioHangChiTietRequest request);
 

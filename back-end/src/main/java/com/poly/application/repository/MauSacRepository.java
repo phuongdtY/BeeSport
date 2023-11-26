@@ -2,6 +2,7 @@ package com.poly.application.repository;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.MauSac;
+import com.poly.application.entity.ThuongHieu;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,6 +23,9 @@ public interface MauSacRepository extends JpaRepository<MauSac, Long> {
     boolean existsByMa (String ma);
 
     boolean existsByTen ( String ten);
+
+    @Query(value = "SELECT ms.id FROM MauSac ms WHERE ms.trangThai = 'ACTIVE' ")
+    List<Long> findByIdIn();
 
     @Query("SELECT DISTINCT ms FROM ChiTietSanPham ctsp JOIN MauSac ms ON ctsp.mauSac.id = ms.id  WHERE ctsp.sanPham.id = :idSanPham AND ms.trangThai = 'ACTIVE'")
     List<MauSac> getMauSacKhongLap(Long idSanPham);
