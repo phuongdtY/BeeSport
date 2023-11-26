@@ -26,14 +26,15 @@ public interface SanPhamService {
     Page<SanPhamFilterResponse> filterSanPham(
             Integer page,
             Integer pageSize,
-            String sapXep,
+            Integer sapXep,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             List<Long> listThuongHieu,
             List<Long> listMauSac,
             List<Long> listDiaHinhSan,
             List<Long> listKichCo,
-            List<Long> listLoaiDe
+            List<Long> listLoaiDe,
+            String search
     );
 
     List<SanPhamResponse> get5SanPhamMoiNhat();

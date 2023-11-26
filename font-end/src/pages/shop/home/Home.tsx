@@ -149,7 +149,7 @@ const Home: React.FC = () => {
       </Divider>
       <Row>
         <Col span={7} style={{ marginRight: 85 }}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={nike} alt="" width={"100%"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               GIÀY ĐÁ BÓNG NIKE{" "}

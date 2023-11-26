@@ -157,7 +157,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         }
         hoaDon.setGhiChu(updatedHoaDonRequest.getGhiChu());
         hoaDon.setVoucher(updatedHoaDonRequest.getVoucher());
-
+        System.out.println(hoaDon.getTrangThaiHoaDon());
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
 

@@ -73,4 +73,5 @@ public class SanPham {
     @OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY)
     private List<ChiTietSanPham> listChiTietSanPham;
 
+
 }
