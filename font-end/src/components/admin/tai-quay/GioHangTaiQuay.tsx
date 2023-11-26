@@ -207,9 +207,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   };
 
   const getHoaDonData = () => {
-    const idTaiKhoan = selectKhachHang ? selectKhachHang.id : null; // Lấy id của khách hàng (nếu có)
-    const tongTien = totalPriceFromTable; // Lấy tổng tiền từ state hoặc props
-
+    const idTaiKhoan = selectKhachHang ? selectKhachHang.id : null;
+    const tongTien = totalPriceFromTable;
     // Tạo đối tượng hóa đơn
     const hoaDonData = {
       id: id,
@@ -245,6 +244,15 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         const hoaDonData = getHoaDonData();
         hoaDonData.trangThaiHoaDon = "CONFIRMED";
 
+        if (
+          !hoaDonData.hoaDonChiTiet ||
+          hoaDonData.hoaDonChiTiet.length === 0
+        ) {
+          // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
+          message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
+          return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
+        }
+
         try {
           const response = await request.put(`/hoa-don/${id}`, hoaDonData);
           if (response.status === 200) {
@@ -262,37 +270,54 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   };
 
   const handleThanhToan = async (id) => {
-    // Tạo đối tượng hóa đơn với trạng thái APPROVE
-    const hoaDonData = getHoaDonData();
-    const trangThai = isChecked ? "CONFIRMED" : "APPROVED";
-    const ngayHomNay = dayjs().endOf("day");
-    const hoaDonThanhToan = {
-      ...hoaDonData,
-      trangThaiHoaDon: trangThai,
-      voucher: {
-        id: selectedVoucher ? selectedVoucher.id : null, // Include the selected voucher's ID
-      },
-      ngayThanhToan: ngayHomNay,
-    };
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn thanh toán hóa đơn không?",
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        const hoaDonData1 = getHoaDonData();
+        if (
+          !hoaDonData1.hoaDonChiTiet ||
+          hoaDonData1.hoaDonChiTiet.length === 0
+        ) {
+          // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
+          message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
+          return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
+        }
+        if (tienTraKhach < 0) {
+          // Nếu tiền trả lại khách là số âm, hiển thị thông báo hoặc xử lý tùy ý ở đây
+          message.error("Số tiền khách đưa không đủ để thanh toán.");
+          return; // Ngăn chặn việc thực hiện thanh toán nếu số tiền trả lại là âm
+        }
+        // Tạo đối tượng hóa đơn với trạng thái APPROVE
+        const hoaDonData = getHoaDonData();
+        const trangThai = isChecked ? "CONFIRMED" : "APPROVED";
+        const ngayHomNay = dayjs().endOf("day");
+        const hoaDonThanhToan = {
+          ...hoaDonData,
+          trangThaiHoaDon: trangThai,
+          voucher: {
+            id: selectedVoucher ? selectedVoucher.id : null, // Include the selected voucher's ID
+          },
+          ngayThanhToan: ngayHomNay,
+        };
 
-    try {
-      // Gọi API để cập nhật hóa đơn với trạng thái APPROVE
-      const response = await request.put(`/hoa-don/${id}`, hoaDonThanhToan);
-      if (response.status === 200) {
-        loadHoaDon();
-        // Nếu cập nhật thành công, hiển thị thông báo thành công
-        message.success("Hóa đơn đã được thanh toán thành công.");
-        // Sau khi thanh toán, bạn có thể thực hiện các hành động khác ở đây
-        // Ví dụ: gửi email xác nhận đơn hàng, in hóa đơn, vv.
-      } else {
-        // Xử lý lỗi nếu cập nhật không thành công
-        message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
-      }
-    } catch (error) {
-      console.error("Error making payment:", error);
-      // Xử lý lỗi nếu có lỗi trong quá trình thanh toán
-      message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
-    }
+        try {
+          const response = await request.put(`/hoa-don/${id}`, hoaDonThanhToan);
+          if (response.status === 200) {
+            loadHoaDon();
+            message.success("Hóa đơn đã được thanh toán thành công.");
+          } else {
+            message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
+          }
+        } catch (error) {
+          console.error("Error making payment:", error);
+          message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
+        }
+      },
+    });
   };
 
   useEffect(() => {
@@ -638,11 +663,11 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 />
                 <br />
                 <span>Tiền trả khách: </span>
-                <InputNumber
-                  disabled={true}
-                  style={{ marginTop: 10, width: "100%" }}
-                  value={formatGiaTienVND(giaTriTienTraKhach)}
-                />
+                <span
+                  style={{ marginTop: 10, width: "100%", fontWeight: "bold" }}
+                >
+                  {formatGiaTienVND(giaTriTienTraKhach)}
+                </span>
               </>
             )}
             {isPaymentSelected && (

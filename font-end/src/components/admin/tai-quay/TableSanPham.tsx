@@ -15,6 +15,7 @@ import React, { useState, useEffect } from "react";
 import request, { request4s } from "~/utils/request";
 import ModalSanPham from "./ModalSanPham";
 import { DeleteOutlined, ExclamationCircleFilled } from "@ant-design/icons";
+const { confirm } = Modal;
 
 interface DataGioHang {
   key: React.Key;
@@ -23,6 +24,18 @@ interface DataGioHang {
   maHoaDon: string;
   chiTietSanPham: {
     sanPham: {
+      ten: string;
+    };
+    kichCo: {
+      kichCo: number;
+    };
+    mauSac: {
+      ten: string;
+    };
+    diaHinhSan: {
+      ten: string;
+    };
+    loaiDe: {
       ten: string;
     };
   };
@@ -65,12 +78,17 @@ const TableSanPham: React.FC<{
     {
       title: "Tên Sản Phẩm",
       dataIndex: ["chiTietSanPham", "sanPham", "ten"],
+      render: (_, record) => {
+        return `${record.chiTietSanPham.sanPham.ten} [ ${record.chiTietSanPham.mauSac.ten} - ${record.chiTietSanPham.kichCo.kichCo}]`;
+      },
     },
     {
       title: "Số Lượng",
       dataIndex: "soLuong",
+      width: 60,
       render: (text, record, index) => (
         <InputNumber
+          style={{ width: 60 }}
           value={record.soLuong}
           inputMode="numeric"
           onChange={(newSoLuong) => handleSoLuongChange(index, newSoLuong)}
@@ -158,14 +176,23 @@ const TableSanPham: React.FC<{
   }, [dataGioHang]);
 
   const deleteHoaDonChiTiet = async (idHoaDonChiTiet) => {
-    try {
-      await request.delete(`/hoa-don/${idHoaDonChiTiet}`);
-      message.success("Đã xóa sản phẩm khỏi giỏ hàng");
-      getDataGioHang();
-    } catch (error) {
-      console.error("Error deleting item:", error);
-      // Handle errors, e.g., display an error message
-    }
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn xóa sản phẩm không?",
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          await request.delete(`/hoa-don/${idHoaDonChiTiet}`);
+          message.success("Đã xóa sản phẩm khỏi giỏ hàng");
+          getDataGioHang();
+        } catch (error) {
+          console.error("Error deleting item:", error);
+          // Handle errors, e.g., display an error message
+        }
+      },
+    });
   };
 
   const [loading, setLoading] = useState(true);
