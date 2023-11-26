@@ -672,7 +672,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </span>
               </>
             )}
-            {isPaymentSelected && (
+            {isPaymentSelected && !checked && (
               <Row>
                 <Col span={24}>
                   <Button
@@ -685,7 +685,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </Col>
               </Row>
             )}
-            {!isPaymentSelected && (
+            {!isPaymentSelected && !checked && (
               <Row>
                 <Col span={24}>
                   <Button
@@ -693,7 +693,20 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                     style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
                     onClick={() => handleLuuHoaDon(id)}
                   >
-                    {isChecked ? "Xác nhận" : "Lưu hóa đơn"}
+                    Xác nhận
+                  </Button>
+                </Col>
+              </Row>
+            )}
+            {isPaymentSelected && checked && (
+              <Row>
+                <Col span={24}>
+                  <Button
+                    type="primary"
+                    style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
+                    onClick={() => handleLuuHoaDon(id)}
+                  >
+                    Xác nhận
                   </Button>
                 </Col>
               </Row>
