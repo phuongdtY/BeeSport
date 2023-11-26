@@ -85,8 +85,6 @@ public class Voucher implements Serializable {
     @Enumerated(EnumType.STRING)
     private CommonEnum.TrangThaiVoucher trangThai;
 
-    private boolean cancelled;
-
     @JsonIgnore
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HoaDon> hoaDonList;

@@ -154,11 +154,7 @@ public class VoucherServiceImpl implements VoucherService {
                 voucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
             } else {
                 // Thêm điều kiện để kiểm tra nếu voucher đã bị hủy
-                if (voucher.isCancelled()) {
                     voucher.setTrangThai(CommonEnum.TrangThaiVoucher.CANCELLED);
-                } else {
-                    voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ONGOING);
-                }
             }
 
             CommonEnum.TrangThaiVoucher newStatus = voucher.getTrangThai();
