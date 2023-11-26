@@ -30,7 +30,7 @@ import Signin from "./pages/login/sign-in/Signin";
 import Signup from "./pages/login/sign-up/Singup";
 import Forgotpassword from "./pages/login/forgot-password/Forgotpassword";
 import AddKH from "./pages/admin/khach-hang/add";
-// import UpdateKhachHang from "./pages/admin/khach-hang/update";
+import UpdateKhachHang from "./pages/admin/khach-hang/update";
 import IndexHoaDon from "./pages/admin/hoa-don";
 import IndexKichCo from "./pages/admin/kich-co";
 import AddKichCo from "./pages/admin/kich-co/add";
@@ -39,6 +39,8 @@ import DetailHoaDon from "./pages/admin/hoa-don/detailHoaDon";
 import DetailSanPham from "./pages/shop/san-pham/detail";
 import BanHangTaiQuay from "./pages/admin/ban-hang-tai-quay/BanHangTaiQuay.tsx";
 import UpdateSanPham from "./pages/admin/san-pham/UpdateSanPham.tsx";
+import ProtectedRoute from "./pages/admin/component/ProtextedRoute.tsx";
+import ProtectedRoute1 from "./pages/admin/component/ProtectedRoute1.tsx";
 
 function App() {
   return (
@@ -52,7 +54,7 @@ function App() {
         <Route path="/gio-hang" element={<GioHang />} />
         <Route path="/san-pham/detail/:id" element={<DetailSanPham />} />
       </Route>
-      <Route path="/admin/*" element={<AdminLayout />}>
+      <Route path="/admin/*" element={<ProtectedRoute1 element={<AdminLayout />} />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />
         <Route path="ban-hang-tai-quay" element={<BanHangTaiQuay />} />
         <Route path="nhan-vien/add" element={<AddNV />} />
@@ -82,7 +84,7 @@ function App() {
         <Route path="hoa-don/:id" element={<DetailHoaDon />} />
         <Route path="khach-hang" element={<IndexKhachHang />} />
         <Route path="khach-hang/add" element={<AddKH />} />
-        {/*<Route path="khach-hang/edit/:id" element={<UpdateKhachHang />} /> */}
+        <Route path="khach-hang/edit/:id" element={<UpdateKhachHang />} />
         <Route path="voucher/update/:id" element={<UpdateVoucher />} />
       </Route>
     </Routes>

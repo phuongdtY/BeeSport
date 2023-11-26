@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -86,9 +87,9 @@ public class AuthenticationServiceIplm implements AuthenticationService {
             TaiKhoan user = new TaiKhoan();
             user.setHoVaTen("hoanggiang");
             user.setSoDienThoai("0348079278");
-            user.setEmail("giangminh0302@gmail.com");
+            user.setEmail("giangminh030222@gmail.com");
             user.setVaiTro(role);
-            user.setMatKhau(new BCryptPasswordEncoder().encode("giang123"));
+            user.setMatKhau(new BCryptPasswordEncoder().encode("giang123123"));
             userRepository.save(user);
 
         return true;
@@ -96,21 +97,29 @@ public class AuthenticationServiceIplm implements AuthenticationService {
 
     @Override
     public JwtAuthenticationResponse signin(SigninRequest signinRequest) {
-        authenticationManager.authenticate((new UsernamePasswordAuthenticationToken(signinRequest.getEmail(),
-                signinRequest.getMatKhau())));
-        TaiKhoan taiKhoan = userRepository.findTaiKhoanByEmail(signinRequest.getEmail());
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.getEmail(),
+                    signinRequest.getMatKhau()));
+        } catch (AuthenticationException e) {
+            // Invalid credentials
+            throw new BadRequestException("Tài khoản hoặc mật khẩu không tồn tại.");
+        }
 
+        TaiKhoan taiKhoan = userRepository.findTaiKhoanByEmail(signinRequest.getEmail());
         var userToke = user.loadUserByUsername(signinRequest.getEmail());
         var jwt = jwtService.generateToken(userToke);
-        var refreshToken = jwtService.generateRefreshToken(new HashMap<>(),userToke);
+        var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), userToke);
 
         JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
 
         jwtAuthenticationResponse.setToken(jwt);
         jwtAuthenticationResponse.setRefreshToken(refreshToken);
         jwtAuthenticationResponse.setRoleId(taiKhoan.getVaiTro().getId());
+        jwtAuthenticationResponse.setId(taiKhoan.getId());
+        jwtAuthenticationResponse.setEmail(taiKhoan.getEmail());
         return jwtAuthenticationResponse;
     }
+
 
 
     @Override

@@ -18,6 +18,7 @@ export interface DataType {
   phuongXa: string;
   diaChiCuThe: string;
   anhDaiDien: string;
+  matKhau: string;
   ngayTao: string;
   ngaySua: string;
   trangThai: {

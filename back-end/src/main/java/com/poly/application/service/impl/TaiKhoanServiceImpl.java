@@ -156,18 +156,9 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     }
 
     @Override
-    public List<TaiKhoanResponse> getAllTaiKhoan() {
-        List<TaiKhoan> listTaiKhoan = taiKhoanRepository.findAll();
-            List<TaiKhoanResponse> listTaiKhoanResponse = new ArrayList<>();
-            for (TaiKhoan taiKhoan: listTaiKhoan ){
-                TaiKhoanResponse taiKhoanResponse = new TaiKhoanResponse();
-                taiKhoanResponse.setId(taiKhoan.getId());
-                taiKhoanResponse.setHoVaTen(taiKhoan.getHoVaTen());
-                taiKhoanResponse.setEmail(taiKhoan.getEmail());
-                taiKhoanResponse.setMatKhau(taiKhoan.getMatKhau());
-                listTaiKhoanResponse.add(taiKhoanResponse);
-            }
-        return listTaiKhoanResponse;
+    public TaiKhoan getAllTaiKhoan(String email) {
+        TaiKhoan listTaiKhoan = taiKhoanRepository.findTaiKhoanByEmail(email);
+        return listTaiKhoan;
     }
 
 //    public TaiKhoanResponse converToResponse(TaiKhoan taiKhoan){

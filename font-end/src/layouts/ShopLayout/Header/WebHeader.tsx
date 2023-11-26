@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Badge, Menu, theme } from "antd";
-import { Link } from "react-router-dom";
+import { Badge, Button, Menu, Select, message, theme } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import logo from "~/image/logo.jpg";
-import request from "~/utils/request";
+import request, { requestLogout } from "~/utils/request";
+import { max } from "moment";
 
 type MenuItem = Required<MenuProps>["items"][number];
 const getItem = (
@@ -39,6 +40,22 @@ const Header: React.FC = () => {
     };
     fetchData();
   }, [id]);
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    try {
+      const response123 = await requestLogout.post("/logout");
+      console.log(response123.data)
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("email");
+      localStorage.removeItem("roleId");
+      
+      navigate("/sign-in");
+      message.success("Đăng xuất thành công");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      message.error("Có lỗi xảy ra khi đăng xuất.");
+    }
+  };
 
   const {
     token: { colorBgContainer },
@@ -51,7 +68,8 @@ const Header: React.FC = () => {
     getItem(<Link to="/">GROUP</Link>, "4"),
     getItem(<Link to="/">TIN TỨC</Link>, "5"),
   ];
-
+  const userEmail = localStorage.getItem("email");
+  const { Option } = Select;
   return (
     <header
       style={{
@@ -79,6 +97,24 @@ const Header: React.FC = () => {
         defaultSelectedKeys={["2"]}
         items={items}
       />
+      {userEmail ? (
+        <Select
+        defaultValue={userEmail}
+        style={{ width: 150, marginLeft: 700 }}
+        onChange={(value) => {
+          // Check if the selected value is "logout" and call handleLogout
+          if (value === "logout") {
+            handleLogout();
+          }
+        }}
+      >
+        <Option value={userEmail} disabled>
+          {userEmail}
+        </Option>
+        <Option>Thông tin</Option>
+        <Option value="logout">Logout</Option>
+      </Select>
+      ) : (
       <Link
         style={{ marginLeft: "850px" }}
         to="/sign-in"
@@ -88,6 +124,7 @@ const Header: React.FC = () => {
           style={{ fontSize: "22px", color: "black", marginRight: 10 }}
         />
       </Link>
+      )}
       <Link to="/gio-hang">
         <Badge count={count}>
           <ShoppingCartOutlined style={{ fontSize: "25px" }} />

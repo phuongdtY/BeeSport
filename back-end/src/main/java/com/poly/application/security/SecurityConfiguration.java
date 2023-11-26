@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -34,6 +35,7 @@ public class SecurityConfiguration {
         return http.cors().and().csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request.requestMatchers(new AntPathRequestMatcher("/api/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/**")).hasAnyAuthority("MANAGER")
+                        .requestMatchers(new AntPathRequestMatcher("/**")).hasAnyAuthority("CUSTOMER")
                         .anyRequest().authenticated())
 
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -60,5 +62,7 @@ public class SecurityConfiguration {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)throws Exception{
         return config.getAuthenticationManager();
     }
+
+
 
 }

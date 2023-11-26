@@ -122,14 +122,8 @@ const UpdateKhachHang: React.FC = () => {
       
       setLoadingForm(true);
       try {
-        const local123 = localStorage.getItem('refreshToken');
-        const res = await request.get("khach-hang/edit/" + id,
-        {
-          headers: {
-            Authorization: `Bearer ${local123}`
-          }
-        }
-        );
+     
+        const res = await request.get("khach-hang/edit/" + id);
         //fix
         fetchProvinces();
         fetchDistricts(res.data?.thanhPho);
@@ -171,7 +165,6 @@ const UpdateKhachHang: React.FC = () => {
       onOk: async () => {
         try {
           const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
-          const local123 = localStorage.getItem('refreshToken');
           const res = await request.put("khach-hang/update/" + id, {
             hoVaTen: values.hoVaTen,
             // canCuocCongDan: values.canCuocCongDan,
@@ -184,13 +177,7 @@ const UpdateKhachHang: React.FC = () => {
             // phuongXa: values.phuongXa,
             // diaChiCuThe: values.diaChiCuThe,
             trangThai: trangThai,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${local123}`
-            }
-          }
-          );
+          });
           if (res.data) {
             message.success("Cập nhật khách hàng thành công");
             navigate("/admin/khach-hang");

@@ -28,7 +28,7 @@ public interface TaiKhoanService {
 
     TaiKhoanResponse addKhachHang(CreatedTaiKhoanRequest request);
 
-    List<TaiKhoanResponse> getAllTaiKhoan();
+    TaiKhoan getAllTaiKhoan(String email);
 
 
 

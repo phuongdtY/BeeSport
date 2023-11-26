@@ -17,32 +17,42 @@ import * as React from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { DangNhapRequest } from "~/interfaces/taiKhoan.type";
-import { useAuth } from "~/pages/admin/component/AuthContext";
-import {requestDangNhap} from "~/utils/request";
+import {requestDangNhap, requestLogout} from "~/utils/request";
 
 const { confirm } = Modal;
 
 const DangNhap: React.FC = () => {
+
+
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null); // Thêm state để lưu thông báo lỗi
-
-  // const {login,isAuthenticated} = useAuth();
   
+
   const onFinish = async (values: DangNhapRequest) => {
     try {
       const response = await requestDangNhap.post("/sign-in", values);
-      const { refreshToken } = response.data; // Assuming your response contains accessToken and refreshToken
+      const { refreshToken,roleId,email,id } = response.data; // Assuming your response contains accessToken and refreshToken
       localStorage.setItem("refreshToken", refreshToken); // Store the access token
+      localStorage.setItem("roleId", roleId);
+      localStorage.setItem("email", email);
+      localStorage.setItem("id", id);
       console.log("AA  "+ response.data.refreshToken)
+      console.log("BB  "+ response.data.email )
+      if (response.data.roleId === 1) {
+        navigate("/admin");
+      } else if (response.data.roleId === 3) {
+        navigate("/");
+      } 
+        message.success("Đăng nhập thành công");
       
-      // Make sure to handle refreshToken as needed (e.g., refresh it before it expires)
-  
-      navigate("/admin");
-      message.success("Đăng nhập thành công");
     } catch (error: any) {
       console.log("Error:", error);
-      if (error.response && error.response.data) {
+      console.log("A123"+error.response.data.message)
+      if (error.response && error.response.status === 403) {
+        message.error("Tài khoản hoặc mật khẩu không tồn tại.");
+      } else if (error.response && error.response.data) {
         message.error(error.response.data.message);
       } else {
         message.error("Có lỗi xảy ra khi đăng nhập.");

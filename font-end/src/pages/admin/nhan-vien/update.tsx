@@ -120,14 +120,7 @@ const UpdateNhanVien: React.FC = () => {
       
       setLoadingForm(true);
       try {
-        const local123 = localStorage.getItem('refreshToken');
-        const res = await request.get("nhan-vien/edit/" + id,
-        {
-          headers: {
-            Authorization: `Bearer ${local123}`
-          }
-        }
-        );
+        const res = await request.get("nhan-vien/edit/" + id);
         fetchProvinces();
         fetchDistricts(res.data?.thanhPho);
         fetchWards(res.data?.quanHuyen);
@@ -170,7 +163,6 @@ const UpdateNhanVien: React.FC = () => {
       onOk: async () => {
         try {
           const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
-          const local123 = localStorage.getItem('refreshToken');
           const res = await request.put("nhan-vien/update/" + id, {
             hoVaTen: values.hoVaTen,
             canCuocCongDan: values.canCuocCongDan,
@@ -184,13 +176,7 @@ const UpdateNhanVien: React.FC = () => {
             diaChiCuThe: values.diaChiCuThe,
             // matKhau: values.matKhau,
             trangThai: trangThai,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${local123}`
-            }
-          }
-          );
+          });
           if (res.data) {
             message.success("Cập nhật nhân viên thành công");
             navigate("/admin/nhan-vien");

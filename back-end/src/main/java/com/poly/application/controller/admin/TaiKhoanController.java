@@ -63,8 +63,8 @@ public class TaiKhoanController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAll11() {
-        return ResponseEntity.ok(taiKhoanService.getAllTaiKhoan());
+    public ResponseEntity<?> getAll11(@RequestParam("email")String email) {
+        return ResponseEntity.ok(taiKhoanService.getAllTaiKhoan(email));
     }
 
 
