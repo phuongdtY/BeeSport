@@ -253,7 +253,6 @@ const index: React.FC = () => {
       setLoading(false);
     }
   };
-
   return (
     <>
       <Card
