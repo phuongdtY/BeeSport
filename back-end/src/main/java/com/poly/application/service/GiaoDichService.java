@@ -20,7 +20,8 @@ public interface GiaoDichService {
 
     GiaoDichResponse update(Long id, UpdatedGiaoDichRequest request);
 
-    List<GiaoDichResponse> getListGiaoDich();
+    List<GiaoDichResponse> getListGiaoDich(Long idHoaDon);
+
 
 
 }

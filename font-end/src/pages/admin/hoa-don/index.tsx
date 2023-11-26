@@ -63,6 +63,13 @@ const index: React.FC = () => {
       align: "center",
       sorter: true,
       width: "20%",
+      render: (sdtNguoiNhan, record) => (
+        <span>
+          {sdtNguoiNhan === null && record.loaiHoaDon?.ten === "COUNTER"
+            ? "Khách hàng lẻ"
+            : sdtNguoiNhan}
+        </span>
+      ),
     },
     {
       title: "Tên người nhận",
@@ -71,6 +78,13 @@ const index: React.FC = () => {
       align: "center",
       sorter: true,
       width: "20%",
+      render: (nguoiNhan, record) => (
+        <span>
+          {nguoiNhan === null && record.loaiHoaDon?.ten === "COUNTER"
+            ? "Khách hàng lẻ"
+            : nguoiNhan}
+        </span>
+      ),
     },
     {
       title: "Loại Hóa Đơn",

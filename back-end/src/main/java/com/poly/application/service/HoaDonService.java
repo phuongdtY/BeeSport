@@ -25,7 +25,7 @@ public interface HoaDonService {
 
     void delete(Long id);
 
-    void updateTrangThaiHoaDon(Long idHoadon, CommonEnum.TrangThaiHoaDon trangThaiHoaDon, String ghiChu);
+    void updateTrangThaiHoaDon(Long idHoadon, CommonEnum.TrangThaiHoaDon trangThaiHoaDon, String ghiChu, Long idPhuongThucThanhToan);
 
 
 }

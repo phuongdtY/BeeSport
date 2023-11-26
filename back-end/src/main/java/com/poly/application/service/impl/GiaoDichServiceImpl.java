@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class GiaoDichServiceImpl implements GiaoDichService {
@@ -76,7 +77,11 @@ public class GiaoDichServiceImpl implements GiaoDichService {
         return giaoDichMapper.convertGiaoDichEntityToGiaoDichResponse(giaoDichRepository.save(giaoDich));
     }
     @Override
-    public List<GiaoDichResponse> getListGiaoDich() {
-        return null;
+    public List<GiaoDichResponse> getListGiaoDich(Long idHoaDon) {
+        List<GiaoDich> giaoDichList = giaoDichRepository.findGiaoDichesByHoaDonId(idHoaDon);
+        return giaoDichList
+                .stream()
+                .map(giaoDichMapper::convertGiaoDichEntityToGiaoDichResponse)
+                .collect(Collectors.toList());
     }
 }

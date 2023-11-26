@@ -69,5 +69,8 @@ public class UpdatedHoaDonRequest {
 
     private List<HoaDonChiTiet> hoaDonChiTietList;
 
+    private String ghiChuTimeLine;
+
+    private Long idPhuongThuc;
 
 }

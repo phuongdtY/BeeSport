@@ -74,4 +74,8 @@ public class CreateHoaDonRequest {
 
     private List<HoaDonChiTiet> hoaDonChiTietList;
 
+    private String ghiChuTimeLine;
+
+    private Long idPhuongThuc;
+
 }

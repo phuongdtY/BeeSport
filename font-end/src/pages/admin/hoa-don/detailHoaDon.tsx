@@ -40,6 +40,8 @@ import {
   DataType as DataTypeHoaDonChiTiet,
   DataParams,
 } from "~/interfaces/hoaDonChiTiet.type";
+import { DataTypeGiaoDich } from "~/interfaces/giaoDich.type";
+import { DataTypePhuongThucThanhToan } from "~/interfaces/phuongThucThanhToan.type";
 import { DataType as DataTypeCtsp } from "~/interfaces/ctsp.type";
 import request from "~/utils/request";
 const { confirm } = Modal;
@@ -112,6 +114,7 @@ const detailHoaDon: React.FC = () => {
   const [listHoaDonChiTiet, setListHoaDonChiTiet] = useState<
     DataTypeHoaDonChiTiet[]
   >([]);
+  const [listGiaoDich, setListGiaoDich] = useState<DataTypeGiaoDich[]>([]);
   const [orderStatus, setOrderStatus] = useState(data?.trangThaiHoaDon);
   const [diaChiThongTin, setDiaChiThongTin] = useState(data?.diaChiNguoiNhan);
   const [phiShipThongTin, setphiShipThongTin] = useState(data?.phiShip);
@@ -229,6 +232,63 @@ const detailHoaDon: React.FC = () => {
             </Button>
           </Tooltip>
         </Space>
+      ),
+    },
+  ];
+
+  const columnsGiaoDich: ColumnsType<DataTypeGiaoDich> = [
+    {
+      title: "STT",
+      key: "index",
+      align: "center",
+      rowScope: "row",
+      width: "5%",
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: "Số tiền",
+      dataIndex: "soTienGiaoDich",
+      key: "soTienGiaoDich",
+      align: "center",
+      sorter: true,
+      width: "15%",
+      render: (item, record) => {
+        return formatGiaTienVND(record.soTienGiaoDich);
+      },
+    },
+    {
+      title: "Thời gian",
+      dataIndex: "ngayTao",
+      key: "ngayTao",
+      align: "center",
+      sorter: true,
+      width: "15%",
+      render: (item, record) => {
+        return formatNgayTao(record.ngayTao);
+      },
+    },
+    {
+      title: "Phương thức thanh toán",
+      dataIndex: "phuongThucThanhToan",
+      key: "phuongThucThanhToan",
+      align: "center",
+      sorter: true,
+      width: "20%",
+      render: (phuongThucThanhToan, record) => (
+        <Tag color={phuongThucThanhToan?.id == 1 ? "green" : "blue"}>
+          {phuongThucThanhToan.ten}
+        </Tag>
+      ),
+    },
+    {
+      title: "Trạng thái giao dịch",
+      dataIndex: "trangThaiGiaoDich",
+      key: "trangThaiGiaoDich",
+      align: "center",
+      sorter: true,
+      width: "20%",
+      render: (trangThaiGiaoDich, record) => (
+        <Tag color={trangThaiGiaoDich.mauSac}>{trangThaiGiaoDich.moTa}</Tag>
       ),
     },
   ];
@@ -357,6 +417,18 @@ const detailHoaDon: React.FC = () => {
     }
   };
 
+  const fetchGiaoDichList = async () => {
+    setLoadingTable(true);
+    try {
+      const res = await request.get("giao-dich/list/" + id);
+      setListGiaoDich(res.data);
+      setLoadingTable(false);
+    } catch (error) {
+      console.log(error);
+      setLoadingTable(false);
+    }
+  };
+
   const handleChagneImage = async (list: DataTypeHoaDonChiTiet[]) => {
     const sanPhamData = list;
 
@@ -390,7 +462,7 @@ const detailHoaDon: React.FC = () => {
         description:
           (item.ghiChu === null ? "" : item.ghiChu) +
           "    " +
-          item.hoaDon.nguoiSua,
+          (item.hoaDon.nguoiSua === null ? "" : item.hoaDon.nguoiSua),
         icon: handleIconTimeline(item.trangThai.ten),
       }));
       setItemTimeline(timelineItem1);
@@ -516,6 +588,7 @@ const detailHoaDon: React.FC = () => {
   // load dữ liệu useEffect
   useEffect(() => {
     fetchHoaDonData();
+    fetchGiaoDichList();
     fetchProvinces();
     fetchDataTimeline();
     // console.log(tongTien + " | onupdate useEff");
@@ -700,6 +773,7 @@ const detailHoaDon: React.FC = () => {
     moTa: "Đã hoàn thành",
     mauSac: "magenta",
   };
+  const [formData] = Form.useForm();
   // xử lý button xác nhận và vận chuyển
   const handleStatus = async (
     values: UpdatedRequest,
@@ -709,12 +783,19 @@ const detailHoaDon: React.FC = () => {
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
-      content: title + " hóa đơn này ?",
+      content: (
+        <Form.Item name="ghiChuTimeLine" label="Ghi chú timeline">
+          <TextArea />
+        </Form.Item>
+      ),
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
         setOrderStatus(status);
         try {
+          const ghiChuTimeLineValue = form.getFieldValue("ghiChuTimeLine");
+          console.log(ghiChuTimeLineValue);
+
           const res = await request.put("hoa-don/" + id, {
             ma: data?.ma,
             diaChiNguoiNhan: data?.diaChiNguoiNhan,
@@ -726,6 +807,9 @@ const detailHoaDon: React.FC = () => {
             sdtNguoiNhan: values.sdtNguoiNhan,
             phiShip: tienShip,
             tongTien: tinhTongTien(Number(tienShip)),
+            tongTienKhiGiam: tinhTongTien(Number(tienShip)),
+            ghiChuTimeLine: "Đang chờ sử lý",
+            idPhuongThuc: 1,
           });
           setLoadingForm(false);
           setTongTien(tinhTongTien(Number(tienShip)));
@@ -830,8 +914,12 @@ const detailHoaDon: React.FC = () => {
                       },
                     ]}
                   >
-                    {orderStatus?.ten === "APPROVED" ? (
-                      <span>{data?.nguoiNhan}</span>
+                    {(orderStatus?.ten === "APPROVED" ||
+                      orderStatus?.ten === "PICKUP" ||
+                      orderStatus?.ten === "SHIPPING" ||
+                      orderStatus?.ten === "CANCELLED") &&
+                    data?.loaiHoaDon?.ten === "COUNTER" ? (
+                      <span>{data?.nguoiNhan || "Khách hàng lẻ"}</span>
                     ) : (
                       <Input />
                     )}
@@ -846,8 +934,12 @@ const detailHoaDon: React.FC = () => {
                       },
                     ]}
                   >
-                    {orderStatus?.ten === "APPROVED" ? (
-                      <span>{data?.sdtNguoiNhan}</span>
+                    {(orderStatus?.ten === "APPROVED" ||
+                      orderStatus?.ten === "PICKUP" ||
+                      orderStatus?.ten === "SHIPPING" ||
+                      orderStatus?.ten === "CANCELLED") &&
+                    data?.loaiHoaDon?.ten === "COUNTER" ? (
+                      <span>{data?.sdtNguoiNhan || "Khách hàng lẻ"}</span>
                     ) : (
                       <Input />
                     )}
@@ -889,16 +981,7 @@ const detailHoaDon: React.FC = () => {
                       <Input />
                     )}
                   </Form.Item>
-                  <Form.Item
-                    name="ghiChu"
-                    label="Ghi chú"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng không để trống",
-                      },
-                    ]}
-                  >
+                  <Form.Item name="ghiChu" label="Ghi chú">
                     {orderStatus?.ten === "APPROVED" ? (
                       <span>{data?.ghiChu}</span>
                     ) : (
@@ -930,7 +1013,12 @@ const detailHoaDon: React.FC = () => {
                   </Form.Item>
                   <Form.Item>
                     <Space>
-                      {orderStatus?.ten === "PENDING" && (
+                      {((orderStatus?.ten === "PENDING" &&
+                        data?.loaiHoaDon?.ten === "COUNTER") ||
+                        (orderStatus?.ten === "CONFIRMED" &&
+                          data?.loaiHoaDon?.ten === "COUNTER") ||
+                        (orderStatus?.ten === "PENDING" &&
+                          data?.loaiHoaDon?.ten === "ONLINE")) && (
                         <Button
                           type="primary"
                           onClick={async () => {
@@ -945,7 +1033,12 @@ const detailHoaDon: React.FC = () => {
                         </Button>
                       )}
 
-                      {orderStatus?.ten === "PENDING" && (
+                      {((orderStatus?.ten === "PENDING" &&
+                        data?.loaiHoaDon?.ten === "COUNTER") ||
+                        (orderStatus?.ten === "CONFIRMED" &&
+                          data?.loaiHoaDon?.ten === "COUNTER") ||
+                        (orderStatus?.ten === "PENDING" &&
+                          data?.loaiHoaDon?.ten === "ONLINE")) && (
                         <Button
                           type="primary"
                           danger
@@ -974,7 +1067,10 @@ const detailHoaDon: React.FC = () => {
                           Giao hàng
                         </Button>
                       )}
-                      {orderStatus?.ten === "SHIPPING" && (
+                      {((orderStatus?.ten === "CONFIRMED" &&
+                        data?.loaiHoaDon?.ten === "COUNTER") ||
+                        (orderStatus?.ten === "SHIPPING" &&
+                          data?.loaiHoaDon?.ten === "ONLINE")) && (
                         <Button
                           type="primary"
                           onClick={async () => {
@@ -988,15 +1084,29 @@ const detailHoaDon: React.FC = () => {
                           Hoàn thành
                         </Button>
                       )}
-                      {orderStatus?.ten === "CONFIRMED" && showExportButton && (
+                      {/* {orderStatus?.ten === "CONFIRMED" && showExportButton && (
                         <Button type="primary" onClick={showExportHoaDonModal}>
                           Export PDF
                         </Button>
-                      )}
+                      )} */}
                     </Space>
                   </Form.Item>
                 </Col>
               </Row>
+            </Card>
+            <Card>
+              <Row>
+                <Space direction="horizontal">
+                  <h3 style={{ width: "200px" }}>Giao dịch thanh toán</h3>
+                  <Button type="primary">Thành toán</Button>
+                </Space>
+              </Row>
+              <Table<DataTypeGiaoDich>
+                columns={columnsGiaoDich as ColumnsType<DataTypeGiaoDich>}
+                dataSource={listGiaoDich}
+                loading={loadingTable}
+                showSorterTooltip={false}
+              />
             </Card>
             <Card>
               <Row>
@@ -1009,12 +1119,22 @@ const detailHoaDon: React.FC = () => {
                     allowClear
                     prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
                   />
-                  {orderStatus?.ten === "PENDING" && (
+                  {((orderStatus?.ten === "PENDING" &&
+                    data?.loaiHoaDon?.ten === "COUNTER") ||
+                    (orderStatus?.ten === "CONFIRMED" &&
+                      data?.loaiHoaDon?.ten === "COUNTER") ||
+                    (orderStatus?.ten === "PENDING" &&
+                      data?.loaiHoaDon?.ten === "ONLINE")) && (
                     <Button onClick={handleUpdateSoLuongSanPham}>
                       Cập nhật lại giỏ hàng
                     </Button>
                   )}
-                  {orderStatus?.ten === "PENDING" && (
+                  {((orderStatus?.ten === "PENDING" &&
+                    data?.loaiHoaDon?.ten === "COUNTER") ||
+                    (orderStatus?.ten === "CONFIRMED" &&
+                      data?.loaiHoaDon?.ten === "COUNTER") ||
+                    (orderStatus?.ten === "PENDING" &&
+                      data?.loaiHoaDon?.ten === "ONLINE")) && (
                     <Button onClick={showSanPhamModal}>Thêm sản phẩm</Button>
                   )}
                 </Space>
