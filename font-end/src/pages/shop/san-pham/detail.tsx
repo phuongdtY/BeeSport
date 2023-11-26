@@ -1,15 +1,24 @@
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  LeftOutlined,
+  MinusOutlined,
+  PlusOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   Card,
+  Carousel,
   Col,
   ColorPicker,
+  Divider,
   Form,
   Image,
   Input,
+  Popover,
   Radio,
   Row,
   Space,
+  Tooltip,
   Typography,
   message,
 } from "antd";
@@ -29,9 +38,17 @@ const detailSanPham: React.FC = () => {
   const [dataKichCo, setDataKichCo] = useState<any[]>([]);
   const [dataLoaiDe, setDataLoaiDe] = useState<DataType[]>([]);
   const [dataDHS, setDataDHS] = useState<any[]>([]);
+  const [dataHinhAnh, setDataHinhAnh] = useState<any[]>([]);
+  const [titleMauSac, setTitleMauSac] = useState("");
+  const [titleKichCo, setTitleKichCo] = useState("");
+  const [idMauSac, setIdMauSac] = useState(null);
+  const [anhDaiDien, setAnhDaiDien] = useState("");
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
   const [giaTienMin, setGiaTienMin] = useState(0);
   const [giaTienMax, setGiaTienMax] = useState(0);
   const [quantity, setQuantity] = useState(1); // Số lượng sản phẩm, mặc định là 1
+  const [form] = Form.useForm();
   const { id } = useParams();
   const [selecteds, setSelecteds] = useState<DataParams>({});
   // Hàm xử lý khi bấm nút cộng
@@ -86,6 +103,20 @@ const detailSanPham: React.FC = () => {
     try {
       const res = await request.get("/san-pham/" + id);
       setDataSanPham(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const hinhAnh = async () => {
+    try {
+      const res = await request.get("hinh-anh-san-pham", {
+        params: {
+          idSanPham: id,
+          idMauSac: idMauSac,
+        },
+      });
+      setDataHinhAnh(res.data);
+      setAnhDaiDien(res.data[0].duongDan);
     } catch (error) {
       console.log(error);
     }
@@ -148,19 +179,21 @@ const detailSanPham: React.FC = () => {
   };
 
   const handleMauSac = (event) => {
+    setIdMauSac(event.id !== idMauSac ? event.id : null);
+
+    setTitleMauSac(event.ten);
     setQuantity(1);
-    const selectedValue = event.target.value;
     setSelecteds({
       ...selecteds,
-      idMauSac: selectedValue,
+      idMauSac: event.id,
     });
   };
   const handleKichCo = (event) => {
+    setTitleKichCo(event.kichCo);
     setQuantity(1);
-    const selectedValue = event.target.value;
     setSelecteds({
       ...selecteds,
-      idKichCo: selectedValue,
+      idKichCo: event.id,
     });
   };
   const [selectedValue, setSelectedValue] = useState(null);
@@ -181,6 +214,7 @@ const detailSanPham: React.FC = () => {
   };
 
   useEffect(() => {
+    hinhAnh();
     sanPham();
     sanPhamChiTiet();
     fetchDataMS();
@@ -188,95 +222,149 @@ const detailSanPham: React.FC = () => {
     fetchDataSize();
     fetchDataDHS();
   }, [selecteds]);
+  const onChangeHinhAnh = (event) => {
+    const selectedImageIndex = dataHinhAnh.findIndex(
+      (image) => image.id === event.id
+    );
+
+    setAnhDaiDien(event.duongDan);
+    setSelectedImageIndex(selectedImageIndex);
+  };
+
+  const handleNextImage = () => {
+    const nextIndex = (selectedImageIndex + 1) % dataHinhAnh.length;
+    setSelectedImageIndex(nextIndex);
+    onChangeHinhAnh(dataHinhAnh[nextIndex]);
+  };
+
+  // Function to handle the previous image
+  const handlePrevImage = () => {
+    const prevIndex =
+      (selectedImageIndex - 1 + dataHinhAnh.length) % dataHinhAnh.length;
+    setSelectedImageIndex(prevIndex);
+    onChangeHinhAnh(dataHinhAnh[prevIndex]);
+  };
+
   return (
     <>
-      <Row>
+      <Row style={{ marginTop: 40 }}>
         <Col span={2}></Col>
         <Col span={9}>
-          <Image
-            width={500}
-            height={500}
-            src="https://product.hstatic.net/1000061481/product/7e1178b4f9d64788a9cfafdcab4fbd42_e1416ce4bfdc48e5bed9e6a1b76d24b7_1024x1024.jpeg"
-          />
+          <div style={{ position: "relative", width: "100%" }}>
+            <Image
+              preview={false}
+              width={500}
+              height={500}
+              fallback="http://localhost:8080/admin/api/file/view/fallback.jpg"
+              src={`http://localhost:8080/admin/api/file/view/${anhDaiDien}`}
+            />
+            <Button
+              type="default"
+              shape="circle"
+              style={{ position: "absolute", top: 250, left: 10 }}
+              onClick={handlePrevImage}
+            >
+              <LeftOutlined />
+            </Button>
+            <Button
+              shape="circle"
+              style={{ position: "absolute", top: 250, right: 75 }}
+              onClick={handleNextImage}
+            >
+              <RightOutlined />
+            </Button>
+          </div>
+          {dataHinhAnh.length > 0 && (
+            <Radio.Group
+              buttonStyle="solid"
+              defaultValue={dataHinhAnh[selectedImageIndex]?.id}
+              value={dataHinhAnh[selectedImageIndex]?.id}
+            >
+              <Row gutter={[15, 15]}>
+                {dataHinhAnh.map((record) => (
+                  <Col key={record.id}>
+                    <Radio.Button
+                      value={record.id}
+                      style={{ margin: 0, padding: 0, height: 61 }}
+                      onClick={() => onChangeHinhAnh(record)}
+                    >
+                      <Image
+                        preview={false}
+                        width={60}
+                        height={60}
+                        fallback="http://localhost:8080/admin/api/file/view/fallback.jpg"
+                        src={`http://localhost:8080/admin/api/file/view/${record.duongDan}`}
+                      />
+                    </Radio.Button>
+                  </Col>
+                ))}
+              </Row>
+            </Radio.Group>
+          )}
         </Col>
-        <Col span={8}>
-          <Title level={4} style={{ margin: 0 }}>
+        <Col span={10}>
+          <Title level={3} style={{ margin: 0 }}>
             {dataSanPham.ten}
           </Title>
+          <Divider style={{ margin: 5, padding: 0 }} />
           <Title level={3} style={{ color: "red", margin: 10 }}>
             {giaTienMin === giaTienMax
               ? `${formatGiaTien(giaTienMax)}`
               : `${formatGiaTien(giaTienMin)} - ${formatGiaTien(giaTienMax)}`}
           </Title>
-          <Text>Mã sản phẩm: {dataSanPham.ma}</Text>
-          <br />
-          <Text>
-            Nhà cung cấp: {dataSanPham.thuongHieu && dataSanPham.thuongHieu.ten}
-          </Text>
-          <Title level={4} style={{ color: "red" }}>
-            CAM KẾT SẢN PHẨM CHÍNH HÃNG 100%. ĐƯỢC BỒI HOÀN GẤP 10 LẦN NẾU KHÔNG
-            PHẢI CHÍNH HÃNG
-          </Title>
+          <Space direction="vertical">
+            <Text>Thông tin sản phẩm</Text>
+            <Text> - Mã sản phẩm: {dataSanPham.ma}</Text>
+            <Text>
+              - Nhà cung cấp:{" "}
+              {dataSanPham.thuongHieu && dataSanPham.thuongHieu.ten}
+            </Text>
+          </Space>
           <Form
-            // form={form}
+            form={form}
             onFinish={onFinish}
             layout="vertical"
             name="form_in_modal"
           >
             <Form.Item
               name="mauSac"
-              label="Màu sắc"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn màu sắc!",
-                },
-              ]}
+              label={` - Màu sắc: ${titleMauSac}`}
+              style={{ margin: 0 }}
             >
-              <Radio.Group buttonStyle="solid" onChange={handleMauSac}>
+              <Radio.Group buttonStyle="solid" value={idMauSac}>
                 <Row gutter={[15, 15]}>
                   {dataMauSac.map((record: any) => (
-                    <Col key={record.id}>
-                      <Radio.Button
-                        value={record.id}
-                        disabled={
-                          !data.some((item) => item.mauSac.id === record.id)
-                        }
-                      >
-                        <Space>
+                    <Tooltip title={record.ten}>
+                      <Col key={record.id}>
+                        <Radio.Button
+                          onClick={() => handleMauSac(record)}
+                          value={record.id}
+                          style={{ margin: 0, padding: 0, border: "0" }}
+                        >
                           <ColorPicker
                             value={record.ma}
-                            size="small"
+                            size="middle"
                             disabled
-                            style={{ marginTop: 3 }}
                           />
-                          <span>{record.ten}</span>
-                        </Space>
-                      </Radio.Button>
-                    </Col>
+                        </Radio.Button>
+                      </Col>
+                    </Tooltip>
                   ))}
                 </Row>
               </Radio.Group>
             </Form.Item>
             <Form.Item
               name="kichCo"
-              label="Kích cỡ"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn kích cỡ!",
-                },
-              ]}
+              label={`- Kich cỡ: ${titleKichCo}`}
+              style={{ margin: 0 }}
             >
-              <Radio.Group buttonStyle="solid" onChange={handleKichCo}>
+              <Radio.Group buttonStyle="solid">
                 <Row gutter={[15, 15]}>
                   {dataKichCo.map((record: any) => (
                     <Col key={record.id}>
                       <Radio.Button
+                        onChange={() => handleKichCo(record)}
                         value={record.id}
-                        disabled={
-                          !data.some((item) => item.kichCo.id === record.id)
-                        }
                       >
                         {record.kichCo}
                       </Radio.Button>
@@ -359,7 +447,7 @@ const detailSanPham: React.FC = () => {
             </Form.Item>
             <Form.Item>
               <Space>
-                <Button type="primary" danger htmlType="submit">
+                <Button type="primary" danger htmlType="reset">
                   MUA NGAY
                 </Button>
                 <Button

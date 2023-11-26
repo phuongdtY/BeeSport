@@ -31,6 +31,8 @@ export interface DataParams {
   filterGender: string;
   sorter: string;
   sortOrder: string;
+  ngayBatDau?: string;
+  ngayKetThuc?: string;
 }
 
 export interface CreatedRequest {

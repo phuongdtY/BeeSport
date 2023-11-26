@@ -15,20 +15,13 @@ import {
   TimeRangePickerProps,
   Table,
   Tooltip,
-  Tag,
-  Divider,
-  Steps,
   Typography,
 } from "antd";
 const { Text, Link } = Typography;
 
 import dayjs from "dayjs";
 import request from "~/utils/request";
-import {
-  DeleteOutlined,
-  ExclamationCircleFilled,
-  EyeOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import { CreatedRequest } from "~/interfaces/voucher.type";
 import { formatGiaTienVND, formatSoLuong } from "~/utils/formatResponse";
 import { ColumnsType } from "antd/es/table";
@@ -36,9 +29,10 @@ import { DataType } from "~/interfaces/khachHang.type";
 import ModalKhachHang from "./ModalKhachHang";
 const { Option } = Select;
 
-function AddVoucherKhachHang() {
+export function UpdateVoucherKhachHang({ id }) {
   const [openModal, setOpenModal] = useState(false);
   const [dataTable, setDataTable] = useState([]);
+  const [dataKhachHang, setDataKhachHang] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -59,7 +53,49 @@ function AddVoucherKhachHang() {
     };
 
     fetchData();
-  }, []);
+    const getOne = async () => {
+      try {
+        const res = await request.get("voucher/" + id);
+        const ngayBatDau = dayjs(res.data?.ngayBatDau, "YYYY-MM-DD HH:mm:ss");
+        const ngayKetThuc = dayjs(res.data?.ngayKetThuc, "YYYY-MM-DD HH:mm:ss");
+        form.setFieldsValue({
+          id: res.data?.id,
+          ma: res.data?.ma,
+          ten: res.data?.ten,
+          soLanSuDung: res.data.soLuong !== null ? 1 : 0,
+          soLuong: res.data?.soLuong,
+          dateRange: [ngayBatDau, ngayKetThuc],
+          hinhThucGiam: res.data?.hinhThucGiam.id,
+          donToiThieu: res.data?.donToiThieu,
+          giaTriGiam: res.data?.giaTriGiam,
+          giamToiDa: res.data?.giamToiDa,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getOne();
+    const getListKhachHang = async () => {
+      try {
+        const res = await request.get("voucher-chi-tiet/list", {
+          params: { idVoucher: id },
+        });
+        const dataT = res.data.map((item: any) => ({
+          id: item.id,
+          key: item.id,
+          idKH: item.taiKhoan.id,
+          ten: item.taiKhoan.hoVaTen,
+          soDienThoai: item.taiKhoan.soDienThoai,
+          email: item.taiKhoan.email,
+          soLanSuDung: item.soLanSuDung,
+        }));
+        setDataTable(dataT);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getListKhachHang();
+  }, [id]);
 
   const onFinish = (values: CreatedRequest) => {
     if (dataTable.length === 0) {
@@ -69,7 +105,7 @@ function AddVoucherKhachHang() {
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc thêm voucher này không?",
+      content: "Bạn có chắc cập nhật voucher này không?",
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
@@ -86,19 +122,21 @@ function AddVoucherKhachHang() {
         };
         try {
           setLoading(true);
-          const res = await request.post("voucher", data);
+          const res = await request.put(`voucher/${id}`, data);
+          console.log(fakeList(id));
+
           try {
             setLoading(true);
-            console.log(fakeList(res.data.id));
+            console.log(fakeList(id));
 
-            await request.post("/voucher-chi-tiet/add", fakeList(res.data.id), {
+            await request.put(`/voucher-chi-tiet/update`, fakeList(id), {
               headers: {
                 "Content-Type": "application/json",
               },
             });
             setLoading(false);
-            message.success("Thêm voucher thành công");
-            navigate("/admin/voucher");
+            message.success("Cập nhật voucher thành công");
+            // navigate("/admin/voucher");
           } catch (error) {
             console.log(error);
             message.error(error.response.data.message);
@@ -213,7 +251,6 @@ function AddVoucherKhachHang() {
       return updatedDataTable;
     });
   };
-
   const handleEditSoLuong = (id, value) => {
     // Find the index of the item with the given id
     const index = dataTable.findIndex((item) => item.idKH === id);
@@ -238,6 +275,7 @@ function AddVoucherKhachHang() {
 
   const fakeList = (idVoucher) => {
     const dataFake = dataTable.map((item) => ({
+      id: item.id,
       voucher: {
         id: idVoucher,
       },
@@ -491,7 +529,7 @@ function AddVoucherKhachHang() {
                 Reset
               </Button>
               <Button type="primary" htmlType="submit" loading={loading}>
-                Thêm
+                Cập Nhật
               </Button>
             </Space>
           </Form.Item>
@@ -521,4 +559,4 @@ function AddVoucherKhachHang() {
   );
 }
 
-export default AddVoucherKhachHang;
+export default UpdateVoucherKhachHang;

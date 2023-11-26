@@ -11,27 +11,25 @@ import java.util.List;
 
 public interface TaiKhoanService {
 
-    Page<TaiKhoanResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,String gioiTinhString, String searchText, String trangThaiString);
+    Page<TaiKhoanResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String gioiTinhString, String searchText, String trangThaiString);
 
     List<TaiKhoan> getAllKhachHang1();
-    Page<TaiKhoanResponse> getAllKhachHang(Integer page, Integer pageSize, String sortField, String sortOrder,String gioiTinhString, String searchText, String trangThaiString);
+
+    Page<TaiKhoanResponse> getAllKhachHang(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String ngaySinhStart, String ngaySinhEnd, String gioiTinhString, String trangThaiString);
 
     TaiKhoanResponse add(CreatedTaiKhoanRequest request);
 
     TaiKhoanResponse update(Long id, UpdatedTaiKhoanRequest request);
 
-    void  delete(Long id);
+    void delete(Long id);
 
     TaiKhoanResponse findById(Long id);
 
-    TaiKhoanResponse findByEmail(String email,String matKhau);
+    TaiKhoanResponse findByEmail(String email, String matKhau);
 
     TaiKhoanResponse khachHangCreat(CreatedTaiKhoanRequest request);
 
     TaiKhoanResponse addKhachHang(CreatedTaiKhoanRequest request);
-
-
-
 
 
 }

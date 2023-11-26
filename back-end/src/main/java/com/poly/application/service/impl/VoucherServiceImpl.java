@@ -39,7 +39,8 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Page<VoucherResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder,
-                                        String searchText, Long hinhThucGiamGiaId, String trangThaiString) {
+                                        String searchText, Long hinhThucGiamGiaId, String trangThaiString,
+                                        LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
@@ -55,13 +56,14 @@ public class VoucherServiceImpl implements VoucherService {
             trangThai = CommonEnum.TrangThaiVoucher.valueOf(trangThaiString);
         }
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<Voucher> voucherPage = repository.findByALl(pageable, searchText, hinhThucGiamGiaId, trangThai);
+        Page<Voucher> voucherPage = repository.findByALl(pageable, searchText, hinhThucGiamGiaId, trangThai, ngayBatDau, ngayKetThuc);
         return voucherPage.map(mapper::convertEntityToResponse);
     }
 
     @Override
     public List<VoucherResponse> getListVoucher() {
-        List<Voucher> list = repository.getListVoucherActive();
+
+        List<Voucher> list = repository.getListVoucher();
         return list
                 .stream()
                 .map(mapper::convertEntityToResponse)
@@ -102,7 +104,6 @@ public class VoucherServiceImpl implements VoucherService {
         request.setTrangThai(status);
         mapper.convertUpdateRequestToEntity(request, detail);
         Voucher savedVoucher = this.repository.save(detail);
-        System.out.println(detail);
         return mapper.convertEntityToResponse(savedVoucher);
     }
 
@@ -119,6 +120,15 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public VoucherResponse findById(Long id) {
         Optional<Voucher> optional = repository.findById(id);
+        if (optional.isEmpty()) {
+            throw new NotFoundException("Voucher không tồn tại");
+        }
+        return mapper.convertEntityToResponse(optional.get());
+    }
+
+    @Override
+    public VoucherResponse findByMa(String ma) {
+        Optional<Voucher> optional = repository.findByMa(ma);
         if (optional.isEmpty()) {
             throw new NotFoundException("Voucher không tồn tại");
         }
@@ -142,6 +152,13 @@ public class VoucherServiceImpl implements VoucherService {
                 }
             } else if (now.isAfter(voucher.getNgayKetThuc())) {
                 voucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
+            } else {
+                // Thêm điều kiện để kiểm tra nếu voucher đã bị hủy
+                if (voucher.isCancelled()) {
+                    voucher.setTrangThai(CommonEnum.TrangThaiVoucher.CANCELLED);
+                } else {
+                    voucher.setTrangThai(CommonEnum.TrangThaiVoucher.ONGOING);
+                }
             }
 
             CommonEnum.TrangThaiVoucher newStatus = voucher.getTrangThai();
