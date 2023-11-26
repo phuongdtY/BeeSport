@@ -217,9 +217,12 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
       tongTien: tongTien,
       tongTienKhiGiam: tongTienKhiGiam,
-      voucher: {
-        id: selectedVoucher ? selectedVoucher.id : null, // Include the selected voucher's I
-      },
+      voucher:
+        selectedVoucher != null || undefined
+          ? {
+              id: selectedVoucher.id,
+            }
+          : null,
       phiShip: phiShip, // Thêm phiShip vào hoaDonData
       diaChiNguoiNhan: address, // Thêm address vào hoaDonData
       donToiThieu: 12000,
@@ -228,6 +231,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       nguoiNhan: customerInfo.nguoiNhan,
       sdtNguoiNhan: customerInfo.sdtNguoiNhan,
       emailNguoiNhan: customerInfo.emailNguoiNhan,
+      idPhuongThuc: 1,
     };
 
     return hoaDonData;
@@ -244,10 +248,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         const hoaDonData = getHoaDonData();
         hoaDonData.trangThaiHoaDon = "CONFIRMED";
 
-        if (
-          !hoaDonData.hoaDonChiTiet ||
-          hoaDonData.hoaDonChiTiet.length === 0
-        ) {
+        if (totalPriceFromTable == 0) {
           // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
           message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
           return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
@@ -282,11 +283,15 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
           return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
         }
-        if (tienTraKhach < 0) {
-          // Nếu tiền trả lại khách là số âm, hiển thị thông báo hoặc xử lý tùy ý ở đây
-          message.error("Số tiền khách đưa không đủ để thanh toán.");
-          return; // Ngăn chặn việc thực hiện thanh toán nếu số tiền trả lại là âm
+
+        if (selectedRadio !== 1) {
+          // Nếu tiền trả lại khách là số âm, hiển thị thông báo và ngăn chặn việc thanh toán
+          if (tienTraKhach < 0) {
+            message.error("Số tiền khách đưa không đủ để thanh toán.");
+            return;
+          }
         }
+
         // Tạo đối tượng hóa đơn với trạng thái APPROVE
         const hoaDonData = getHoaDonData();
         const trangThai = isChecked ? "CONFIRMED" : "APPROVED";
@@ -294,10 +299,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         const hoaDonThanhToan = {
           ...hoaDonData,
           trangThaiHoaDon: trangThai,
-          voucher: {
-            id: selectedVoucher ? selectedVoucher.id : null, // Include the selected voucher's ID
-          },
           ngayThanhToan: ngayHomNay,
+          tongTienKhiGiam: tongTienKhiGiam,
         };
 
         try {
@@ -477,23 +480,25 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               </Col>
             </Row>
             {/* Phí vận chuyển */}
-            <Row>
-              <Col span={7}>
-                <p>Phí vận chuyển: </p>
-              </Col>
-              <Col span={10}></Col>
-              <Col span={7}>
-                <InputNumber
-                  value={phiShip}
-                  style={{ width: "100%" }}
-                  min={1000}
-                  step={10000}
-                  formatter={(value) => `${formatGiaTienVND(value)}`}
-                  parser={(value: any) => value.replace(/\D/g, "")}
-                  onChange={(value) => setPhiShip(value)}
-                />
-              </Col>
-            </Row>
+            {checked ? (
+              <Row>
+                <Col span={7}>
+                  <p>Phí vận chuyển: </p>
+                </Col>
+                <Col span={10}></Col>
+                <Col span={7}>
+                  <InputNumber
+                    value={phiShip}
+                    style={{ width: "100%" }}
+                    min={1000}
+                    step={10000}
+                    formatter={(value) => `${formatGiaTienVND(value)}`}
+                    parser={(value: any) => value.replace(/\D/g, "")}
+                    onChange={(value) => setPhiShip(value)}
+                  />
+                </Col>
+              </Row>
+            ) : null}
             {/* Giảm giá */}
             <Row>
               <Col span={5}>
@@ -646,7 +651,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </Radio.Button>
               </Row>
             </Radio.Group>
-            {isCashSelected && (
+            <br />
+            {!checked && isCashSelected && (
               <>
                 {/* Hiển thị hai ô input khi "Tiền mặt" được chọn */}
                 <span>Tiền khách đưa: </span>
@@ -674,7 +680,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                     style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
                     onClick={() => handleThanhToan(id)}
                   >
-                    {isChecked ? "Xác nhận" : "Thanh toán"}
+                    Thanh toán
                   </Button>
                 </Col>
               </Row>
@@ -687,7 +693,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                     style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
                     onClick={() => handleLuuHoaDon(id)}
                   >
-                    Lưu hóa đơn
+                    {isChecked ? "Xác nhận" : "Lưu hóa đơn"}
                   </Button>
                 </Col>
               </Row>
