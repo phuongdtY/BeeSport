@@ -794,7 +794,7 @@ const detailHoaDon: React.FC = () => {
         setOrderStatus(status);
         try {
           const ghiChuTimeLineValue = form.getFieldValue("ghiChuTimeLine");
-          console.log(ghiChuTimeLineValue);
+          // console.log(ghiChuTimeLineValue);
 
           const res = await request.put("hoa-don/" + id, {
             ma: data?.ma,

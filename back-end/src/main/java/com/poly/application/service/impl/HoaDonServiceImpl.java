@@ -172,8 +172,20 @@ public class HoaDonServiceImpl implements HoaDonService {
 
         boolean isExistTimeLine = timelineRepository.existsTimeLineByTrangThaiAndHoaDonId(hoaDon.getTrangThaiHoaDon(), hoaDon.getId());
         boolean isExistConfirmedTimeLine = timelineRepository.existsTimeLineByTrangThaiAndHoaDonId(CommonEnum.TrangThaiHoaDon.CONFIRMED, hoaDon.getId());
+        boolean isExistPendingTimeLine = timelineRepository.existsTimeLineByTrangThaiAndHoaDonId(CommonEnum.TrangThaiHoaDon.PENDING, hoaDon.getId());
+
         if (!isExistTimeLine) {
-            if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CANCELLED) {
+            if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CANCELLED && isExistPendingTimeLine && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE && !isExistConfirmedTimeLine) {
+                TimeLine timeLine = new TimeLine();
+                timeLine.setGhiChu(updatedHoaDonRequest.getGhiChuTimeLine());
+                timeLine.setHoaDon(hoaDon);
+                timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.CANCELLED);
+                timelineRepository.save(timeLine);
+            }
+            if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CANCELLED && isExistPendingTimeLine && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE && isExistConfirmedTimeLine) {
+                updateTrangThaiHoaDon(id, hoaDon.getTrangThaiHoaDon(), updatedHoaDonRequest.getGhiChuTimeLine(), updatedHoaDonRequest.getIdPhuongThuc());
+            }
+            if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CANCELLED && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.COUNTER) {
                 TimeLine timeLine = new TimeLine();
                 timeLine.setGhiChu(updatedHoaDonRequest.getGhiChuTimeLine());
                 timeLine.setHoaDon(hoaDon);
@@ -182,7 +194,6 @@ public class HoaDonServiceImpl implements HoaDonService {
             }
             if (hoaDon.getTrangThaiHoaDon() != CommonEnum.TrangThaiHoaDon.CANCELLED) {
                 updateTrangThaiHoaDon(id, hoaDon.getTrangThaiHoaDon(), updatedHoaDonRequest.getGhiChuTimeLine(), updatedHoaDonRequest.getIdPhuongThuc());
-
             }
         }
 
