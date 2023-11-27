@@ -23,6 +23,8 @@ import java.math.BigDecimal;
                                 @ColumnResult(name = "tongSoDonThanhCong", type = Long.class),
                                 @ColumnResult(name = "tongSoDonHuy", type = Long.class),
                                 @ColumnResult(name = "tongSoSanPhamDaBan", type = Long.class),
+                                @ColumnResult(name = "tongSoDonOnline", type = Long.class),
+                                @ColumnResult(name = "tongSoDonTaiQuay", type = Long.class),
                         }
                 )
         }
