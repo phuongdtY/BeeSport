@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Menu, Select, message, theme } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { Badge, Menu, MenuProps, theme } from "antd";
-import { Link } from "react-router-dom";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import logo from "~/image/logo.jpg";
 import request, { requestLogout } from "~/utils/request";

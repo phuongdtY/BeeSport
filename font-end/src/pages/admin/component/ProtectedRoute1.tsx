@@ -14,7 +14,7 @@ const ProtectedRoute1: React.FC<{
     element
   ) : roleId === "3" ? (
     // If roleId is 3, redirect to the admin page
-    <Navigate to="/view" replace={true} state={{ from: "/" }} />
+    <Navigate to="/san-pham" replace={true} state={{ from: "/" }} />
   ) : (
     // If not authenticated and not roleId 3, redirect to sign-in page
     <Navigate to="/sign-in" replace={true} state={{ from: "/" }} />

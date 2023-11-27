@@ -32,17 +32,14 @@ public interface    TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
 
     @Query("SELECT tk FROM TaiKhoan tk " +
             "WHERE (tk.hoVaTen LIKE %:searchText% OR tk.soDienThoai LIKE %:searchText% OR tk.email LIKE %:searchText% OR tk.canCuocCongDan LIKE %:searchText%) " +
-            "AND (:ngaySinhStart IS NULL OR :ngaySinhEnd IS NULL OR tk.ngaySinh BETWEEN :ngaySinhStart AND :ngaySinhEnd) " +
-            "AND (:gioiTinh IS NULL OR tk.gioiTinh = :gioiTinh)"+
             "AND (:trangThai IS NULL OR tk.trangThai = :trangThai) " +
+            "AND (:gioiTinh IS NULL OR tk.gioiTinh = :gioiTinh)"+
             "AND tk.vaiTro.id = 3")
     Page<TaiKhoan> findAllByVaiTro2(
             Pageable pageable,
             @Param("searchText") String searchText,
-            @Param("ngaySinhStart") LocalDate ngaySinhStart,
-            @Param("ngaySinhEnd") LocalDate ngaySinhEnd,
-            @Param("gioiTinh") CommonEnum.GioiTinh gioiTinh,
-            @Param("trangThai") CommonEnum.TrangThaiThuocTinh trangThai
+            @Param("trangThai") CommonEnum.TrangThaiThuocTinh trangThai,
+            @Param("gioiTinh") CommonEnum.GioiTinh gioiTinh
     );
 
     @Query("SELECT tk FROM TaiKhoan tk " +

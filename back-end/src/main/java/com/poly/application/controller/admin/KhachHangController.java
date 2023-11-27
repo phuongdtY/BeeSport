@@ -23,15 +23,13 @@ public class KhachHangController {
     public ResponseEntity<?> getAll(
             @RequestParam(value = "currentPage", defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
-            @RequestParam(value = "sortField", defaultValue = "", required = false) String sorter,
-            @RequestParam(value = "sortOrder", defaultValue = "", required = false) String sortOrder,
             @RequestParam(value = "searchText", defaultValue = "", required = false) String searchText,
-            @RequestParam(value = "ngaySinhStart", required = false) String ngaySinhStart,
-            @RequestParam(value = "ngaySinhEnd", required = false) String ngaySinhEnd,
+            @RequestParam(value = "trangThai", defaultValue = "", required = false) String trangThai,
             @RequestParam(value = "gioiTinh", required = false) String gioiTinhString,
-            @RequestParam(value = "trangThai", defaultValue = "", required = false) String trangThai
+            @RequestParam(value = "sortField", defaultValue = "", required = false) String sorter,
+            @RequestParam(value = "sortOrder", defaultValue = "", required = false) String sortOrder
     ) {
-        return ResponseEntity.ok(taiKhoanService.getAllKhachHang(page, pageSize, sorter,sortOrder, searchText, ngaySinhStart,ngaySinhEnd, gioiTinhString, trangThai));
+        return ResponseEntity.ok(taiKhoanService.getAllKhachHang(page, pageSize, sorter,sortOrder, gioiTinhString, searchText, trangThai));
     }
 
     @GetMapping("/list")
