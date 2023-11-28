@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @Setter
 public class  CreatedVoucherRequest {
 
+    private  Long id;
+
     private String ma;
 
     private String ten;

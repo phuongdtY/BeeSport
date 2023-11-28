@@ -38,7 +38,7 @@ interface Option {
   children?: Option[];
   isLeaf?: boolean;
 }
-const ThanhToan = ({ tamTinh, dataSanPham }) => {
+const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
   const [radioOnchageValue, setRadioOnchageValue] = useState(1);
   const [form] = Form.useForm();
   const [provinces, setProvinces] = useState<Option[]>([]);
@@ -53,6 +53,8 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
   const [phiShip, setPhiShip] = useState(0);
   const [giamGiam, setGiamGia] = useState(0);
   const [idVoucher, setIdVoucher] = useState(null);
+  const [goiY, setGoiY] = useState(null);
+  const [giamGiaGoiY, setGiamGiaGoiY] = useState(null);
 
   const tongTien = () => {
     return tamTinh - giamGiam + phiShip;
@@ -111,7 +113,6 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
   };
 
   const onSubmit = async (values: any) => {
-    console.log(values);
     const getProvinceLabelFromId = () => {
       const province = provinces.find((p) => p.value === values.thanhPho);
       return province?.label;
@@ -128,8 +129,6 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
     const diaChi = `${
       values.diaChiCuThe
     }, ${getWardLabelFromId()}, ${getDistrictLabelFromId()}, ${getProvinceLabelFromId()}`;
-    console.log(dataSanPham);
-
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -143,7 +142,7 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
 
           const res = await request.post("hoa-don", {
             loaiHoaDon: "ONLINE",
-            voucher: idVoucher !== null || undefined ? { id: idVoucher } : null,
+            voucher: idVoucher != null || undefined ? { id: idVoucher } : null,
             phiShip: phiShip,
             tongTien: tamTinh,
             tongTienKhiGiam: tongTien(),
@@ -161,10 +160,13 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
               "hoa-don-chi-tiet/add-list",
               dataHoaDonChiTiet(res.data.id)
             );
-            // console.log(response);
+            console.log(response);
             await request.delete("gio-hang-chi-tiet/delete-all");
-            message.success("Đặt hàng thành công");
-            navigate("/");
+            if (response.status == 200) {
+              setLoading(false);
+              navigate("/");
+              message.success("Đặt hàng thành công");
+            }
           } catch (error) {
             console.log(error);
           }
@@ -263,11 +265,18 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
     setRadioOnchageValue(e.target.value);
   };
 
-  const voucher = (id, value) => {
-    setIdVoucher(id);
+  const addVoucher = (obj, value) => {
+    setIdVoucher(obj?.id);
     setGiamGia(value);
     setOpenModalVoucher(false);
   };
+  const goiYGiamGia = (obj, value, objGoiY, valueGoiY) => {
+    setIdVoucher(obj?.id);
+    setGiamGia(value);
+    setGoiY(objGoiY);
+    setGiamGiaGoiY(valueGoiY);
+  };
+
   return (
     <Content style={{ width: 509 }}>
       <Form
@@ -442,7 +451,7 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
             </Space>
           </Radio.Group>
         </Card>
-        <Card title="Đơn hàng (4 sản phẩm)">
+        <Card title={`Đơn hàng (${soSanPham} sản phẩm)`}>
           <div>
             <Space.Compact>
               <LuTicket style={{ fontSize: 23, color: "#1677ff" }} />
@@ -456,11 +465,22 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
             >
               Chọn hoặc nhập mã
             </Button>
+            <br />
+            <Space direction="vertical">
+              {goiY !== null && (
+                <Text type="success">
+                  Gợi ý: Mua thêm{" "}
+                  {formatGiaTienVND(goiY?.donToiThieu - tamTinh)} để được giảm{" "}
+                  {formatGiaTienVND(giamGiaGoiY)}
+                </Text>
+              )}
+            </Space>
             <KhoVoucher
               open={openModalVoucher}
               close={() => setOpenModalVoucher(false)}
-              onOK={voucher}
+              onOK={addVoucher}
               tongTien={tamTinh}
+              tuDongGiamGia={goiYGiamGia}
             />
           </div>
 

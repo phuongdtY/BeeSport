@@ -28,8 +28,11 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
 
 //    @Query("SELECT v FROM Voucher v WHERE v.trangThai IN (:trangThaiList) ORDER BY v.ngaySua DESC")
 //    List<Voucher> getListVoucher(@Param("trangThaiList") List<CommonEnum.TrangThaiVoucher> trangThaiList);
-    @Query("SELECT v FROM Voucher v WHERE v.trangThai IN ('ONGOING', 'UPCOMING', 'ENDING_SOON', 'OUT_OF_STOCK') ORDER BY v.ngayTao DESC")
+    @Query("SELECT v FROM Voucher v WHERE v.trangThai IN ('ONGOING', 'UPCOMING', 'ENDING_SOON') ORDER BY v.ngaySua DESC")
     List<Voucher> getListVoucher();
+
+    @Query("SELECT v FROM Voucher v WHERE v.trangThai IN ('ONGOING', 'ENDING_SOON') AND (v.soLuong > 0 OR v.soLuong IS NULL) ORDER BY v.ngaySua DESC")
+    List<Voucher> getListVoucherSuDung();
 
     Optional<Voucher> findByMa(String ma);
 }

@@ -89,6 +89,8 @@ const index: React.FC = () => {
     }
   };
 
+  const countSanPham = data.reduce((acc, item) => acc + item.soLuong, 0);
+
   const handleDecrement = (record: DataType) => {
     if (record.soLuong > 1) {
       const newData = [...data];
@@ -291,7 +293,11 @@ const index: React.FC = () => {
             </Col>
             <Col span={1}></Col>
             <Col span={8}>
-              <ThanhToan tamTinh={totalAmount} dataSanPham={data} />
+              <ThanhToan
+                tamTinh={totalAmount}
+                dataSanPham={data}
+                soSanPham={countSanPham}
+              />
             </Col>
           </Row>
         ) : (

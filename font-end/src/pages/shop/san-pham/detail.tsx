@@ -174,11 +174,13 @@ const detailSanPham: React.FC = () => {
           params: {
             idMauSac: idMauSac,
             idKichCo: idKichCo,
-            idDiaHinhSan: idLoaiDe,
-            idLoaiDe: idDiaHinhSan,
+            idDiaHinhSan: idDiaHinhSan,
+            idLoaiDe: idLoaiDe,
           },
         }
       );
+      console.log(productResponse.data);
+
       if (productResponse.data) {
         await request.post("/gio-hang-chi-tiet", {
           gioHang: { id: 1 },

@@ -38,6 +38,9 @@ public class VoucherController {
     @GetMapping("/list")
     public ResponseEntity<?> getList() {
         return ResponseEntity.ok(service.getListVoucher());
+    }@GetMapping("/list-su-dung")
+    public ResponseEntity<?> getListSuDung() {
+        return ResponseEntity.ok(service.getListVoucherSuDung());
     }
 
     @PostMapping()

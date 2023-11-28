@@ -17,6 +17,7 @@ public interface VoucherService {
                                  LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc);
 
     List<VoucherResponse> getListVoucher();
+    List<VoucherResponse> getListVoucherSuDung();
 
     VoucherResponse add(CreatedVoucherRequest request);
 

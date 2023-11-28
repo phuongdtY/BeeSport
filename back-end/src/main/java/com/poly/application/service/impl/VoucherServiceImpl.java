@@ -72,6 +72,15 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public List<VoucherResponse> getListVoucherSuDung() {
+        List<Voucher> list = repository.getListVoucherSuDung();
+        return list
+                .stream()
+                .map(mapper::convertEntityToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public VoucherResponse add(CreatedVoucherRequest request) {
         if (repository.existsByTen(request.getTen())) {
             throw new BadRequestException("Tên voucher đã tồn tại trong hệ thống!");
@@ -154,7 +163,7 @@ public class VoucherServiceImpl implements VoucherService {
                 voucher.setTrangThai(CommonEnum.TrangThaiVoucher.EXPIRED);
             } else {
                 // Thêm điều kiện để kiểm tra nếu voucher đã bị hủy
-                    voucher.setTrangThai(CommonEnum.TrangThaiVoucher.CANCELLED);
+                voucher.setTrangThai(CommonEnum.TrangThaiVoucher.CANCELLED);
             }
 
             CommonEnum.TrangThaiVoucher newStatus = voucher.getTrangThai();

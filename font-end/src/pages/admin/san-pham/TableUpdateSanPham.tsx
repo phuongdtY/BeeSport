@@ -28,8 +28,10 @@ import { DataTypeCTSP } from "~/interfaces/ctsp.type";
 // import ModalAddMauSac from "./ModalAddMauSac";
 import TableAllSanpham from "./TableAllSanPham";
 import ModalAddMauSac from "./ModalAddMauSac";
+import { useNavigate } from "react-router";
 
 function TableUpdateSanpham({ idSanPham }) {
+  const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [openModalMauSac, setOpenModalMauSac] = useState(false);
   const [dataChiTietSanPham, setDataChiTietSanPham] = useState([]);
@@ -139,6 +141,7 @@ function TableUpdateSanpham({ idSanPham }) {
       getDataChiTietSanPham();
       setSelectedRowKeys([]);
       message.success("Chỉnh sửa dữ liệu thành công");
+      navigate("/admin/san-pham");
     } catch (error) {
       message.error("Chỉnh sửa dữ liệu thất bại");
       console.log(error);

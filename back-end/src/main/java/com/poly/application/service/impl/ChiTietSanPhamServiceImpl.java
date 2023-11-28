@@ -52,6 +52,9 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
 
     @Override
     public ChiTietSanPhamResponse findOne(Long idSanPham, Long idMauSac, Long idLoaiDe, Long idKichCo, Long idDiaHinhSan) {
+        System.out.println(idSanPham);
+        System.out.println(idMauSac);
+        System.out.println(idLoaiDe);
         ChiTietSanPham chiTietSanPham = repository.findOneChiTietSanPham(idSanPham, idMauSac, idLoaiDe, idKichCo, idDiaHinhSan);
         return mapper.convertEntityToResponse(chiTietSanPham);
     }

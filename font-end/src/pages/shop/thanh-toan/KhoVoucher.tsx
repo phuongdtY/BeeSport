@@ -22,9 +22,10 @@ import dayjs from "dayjs";
 const { Text } = Typography;
 // other imports...
 
-const KhoVoucher = ({ open, close, onOK, tongTien }) => {
+const KhoVoucher = ({ open, close, onOK, tongTien, tuDongGiamGia }) => {
   const [data, setData] = useState([]);
-  const [idVoucher, setIdVoucher] = useState(null);
+  const [voucher, setVoucher] = useState(null);
+  const [checkedVoucher, setCheckedVoucher] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -34,9 +35,70 @@ const KhoVoucher = ({ open, close, onOK, tongTien }) => {
       console.error(error);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, [open, close]);
+  const timGiamGiaCaoNhat = (dataSuDung) => {
+    let maxDiscount = 0;
+    let maxDiscountVoucher = null;
+    let nextHigherDonToiThieuVoucher = null;
+    if (dataSuDung.length > 0) {
+      dataSuDung.forEach((voucher) => {
+        const { id, hinhThucGiam, giamToiDa, giaTriGiam, donToiThieu } =
+          voucher;
+
+        // Check if tongTien is greater than or equal to donToiThieu
+        if (tongTien >= donToiThieu) {
+          if (hinhThucGiam.id === 1) {
+            // If hinhThucGiam is 1, set the discount as giamToiDa
+            if (giamToiDa > maxDiscount) {
+              maxDiscount = giamToiDa;
+              maxDiscountVoucher = voucher;
+            }
+          } else if (hinhThucGiam.id === 2) {
+            // If hinhThucGiam is 2, calculate the percentage discount
+            const discountPercentage = giaTriGiam;
+            const discountedAmount = (discountPercentage / 100) * tongTien;
+
+            // Ensure the discounted amount does not exceed giamToiDa
+            const currentDiscount = Math.min(discountedAmount, giamToiDa);
+
+            if (currentDiscount > maxDiscount) {
+              maxDiscount = currentDiscount;
+              maxDiscountVoucher = voucher;
+            }
+          }
+        } else {
+          // If tongTien is less than donToiThieu, track the next higher donToiThieu
+          if (
+            donToiThieu < nextHigherDonToiThieuVoucher?.donToiThieu ||
+            nextHigherDonToiThieuVoucher === null
+          ) {
+            nextHigherDonToiThieuVoucher = voucher;
+          }
+        }
+      });
+    }
+    setCheckedVoucher(maxDiscountVoucher?.id);
+    tuDongGiamGia(
+      maxDiscountVoucher,
+      tinhGiamGia(maxDiscountVoucher),
+      nextHigherDonToiThieuVoucher,
+      tinhGiamGia(nextHigherDonToiThieuVoucher)
+    );
+  };
+  useEffect(() => {
+    const getVoucherSuDung = async () => {
+      try {
+        const res = await request.get("voucher/list-su-dung");
+        timGiamGiaCaoNhat(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getVoucherSuDung();
+  }, [tongTien]);
 
   const phanTram = (item) => {
     if (item.soLuong !== null) {
@@ -108,23 +170,17 @@ const KhoVoucher = ({ open, close, onOK, tongTien }) => {
     }
   };
   const conicColors = { "10%": "#87d068", "50%": "#ffe58f", "100%": "#FF0000" };
-  const tinhGiamGia = async () => {
-    try {
-      const res = await request.get(`voucher/${idVoucher}`);
+  const tinhGiamGia = (voucher) => {
+    if (voucher !== null || undefined) {
+      const { hinhThucGiam, giamToiDa, giaTriGiam } = voucher;
 
-      if (res && res.data) {
-        const { hinhThucGiam, giamToiDa, giaTriGiam } = res.data;
-
-        if (hinhThucGiam.id === 1) {
-          return giamToiDa;
-        } else if (hinhThucGiam.id === 2) {
-          const discountPercentage = giaTriGiam;
-          const discountedAmount = (discountPercentage / 100) * tongTien;
-          return Math.min(discountedAmount, giamToiDa);
-        }
+      if (hinhThucGiam.id === 1) {
+        return giamToiDa;
+      } else if (hinhThucGiam.id === 2) {
+        const discountPercentage = giaTriGiam;
+        const discountedAmount = (discountPercentage / 100) * tongTien;
+        return Math.min(discountedAmount, giamToiDa);
       }
-    } catch (error) {
-      console.log(error);
     }
 
     return 0;
@@ -136,15 +192,7 @@ const KhoVoucher = ({ open, close, onOK, tongTien }) => {
       style={{ top: 60 }}
       width={520}
       open={open}
-      onOk={async () => {
-        try {
-          const giamGiam = await tinhGiamGia();
-          onOK(idVoucher, giamGiam);
-        } catch (error) {
-          // Handle the error (e.g., show an error message)
-          console.log(error);
-        }
-      }}
+      onOk={() => onOK(voucher, tinhGiamGia(voucher))}
       onCancel={close}
     >
       <Space>
@@ -168,7 +216,7 @@ const KhoVoucher = ({ open, close, onOK, tongTien }) => {
       {/* <Text type="danger">{errorInput}</Text> */}
       {data.length > 0 ? (
         <List>
-          <Radio.Group defaultValue={idVoucher}>
+          <Radio.Group value={checkedVoucher}>
             <VirtualList
               data={data}
               height={400}
@@ -179,8 +227,11 @@ const KhoVoucher = ({ open, close, onOK, tongTien }) => {
                 <List.Item key={item.ma}>
                   <Space direction="vertical" size="middle">
                     <Radio
-                      value={item.ma}
-                      onChange={() => setIdVoucher(item.id)}
+                      value={item.id}
+                      onChange={() => {
+                        setVoucher(item);
+                        setCheckedVoucher(item.id);
+                      }}
                       disabled={
                         tongTien < item.donToiThieu || phanTram(item) == 100
                           ? true
