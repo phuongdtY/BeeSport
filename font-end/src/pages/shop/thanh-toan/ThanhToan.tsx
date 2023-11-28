@@ -55,6 +55,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
   const [idVoucher, setIdVoucher] = useState(null);
   const [goiY, setGoiY] = useState(null);
   const [giamGiaGoiY, setGiamGiaGoiY] = useState(null);
+  const [voucher, setVoucher] = useState(null);
 
   const tongTien = () => {
     return tamTinh - giamGiam + phiShip;
@@ -266,6 +267,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
   };
 
   const addVoucher = (obj, value) => {
+    setVoucher(obj);
     setIdVoucher(obj?.id);
     setGiamGia(value);
     setOpenModalVoucher(false);
@@ -467,6 +469,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
             </Button>
             <br />
             <Space direction="vertical">
+              <Text>Đã áp dụng mã voucher: {voucher?.ma}</Text>
               {goiY !== null && (
                 <Text type="success">
                   Gợi ý: Mua thêm{" "}

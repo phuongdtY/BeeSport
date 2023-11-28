@@ -17,7 +17,6 @@ import React, { useState, useEffect } from "react";
 import request from "~/utils/request";
 import VirtualList from "rc-virtual-list";
 import { formatGiaTienVND } from "~/utils/formatResponse";
-import { fetchData } from "~/api/apiNhanVien";
 import dayjs from "dayjs";
 const { Text } = Typography;
 // other imports...
