@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -124,6 +125,8 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         createdTaiKhoan.setMatKhau(emailSender.randomPasswords());
         TaiKhoan savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
         emailSender.sendEmail(savedTaiKhoan);
+        createdTaiKhoan.setMatKhau(new BCryptPasswordEncoder().encode(savedTaiKhoan.getMatKhau()));
+        savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
         return taiKhoanMapper.convertEntityToResponse(savedTaiKhoan);
     }
 
@@ -152,6 +155,8 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         createdTaiKhoan.setMatKhau(emailSender.randomPasswords());
         TaiKhoan savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
         emailSender.sendEmail(savedTaiKhoan);
+        createdTaiKhoan.setMatKhau(new BCryptPasswordEncoder().encode(savedTaiKhoan.getMatKhau()));
+        savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
         return taiKhoanMapper.convertEntityToResponse(savedTaiKhoan);
     }
 

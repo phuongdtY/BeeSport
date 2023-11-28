@@ -38,10 +38,12 @@ const DangNhap: React.FC = () => {
       localStorage.setItem("roleId", roleId);
       localStorage.setItem("email", email);
       localStorage.setItem("id", id);
-      console.log("AA  "+ response.data.refreshToken)
-      console.log("BB  "+ response.data.email )
+      // console.log("AA  "+ response.data.refreshToken)
+      // console.log("BB  "+ response.data.email )
       if (response.data.roleId === 1) {
         navigate("/admin");
+      } else if (response.data.roleId === 2){
+        navigate("/admin")
       } else if (response.data.roleId === 3) {
         navigate("/");
       } 

@@ -15,6 +15,10 @@ request.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+export const request1 = axios.create({
+  baseURL: "http://localhost:8080/client/api",
+  timeout: 2000,
+});
 export const requestTimMatKhau = axios.create({
   baseURL: "http://localhost:8080/admin/api",
   timeout: 10000,

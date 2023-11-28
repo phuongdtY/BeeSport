@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Badge, Button, Menu, Select, message, theme } from "antd";
+import { Badge, Button, Menu, Select, message, theme,Modal } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
+import { PlusOutlined, ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import logo from "~/image/logo.jpg";
 import request, { requestLogout } from "~/utils/request";
 import { max } from "moment";
@@ -69,6 +69,18 @@ const Header: React.FC = () => {
   ];
   const userEmail = localStorage.getItem("email");
   const { Option } = Select;
+  const [modalVisible, setModalVisible] = useState(false);
+  const showModal = () => {
+    setModalVisible(true);
+  };
+  const handleOk = () => {
+    // Handle any logic you need when the OK button is clicked
+    setModalVisible(false);
+  };
+  const handleCancel = () => {
+    // Handle any logic you need when the Cancel button is clicked or modal is closed
+    setModalVisible(false);
+  };
   return (
     <header
       style={{
@@ -104,13 +116,17 @@ const Header: React.FC = () => {
           // Check if the selected value is "logout" and call handleLogout
           if (value === "logout") {
             handleLogout();
+          } else if(value === "thongtin"){
+            showModal();
           }
         }}
       >
         <Option value={userEmail} disabled>
           {userEmail}
         </Option>
-        <Option>Thông tin</Option>
+        <Option value="thongtin">
+          Thông tin
+        </Option>
         <Option value="logout">Logout</Option>
       </Select>
       ) : (
