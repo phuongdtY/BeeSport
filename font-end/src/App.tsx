@@ -41,6 +41,7 @@ import BanHangTaiQuay from "./pages/admin/ban-hang-tai-quay/BanHangTaiQuay.tsx";
 import UpdateSanPham from "./pages/admin/san-pham/UpdateSanPham.tsx";
 import SanPham from "./pages/shop/san-pham/SanPham.tsx";
 import ThongKe from "./pages/admin/thong-ke/ThongKe.tsx";
+import DonHangCuaToi from "./pages/shop/don-hang-cua-toi/DonHangCuaToi.tsx";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
         <Route path="/san-pham" element={<SanPham />} />
         <Route path="/gio-hang" element={<GioHang />} />
         <Route path="/san-pham/detail/:id" element={<DetailSanPham />} />
+        <Route path="/don-hang" element={<DonHangCuaToi />} />
       </Route>
       <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="nhan-vien" element={<IndexNhanVien />} />
