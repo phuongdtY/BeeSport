@@ -97,6 +97,23 @@ export function UpdateVoucherKhachHang({ id }) {
     getListKhachHang();
   }, [id]);
 
+  const daSuDung = async (idTaiKhoan) => {
+    try {
+      const res = await request.get("voucher/da-su-dung-tai-khoan", {
+        params: {
+          idVoucher: id,
+          idTaiKhoan: idTaiKhoan,
+        },
+      });
+      console.log(res.data);
+
+      return res.data;
+    } catch (error) {
+      console.log(error);
+    }
+    return 0;
+  };
+
   const onFinish = (values: CreatedRequest) => {
     if (dataTable.length === 0) {
       message.warning("Bạn chưa chọn khách hàng muốn thêm");
@@ -136,7 +153,7 @@ export function UpdateVoucherKhachHang({ id }) {
             });
             setLoading(false);
             message.success("Cập nhật voucher thành công");
-            // navigate("/admin/voucher");
+            navigate("/admin/voucher");
           } catch (error) {
             console.log(error);
             message.error(error.response.data.message);
@@ -219,6 +236,18 @@ export function UpdateVoucherKhachHang({ id }) {
         </Space>
       ),
     },
+    {
+      title: "Đã sử dụng",
+      dataIndex: "id",
+      key: "id",
+      ellipsis: true,
+      render: async (id) => {
+        const result = await daSuDung(id);
+        console.log(result);
+
+        return result; // or modify the return value as needed
+      },
+    },
   ];
 
   const listKhachHang = (data: any) => {
@@ -293,8 +322,11 @@ export function UpdateVoucherKhachHang({ id }) {
           form={form}
           onFinish={onFinish}
           labelCol={{ span: 6 }}
-          wrapperCol={{ span: 17 }}
+          wrapperCol={{ span: 14 }}
         >
+          <Form.Item label="mã voucher">
+            <Text strong>{form.getFieldValue("ma")}</Text>
+          </Form.Item>
           <Form.Item
             name="ten"
             label="Tên voucher"
@@ -521,13 +553,6 @@ export function UpdateVoucherKhachHang({ id }) {
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 8, span: 15 }}>
             <Space style={{ float: "right" }}>
-              <Button
-                type="dashed"
-                htmlType="reset"
-                style={{ margin: "0 12px" }}
-              >
-                Reset
-              </Button>
               <Button type="primary" htmlType="submit" loading={loading}>
                 Cập Nhật
               </Button>

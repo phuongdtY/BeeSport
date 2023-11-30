@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @CrossOrigin(origins = "*")
@@ -18,6 +19,7 @@ public class VoucherController {
 
     @Autowired
     private VoucherService service;
+
     @GetMapping()
     public ResponseEntity<?> getAll(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
@@ -38,9 +40,24 @@ public class VoucherController {
     @GetMapping("/list")
     public ResponseEntity<?> getList() {
         return ResponseEntity.ok(service.getListVoucher());
-    }@GetMapping("/list-su-dung")
+    }
+
+    @GetMapping("/list-su-dung")
     public ResponseEntity<?> getListSuDung() {
         return ResponseEntity.ok(service.getListVoucherSuDung());
+    }
+
+    @GetMapping("/da-su-dung")
+    public ResponseEntity<?> getDaSuDung(@RequestParam("idVoucher") Long idVoucher,
+                                         @RequestParam("startDate") LocalDate startDate,
+                                         @RequestParam("endDate") LocalDate endDate) {
+        return ResponseEntity.ok(service.soLanDaSuDung(idVoucher, startDate, endDate));
+    }
+
+    @GetMapping("/da-su-dung-tai-khoan")
+    public ResponseEntity<?> getDaSuDungTaiKhaon(@RequestParam("idVoucher") Long idVoucher,
+                                                 @RequestParam("idTaiKhoan") Long idTaiKhoan) {
+        return ResponseEntity.ok(service.soLanDaSuDungVoucherTaiKhoan(idVoucher, idTaiKhoan));
     }
 
     @PostMapping()
@@ -68,8 +85,9 @@ public class VoucherController {
         service.cancelVoucher(id);
         return ResponseEntity.noContent().build();
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable(name = "id") Long id,@RequestBody UpdatedVoucherRequest request) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") Long id, @RequestBody UpdatedVoucherRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }
 

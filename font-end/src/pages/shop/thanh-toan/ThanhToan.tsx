@@ -16,6 +16,7 @@ import {
   Select,
   Space,
   Table,
+  Tag,
   Typography,
   message,
 } from "antd";
@@ -273,6 +274,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
     setOpenModalVoucher(false);
   };
   const goiYGiamGia = (obj, value, objGoiY, valueGoiY) => {
+    setVoucher(obj);
     setIdVoucher(obj?.id);
     setGiamGia(value);
     setGoiY(objGoiY);
@@ -443,7 +445,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
           <Radio.Group onChange={onChangeRadio} value={radioOnchageValue}>
             <Space direction="vertical">
               <Radio value={1}>
-                <Card style={{ width: "450px" }}>Thanh toán khi giao hàng</Card>
+                <Card style={{ width: "450px" }}>Thanh toán khi nhận hàng</Card>
               </Radio>
               <Radio value={2}>
                 <Card style={{ width: "450px" }}>
@@ -465,13 +467,20 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
               style={{ float: "right", padding: 0 }}
               onClick={() => setOpenModalVoucher(true)}
             >
-              Chọn hoặc nhập mã
+              Chọn Voucher
             </Button>
             <br />
-            <Space direction="vertical">
-              <Text>Đã áp dụng mã voucher: {voucher?.ma}</Text>
+            <Space direction="vertical" style={{ marginTop: 10 }}>
+              {voucher !== null && (
+                <Text>
+                  Đã áp dụng mã voucher:{" "}
+                  <Tag color="green-inverse" bordered={false}>
+                    {voucher?.ma}
+                  </Tag>
+                </Text>
+              )}
               {goiY !== null && (
-                <Text type="success">
+                <Text type="warning" italic>
                   Gợi ý: Mua thêm{" "}
                   {formatGiaTienVND(goiY?.donToiThieu - tamTinh)} để được giảm{" "}
                   {formatGiaTienVND(giamGiaGoiY)}
@@ -491,7 +500,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
           <div>
             <div>
               <Text type="secondary" strong>
-                Tạm tính:
+                Tổng tiền hàng:
               </Text>
               <Text style={{ float: "right" }}>
                 {formatGiaTienVND(tamTinh)}
@@ -516,10 +525,22 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
             </div>
 
             <Divider style={{ margin: 5, padding: 0, color: "black" }} />
-            <div>
-              <Text strong>Tổng tiền:</Text>
+            <div style={{ display: "flex", justifyContent: "flex-start" }}>
               <Text
-                style={{ float: "right", color: "red", fontWeight: "bold" }}
+                strong
+                style={{
+                  marginTop: 10,
+                }}
+              >
+                Tổng thanh toán:
+              </Text>
+              <Text
+                style={{
+                  fontSize: 25,
+                  color: "red",
+                  fontWeight: "bold",
+                  marginLeft: "auto",
+                }}
               >
                 {formatGiaTienVND(tongTien())}
               </Text>

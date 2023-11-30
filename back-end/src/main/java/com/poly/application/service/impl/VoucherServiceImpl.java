@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -124,6 +125,16 @@ public class VoucherServiceImpl implements VoucherService {
         }
         repository.delete(optional.get());
         return mapper.convertEntityToResponse(optional.get());
+    }
+
+    @Override
+    public Long soLanDaSuDung(Long idVoucher, LocalDate startDate, LocalDate endDate) {
+        return repository.soLanDaSuDung(idVoucher, startDate, endDate);
+    }
+
+    @Override
+    public Long soLanDaSuDungVoucherTaiKhoan(Long idVoucher, Long idTaiKhoan) {
+        return repository.soLanDaSuDungVoucherTaiKhoan(idVoucher, idTaiKhoan);
     }
 
     @Override
