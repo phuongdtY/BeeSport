@@ -39,11 +39,13 @@ const DangNhap: React.FC = () => {
       localStorage.setItem("email", email);
       localStorage.setItem("id", id);
       // console.log("AA  "+ response.data.refreshToken)
-      // console.log("BB  "+ response.data.email )
+      console.log("BB  "+ response.data.roleId )
       if (response.data.roleId === 1) {
+        localStorage.setItem("2","11")
         navigate("/admin");
       } else if (response.data.roleId === 2){
-        navigate("/admin")
+        localStorage.setItem("2","111111")
+        navigate("/admin/ban-hang-tai-quay")
       } else if (response.data.roleId === 3) {
         navigate("/");
       } 

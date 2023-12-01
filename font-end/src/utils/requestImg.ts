@@ -1,9 +1,9 @@
 import axios from "axios";
- const request4s = axios.create({
+ const request4ss = axios.create({
     baseURL: "http://localhost:8080/admin/api",
     timeout: 5000,
   });
-  request4s.interceptors.request.use(
+  request4ss.interceptors.request.use(
     (config) => {
       const local123 = localStorage.getItem('refreshToken');
       if (local123) {
@@ -15,4 +15,4 @@ import axios from "axios";
       return Promise.reject(error);
     }
   );
-  export default request4s;
+  export default request4ss;
