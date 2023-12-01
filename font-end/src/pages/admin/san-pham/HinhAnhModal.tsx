@@ -133,7 +133,6 @@ function HinhAnhModal({ openModal, closeModal, mauSac, sanPham }) {
       >
         <ImgCrop rotationSlider>
           <Upload
-          multiple={true}
             action="http://localhost:8080/admin/api/file/upload"
             listType="picture-card"
             fileList={fileList}
