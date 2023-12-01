@@ -125,7 +125,9 @@ const DonHangChiTiet: React.FC<DonHangChiTietProps> = ({ currentKey }) => {
                   Giảm giá:{" "}
                 </Text>
                 <Text italic strong style={{ color: "green" }}>
-                  {formatGiaTienVND(item.tongTien - item.tongTienKhiGiam)}
+                  {formatGiaTienVND(
+                    item.tongTien + item.phiShip - item.tongTienKhiGiam
+                  )}
                 </Text>
               </Text>
               <br />
