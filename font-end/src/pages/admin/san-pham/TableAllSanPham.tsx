@@ -237,36 +237,6 @@ function TableAllSanpham({ idSanPham, loadData }) {
         </Button>
       ),
     },
-    {
-      title: "Ảnh",
-      dataIndex: "anh",
-      width: "10%",
-      render: (text, record, index) => {
-        if (index === 0) {
-          return {
-            children: (
-              <Button
-                type="link"
-                style={{ padding: 0, fontSize: 30 }}
-                onClick={() => setOpenModal(true)}
-              >
-                <PictureOutlined />
-              </Button>
-            ),
-            props: {
-              rowSpan: 10,
-            },
-          };
-        } else {
-          return {
-            children: null,
-            props: {
-              rowSpan: 0,
-            },
-          };
-        }
-      },
-    },
   ];
 
   return (

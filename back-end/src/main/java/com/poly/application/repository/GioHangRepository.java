@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface GioHangRepository extends JpaRepository<GioHang, Long> {
 
     @Query("SELECT gh FROM GioHang gh where gh.taiKhoan = :taiKhoanId")
-    GioHang getOne(Long taiKhoanId);
+    GioHang getOne(Long taiKhoanId);    
 
 }

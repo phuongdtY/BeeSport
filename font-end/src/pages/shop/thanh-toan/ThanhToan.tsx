@@ -16,6 +16,7 @@ import {
   Select,
   Space,
   Table,
+  Tag,
   Typography,
   message,
 } from "antd";
@@ -38,7 +39,7 @@ interface Option {
   children?: Option[];
   isLeaf?: boolean;
 }
-const ThanhToan = ({ tamTinh, dataSanPham }) => {
+const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
   const [radioOnchageValue, setRadioOnchageValue] = useState(1);
   const [form] = Form.useForm();
   const [provinces, setProvinces] = useState<Option[]>([]);
@@ -53,6 +54,9 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
   const [phiShip, setPhiShip] = useState(0);
   const [giamGiam, setGiamGia] = useState(0);
   const [idVoucher, setIdVoucher] = useState(null);
+  const [goiY, setGoiY] = useState(null);
+  const [giamGiaGoiY, setGiamGiaGoiY] = useState(null);
+  const [voucher, setVoucher] = useState(null);
 
   const tongTien = () => {
     return tamTinh - giamGiam + phiShip;
@@ -111,7 +115,6 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
   };
 
   const onSubmit = async (values: any) => {
-    console.log(values);
     const getProvinceLabelFromId = () => {
       const province = provinces.find((p) => p.value === values.thanhPho);
       return province?.label;
@@ -128,8 +131,6 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
     const diaChi = `${
       values.diaChiCuThe
     }, ${getWardLabelFromId()}, ${getDistrictLabelFromId()}, ${getProvinceLabelFromId()}`;
-    console.log(dataSanPham);
-
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -143,7 +144,7 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
 
           const res = await request.post("hoa-don", {
             loaiHoaDon: "ONLINE",
-            voucher: idVoucher !== null || undefined ? { id: idVoucher } : null,
+            voucher: idVoucher != null || undefined ? { id: idVoucher } : null,
             phiShip: phiShip,
             tongTien: tamTinh,
             tongTienKhiGiam: tongTien(),
@@ -161,10 +162,13 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
               "hoa-don-chi-tiet/add-list",
               dataHoaDonChiTiet(res.data.id)
             );
-            // console.log(response);
+            console.log(response);
             await request.delete("gio-hang-chi-tiet/delete-all");
-            message.success("Đặt hàng thành công");
-            navigate("/");
+            if (response.status == 200) {
+              setLoading(false);
+              navigate("/");
+              message.success("Đặt hàng thành công");
+            }
           } catch (error) {
             console.log(error);
           }
@@ -263,11 +267,20 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
     setRadioOnchageValue(e.target.value);
   };
 
-  const voucher = (id, value) => {
-    setIdVoucher(id);
+  const addVoucher = (obj, value) => {
+    setVoucher(obj);
+    setIdVoucher(obj?.id);
     setGiamGia(value);
     setOpenModalVoucher(false);
   };
+  const goiYGiamGia = (obj, value, objGoiY, valueGoiY) => {
+    setVoucher(obj);
+    setIdVoucher(obj?.id);
+    setGiamGia(value);
+    setGoiY(objGoiY);
+    setGiamGiaGoiY(valueGoiY);
+  };
+
   return (
     <Content style={{ width: 509 }}>
       <Form
@@ -432,7 +445,7 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
           <Radio.Group onChange={onChangeRadio} value={radioOnchageValue}>
             <Space direction="vertical">
               <Radio value={1}>
-                <Card style={{ width: "450px" }}>Thanh toán khi giao hàng</Card>
+                <Card style={{ width: "450px" }}>Thanh toán khi nhận hàng</Card>
               </Radio>
               <Radio value={2}>
                 <Card style={{ width: "450px" }}>
@@ -442,7 +455,7 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
             </Space>
           </Radio.Group>
         </Card>
-        <Card title="Đơn hàng (4 sản phẩm)">
+        <Card title={`Đơn hàng (${soSanPham} sản phẩm)`}>
           <div>
             <Space.Compact>
               <LuTicket style={{ fontSize: 23, color: "#1677ff" }} />
@@ -454,13 +467,32 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
               style={{ float: "right", padding: 0 }}
               onClick={() => setOpenModalVoucher(true)}
             >
-              Chọn hoặc nhập mã
+              Chọn Voucher
             </Button>
+            <br />
+            <Space direction="vertical" style={{ marginTop: 10 }}>
+              {voucher !== null && (
+                <Text>
+                  Đã áp dụng mã voucher:{" "}
+                  <Tag color="green-inverse" bordered={false}>
+                    {voucher?.ma}
+                  </Tag>
+                </Text>
+              )}
+              {goiY !== null && (
+                <Text type="warning" italic>
+                  Gợi ý: Mua thêm{" "}
+                  {formatGiaTienVND(goiY?.donToiThieu - tamTinh)} để được giảm{" "}
+                  {formatGiaTienVND(giamGiaGoiY)}
+                </Text>
+              )}
+            </Space>
             <KhoVoucher
               open={openModalVoucher}
               close={() => setOpenModalVoucher(false)}
-              onOK={voucher}
+              onOK={addVoucher}
               tongTien={tamTinh}
+              tuDongGiamGia={goiYGiamGia}
             />
           </div>
 
@@ -468,7 +500,7 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
           <div>
             <div>
               <Text type="secondary" strong>
-                Tạm tính:
+                Tổng tiền hàng:
               </Text>
               <Text style={{ float: "right" }}>
                 {formatGiaTienVND(tamTinh)}
@@ -493,10 +525,22 @@ const ThanhToan = ({ tamTinh, dataSanPham }) => {
             </div>
 
             <Divider style={{ margin: 5, padding: 0, color: "black" }} />
-            <div>
-              <Text strong>Tổng tiền:</Text>
+            <div style={{ display: "flex", justifyContent: "flex-start" }}>
               <Text
-                style={{ float: "right", color: "red", fontWeight: "bold" }}
+                strong
+                style={{
+                  marginTop: 10,
+                }}
+              >
+                Tổng thanh toán:
+              </Text>
+              <Text
+                style={{
+                  fontSize: 25,
+                  color: "red",
+                  fontWeight: "bold",
+                  marginLeft: "auto",
+                }}
               >
                 {formatGiaTienVND(tongTien())}
               </Text>

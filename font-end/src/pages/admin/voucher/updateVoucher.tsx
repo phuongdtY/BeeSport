@@ -1,10 +1,17 @@
-import { Card, Skeleton } from "antd";
+import {
+  Card,
+  DatePicker,
+  DatePickerProps,
+  Skeleton,
+  Space,
+  Typography,
+} from "antd";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import request from "~/utils/request";
 import UpdateVoucherHoaDon from "./updateVoucherHoaDon";
 import UpdateVoucherKhachHang from "./UpdateVoucherKhachHang";
-
+const { Text } = Typography;
 export function UpdateVoucher() {
   const [loadingForm, setLoadingForm] = useState(false);
   const [data, setData] = useState([]);
@@ -23,8 +30,7 @@ export function UpdateVoucher() {
       }
     };
     getOne();
-  }, [id]);
-
+  }, []);
   return (
     <>
       <Card title="CẬP NHẬT VOUCHER">

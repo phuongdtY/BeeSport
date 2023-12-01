@@ -179,6 +179,8 @@ const detailSanPham: React.FC = () => {
           },
         }
       );
+      console.log(productResponse.data);
+
       if (productResponse.data) {
         await request.post("/gio-hang-chi-tiet", {
           gioHang: { id: 1 },
@@ -389,6 +391,9 @@ const detailSanPham: React.FC = () => {
                           onClick={() => handleMauSac(record)}
                           value={record.id}
                           style={{ margin: 0, padding: 0, border: "0" }}
+                          disabled={
+                            !data.some((item) => item.mauSac.id === record.id)
+                          }
                         >
                           <ColorPicker
                             value={record.ma}
@@ -409,6 +414,9 @@ const detailSanPham: React.FC = () => {
                       <Radio.Button
                         onClick={() => handleKichCo(record)}
                         value={record.id}
+                        disabled={
+                          !data.some((item) => item.kichCo.id === record.id)
+                        }
                       >
                         {record.kichCo}
                       </Radio.Button>

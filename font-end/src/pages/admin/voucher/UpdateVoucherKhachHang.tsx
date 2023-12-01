@@ -70,6 +70,7 @@ export function UpdateVoucherKhachHang({ id }) {
           giaTriGiam: res.data?.giaTriGiam,
           giamToiDa: res.data?.giamToiDa,
         });
+        console.log(res.data);
       } catch (error) {
         console.log(error);
       }
@@ -82,6 +83,7 @@ export function UpdateVoucherKhachHang({ id }) {
         });
         const dataT = res.data.map((item: any) => ({
           id: item.id,
+          daSuDung: item.daSuDung,
           key: item.id,
           idKH: item.taiKhoan.id,
           ten: item.taiKhoan.hoVaTen,
@@ -98,10 +100,6 @@ export function UpdateVoucherKhachHang({ id }) {
   }, [id]);
 
   const onFinish = (values: CreatedRequest) => {
-    if (dataTable.length === 0) {
-      message.warning("Bạn chưa chọn khách hàng muốn thêm");
-      return;
-    }
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -136,7 +134,7 @@ export function UpdateVoucherKhachHang({ id }) {
             });
             setLoading(false);
             message.success("Cập nhật voucher thành công");
-            // navigate("/admin/voucher");
+            navigate("/admin/voucher");
           } catch (error) {
             console.log(error);
             message.error(error.response.data.message);
@@ -212,12 +210,18 @@ export function UpdateVoucherKhachHang({ id }) {
             <Tooltip title="Xóa">
               <DeleteOutlined
                 style={{ color: "red" }}
-                onClick={() => deleteItem(record.idKH)}
+                onClick={() => deleteItem(record.idKH, record.id)}
               />
             </Tooltip>
           </Button>
         </Space>
       ),
+    },
+    {
+      title: "Đã sử dụng",
+      dataIndex: "daSuDung",
+      key: "daSuDung",
+      width: "110px",
     },
   ];
 
@@ -244,6 +248,7 @@ export function UpdateVoucherKhachHang({ id }) {
             soDienThoai: item.soDienThoai,
             email: item.email,
             soLanSuDung: 1,
+            daSuDung: 0,
           });
         }
       });
@@ -267,10 +272,16 @@ export function UpdateVoucherKhachHang({ id }) {
       });
     }
   };
-  const deleteItem = (id) => {
+  const deleteItem = (idKH, id) => {
     setDataTable((prevDataTable) =>
-      prevDataTable.filter((item) => item.idKH !== id)
+      prevDataTable.filter((item) => item.idKH !== idKH)
     );
+    if (id != null || undefined) {
+      try {
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   const fakeList = (idVoucher) => {
@@ -293,8 +304,11 @@ export function UpdateVoucherKhachHang({ id }) {
           form={form}
           onFinish={onFinish}
           labelCol={{ span: 6 }}
-          wrapperCol={{ span: 17 }}
+          wrapperCol={{ span: 14 }}
         >
+          <Form.Item label="mã voucher">
+            <Text strong>{form.getFieldValue("ma")}</Text>
+          </Form.Item>
           <Form.Item
             name="ten"
             label="Tên voucher"
@@ -521,13 +535,6 @@ export function UpdateVoucherKhachHang({ id }) {
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 8, span: 15 }}>
             <Space style={{ float: "right" }}>
-              <Button
-                type="dashed"
-                htmlType="reset"
-                style={{ margin: "0 12px" }}
-              >
-                Reset
-              </Button>
               <Button type="primary" htmlType="submit" loading={loading}>
                 Cập Nhật
               </Button>

@@ -7,6 +7,7 @@ import {
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
+import { GiInfinity } from "react-icons/gi";
 import {
   Button,
   Card,
@@ -22,7 +23,9 @@ import {
   Tooltip,
   message,
   DatePicker,
+  Typography,
 } from "antd";
+const { Text } = Typography;
 import { ColumnsType } from "antd/es/table";
 import { Link } from "react-router-dom";
 import { DataParams, DataType } from "~/interfaces/voucher.type";
@@ -57,6 +60,7 @@ const index: React.FC = () => {
     {
       title: "Tên",
       dataIndex: "ten",
+      ellipsis: true,
       key: "ten",
       sorter: true,
     },
@@ -66,30 +70,36 @@ const index: React.FC = () => {
       key: "soLuong",
       align: "center",
       sorter: true,
+      width: 130,
       render: (soLuong) => {
-        return soLuong === null ? "Không giới hạn" : soLuong;
+        return soLuong === null ? (
+          <GiInfinity style={{ color: "red" }} />
+        ) : (
+          soLuong
+        );
       },
     },
     {
-      title: "Ngày bắt đầu",
-      align: "center",
+      title: "Thời gian",
       dataIndex: "ngayBatDau",
-      key: "ngayBatDau",
-      sorter: true,
-      render: (ngayBatDau) => {
-        return dayjs(ngayBatDau).format("YYYY-MM-DD HH:mm:ss"); // Định dạng ngày theo ý muốn của bạn
-      },
-    },
-    {
-      title: "Ngày kết thúc",
       align: "center",
-      dataIndex: "ngayKetThuc",
-      key: "ngayKetThuc",
       sorter: true,
-      render: (ngayKetThuc) => {
-        return dayjs(ngayKetThuc).format("YYYY-MM-DD HH:mm:ss"); // Định dạng ngày theo ý muốn của bạn
+      key: "ngayBatDau",
+      width: 180,
+      render: (_, voucher) => {
+        return (
+          <Space direction="vertical">
+            <Text type="success">
+              Từ: {dayjs(voucher.ngayBatDau).format("HH:mm, DD/MM/YYYY")}
+            </Text>
+            <Text type="warning">
+              Đến: {dayjs(voucher.ngayKetThuc).format("HH:mm, DD/MM/YYYY")}
+            </Text>
+          </Space>
+        );
       },
     },
+
     {
       title: "Giảm giá",
       dataIndex: "giaTriGiam",
@@ -106,15 +116,17 @@ const index: React.FC = () => {
         }
       },
     },
-    // {
-    //   title: "Đơn tối thiểu",
-    //   dataIndex: "donToiThieu",
-    //   key: "donToiThieu",
-    //   sorter: true,
-    //   render: (donToiThieu) => {
-    //     return formatGiaTienVND(donToiThieu);
-    //   },
-    // },
+    {
+      title: "Loại Voucher",
+      align: "center",
+      render: (_, voucher) => {
+        if (voucher.voucherChiTietList.length == 0) {
+          return <Tag color="magenta">Hóa đơn</Tag>;
+        } else {
+          return <Tag color="lime">Khách hàng</Tag>;
+        }
+      },
+    },
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
