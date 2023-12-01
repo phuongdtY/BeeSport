@@ -83,6 +83,7 @@ export function UpdateVoucherKhachHang({ id }) {
         });
         const dataT = res.data.map((item: any) => ({
           id: item.id,
+          daSuDung: item.daSuDung,
           key: item.id,
           idKH: item.taiKhoan.id,
           ten: item.taiKhoan.hoVaTen,
@@ -98,28 +99,7 @@ export function UpdateVoucherKhachHang({ id }) {
     getListKhachHang();
   }, [id]);
 
-  const daSuDung = async (idTaiKhoan) => {
-    try {
-      const res = await request.get("voucher/da-su-dung-tai-khoan", {
-        params: {
-          idVoucher: id,
-          idTaiKhoan: idTaiKhoan,
-        },
-      });
-
-      // Trả về số lần đã sử dụng nếu có dữ liệu, ngược lại trả về 0
-      return res.data ? res.data : 0;
-    } catch (error) {
-      console.log(error);
-      return 0; // Trả về 0 nếu có lỗi trong quá trình gọi API
-    }
-  };
-
   const onFinish = (values: CreatedRequest) => {
-    if (dataTable.length === 0) {
-      message.warning("Bạn chưa chọn khách hàng muốn thêm");
-      return;
-    }
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -182,20 +162,6 @@ export function UpdateVoucherKhachHang({ id }) {
     });
   };
 
-  const countVouchersInInvoice = (data, idTaiKhoan) => {
-    // Lọc danh sách hóa đơn theo idTaiKhoan
-    const invoices = data.hoaDonList.filter((invoice) => {
-      return invoice.taiKhoan.id === idTaiKhoan;
-    });
-
-    // Đếm số lượng voucher trong danh sách hóa đơn đã lọc
-    let count = 0;
-    invoices.forEach((invoice) => {
-      count += invoice.voucher ? 1 : 0;
-    });
-
-    return count;
-  };
   // con
   const columns: ColumnsType<DataType> = [
     {
@@ -244,7 +210,7 @@ export function UpdateVoucherKhachHang({ id }) {
             <Tooltip title="Xóa">
               <DeleteOutlined
                 style={{ color: "red" }}
-                onClick={() => deleteItem(record.idKH)}
+                onClick={() => deleteItem(record.idKH, record.id)}
               />
             </Tooltip>
           </Button>
@@ -253,17 +219,9 @@ export function UpdateVoucherKhachHang({ id }) {
     },
     {
       title: "Đã sử dụng",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "daSuDung",
+      key: "daSuDung",
       width: "110px",
-      render: async () => {
-        try {
-          return 0;
-        } catch (error) {
-          console.error(error);
-          return <span>0</span>; // Hoặc hiển thị giá trị mặc định nếu có lỗi
-        }
-      },
     },
   ];
 
@@ -290,6 +248,7 @@ export function UpdateVoucherKhachHang({ id }) {
             soDienThoai: item.soDienThoai,
             email: item.email,
             soLanSuDung: 1,
+            daSuDung: 0,
           });
         }
       });
@@ -313,10 +272,16 @@ export function UpdateVoucherKhachHang({ id }) {
       });
     }
   };
-  const deleteItem = (id) => {
+  const deleteItem = (idKH, id) => {
     setDataTable((prevDataTable) =>
-      prevDataTable.filter((item) => item.idKH !== id)
+      prevDataTable.filter((item) => item.idKH !== idKH)
     );
+    if (id != null || undefined) {
+      try {
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   const fakeList = (idVoucher) => {

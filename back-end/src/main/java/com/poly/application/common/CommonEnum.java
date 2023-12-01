@@ -179,6 +179,18 @@ public class CommonEnum {
         private final String moTa;
         private final String mauSac;
     }
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum TrangThaiVoucherChiTiet{
+        ACTIVE("ACTIVE", "Hoạt động", "success"),
+        INACTIVE("INACTIVE", "Không hoạt động", "red"),
+        DELETED("DELETED", "Đã xóa", "red");
+
+        private final String ten;
+        private final String moTa;
+        private final String mauSac;
+    }
 
     @AllArgsConstructor
     @Getter

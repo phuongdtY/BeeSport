@@ -52,7 +52,7 @@ public class VoucherChiTiet {
 
     @Column(name = "trang_thai")
     @Enumerated(EnumType.STRING)
-    private CommonEnum.TrangThaiThuocTinh trangThai;
+    private CommonEnum.TrangThaiVoucherChiTiet trangThai;
 
     @ManyToOne
     @JoinColumn(name = "voucher_id", referencedColumnName = "id")
