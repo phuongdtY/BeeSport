@@ -28,13 +28,17 @@ public class ThongKeRepository {
         String queryString = "SELECT \n" +
                 "   SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.tong_tien_khi_giam ELSE 0 END) AS tong_tien_thu_duoc,\n" +
                 "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_thanh_cong,\n" +
-                "    COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'CANCELLED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_huy,\n" +
-                "SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don_chi_tiet.so_luong ELSE 0 END) AS tong_so_san_pham_ban_ra\n" +
+                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'CANCELLED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_huy,\n" +
+                "   SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don_chi_tiet.so_luong ELSE 0 END) AS tong_so_san_pham_ban_ra,\n" +
+                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'COUNTER' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_tai_quay,\n" +  // Đếm các hóa đơn có loại 'COUNTER'
+                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'ONLINE' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_online \n" +  // Đếm các hóa đơn có loại 'ONLINE'
                 "\n" +
                 "FROM hoa_don\n" +
                 "LEFT JOIN du_an_tot_nghiep.hoa_don_chi_tiet ON du_an_tot_nghiep.hoa_don.id = du_an_tot_nghiep.hoa_don_chi_tiet.hoa_don_id\n" +
                 "LEFT JOIN du_an_tot_nghiep.chi_tiet_san_pham ON du_an_tot_nghiep.hoa_don_chi_tiet.chi_tiet_san_pham_id = du_an_tot_nghiep.chi_tiet_san_pham.id\n" +
-                "WHERE DATE(du_an_tot_nghiep.hoa_don.ngay_thanh_toan) = :ngayThanhToan";
+                "WHERE DATE(du_an_tot_nghiep.hoa_don.ngay_tao) = :ngayThanhToan \n" +
+                "   OR DATE(du_an_tot_nghiep.hoa_don.ngay_thanh_toan) = :ngayThanhToan";
+
 
         Object[] result = (Object[]) entityManager.createNativeQuery(queryString)
                 .setParameter("ngayThanhToan", ngayThanhToan)
@@ -44,6 +48,8 @@ public class ThongKeRepository {
         Long soDonThanhCong = result[1] != null ? ((Number) result[1]).longValue() : 0L;
         Long soDonHuy = result[2] != null ? ((Number) result[2]).longValue() : 0L;
         Long soSanPhamDaBan = result[3] != null ? ((Number) result[3]).longValue() : 0L;
+        Long tongSoDonTaiQuay = result[4] != null ? ((Number) result[4]).longValue() : 0L;
+        Long tongSoDonOnline = result[5] != null ? ((Number) result[5]).longValue() : 0L;
 
 
         ThongKeTheoDMYResponse response = new ThongKeTheoDMYResponse();
@@ -51,6 +57,8 @@ public class ThongKeRepository {
         response.setTongSoDonThanhCong(soDonThanhCong);
         response.setTongSoDonHuy(soDonHuy);
         response.setTongSoSanPhamDaBan(soSanPhamDaBan);
+        response.setTongSoDonTaiQuay(tongSoDonTaiQuay);
+        response.setTongSoDonOnline(tongSoDonOnline);
 
 
         return response;
@@ -62,12 +70,15 @@ public class ThongKeRepository {
                 "   SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.tong_tien_khi_giam ELSE 0 END) AS tong_tien_thu_duoc,\n" +
                 "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_thanh_cong,\n" +
                 "    COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'CANCELLED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_huy,\n" +
-                "SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don_chi_tiet.so_luong ELSE 0 END) AS tong_so_san_pham_ban_ra\n" +
+                "   SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don_chi_tiet.so_luong ELSE 0 END) AS tong_so_san_pham_ban_ra,\n" +
+                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'COUNTER' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_tai_quay,\n" +  // Đếm các hóa đơn có loại 'COUNTER'
+                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'ONLINE' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_online \n" +  // Đếm các hóa đơn có loại 'ONLINE'
                 "\n" +
                 "FROM hoa_don\n" +
                 "LEFT JOIN du_an_tot_nghiep.hoa_don_chi_tiet ON du_an_tot_nghiep.hoa_don.id = du_an_tot_nghiep.hoa_don_chi_tiet.hoa_don_id\n" +
                 "LEFT JOIN du_an_tot_nghiep.chi_tiet_san_pham ON du_an_tot_nghiep.hoa_don_chi_tiet.chi_tiet_san_pham_id = du_an_tot_nghiep.chi_tiet_san_pham.id\n" +
-                "WHERE DATE(du_an_tot_nghiep.hoa_don.ngay_thanh_toan) BETWEEN :startOfWeek AND :endOfWeek";
+                "WHERE (DATE(du_an_tot_nghiep.hoa_don.ngay_tao) BETWEEN :startOfWeek AND :endOfWeek \n" +
+                "   OR DATE(du_an_tot_nghiep.hoa_don.ngay_thanh_toan) BETWEEN :startOfWeek AND :endOfWeek)";
 
         Object[] result = (Object[]) entityManager.createNativeQuery(queryString)
                     .setParameter("startOfWeek", startOfWeek)
@@ -78,6 +89,8 @@ public class ThongKeRepository {
         Long soDonThanhCong = result[1] != null ? ((Number) result[1]).longValue() : 0L;
         Long soDonHuy = result[2] != null ? ((Number) result[2]).longValue() : 0L;
         Long soSanPhamDaBan = result[3] != null ? ((Number) result[3]).longValue() : 0L;
+        Long tongSoDonTaiQuay = result[4] != null ? ((Number) result[4]).longValue() : 0L;
+        Long tongSoDonOnline = result[5] != null ? ((Number) result[5]).longValue() : 0L;
 
 
         ThongKeTheoDMYResponse response = new ThongKeTheoDMYResponse();
@@ -85,6 +98,8 @@ public class ThongKeRepository {
         response.setTongSoDonThanhCong(soDonThanhCong);
         response.setTongSoDonHuy(soDonHuy);
         response.setTongSoSanPhamDaBan(soSanPhamDaBan);
+        response.setTongSoDonTaiQuay(tongSoDonTaiQuay);
+        response.setTongSoDonOnline(tongSoDonOnline);
 
 
         return response;

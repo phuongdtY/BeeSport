@@ -174,8 +174,8 @@ const detailSanPham: React.FC = () => {
           params: {
             idMauSac: idMauSac,
             idKichCo: idKichCo,
-            idDiaHinhSan: idLoaiDe,
-            idLoaiDe: idDiaHinhSan,
+            idDiaHinhSan: idDiaHinhSan,
+            idLoaiDe: idLoaiDe,
           },
         }
       );

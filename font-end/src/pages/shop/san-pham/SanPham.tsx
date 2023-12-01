@@ -485,7 +485,7 @@ const SanPham: React.FC = () => {
             {sanPhams.map((product) => (
               <Col key={product.id}>
                 <Card
-                  bordered
+                  hoverable
                   style={{
                     width: 260,
                     marginRight: 30,

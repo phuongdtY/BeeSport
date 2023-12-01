@@ -15,6 +15,7 @@ import React, { useState, useEffect } from "react";
 import request, { request4s } from "~/utils/request";
 import ModalSanPham from "./ModalSanPham";
 import { DeleteOutlined, ExclamationCircleFilled } from "@ant-design/icons";
+import { formatGiaTienVND } from "~/utils/formatResponse";
 const { confirm } = Modal;
 
 interface DataGioHang {
@@ -41,18 +42,14 @@ interface DataGioHang {
   };
 }
 
-function formatCurrency(amount) {
-  // Định dạng số tiền thành chuỗi với dấu phẩy ngăn cách hàng nghìn và giữ hai chữ số sau dấu thập phân.
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-}
-
-const TableSanPham: React.FC<{
+interface TableSanPhamProps {
   id: number;
   passTotalPriceToParent: (price: number) => void;
-}> = ({ id, passTotalPriceToParent }) => {
+}
+const TableSanPham: React.FC<TableSanPhamProps> = ({
+  id,
+  passTotalPriceToParent,
+}) => {
   const [dataGioHang, setDataGioHang] = useState<DataGioHang[]>([]); // Specify the data type
   const { confirm } = Modal;
 
@@ -98,12 +95,12 @@ const TableSanPham: React.FC<{
     {
       title: "Đơn giá",
       dataIndex: "donGia",
-      render: (text, record) => formatCurrency(record.chiTietSanPham.giaTien),
+      render: (text, record) => formatGiaTienVND(record.chiTietSanPham.giaTien),
     },
     {
       title: "Tổng tiền",
       dataIndex: "tongTien",
-      render: (text, record) => formatCurrency(record.tongTien),
+      render: (text, record) => formatGiaTienVND(record.tongTien),
     },
     {
       title: "Hành động",
@@ -120,29 +117,19 @@ const TableSanPham: React.FC<{
   ];
 
   const handleCapNhatGioHang = async (id) => {
-    confirm({
-      title: "Xác Nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhật Giỏ hàng không?",
-      okText: "OK",
-      cancelText: "Hủy",
-      onOk: async () => {
-        try {
-          const response = await request4s.put(
-            `/hoa-don/hoa-don-chi-tiet/${id}`,
-            dataGioHang?.map((item) => ({
-              id: item.id,
-              soLuong: item.soLuong,
-            }))
-          );
-          message.success("Đã cập nhật giỏ hàng");
-        } catch (error) {
-          console.error("Error updating cart:", error);
-          // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
-          message.error("Có lỗi xảy ra khi cập nhật giỏ hàng.");
-        }
-      },
-    });
+    try {
+      const response = await request4s.put(
+        `/hoa-don/hoa-don-chi-tiet/${id}`,
+        dataGioHang?.map((item) => ({
+          id: item.id,
+          soLuong: item.soLuong,
+        }))
+      );
+    } catch (error) {
+      console.error("Error updating cart:", error);
+      // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
+      message.error("Có lỗi xảy ra khi cập nhật giỏ hàng.");
+    }
   };
 
   const handleSoLuongChange = (index, newSoLuong) => {
@@ -162,6 +149,10 @@ const TableSanPham: React.FC<{
       setDataGioHang(updatedData);
     }
   };
+
+  useEffect(() => {
+    handleCapNhatGioHang(id);
+  }, [dataGioHang]);
 
   const passTotalPriceToParentCallback = (price) => {
     // Gọi hàm callback để truyền tổng tiền lên component cha
@@ -253,15 +244,7 @@ const TableSanPham: React.FC<{
             <div style={{ fontWeight: "bold", fontSize: "18px" }}>Giỏ hàng</div>
             <Row>
               <Col span={10}></Col>
-              <Col span={7}>
-                <Button
-                  type="primary"
-                  style={{ float: "right", marginBottom: 15 }}
-                  onClick={() => handleCapNhatGioHang(id)}
-                >
-                  Cập nhật giỏ hàng
-                </Button>
-              </Col>
+              <Col span={7}></Col>
               <Col span={7}>
                 <Button
                   type="primary"

@@ -11,7 +11,7 @@ import {
   GiftOutlined,
   AppstoreAddOutlined,
 } from "@ant-design/icons";
-import logo from "~/image/logo.png";
+import logo from "~/image/logo.jpg";
 import type { MenuProps } from "antd";
 
 type MenuItem = Required<MenuProps>["items"][number];

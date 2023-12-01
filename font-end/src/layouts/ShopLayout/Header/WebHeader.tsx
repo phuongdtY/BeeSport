@@ -48,7 +48,7 @@ const Header: React.FC = () => {
     getItem(<Link to="/">Trang chủ</Link>, "1"),
     getItem(<Link to="/san-pham">Sản phẩm</Link>, "2"),
     getItem(<Link to="/admin">Về chúng tôi</Link>, "3"),
-    getItem(<Link to="/admin"></Link>, "4"),
+    getItem(<Link to="/don-hang">Đơn hàng của tôi</Link>, "4"),
   ];
 
   return (
