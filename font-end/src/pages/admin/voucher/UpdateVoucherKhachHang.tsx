@@ -70,6 +70,7 @@ export function UpdateVoucherKhachHang({ id }) {
           giaTriGiam: res.data?.giaTriGiam,
           giamToiDa: res.data?.giamToiDa,
         });
+        console.log(res.data);
       } catch (error) {
         console.log(error);
       }
@@ -105,13 +106,13 @@ export function UpdateVoucherKhachHang({ id }) {
           idTaiKhoan: idTaiKhoan,
         },
       });
-      console.log(res.data);
 
-      return res.data;
+      // Trả về số lần đã sử dụng nếu có dữ liệu, ngược lại trả về 0
+      return res.data ? res.data : 0;
     } catch (error) {
       console.log(error);
+      return 0; // Trả về 0 nếu có lỗi trong quá trình gọi API
     }
-    return 0;
   };
 
   const onFinish = (values: CreatedRequest) => {
@@ -181,6 +182,20 @@ export function UpdateVoucherKhachHang({ id }) {
     });
   };
 
+  const countVouchersInInvoice = (data, idTaiKhoan) => {
+    // Lọc danh sách hóa đơn theo idTaiKhoan
+    const invoices = data.hoaDonList.filter((invoice) => {
+      return invoice.taiKhoan.id === idTaiKhoan;
+    });
+
+    // Đếm số lượng voucher trong danh sách hóa đơn đã lọc
+    let count = 0;
+    invoices.forEach((invoice) => {
+      count += invoice.voucher ? 1 : 0;
+    });
+
+    return count;
+  };
   // con
   const columns: ColumnsType<DataType> = [
     {
@@ -240,12 +255,14 @@ export function UpdateVoucherKhachHang({ id }) {
       title: "Đã sử dụng",
       dataIndex: "id",
       key: "id",
-      ellipsis: true,
-      render: async (id) => {
-        const result = await daSuDung(id);
-        console.log(result);
-
-        return result; // or modify the return value as needed
+      width: "110px",
+      render: async () => {
+        try {
+          return 0;
+        } catch (error) {
+          console.error(error);
+          return <span>0</span>; // Hoặc hiển thị giá trị mặc định nếu có lỗi
+        }
       },
     },
   ];

@@ -19,4 +19,5 @@ public interface VoucherChiTietRepository extends JpaRepository<VoucherChiTiet,L
     @Query("SELECT obj FROM VoucherChiTiet obj WHERE obj.voucher.id = :idVoucher")
     List<VoucherChiTiet> getAllList(@Param("idVoucher") Long idVoucher);
 
+
 }

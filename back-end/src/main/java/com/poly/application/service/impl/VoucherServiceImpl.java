@@ -156,7 +156,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     public void updateVoucherStatus() {
-        List<Voucher> vouchers = repository.findAll();
+        List<Voucher> vouchers = repository.danhSachVoucherKhongHuy();
         LocalDateTime now = LocalDateTime.now();
 
         for (Voucher voucher : vouchers) {
