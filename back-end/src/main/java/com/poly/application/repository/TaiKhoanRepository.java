@@ -65,6 +65,9 @@ public interface    TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
 
     Optional<TaiKhoan> findByEmail(String email);
 
+    @Query("SELECT tk FROM TaiKhoan tk WHERE tk.soDienThoai = :sdt")
+    Optional<TaiKhoan> findBySoDienThoai1(String sdt);
+
 //    TaiKhoan findByVaitro(VaiTro vaiTro);
 
 

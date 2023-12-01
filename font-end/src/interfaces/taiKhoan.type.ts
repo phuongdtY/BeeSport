@@ -61,6 +61,6 @@ export interface QuenMatKhauRequest {
   email: String;
 }
 export interface DangNhapRequest {
-  email: String;
+  sdt: String;
   matKhau:String;
 }

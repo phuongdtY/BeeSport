@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class SigninRequest {
 
-    private String email;
+    private String sdt;
 
     private String matKhau;
 

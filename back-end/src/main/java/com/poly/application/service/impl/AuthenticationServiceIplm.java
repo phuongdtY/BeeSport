@@ -2,6 +2,8 @@ package com.poly.application.service.impl;
 
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.common.GenCode;
+import com.poly.application.entity.GioHang;
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.entity.VaiTro;
 import com.poly.application.exception.BadRequestException;
@@ -10,6 +12,7 @@ import com.poly.application.model.dto.RefreshTokenRequest;
 import com.poly.application.model.dto.SignUpRequest;
 import com.poly.application.model.dto.SigninRequest;
 import com.poly.application.model.response.TaiKhoanResponse;
+import com.poly.application.repository.GioHangRepository;
 import com.poly.application.repository.TaiKhoanRepository;
 import com.poly.application.repository.VaiTroRepository;
 import com.poly.application.security.TaiKhoanInfoDetailsServices;
@@ -41,6 +44,9 @@ public class AuthenticationServiceIplm implements AuthenticationService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private GioHangRepository gioHangRepository;
+
     private TaiKhoanInfoDetailsServices user;
 
     private AuthenticationManager authenticationManager;
@@ -67,6 +73,7 @@ public class AuthenticationServiceIplm implements AuthenticationService {
             signUpRequest.setGioiTinh(CommonEnum.GioiTinh.OTHER);
         }
         TaiKhoan user = new TaiKhoan();
+
         user.setHoVaTen(signUpRequest.getHoVaTen());
         user.setSoDienThoai(signUpRequest.getSoDienThoai());
         user.setEmail(signUpRequest.getEmail());
@@ -77,6 +84,13 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         TaiKhoan taiKhoan = userRepository.save(user);
         taiKhoan.setMatKhau(signUpRequest.getMatKhau());
         emailSender.sendEmail(taiKhoan);
+        GioHang gioHang = new GioHang();
+        gioHang.setMaGioHang(GenCode.generateGioHangCode());
+        gioHang.setTrangThai(1);
+        gioHang.setTaiKhoan(userRepository.getOne(taiKhoan.getId()));
+        gioHangRepository.save(gioHang);
+        taiKhoan.setMatKhau(passwordEncoder.encode(taiKhoan.getMatKhau()));
+        userRepository.save(taiKhoan);
         return taiKhoan;
     }
 
@@ -86,27 +100,32 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         VaiTro role = roleId.get();
             TaiKhoan user = new TaiKhoan();
             user.setHoVaTen("hoanggiang");
-            user.setSoDienThoai("0348079278");
-            user.setEmail("giangminh030222@gmail.com");
+            user.setSoDienThoai("0348079272");
+            user.setEmail("giangminh0302@gmail.com");
             user.setVaiTro(role);
-            user.setMatKhau(new BCryptPasswordEncoder().encode("giang123123"));
+            user.setMatKhau(new BCryptPasswordEncoder().encode("123123"));
             userRepository.save(user);
-
+        GioHang gioHang = new GioHang();
+        gioHang.setMaGioHang(GenCode.generateGioHangCode());
+        gioHang.setTrangThai(1);
+        gioHang.setTaiKhoan(userRepository.getOne(user.getId()));
+        gioHangRepository.save(gioHang);
         return true;
     }
 
     @Override
     public JwtAuthenticationResponse signin(SigninRequest signinRequest) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.getEmail(),
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.getSdt(),
                     signinRequest.getMatKhau()));
         } catch (AuthenticationException e) {
             // Invalid credentials
             throw new BadRequestException("Tài khoản hoặc mật khẩu không tồn tại.");
         }
 
-        TaiKhoan taiKhoan = userRepository.findTaiKhoanByEmail(signinRequest.getEmail());
-        var userToke = user.loadUserByUsername(signinRequest.getEmail());
+        TaiKhoan taiKhoan = userRepository.findBySoDienThoai(signinRequest.getSdt());
+//        GioHang gioHang = gioHangRepository.getOne(taiKhoan.getId());
+        var userToke = user.loadUserByUsername(signinRequest.getSdt());
         var jwt = jwtService.generateToken(userToke);
         var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), userToke);
 
@@ -115,8 +134,9 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         jwtAuthenticationResponse.setToken(jwt);
         jwtAuthenticationResponse.setRefreshToken(refreshToken);
         jwtAuthenticationResponse.setRoleId(taiKhoan.getVaiTro().getId());
-        jwtAuthenticationResponse.setId(taiKhoan.getId());
-        jwtAuthenticationResponse.setEmail(taiKhoan.getEmail());
+        jwtAuthenticationResponse.setAcountId(taiKhoan.getId());
+        jwtAuthenticationResponse.setSdt(taiKhoan.getSoDienThoai());
+//        jwtAuthenticationResponse.setIdGioHang(gioHang.getId());
         return jwtAuthenticationResponse;
     }
 

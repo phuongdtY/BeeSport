@@ -67,7 +67,8 @@ const Header: React.FC = () => {
     getItem(<Link to="/admin">Về chúng tôi</Link>, "3"),
     getItem(<Link to="/admin"></Link>, "4"),
   ];
-  const userEmail = localStorage.getItem("email");
+  const roleId = localStorage.getItem("roleId");
+ console.log("aaaa",roleId)
   const { Option } = Select;
   const [modalVisible, setModalVisible] = useState(false);
   const showModal = () => {
@@ -108,27 +109,24 @@ const Header: React.FC = () => {
         defaultSelectedKeys={["1"]}
         items={items}
       />
-      {userEmail ? (
+      {roleId ? (
         <Select
-        defaultValue={userEmail}
-        style={{ width: 150, marginLeft: 700 }}
-        onChange={(value) => {
-          // Check if the selected value is "logout" and call handleLogout
-          if (value === "logout") {
-            handleLogout();
-          } else if(value === "thongtin"){
-            showModal();
-          }
-        }}
-      >
-        <Option value={userEmail} disabled>
-          {userEmail}
-        </Option>
-        <Option value="thongtin">
-          Thông tin
-        </Option>
-        <Option value="logout">Logout</Option>
-      </Select>
+          defaultValue={roleId}
+          style={{ width: 150, marginLeft: 700 }}
+          onChange={(value) => {
+            if (value === "logout") {
+              handleLogout();
+            } else if (value === "thongtin") {
+              showModal();
+            }
+          }}
+        >
+          {roleId === "1" && <Option value="1">Quản lý</Option>}
+          {roleId === "2" && <Option value="2">Nhân viên</Option>}
+          {roleId === "3" && <Option value="3">Khách hàng</Option>}
+          <Option value="thongtin">Thông tin</Option>
+          <Option value="logout">Logout</Option>
+        </Select>
       ) : (
       <Link
         style={{ marginLeft: "850px" }}

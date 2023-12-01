@@ -2,6 +2,7 @@ import {
   ExclamationCircleFilled,
   MailOutlined,
   LockOutlined,
+  PhoneOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -33,11 +34,14 @@ const DangNhap: React.FC = () => {
   const onFinish = async (values: DangNhapRequest) => {
     try {
       const response = await requestDangNhap.post("/sign-in", values);
-      const { refreshToken,roleId,email,id } = response.data; // Assuming your response contains accessToken and refreshToken
+      const { refreshToken,roleId,email,acountId,idGioHang } = response.data; // Assuming your response contains accessToken and refreshToken
       localStorage.setItem("refreshToken", refreshToken); // Store the access token
       localStorage.setItem("roleId", roleId);
       localStorage.setItem("email", email);
-      localStorage.setItem("id", id);
+      localStorage.setItem("acountId", acountId);
+      // localStorage.setItem("idGioHang", idGioHang);
+      console.log("IdGioHang",idGioHang)
+      console.log("acountId",acountId)
       // console.log("AA  "+ response.data.refreshToken)
       console.log("BB  "+ response.data.roleId )
       if (response.data.roleId === 1) {
@@ -87,22 +91,22 @@ const DangNhap: React.FC = () => {
           layout="horizontal"
         >
 
-          <Form.Item
-            name="email"
-            rules={[
-              {
-                required: true,
-                message: "Bạn chưa điền E-mail!",
-              },
-              {
-                type: "email",
-                message: "E-mail không hợp lệ!",
-              },
-            ]}
-            style={{ width: "100%" }}
-          >
-            <Input prefix={<MailOutlined />} placeholder="E-mail" />
-          </Form.Item>
+<Form.Item
+                name="sdt"
+                rules={[
+                  {
+                    required: true,
+                    message: "Bạn chưa điền số điện thoại!",
+                  },
+                  {
+                    pattern: /^0[35789]\d{8}$/,
+                    message: "Số điện thoại không hợp lệ!",
+                  },
+                ]}
+                style={{ width: "100%" }} // Đặt chiều rộng 100%
+              >
+                <Input prefix={<PhoneOutlined />} placeholder="Số Điện Thoại" />
+              </Form.Item>
           <Form.Item
             name="matKhau"
             rules={[

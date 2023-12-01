@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 
 public class TaiKhoanInfoDetails implements UserDetails {
 
-    private String email;
+    private String sdt;
     private String matKhau;
     private List<GrantedAuthority> authorities;
 
     public TaiKhoanInfoDetails(TaiKhoan user) {
-        this.email = user.getEmail();
+        this.sdt = user.getSoDienThoai();
         this.matKhau = user.getMatKhau();
         this.authorities = Arrays.stream(user.getVaiTro().getTen().split(","))
                         .map(SimpleGrantedAuthority::new)
@@ -37,7 +37,7 @@ public class TaiKhoanInfoDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return sdt;
     }
 
     @Override

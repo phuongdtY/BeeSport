@@ -9,9 +9,11 @@ public class JwtAuthenticationResponse {
 
     private String refreshToken;
 
-    private String email;
+    private String sdt;
 
     private Long roleId;
 
-    private Long id;
+    private Long acountId;
+
+
 }

@@ -20,9 +20,9 @@ public class TaiKhoanInfoDetailsServices implements UserDetailsService{
     private TaiKhoanInfoDetails userDetails;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<TaiKhoan> userInfo = userRepository.findByEmail(email);
+    public UserDetails loadUserByUsername(String sdt) throws UsernameNotFoundException {
+        Optional<TaiKhoan> userInfo = userRepository.findBySoDienThoai1(sdt);
         return userInfo.map(TaiKhoanInfoDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("email not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("sdt not found"));
     }
 }
