@@ -79,30 +79,49 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       const response = await request.get("/voucher/list");
 
       if (response.status === 200) {
-        setVouchers(response.data);
+        const fetchedVouchers = response.data;
 
-        // Find the first voucher that meets the condition
-        const selectedVoucher = response.data.find(
-          (voucher) => totalPriceFromTable >= voucher.donToiThieu
+        if (totalPriceFromTable === 0) {
+          setSelectedVoucher(null); // Reset the selected voucher if total price is 0
+          setGiaTriGiam(0); // Reset giaTriGiam if total price is 0
+          return; // Exit the function early as no voucher can be applied
+        }
+
+        // Sort vouchers by donToiThieu in ascending order
+        const sortedVouchers = fetchedVouchers.sort(
+          (a, b) => a.donToiThieu - b.donToiThieu
         );
 
-        if (selectedVoucher) {
-          setSelectedVoucher(selectedVoucher);
-          if (selectedVoucher.hinhThucGiam.id === 1) {
-            setGiaTriGiam(selectedVoucher.giaTriGiam);
-          } else {
-            const giam =
-              (totalPriceFromTable / 100) * selectedVoucher.giaTriGiam;
-            setGiaTriGiam(
-              giam > selectedVoucher.giamToiDa
-                ? selectedVoucher.giamToiDa
-                : giam
-            );
+        let newSelectedVoucher = null; // Initialize a variable to track the new selected voucher
+        let newGiaTriGiam = 0; // Initialize the discount value for the new selected voucher
+
+        sortedVouchers.forEach((voucher) => {
+          if (
+            totalPriceFromTable >= voucher.donToiThieu &&
+            (!newSelectedVoucher ||
+              voucher.donToiThieu > newSelectedVoucher.donToiThieu)
+          ) {
+            // Check if the current voucher meets the condition and has a higher donToiThieu than the current selectedVoucher
+            newSelectedVoucher = voucher; // Set the new selected voucher
+            if (voucher.hinhThucGiam.id === 1) {
+              newGiaTriGiam = voucher.giaTriGiam;
+            } else {
+              const giam = (totalPriceFromTable / 100) * voucher.giaTriGiam;
+              newGiaTriGiam =
+                giam > voucher.giamToiDa ? voucher.giamToiDa : giam;
+            }
           }
+        });
+
+        if (newSelectedVoucher) {
+          setSelectedVoucher(newSelectedVoucher); // Set the new selected voucher
+          setGiaTriGiam(newGiaTriGiam); // Set the discount value for the new selected voucher
         } else {
-          setSelectedVoucher(null); // Reset the selected voucher name if none is selected
+          setSelectedVoucher(null); // Reset the selected voucher if none is selected
           setGiaTriGiam(0); // Reset giaTriGiam if no voucher is selected
         }
+
+        setVouchers(sortedVouchers); // Set the sorted vouchers
       } else {
         message.error("Error fetching vouchers");
       }
@@ -185,13 +204,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     setIsModalVisible(true);
   };
 
-  function formatCurrency(amount) {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  }
-
   const handleCancel = () => {
     setIsModalVisible(false);
   };
@@ -246,7 +258,11 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       cancelText: "Hủy",
       onOk: async () => {
         const hoaDonData = getHoaDonData();
-        hoaDonData.trangThaiHoaDon = "CONFIRMED";
+
+        const hoaDonCho = {
+          ...hoaDonData,
+          trangThaiHoaDon: "CONFIRMED",
+        };
 
         if (totalPriceFromTable == 0) {
           // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
@@ -255,7 +271,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         }
 
         try {
-          const response = await request.put(`/hoa-don/${id}`, hoaDonData);
+          const response = await request.put(`/hoa-don/${id}`, hoaDonCho);
           if (response.status === 200) {
             loadHoaDon();
             message.success("Hóa đơn đã được lưu thành công.");
@@ -321,7 +337,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
 
   useEffect(() => {
     getVouchers();
-  }, [vouchers]);
+  }, [vouchers, totalPriceFromTable]);
 
   useEffect(() => {
     const tienGiam = totalPriceFromTable + phiShip - giaTriGiam;
@@ -476,7 +492,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               </Col>
               <Col span={16}></Col>
               <Col span={3}>
-                <p>{formatCurrency(totalPriceFromTable)}</p>
+                <p>{formatGiaTienVND(totalPriceFromTable)}</p>
               </Col>
             </Row>
             {/* Phí vận chuyển */}
@@ -509,17 +525,17 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 <p>
                   {selectedVoucher && selectedVoucher.hinhThucGiam
                     ? selectedVoucher.hinhThucGiam.id === 1
-                      ? `${formatCurrency(giaTriGiam)}`
+                      ? `${formatGiaTienVND(giaTriGiam)}`
                       : `${
                           selectedVoucher.giaTriGiam &&
                           (totalPriceFromTable / 100) *
                             selectedVoucher.giaTriGiam <=
                             selectedVoucher.giamToiDa
-                            ? `${formatCurrency(
+                            ? `${formatGiaTienVND(
                                 (totalPriceFromTable / 100) *
                                   selectedVoucher.giaTriGiam
                               )}`
-                            : `${formatCurrency(selectedVoucher.giamToiDa)}`
+                            : `${formatGiaTienVND(selectedVoucher.giamToiDa)}`
                         }`
                     : "0 đ"}
                 </p>
@@ -531,18 +547,18 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                   <span style={{ color: "green", fontWeight: "bolder" }}>
                     Đã áp dụng voucher: {selectedVoucher.ten}
                     <br />
-                    {selectedVoucher.hinhThucGiam && selectedVoucher.donToiThieu
+                    {selectedVoucher.hinhThucGiam
                       ? selectedVoucher.hinhThucGiam.id === 2
                         ? `Giảm: ${
                             selectedVoucher.giaTriGiam
-                          }% cho đơn hàng từ ${formatCurrency(
+                          }% cho đơn hàng từ ${formatGiaTienVND(
                             selectedVoucher.donToiThieu
-                          )} giảm tối đa ${formatCurrency(
+                          )} giảm tối đa ${formatGiaTienVND(
                             selectedVoucher.giamToiDa
                           )}`
-                        : `Giảm: ${formatCurrency(
+                        : `Giảm: ${formatGiaTienVND(
                             selectedVoucher.giaTriGiam
-                          )} cho đơn hàng từ ${formatCurrency(
+                          )} cho đơn hàng từ ${formatGiaTienVND(
                             selectedVoucher.donToiThieu
                           )}`
                       : "Thông tin giảm giá không khả dụng"}
@@ -550,7 +566,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                   {nextVoucher ? (
                     <>
                       <span style={{ color: "orange", fontStyle: "italic" }}>
-                        Gợi ý: Mua thêm {formatCurrency(remainingAmount)} để
+                        Gợi ý: Mua thêm {formatGiaTienVND(remainingAmount)} để
                         được giảm{" "}
                         {nextVoucher.hinhThucGiam && nextVoucher.giaTriGiam
                           ? nextVoucher.hinhThucGiam.id === 2
@@ -563,16 +579,19 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </Space>
               </Row>
             )}
-            {/* Tổng tiền */}
+            <Divider style={{ marginBottom: 0 }} />
             <Row>
               <Col span={5}>
-                <p>Tổng tiền: </p>
+                <p style={{ fontWeight: "bold" }}>Tổng tiền: </p>
               </Col>
               <Col span={16}></Col>
               <Col span={3}>
-                <p>{formatCurrency(tongTienKhiGiam)}</p>
+                <p style={{ fontWeight: "bold" }}>
+                  {formatGiaTienVND(tongTienKhiGiam)}
+                </p>
               </Col>
             </Row>
+            <Divider style={{ marginTop: 0 }} />
             <p>Ghi chú: </p>
             <TextArea
               rows={4}

@@ -48,7 +48,7 @@ const Header: React.FC = () => {
     getItem(<Link to="/">Trang chủ</Link>, "1"),
     getItem(<Link to="/san-pham">Sản phẩm</Link>, "2"),
     getItem(<Link to="/admin">Về chúng tôi</Link>, "3"),
-    getItem(<Link to="/admin"></Link>, "4"),
+    getItem(<Link to="/don-hang">Đơn hàng của tôi</Link>, "4"),
   ];
 
   return (
@@ -65,11 +65,25 @@ const Header: React.FC = () => {
     >
       <div className="demo-logo">
         <img
+<<<<<<< HEAD
+<<<<<<< HEAD
+          style={{ paddingTop: 5 }}
+          src={logo}
+          alt=""
+          width={"180px"}
+          height={"70px"}
+=======
+=======
+>>>>>>> c226648b5e8e385859e2b7375484c7ad8c4a2203
           src={logo}
           alt=""
           style={{ marginLeft: 10, paddingTop: 5 }}
           width={"150px"}
           height={"60px"}
+<<<<<<< HEAD
+>>>>>>> origin/canh
+=======
+>>>>>>> c226648b5e8e385859e2b7375484c7ad8c4a2203
         />
       </div>
       <Menu

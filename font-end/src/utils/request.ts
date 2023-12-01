@@ -11,5 +11,9 @@ export const request4s = axios.create({
   baseURL: "http://localhost:8080/admin/api",
   timeout: 5000,
 });
+export const requestClient = axios.create({
+  baseURL: "http://localhost:8080/client/api",
+  timeout: 5000,
+});
 
 export default request;

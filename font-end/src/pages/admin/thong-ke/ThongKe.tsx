@@ -187,6 +187,20 @@ const ThongKe: React.FC = () => {
                 {thongKeNgay !== null ? thongKeNgay.tongSoSanPhamDaBan : 0}
               </Text>
             </Space>
+            <br />
+            <Space>
+              Tổng số đơn Tại quầy:
+              <Text strong>
+                {thongKeNgay !== null ? thongKeNgay.tongSoDonTaiQuay : 0}
+              </Text>
+            </Space>
+            <br />
+            <Space>
+              Tổng số đơn Online:
+              <Text strong>
+                {thongKeNgay !== null ? thongKeNgay.tongSoDonOnline : 0}
+              </Text>
+            </Space>
           </Card>
         </Col>
         <Col span={5} style={{ marginRight: 30 }}>
@@ -231,6 +245,20 @@ const ThongKe: React.FC = () => {
               Tổng số sản phẩm đã bán:
               <Text strong>
                 {thongKeTuan !== null ? thongKeTuan.tongSoSanPhamDaBan : 0}
+              </Text>
+            </Space>
+            <br />
+            <Space>
+              Tổng số đơn Tại quầy:
+              <Text strong>
+                {thongKeTuan !== null ? thongKeTuan.tongSoDonTaiQuay : 0}
+              </Text>
+            </Space>
+            <br />
+            <Space>
+              Tổng số đơn Online:
+              <Text strong>
+                {thongKeTuan !== null ? thongKeTuan.tongSoDonOnline : 0}
               </Text>
             </Space>
           </Card>
@@ -280,6 +308,20 @@ const ThongKe: React.FC = () => {
                 {thongKeThang !== null ? thongKeThang.tongSoSanPhamDaBan : 0}
               </Text>
             </Space>
+            <br />
+            <Space>
+              Tổng số đơn Tại quầy:
+              <Text strong>
+                {thongKeThang !== null ? thongKeThang.tongSoDonTaiQuay : 0}
+              </Text>
+            </Space>
+            <br />
+            <Space>
+              Tổng số đơn Online:
+              <Text strong>
+                {thongKeThang !== null ? thongKeThang.tongSoDonOnline : 0}
+              </Text>
+            </Space>
           </Card>
         </Col>
         <Col span={5}>
@@ -326,6 +368,20 @@ const ThongKe: React.FC = () => {
                 {thongKeNam !== null ? thongKeNam.tongSoSanPhamDaBan : 0}
               </Text>
             </Space>
+            <br />
+            <Space>
+              Tổng số đơn Tại quầy:
+              <Text strong>
+                {thongKeNam !== null ? thongKeNam.tongSoDonTaiQuay : 0}
+              </Text>
+            </Space>
+            <br />
+            <Space>
+              Tổng số đơn Online:
+              <Text strong>
+                {thongKeNam !== null ? thongKeNam.tongSoDonOnline : 0}
+              </Text>
+            </Space>
           </Card>
         </Col>
       </Row>
@@ -351,7 +407,7 @@ const ThongKe: React.FC = () => {
               />
             </div>
             <Row>
-              <Col span={6}>
+              <Col span={4}>
                 <Space>
                   Tổng doanh thu:
                   <Text strong>
@@ -363,7 +419,7 @@ const ThongKe: React.FC = () => {
                   </Text>
                 </Space>
               </Col>
-              <Col span={6}>
+              <Col span={4}>
                 <Space>
                   Tổng số đơn thành công:
                   <Text strong>
@@ -373,7 +429,7 @@ const ThongKe: React.FC = () => {
                   </Text>
                 </Space>
               </Col>
-              <Col span={6}>
+              <Col span={3}>
                 <Space>
                   Tổng số đơn hủy:
                   <Text strong>
@@ -383,12 +439,32 @@ const ThongKe: React.FC = () => {
                   </Text>
                 </Space>
               </Col>
-              <Col span={6}>
+              <Col span={5}>
                 <Space>
                   Tổng số sản phẩm đã bán:
                   <Text strong>
                     {thongKeKhoangNgay !== null
                       ? thongKeKhoangNgay.tongSoSanPhamDaBan
+                      : 0}
+                  </Text>
+                </Space>
+              </Col>
+              <Col span={4}>
+                <Space>
+                  Tổng số đơn Tại quầy:
+                  <Text strong>
+                    {thongKeKhoangNgay !== null
+                      ? thongKeKhoangNgay.tongSoDonTaiQuay
+                      : 0}
+                  </Text>
+                </Space>
+              </Col>
+              <Col span={4}>
+                <Space>
+                  Tổng số đơn Online:
+                  <Text strong>
+                    {thongKeKhoangNgay !== null
+                      ? thongKeKhoangNgay.tongSoDonOnline
                       : 0}
                   </Text>
                 </Space>
