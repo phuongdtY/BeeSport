@@ -52,6 +52,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
 }) => {
   const [dataGioHang, setDataGioHang] = useState<DataGioHang[]>([]); // Specify the data type
   const { confirm } = Modal;
+  const [inputSoLuong, setInputSoLuong] = useState(0); // State để theo dõi giá trị nhập vào ô input
 
   const tableGioHang: ColumnsType<DataGioHang> = [
     {
@@ -86,7 +87,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
       render: (text, record, index) => (
         <InputNumber
           style={{ width: 60 }}
-          value={record.soLuong}
+          value={inputSoLuong || record.soLuong} // Sử dụng inputSoLuong nếu đã thiết lập, nếu không dùng record.soLuong như cũ
           inputMode="numeric"
           onChange={(newSoLuong) => handleSoLuongChange(index, newSoLuong)}
         />
@@ -133,20 +134,39 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
   };
 
   const handleSoLuongChange = (index, newSoLuong) => {
-    const newSoLuongValue = typeof newSoLuong === "number" ? newSoLuong : 0;
+    const newSoLuongValue = typeof newSoLuong === "number" ? newSoLuong : 1;
 
     // Tìm sản phẩm trong danh sách dựa trên index
     const productToUpdate = dataGioHang[index];
 
     if (productToUpdate) {
-      // Tạo một bản sao của dataGioHang và cập nhật số lượng và tổng tiền cho sản phẩm cụ thể
+      const soLuongTon = productToUpdate.chiTietSanPham.soLuong; // Số lượng tồn
       const updatedData = [...dataGioHang];
-      updatedData[index] = {
-        ...productToUpdate,
-        soLuong: newSoLuongValue,
-        tongTien: newSoLuongValue * productToUpdate.donGia, // Cập nhật tổng tiền
-      };
-      setDataGioHang(updatedData);
+
+      if (newSoLuongValue >= 1 && newSoLuongValue <= soLuongTon) {
+        updatedData[index] = {
+          ...productToUpdate,
+          soLuong: newSoLuongValue,
+          tongTien: newSoLuongValue * productToUpdate.donGia, // Cập nhật tổng tiền
+        };
+        setDataGioHang(updatedData);
+      } else {
+        // Hiển thị thông báo lỗi khi số lượng không hợp lệ
+        if (newSoLuongValue < 1) {
+          message.error("Số lượng không thể nhỏ hơn 1");
+          setInputSoLuong(1);
+        } else {
+          message.error("Số lượng vượt quá số lượng tồn");
+          // Nếu vượt quá số lượng tồn, đặt lại giá trị số lượng thành soLuongTon
+          updatedData[index] = {
+            ...productToUpdate,
+            soLuong: soLuongTon,
+            tongTien: soLuongTon * productToUpdate.donGia, // Cập nhật tổng tiền
+          };
+          setDataGioHang(updatedData);
+          setInputSoLuong(soLuongTon); // Cập nhật giá trị của ô input thành số lượng tồn
+        }
+      }
     }
   };
 

@@ -220,7 +220,20 @@ const ThongTinGiaoHang: React.FC<{
               label="Họ và tên"
               name="nguoiNhan"
               style={{ marginRight: 10 }}
-              rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập họ và tên",
+                },
+                {
+                  pattern: /^[A-Z ]+$/i,
+                  message: "Tên chỉ được viết chữ",
+                },
+                {
+                  max: 50,
+                  message: "Tên chỉ được tối đa 50 ký tự",
+                },
+              ]}
             >
               <Input
                 value={formValues.nguoiNhan}
@@ -235,7 +248,15 @@ const ThongTinGiaoHang: React.FC<{
               label="SĐT"
               name="sdtNguoiNhan"
               rules={[
-                { required: true, message: "Vui lòng nhập số điện thoại" },
+                {
+                  required: true,
+                  message: "Vui lòng nhập số điện thoại",
+                },
+                {
+                  pattern: /^[0-9]{10}$/,
+                  message:
+                    "Số điện thoại chỉ được nhập số và phải có đúng 10 số",
+                },
               ]}
             >
               <Input
@@ -250,7 +271,16 @@ const ThongTinGiaoHang: React.FC<{
             <Form.Item<FieldType>
               label="Email"
               name="emailNguoiNhan"
-              rules={[{ required: true, message: "Vui lòng điền email" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập địa chỉ email",
+                },
+                {
+                  type: "email",
+                  message: "Địa chỉ email không hợp lệ",
+                },
+              ]}
             >
               <Input
                 value={formValues.emailNguoiNhan}
@@ -336,7 +366,11 @@ const ThongTinGiaoHang: React.FC<{
                 {
                   required: true,
                   whitespace: true,
-                  message: "Bạn chưa điền đia chỉ",
+                  message: "Bạn chưa nhập địa chỉ cụ thể",
+                },
+                {
+                  max: 30,
+                  message: "Địa chỉ cụ thể không được vượt quá 30 ký tự",
                 },
               ]}
             >
