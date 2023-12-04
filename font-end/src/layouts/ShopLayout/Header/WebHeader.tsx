@@ -46,8 +46,9 @@ const Header: React.FC = () => {
       const response123 = await requestLogout.post("/logout");
       console.log(response123.data)
       localStorage.removeItem("refreshToken");
-      localStorage.removeItem("email");
+      localStorage.removeItem("acountId");
       localStorage.removeItem("roleId");
+      // localStorage.removeItem("idGioHang");
       
       navigate("/sign-in");
       message.success("Đăng xuất thành công");

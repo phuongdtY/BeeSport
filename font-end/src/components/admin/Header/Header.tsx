@@ -25,8 +25,9 @@ const CustomHeader: React.FC<{
     try {
       const response123 = await requestLogout.post("/logout");
       localStorage.removeItem("refreshToken");
-      localStorage.removeItem("email");
+      localStorage.removeItem("acountId");
       localStorage.removeItem("roleId");
+      // localStorage.removeItem("idGioHang");
       
       navigate("/sign-in");
       message.success("Đăng xuất thành công");

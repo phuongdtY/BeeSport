@@ -105,11 +105,11 @@ public class AuthenticationServiceIplm implements AuthenticationService {
             user.setVaiTro(role);
             user.setMatKhau(new BCryptPasswordEncoder().encode("123123"));
             userRepository.save(user);
-        GioHang gioHang = new GioHang();
-        gioHang.setMaGioHang(GenCode.generateGioHangCode());
-        gioHang.setTrangThai(1);
-        gioHang.setTaiKhoan(userRepository.getOne(user.getId()));
-        gioHangRepository.save(gioHang);
+//        GioHang gioHang = new GioHang();
+//        gioHang.setMaGioHang(GenCode.generateGioHangCode());
+//        gioHang.setTrangThai(1);
+//        gioHang.setTaiKhoan(userRepository.getOne(user.getId()));
+//        gioHangRepository.save(gioHang);
         return true;
     }
 

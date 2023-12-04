@@ -74,6 +74,8 @@ const dangKiKhachHang: React.FC = () => {
           console.log("Error:", error); // In lỗi ra để xác định lý do
           if (error.response && error.response.data) {
             message.error(error.response.data.message);
+          }  if (error.response && error.response.status === 403) {
+            message.error("Số điện thoại đã tồn tại trên hệ thống.");
           } else {
             message.error("Có lỗi xảy ra khi tạo tài khoản.");
           }
