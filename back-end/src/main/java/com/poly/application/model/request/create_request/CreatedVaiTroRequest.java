@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class CreatedVaiTroRequest {
 
-    private CommonEnum.Ten ten;
+    private String ten;
 
     private LocalDateTime ngayTao;
 

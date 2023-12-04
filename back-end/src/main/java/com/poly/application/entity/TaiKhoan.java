@@ -118,4 +118,11 @@ public class TaiKhoan implements Serializable {
     private List<VoucherChiTiet> voucherChiTietList;
 
 
+    public TaiKhoan(String hoVaTen, String email, String matKhau, VaiTro vaiTro) {
+        this.hoVaTen = hoVaTen;
+        this.email = email;
+        this.matKhau = matKhau;
+        this.vaiTro = vaiTro;
+    }
+
 }

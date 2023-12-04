@@ -40,9 +40,9 @@ public class VaiTro implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Enumerated(EnumType.STRING)
+
     @Column(name = "ten")
-    private CommonEnum.Ten ten;
+    private String ten;
 
     @CreationTimestamp
     @Column(name = "ngay_tao")
@@ -59,5 +59,7 @@ public class VaiTro implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "vaiTro", fetch = FetchType.LAZY)
     private List<TaiKhoan> taiKhoanList;
+
+    public VaiTro(String ten){this.ten=ten;}
 
 }

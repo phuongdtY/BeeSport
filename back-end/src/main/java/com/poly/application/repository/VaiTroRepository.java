@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface VaiTroRepository extends JpaRepository<VaiTro, Long> {
 
@@ -20,4 +22,6 @@ public interface VaiTroRepository extends JpaRepository<VaiTro, Long> {
 
     @Query("SELECT vc FROM VaiTro vc WHERE vc.id =:id")
     VaiTro findId(@Param("id") Long id);
+
+    Optional<VaiTro> findVaiTroById(Long id);
 }
