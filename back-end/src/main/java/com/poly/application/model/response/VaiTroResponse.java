@@ -12,7 +12,7 @@ public class VaiTroResponse {
 
     private Long id;
 
-    private CommonEnum.Ten ten;
+    private String ten;
 
     private LocalDateTime ngayTao;
 

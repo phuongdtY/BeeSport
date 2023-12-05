@@ -26,6 +26,7 @@ import TableSanPham from "./TableAddSanPham";
 import { DataTypeSanPham } from "~/interfaces/sanPham.type";
 import ModalAddSanPham from "./ModalAddSanPham";
 import { formatGiaTienVND, formatSoLuong } from "~/utils/formatResponse";
+import { useNavigate } from "react-router";
 
 const AddSanPham: React.FC = () => {
   const [openThuongHieu, setOpenThuongHieu] = useState(false);
@@ -50,6 +51,7 @@ const AddSanPham: React.FC = () => {
   const [fakeData, setFakeData] = useState<DataTypeSanPham[]>([]);
   const { confirm } = Modal;
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   const addSanPham = (newData) => {
     fetchDataSP();
@@ -222,6 +224,7 @@ const AddSanPham: React.FC = () => {
             },
           });
           message.success("Thêm list sản phẩm thành công");
+          navigate("/admin/san-pham");
         } catch (error) {
           message.error("Thêm list sản phẩm thất bại !");
           console.log(error);

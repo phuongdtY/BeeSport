@@ -16,7 +16,7 @@ import {
   Select,
 } from "antd";
 
-import {requestTimMatKhau} from "~/utils/request";
+import {requestDangKi} from "~/utils/request";
 import {
   ExclamationCircleFilled,
   UserOutlined,
@@ -56,13 +56,13 @@ const dangKiKhachHang: React.FC = () => {
       onOk: async () => {
         try {
           setLoading(true);
-          const response = await requestTimMatKhau.post("khach-hang/dang-ki", {
+          const response = await requestDangKi.post("/sign-up", {
             hoVaTen: values.hoVaTen,
             soDienThoai: values.soDienThoai,
             email: values.email,
             matKhau: values.matKhau,
           });
-          if (response.status === 201) {
+          if (response.status === 200) {
             // Nếu mã trạng thái HTTP là 200, thực hiện các hành động thành công.
             message.success("Tạo tài khoản thành công. Bạn hãy check mail");
             navigate("/sign-in");
@@ -74,6 +74,8 @@ const dangKiKhachHang: React.FC = () => {
           console.log("Error:", error); // In lỗi ra để xác định lý do
           if (error.response && error.response.data) {
             message.error(error.response.data.message);
+          }  if (error.response && error.response.status === 403) {
+            message.error("Số điện thoại đã tồn tại trên hệ thống.");
           } else {
             message.error("Có lỗi xảy ra khi tạo tài khoản.");
           }
@@ -171,6 +173,7 @@ const dangKiKhachHang: React.FC = () => {
         <Card
           title="Đăng ký tài khoản"
           style={{
+            width:"700px",
             display: "grid",
             placeItems: "center",
             minHeight: "60vh",
@@ -191,7 +194,7 @@ const dangKiKhachHang: React.FC = () => {
                     message: "Họ và tên không hợp lệ!",
                   },
                 ]}
-                style={{ width: "100%" }} // Đặt chiều rộng 100%
+                style={{ width: "500px" }} // Đặt chiều rộng 100%
               >
                 <Input prefix={<UserOutlined />} placeholder="Họ và Tên" />
               </Form.Item>

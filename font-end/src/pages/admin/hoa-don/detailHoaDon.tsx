@@ -60,6 +60,7 @@ import {
 } from "~/utils/formatResponse";
 import React from "react";
 import { FaBoxOpen, FaShippingFast } from "react-icons/fa";
+import ConfirmHoaDonComponent from "./ModalConfirm";
 
 const optionPrintPDF: Options = {
   filename: "hoa-don.pdf",
@@ -98,6 +99,10 @@ const getTargetElement = () => document.getElementById("pdfReaderHoaDon");
 const downloadPdf = () => generatePDF(getTargetElement, optionPrintPDF);
 
 const detailHoaDon: React.FC = () => {
+  const [updateRequest, setUpdateRequest] = useState(null);
+  const [titleStatus, setTitleStatus] = useState("");
+  const [statusOrder, setStatusOrder] = useState(null);
+  const [open, setOpen] = useState(false);
   const [itemTimeline, setItemTimeline] = useState<Item[]>([]);
   const [diaChiOpen, setDiaChiOpen] = useState(false);
   const [sanPhamOpen, setSanPhamOpen] = useState(false);
@@ -460,9 +465,9 @@ const detailHoaDon: React.FC = () => {
         title: item.trangThai.moTa,
         subTitle: formatNgayTao(item.ngayTao),
         description:
-          (item.ghiChu === null ? "" : item.ghiChu) +
+          (item.hoaDon.nguoiSua === null ? "" : item.hoaDon.nguoiSua) +
           "    " +
-          (item.hoaDon.nguoiSua === null ? "" : item.hoaDon.nguoiSua),
+          (item.ghiChu === null ? "" : item.ghiChu),
         icon: handleIconTimeline(item.trangThai.ten),
       }));
       setItemTimeline(timelineItem1);
@@ -533,6 +538,17 @@ const detailHoaDon: React.FC = () => {
   };
   const handleCancelExportHoaDon = () => {
     setHoaDonOpen(false);
+  };
+  // đóng mở confirm
+  const showConfirmModal = async (statusOrder: any, titleStatus: string) => {
+    setStatusOrder(statusOrder);
+    setTitleStatus(titleStatus);
+    const values = form.validateFields();
+    setUpdateRequest(await values);
+    setOpen(true);
+  };
+  const handleCancelConfirmModal = () => {
+    setOpen(false);
   };
   // xử lý theo handle
   const deleteRequest = async (id: number) => {
@@ -773,69 +789,53 @@ const detailHoaDon: React.FC = () => {
     moTa: "Đã hoàn thành",
     mauSac: "magenta",
   };
-  const [formData] = Form.useForm();
   // xử lý button xác nhận và vận chuyển
   const handleStatus = async (
-    values: UpdatedRequest,
+    values: UpdatedRequest | null,
     status: any,
-    title: string
+    title: string,
+    ghiChuTimeLine: string
   ) => {
-    confirm({
-      title: "Xác Nhận",
-      icon: <ExclamationCircleFilled />,
-      content: (
-        <Form.Item name="ghiChuTimeLine" label="Ghi chú timeline">
-          <TextArea />
-        </Form.Item>
-      ),
-      okText: "OK",
-      cancelText: "Hủy",
-      onOk: async () => {
-        setOrderStatus(status);
-        try {
-          const ghiChuTimeLineValue = form.getFieldValue("ghiChuTimeLine");
-          // console.log(ghiChuTimeLineValue);
-
-          const res = await request.put("hoa-don/" + id, {
-            ma: data?.ma,
-            diaChiNguoiNhan: data?.diaChiNguoiNhan,
-            emailNguoiNhan: values.emailNguoiNhan,
-            ghiChu: values.ghiChu,
-            trangThaiHoaDon: status.ten,
-            loaiHoaDon: data?.loaiHoaDon.ten,
-            nguoiNhan: values.nguoiNhan,
-            sdtNguoiNhan: values.sdtNguoiNhan,
-            phiShip: tienShip,
-            tongTien: tinhTongTien(Number(tienShip)),
-            tongTienKhiGiam: tinhTongTien(Number(tienShip)),
-            ghiChuTimeLine: "Đang chờ sử lý",
-            idPhuongThuc: 1,
-          });
-          setLoadingForm(false);
-          setTongTien(tinhTongTien(Number(tienShip)));
-          fetchDataTimeline();
-          fetchHoaDonData();
-          console.log(values);
-          if (status.ten == "PENDING" && data?.loaiHoaDon.ten == "ONLINE") {
-          }
-          if (res.data) {
-            message.success("Đã " + title + " hóa đơn thành công");
-            if (status.ten == "PENDING" && data?.loaiHoaDon.ten == "ONLINE") {
-              showExportHoaDonModal();
-            }
-          } else {
-            console.error("Phản hồi API không như mong đợi:", res);
-          }
-        } catch (error: any) {
-          if (error.response && error.response.status === 400) {
-            message.error(error.response.data.message);
-          } else {
-            console.error("Lỗi không xác định:", error);
-            message.error(title + " hóa đơn thất bại");
-          }
+    setOrderStatus(status);
+    try {
+      const res = await request.put("hoa-don/" + id, {
+        ma: data?.ma,
+        diaChiNguoiNhan: data?.diaChiNguoiNhan,
+        emailNguoiNhan: values?.emailNguoiNhan,
+        ghiChu: values?.ghiChu,
+        trangThaiHoaDon: status.ten,
+        loaiHoaDon: data?.loaiHoaDon.ten,
+        nguoiNhan: values?.nguoiNhan,
+        sdtNguoiNhan: values?.sdtNguoiNhan,
+        phiShip: tienShip,
+        tongTien: tinhTongTien(Number(tienShip)),
+        tongTienKhiGiam: tinhTongTien(Number(tienShip)),
+        ghiChuTimeLine: ghiChuTimeLine,
+        idPhuongThuc: 1,
+      });
+      setLoadingForm(false);
+      setTongTien(tinhTongTien(Number(tienShip)));
+      fetchDataTimeline();
+      fetchHoaDonData();
+      console.log(values);
+      if (status.ten == "PENDING" && data?.loaiHoaDon.ten == "ONLINE") {
+      }
+      if (res.data) {
+        message.success("Đã " + title + " hóa đơn thành công");
+        if (status.ten == "PENDING" && data?.loaiHoaDon.ten == "ONLINE") {
+          showExportHoaDonModal();
         }
-      },
-    });
+      } else {
+        console.error("Phản hồi API không như mong đợi:", res);
+      }
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        message.error(error.response.data.message);
+      } else {
+        console.error("Lỗi không xác định:", error);
+        message.error(title + " hóa đơn thất bại");
+      }
+    }
   };
   const handleSoLuongChange = (index: number, newSoLuong: number | null) => {
     const newSoLuongValue = typeof newSoLuong === "number" ? newSoLuong : 0;
@@ -874,12 +874,10 @@ const detailHoaDon: React.FC = () => {
               <Row>
                 <Col span={24} style={{ overflowX: "auto" }}>
                   <Steps
+                    direction="vertical"
+                    size="default"
                     current={itemTimeline.length}
-                    style={
-                      itemTimeline.length > 3
-                        ? { width: 1500, height: 140 }
-                        : {}
-                    }
+                    style={{ width: 400 }}
                     items={itemTimeline}
                   />
                 </Col>
@@ -904,21 +902,8 @@ const detailHoaDon: React.FC = () => {
                   <Form.Item name="trangThaiHoaDon" label="Trạng thái hóa đơn">
                     <Tag color={orderStatus?.mauSac}>{orderStatus?.moTa}</Tag>
                   </Form.Item>
-                  <Form.Item
-                    name="nguoiNhan"
-                    label="Người nhận"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng không để trống",
-                      },
-                    ]}
-                  >
-                    {(orderStatus?.ten === "APPROVED" ||
-                      orderStatus?.ten === "PICKUP" ||
-                      orderStatus?.ten === "SHIPPING" ||
-                      orderStatus?.ten === "CANCELLED") &&
-                    data?.loaiHoaDon?.ten === "COUNTER" ? (
+                  <Form.Item name="nguoiNhan" label="Người nhận">
+                    {data?.loaiHoaDon?.ten === "COUNTER" ? (
                       <span>{data?.nguoiNhan || "Khách hàng lẻ"}</span>
                     ) : (
                       <Input />
@@ -927,18 +912,8 @@ const detailHoaDon: React.FC = () => {
                   <Form.Item
                     name="sdtNguoiNhan"
                     label="Số điện thoại người nhận"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng không để trống",
-                      },
-                    ]}
                   >
-                    {(orderStatus?.ten === "APPROVED" ||
-                      orderStatus?.ten === "PICKUP" ||
-                      orderStatus?.ten === "SHIPPING" ||
-                      orderStatus?.ten === "CANCELLED") &&
-                    data?.loaiHoaDon?.ten === "COUNTER" ? (
+                    {data?.loaiHoaDon?.ten === "COUNTER" ? (
                       <span>{data?.sdtNguoiNhan || "Khách hàng lẻ"}</span>
                     ) : (
                       <Input />
@@ -946,16 +921,7 @@ const detailHoaDon: React.FC = () => {
                   </Form.Item>
                 </Col>
                 <Col span={14}>
-                  <Form.Item
-                    name="diaChiNguoiNhan"
-                    label="Địa chỉ người nhận"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng không để trống",
-                      },
-                    ]}
-                  >
+                  <Form.Item name="diaChiNguoiNhan" label="Địa chỉ người nhận">
                     <Space direction="horizontal">
                       <div style={{ width: "190px" }}>
                         <span>{diaChiThongTin}</span>
@@ -965,16 +931,7 @@ const detailHoaDon: React.FC = () => {
                       )}
                     </Space>
                   </Form.Item>
-                  <Form.Item
-                    name="emailNguoiNhan"
-                    label="Email người nhận"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Vui lòng không để trống",
-                      },
-                    ]}
-                  >
+                  <Form.Item name="emailNguoiNhan" label="Email người nhận">
                     {orderStatus?.ten === "APPROVED" ? (
                       <span>{data?.emailNguoiNhan}</span>
                     ) : (
@@ -988,11 +945,7 @@ const detailHoaDon: React.FC = () => {
                       <TextArea />
                     )}
                   </Form.Item>
-                  <Form.Item
-                    name="phiShip"
-                    label="Phí ship"
-                    // initialValue={tienShip}
-                  >
+                  <Form.Item name="phiShip" label="Phí ship">
                     {orderStatus?.ten === "APPROVED" ? (
                       <span>{formatGiaTienVND(data?.phiShip)}</span>
                     ) : (
@@ -1022,11 +975,7 @@ const detailHoaDon: React.FC = () => {
                         <Button
                           type="primary"
                           onClick={async () => {
-                            await handleStatus(
-                              form.getFieldsValue(),
-                              confirmedStatus,
-                              "Xác nhận"
-                            );
+                            showConfirmModal(confirmedStatus, "Xác nhận");
                           }}
                         >
                           Xác nhận
@@ -1043,11 +992,7 @@ const detailHoaDon: React.FC = () => {
                           type="primary"
                           danger
                           onClick={async () => {
-                            await handleStatus(
-                              form.getFieldsValue(),
-                              cancelledStatus,
-                              "Hủy"
-                            );
+                            showConfirmModal(cancelledStatus, "Hủy");
                           }}
                         >
                           Hủy
@@ -1057,11 +1002,7 @@ const detailHoaDon: React.FC = () => {
                         <Button
                           type="primary"
                           onClick={async () => {
-                            await handleStatus(
-                              form.getFieldsValue(),
-                              shipingStatus,
-                              "Giao hàng"
-                            );
+                            showConfirmModal(shipingStatus, "Giao hàng");
                           }}
                         >
                           Giao hàng
@@ -1074,11 +1015,7 @@ const detailHoaDon: React.FC = () => {
                         <Button
                           type="primary"
                           onClick={async () => {
-                            await handleStatus(
-                              form.getFieldsValue(),
-                              approvedStatus,
-                              "Hoàn thành"
-                            );
+                            showConfirmModal(approvedStatus, "Hoàn thành");
                           }}
                         >
                           Hoàn thành
@@ -1179,6 +1116,14 @@ const detailHoaDon: React.FC = () => {
         open={hoaDonOpen}
         onCancel={handleCancelExportHoaDon}
         id={Number(id)}
+      />
+      <ConfirmHoaDonComponent
+        open={open}
+        onCancel={handleCancelConfirmModal}
+        onUpdate={handleStatus}
+        status={statusOrder}
+        titleStatus={titleStatus}
+        updateRequest={updateRequest}
       />
     </>
   );

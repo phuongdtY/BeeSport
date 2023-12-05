@@ -35,13 +35,21 @@ import HinhAnhSanPham from "./HinhAnhSanPham";
 import ThanhToan from "../thanh-toan/ThanhToan";
 const { Title, Text } = Typography;
 
+const idGioHangTaiKhoan = localStorage.getItem("cartIdTaiKhoan");
+const idGioHangNull = localStorage.getItem("cartId");
+const currentPathname = window.location.pathname;
+
 const index: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [note, setNote] = useState("");
-  const [noteUpdated, setNoteUpdated] = useState(false);
-
   const [data, setData] = useState<DataType[]>([]);
   const { confirm } = Modal;
+
+  useEffect(() => {
+    gioHang();
+    console.log(idGioHangNull);
+    console.log(idGioHangTaiKhoan);
+  }, [idGioHangNull, idGioHangTaiKhoan]);
+
   const confirmDelete = (id) => {
     confirm({
       title: "Xác Nhận",
@@ -58,17 +66,24 @@ const index: React.FC = () => {
       await request.delete(`gio-hang-chi-tiet/${id}`);
       setLoading(false);
       message.success("Xóa sản phẩm thành công");
-      fetchData();
+      gioHang();
     } catch (error) {
       message.error("Xóa sản phẩm thất bại");
       setLoading(false);
     }
   };
+
   const gioHang = async () => {
     try {
       setLoading(true);
-      const res = await request.get(`gio-hang/${id}`);
-      setNote(res.data.ghiChu);
+      const res = await request.get(
+        `gio-hang/${
+          idGioHangTaiKhoan != null ? idGioHangTaiKhoan : idGioHangNull
+        }`
+      );
+      console.log(res.data);
+
+      setData(res.data.gioHangChiTietList);
       setLoading(false);
     } catch (error) {
       message.error("Xóa sản phẩm thất bại");
@@ -88,6 +103,8 @@ const index: React.FC = () => {
       setUpdatedQuantities((prev) => [...prev, record.id]);
     }
   };
+
+  const countSanPham = data.reduce((acc, item) => acc + item.soLuong, 0);
 
   const handleDecrement = (record: DataType) => {
     if (record.soLuong > 1) {
@@ -195,25 +212,6 @@ const index: React.FC = () => {
       ),
     },
   ];
-  const id = localStorage.getItem("gioHang");
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const res = await request.get("/gio-hang-chi-tiet/detail-gio-hang/" + id);
-      setData(res.data);
-      console.log(res.data);
-
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-      message.error("Lấy dữ liệu giỏ hàng thất bại");
-    }
-  };
-  useEffect(() => {
-    gioHang();
-    fetchData();
-  }, [params]);
 
   const onChangeTable = (
     pagination: TablePaginationConfig,
@@ -291,7 +289,11 @@ const index: React.FC = () => {
             </Col>
             <Col span={1}></Col>
             <Col span={8}>
-              <ThanhToan tamTinh={totalAmount} dataSanPham={data} />
+              <ThanhToan
+                tamTinh={totalAmount}
+                dataSanPham={data}
+                soSanPham={countSanPham}
+              />
             </Col>
           </Row>
         ) : (

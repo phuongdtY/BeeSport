@@ -5,6 +5,7 @@ import com.poly.application.model.request.update_request.UpdatedVoucherRequest;
 import com.poly.application.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import java.time.LocalDateTime;
@@ -18,11 +19,16 @@ public interface VoucherService {
 
     List<VoucherResponse> getListVoucher();
 
+    List<VoucherResponse> getListVoucherSuDung();
+
     VoucherResponse add(CreatedVoucherRequest request);
 
     VoucherResponse update(Long id, UpdatedVoucherRequest request);
 
     VoucherResponse delete(Long id);
+
+    Long soLanDaSuDung(Long idVoucher, LocalDate startDate, LocalDate endDate);
+    Long soLanDaSuDungVoucherTaiKhoan(Long idVoucher, Long idTaiKhoan);
 
     VoucherResponse findById(Long id);
 

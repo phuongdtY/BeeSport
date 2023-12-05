@@ -42,7 +42,6 @@ export interface UpdatedRequest {
   phuongXa: number;
   diaChiCuThe: string;
   anhDaiDien: string;
-  matKhau: string;
   ngayTao: string;
   ngaySua: string;
   trangThai: {
@@ -74,8 +73,6 @@ export interface TableParams {
   searchText?: string;
   trangThai?: string;
   gioiTinh?: string;
-  ngaySinhStart: string;
-  ngaySinhEnd: string;
   sortField?: string;
   sortOrder?: string;
   filters?: Record<string, FilterValue>;

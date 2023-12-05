@@ -52,8 +52,6 @@ public class UpdatedTaiKhoanRequest {
 
     private MultipartFile flieAnhDaiDien;
 
-    private String matKhau;
-
     private CommonEnum.TrangThaiThuocTinh trangThai;
 
 }

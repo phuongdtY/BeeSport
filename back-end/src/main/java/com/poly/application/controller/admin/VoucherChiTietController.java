@@ -37,7 +37,7 @@ public class VoucherChiTietController {
 
     @GetMapping("/list")
     public ResponseEntity<?> getAllList(@RequestParam(name = "idVoucher",required = false)Long idVoucher) {
-        return ResponseEntity.ok(service.getAllList(idVoucher));
+        return ResponseEntity.ok(service.findByVoucherId(idVoucher));
     }
 
     @PostMapping("/add")

@@ -52,7 +52,7 @@ public class VaiTroServiceImpl implements VaiTroService {
     @Override
     public VaiTroResponse add(CreatedVaiTroRequest request) {
         VaiTro createdVaiTro = vaiTroMapper.convertCreateRequestToEntity(request);
-        createdVaiTro.setTen(CommonEnum.Ten.CUSTOMER);
+        createdVaiTro.setTen("CUSTOMER");
         createdVaiTro.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
         VaiTro savedVaiTro = this.vaiTroRepository.save(createdVaiTro);
         return vaiTroMapper.convertEntityToResponse(savedVaiTro);

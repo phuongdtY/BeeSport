@@ -2,6 +2,7 @@ package com.poly.application.repository;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.TaiKhoan;
+import com.poly.application.entity.VaiTro;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -30,17 +32,14 @@ public interface    TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
 
     @Query("SELECT tk FROM TaiKhoan tk " +
             "WHERE (tk.hoVaTen LIKE %:searchText% OR tk.soDienThoai LIKE %:searchText% OR tk.email LIKE %:searchText% OR tk.canCuocCongDan LIKE %:searchText%) " +
-            "AND (:ngaySinhStart IS NULL OR :ngaySinhEnd IS NULL OR tk.ngaySinh BETWEEN :ngaySinhStart AND :ngaySinhEnd) " +
-            "AND (:gioiTinh IS NULL OR tk.gioiTinh = :gioiTinh)"+
             "AND (:trangThai IS NULL OR tk.trangThai = :trangThai) " +
+            "AND (:gioiTinh IS NULL OR tk.gioiTinh = :gioiTinh)"+
             "AND tk.vaiTro.id = 3")
     Page<TaiKhoan> findAllByVaiTro2(
             Pageable pageable,
             @Param("searchText") String searchText,
-            @Param("ngaySinhStart") LocalDate ngaySinhStart,
-            @Param("ngaySinhEnd") LocalDate ngaySinhEnd,
-            @Param("gioiTinh") CommonEnum.GioiTinh gioiTinh,
-            @Param("trangThai") CommonEnum.TrangThaiThuocTinh trangThai
+            @Param("trangThai") CommonEnum.TrangThaiThuocTinh trangThai,
+            @Param("gioiTinh") CommonEnum.GioiTinh gioiTinh
     );
 
     @Query("SELECT tk FROM TaiKhoan tk " +
@@ -63,6 +62,13 @@ public interface    TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
 
     TaiKhoan findTaiKhoanByMatKhau(String matKhau);
 
+
+    Optional<TaiKhoan> findByEmail(String email);
+
+    @Query("SELECT tk FROM TaiKhoan tk WHERE tk.soDienThoai = :sdt")
+    Optional<TaiKhoan> findBySoDienThoai1(String sdt);
+
+//    TaiKhoan findByVaitro(VaiTro vaiTro);
 
 
 }

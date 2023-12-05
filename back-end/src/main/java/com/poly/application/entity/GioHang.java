@@ -1,5 +1,6 @@
 package com.poly.application.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -46,5 +48,9 @@ public class GioHang {
     @ManyToOne
     @JoinColumn(name = "nguoi_so_huu", referencedColumnName = "id")
     private TaiKhoan taiKhoan;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "gioHang", fetch = FetchType.LAZY)
+    private List<GioHangChiTiet> gioHangChiTietList;
 
 }

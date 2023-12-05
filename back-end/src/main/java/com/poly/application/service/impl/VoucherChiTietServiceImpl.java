@@ -8,6 +8,7 @@ import com.poly.application.model.request.create_request.CreatedVoucherChiTietRe
 import com.poly.application.model.request.update_request.UpdatedChiTietSanPhamRequest;
 import com.poly.application.model.request.update_request.UpdatedVoucherChiTietRequest;
 import com.poly.application.model.response.VoucherChiTietResponse;
+import com.poly.application.model.response.VoucherChiTietResponseMapping;
 import com.poly.application.repository.VoucherChiTietRepository;
 import com.poly.application.service.VoucherChiTietService;
 import jakarta.transaction.Transactional;
@@ -39,6 +40,11 @@ public class VoucherChiTietServiceImpl implements VoucherChiTietService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<VoucherChiTietResponseMapping> findByVoucherId(Long idVoucher) {
+        return repository.findByVoucherId(idVoucher);
+    }
+
 
     @Override
     public Page<VoucherChiTietResponse> getAllPage(Integer page, Integer pageSize) {
@@ -53,7 +59,7 @@ public class VoucherChiTietServiceImpl implements VoucherChiTietService {
         List<VoucherChiTiet> list = new ArrayList<>();
         for (CreatedVoucherChiTietRequest request : requests) {
             VoucherChiTiet voucherChiTiet = mapper.convertCreateRequestToEntity(request);
-            voucherChiTiet.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
+            voucherChiTiet.setTrangThai(CommonEnum.TrangThaiVoucherChiTiet.ACTIVE);
             list.add(voucherChiTiet);
         }
         repository.saveAll(list);
@@ -78,7 +84,7 @@ public class VoucherChiTietServiceImpl implements VoucherChiTietService {
                 }
             } else if (updateRequest.getId() == null) {
                 VoucherChiTiet newVoucherChiTiet = new VoucherChiTiet();
-                newVoucherChiTiet.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
+                newVoucherChiTiet.setTrangThai(CommonEnum.TrangThaiVoucherChiTiet.ACTIVE);
                 mapper.convertUpdateRequestToEntity(updateRequest, newVoucherChiTiet);
                 newVoucherChiTietList.add(newVoucherChiTiet);
             }

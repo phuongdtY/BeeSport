@@ -17,9 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,7 +76,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     }
 
     @Override
-    public Page<TaiKhoanResponse> getAllKhachHang(Integer page, Integer pageSize, String sortField, String sortOrder, String searchText, String ngaySinhStart, String ngaySinhEnd, String gioiTinhString, String trangThaiString) {
+    public Page<TaiKhoanResponse> getAllKhachHang(Integer page, Integer pageSize, String sortField, String sortOrder, String gioiTinhString, String searchText, String trangThaiString) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
@@ -99,10 +100,8 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         } else {
             trangThai = CommonEnum.TrangThaiThuocTinh.valueOf(trangThaiString);
         }
-        LocalDate ngaySinhStartDate = ngaySinhStart != null ? LocalDate.parse(ngaySinhStart) : null;
-        LocalDate ngaySinhEndDate = ngaySinhEnd != null ? LocalDate.parse(ngaySinhEnd) : null;
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<TaiKhoan> taiKhoanPage = taiKhoanRepository.findAllByVaiTro2(pageable, searchText,ngaySinhStartDate,ngaySinhEndDate,gioiTinh,trangThai);
+        Page<TaiKhoan> taiKhoanPage = taiKhoanRepository.findAllByVaiTro2(pageable, searchText,trangThai,gioiTinh);
         return taiKhoanPage.map(taiKhoanMapper::convertEntityToResponse);
     }
 
@@ -126,6 +125,8 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         createdTaiKhoan.setMatKhau(emailSender.randomPasswords());
         TaiKhoan savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
         emailSender.sendEmail(savedTaiKhoan);
+        createdTaiKhoan.setMatKhau(new BCryptPasswordEncoder().encode(savedTaiKhoan.getMatKhau()));
+        savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
         return taiKhoanMapper.convertEntityToResponse(savedTaiKhoan);
     }
 
@@ -136,40 +137,6 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
             throw new NotFoundException("Tài khoản không tồn tại");
         }
         return taiKhoanMapper.convertEntityToResponse(taiKhoan.get());
-    }
-
-    @Override
-    public TaiKhoanResponse findByEmail(String email, String matKhau) {
-        TaiKhoan taiKhoan = taiKhoanRepository.findTaiKhoanByEmail(email);
-        TaiKhoanResponse taiKhoanResponse = null;
-        if (taiKhoan!=null) {
-            if (taiKhoan.getMatKhau().equals(matKhau)) {
-                taiKhoanResponse = taiKhoanMapper.convertEntityToResponse(taiKhoan);
-
-            } else {
-                throw new BadRequestException("Mật khẩu không khớp");
-            }
-        } else {
-            throw new BadRequestException("Tài khoản không tồn tại");
-        }
-
-        return taiKhoanResponse;
-    }
-
-
-    @Override
-    public TaiKhoanResponse khachHangCreat(CreatedTaiKhoanRequest request) {
-        TaiKhoan soDienThoai = taiKhoanRepository.findBySoDienThoai(request.getSoDienThoai());
-        if (soDienThoai != null) {
-            throw new BadRequestException("Số điện thoại đã tồn tại trong hệ thống!");
-        }
-        TaiKhoan createdTaiKhoan = taiKhoanMapper.convertCreateRequestToEntity(request);
-        createdTaiKhoan.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
-        createdTaiKhoan.setVaiTro(vaiTroRepository.findId(Long.valueOf(3)));
-        TaiKhoan savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
-        TaiKhoanResponse rs = taiKhoanMapper.convertEntityToResponse(savedTaiKhoan);
-        emailSender.sendEmail(savedTaiKhoan);
-        return rs;
     }
 
     @Override
@@ -188,8 +155,25 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         createdTaiKhoan.setMatKhau(emailSender.randomPasswords());
         TaiKhoan savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
         emailSender.sendEmail(savedTaiKhoan);
+        createdTaiKhoan.setMatKhau(new BCryptPasswordEncoder().encode(savedTaiKhoan.getMatKhau()));
+        savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
         return taiKhoanMapper.convertEntityToResponse(savedTaiKhoan);
     }
+
+    @Override
+    public TaiKhoan getAllTaiKhoan(String email) {
+        TaiKhoan listTaiKhoan = taiKhoanRepository.findTaiKhoanByEmail(email);
+        return listTaiKhoan;
+    }
+
+//    public TaiKhoanResponse converToResponse(TaiKhoan taiKhoan){
+//        return TaiKhoanResponse.builder()
+//                .id(taiKhoan.getId())
+//                .hoVaTen(taiKhoan.getHoVaTen())
+//                .email(taiKhoan.getEmail())
+//                .matKhau(taiKhoan.getMatKhau())
+//                .build();
+//    }
 
     @Override
     public TaiKhoanResponse update(Long id, UpdatedTaiKhoanRequest request) {
@@ -214,6 +198,24 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         }
 
 
+        TaiKhoan detail = optional.get();
+        taiKhoanMapper.convertUpdateRequestToEntity(request, detail);
+        return taiKhoanMapper.convertEntityToResponse(taiKhoanRepository.save(detail));
+    }
+
+    @Override
+    public TaiKhoanResponse updateKhachHang(Long id, UpdatedTaiKhoanRequest request) {
+        Optional<TaiKhoan> optional = taiKhoanRepository.findById(id);
+        if (optional.isEmpty()) {
+            throw new NotFoundException("Tài khoản không tồn tại");
+        }
+        TaiKhoan soDienThoai = taiKhoanRepository.findBySoDienThoai(request.getSoDienThoai());
+
+        if (soDienThoai != null && !request.getSoDienThoai().equals(soDienThoai.getSoDienThoai())) {
+            if (taiKhoanRepository.existsBySoDienThoai(request.getSoDienThoai())) {
+                throw new BadRequestException("Số điện thoại đã tồn tại trong hệ thống. Vui lòng sử dụng số điện thoại khác!");
+            }
+        }
         TaiKhoan detail = optional.get();
         taiKhoanMapper.convertUpdateRequestToEntity(request, detail);
         return taiKhoanMapper.convertEntityToResponse(taiKhoanRepository.save(detail));

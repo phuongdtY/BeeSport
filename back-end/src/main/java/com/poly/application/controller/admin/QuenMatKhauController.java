@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/admin/api/")
+@RequestMapping("/api")
 public class QuenMatKhauController {
     @Autowired
     private QuenMatKhauService quenMatKhauService;
 
 
-    @PostMapping("forgot-password")
+    @PostMapping("/forgot-password")
     public ResponseEntity<?> fotgotPassword(@RequestBody QuenMatKhauRequest request){
         TaiKhoan taiKhoan = quenMatKhauService.oldPassword(request);
 

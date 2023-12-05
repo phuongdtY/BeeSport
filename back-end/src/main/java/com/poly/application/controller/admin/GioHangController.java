@@ -23,7 +23,12 @@ public class GioHangController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable(name = "id") Long id) {
-        return ResponseEntity.ok(service.getOne(id));
+        return ResponseEntity.ok(service.findById(id));
+    }
+
+    @GetMapping("/tai-khoan/{id}")
+    public ResponseEntity<?> getGioHang(@PathVariable(name = "id") Long id) {
+        return ResponseEntity.ok(service.findByIdTK(id));
     }
 
     @PutMapping("/{id}")
