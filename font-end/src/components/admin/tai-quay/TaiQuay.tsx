@@ -1,7 +1,8 @@
-import { Tabs, message } from "antd";
+import { Modal, Tabs, Typography, message } from "antd";
 import React, { useRef, useState, useEffect } from "react";
 import GioHangTaiQuay from "./GioHangTaiQuay";
 import request from "~/utils/request";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -10,6 +11,8 @@ const TaiQuay: React.FC = () => {
   const [items, setItems] = useState<React.ReactNode[]>([]);
   const [hoaDonCho, setHoaDonCho] = useState(0);
   const newTabIndex = useRef(1);
+  const { confirm } = Modal;
+  const { Text } = Typography;
 
   const fetchRecentInvoices = async () => {
     try {
@@ -81,24 +84,59 @@ const TaiQuay: React.FC = () => {
     }
   };
 
-  const remove = (targetKey: TargetKey) => {
-    let newActiveKey = activeKey;
-    let lastIndex = -1;
-    items.forEach((item, i) => {
-      if (item.key === targetKey) {
-        lastIndex = i - 1;
-      }
+  const remove = async (targetKey: TargetKey) => {
+    const targetInvoice = items.find((item) => item.key === targetKey);
+    if (!targetInvoice) return;
+
+    const invoiceId = targetInvoice.children?.props.id;
+    const invoiceCode = targetInvoice.label;
+    confirm({
+      title: "Xác Nhận",
+      icon: <ExclamationCircleFilled />,
+      content: (
+        <div>
+          Hóa đơn{" "}
+          <Text type="danger" strong>
+            #{invoiceCode}
+          </Text>{" "}
+          chưa được lưu. Bạn có chắc muốn hủy hóa đơn này không?
+        </div>
+      ),
+      okText: "OK",
+      cancelText: "Hủy",
+      onOk: async () => {
+        let newActiveKey = activeKey;
+        let lastIndex = -1;
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          if (item.key === targetKey) {
+            lastIndex = i - 1;
+            if (item.children) {
+              try {
+                await request.put(`hoa-don/${invoiceId}`, {
+                  trangThaiHoaDon: "CANCELLED",
+                });
+                // Cập nhật giao diện sau khi hóa đơn được hủy
+                fetchRecentInvoices();
+                message.success("Hóa đơn đã được hủy thành công");
+              } catch (error) {
+                message.error("Lỗi khi hủy hóa đơn: " + error);
+              }
+            }
+          }
+        }
+        const newPanes = items.filter((item) => item.key !== targetKey);
+        if (newPanes.length && newActiveKey === targetKey) {
+          if (lastIndex >= 0) {
+            newActiveKey = newPanes[lastIndex].key;
+          } else {
+            newActiveKey = newPanes[0].key;
+          }
+        }
+        setItems(newPanes);
+        setActiveKey(newActiveKey);
+      },
     });
-    const newPanes = items.filter((item) => item.key !== targetKey);
-    if (newPanes.length && newActiveKey === targetKey) {
-      if (lastIndex >= 0) {
-        newActiveKey = newPanes[lastIndex].key;
-      } else {
-        newActiveKey = newPanes[0].key;
-      }
-    }
-    setItems(newPanes);
-    setActiveKey(newActiveKey);
   };
 
   const onEdit = (

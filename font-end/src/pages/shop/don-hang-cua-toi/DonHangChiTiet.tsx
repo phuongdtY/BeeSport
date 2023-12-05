@@ -1,7 +1,7 @@
 import { Divider, Empty, Space, Spin, Table, Tag, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect } from "react";
-import request, { requestClient } from "~/utils/request";
+import requestClient from "~/utils/requestClient";
 import HinhAnhSanPham from "../gio-hang/HinhAnhSanPham";
 import { formatGiaTienVND } from "~/utils/formatResponse";
 
@@ -64,9 +64,10 @@ interface DonHangChiTietProps {
 const DonHangChiTiet: React.FC<DonHangChiTietProps> = ({ currentKey }) => {
   const [data, setData] = useState<DataType[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const idTaiKhoan = localStorage.getItem("acountId");
 
   const param = {
-    taiKhoanId: 3,
+    taiKhoanId: idTaiKhoan,
     trangThai: currentKey,
   };
 

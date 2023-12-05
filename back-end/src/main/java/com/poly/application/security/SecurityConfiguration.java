@@ -49,7 +49,8 @@ public class SecurityConfiguration {
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/hoa-don-chi-tiet/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/**")).hasAnyAuthority("MANAGER","EMPLOYEE")
 //                        .requestMatchers(new AntPathRequestMatcher("/admin/api/hoa-don/**")).hasAnyAuthority("EMPLOYEE")
-                        .requestMatchers(new AntPathRequestMatcher("/api/**")).hasAnyAuthority("CUSTOMER")
+                        .requestMatchers(new AntPathRequestMatcher("/api/**", "/client/api/don-hang/**")).hasAnyAuthority("CUSTOMER")
+
                         .anyRequest().authenticated())
 
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

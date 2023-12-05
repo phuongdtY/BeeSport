@@ -605,26 +605,15 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               optionType="button"
               onChange={(e) => {
                 const value = e.target.value;
-
-                // Kiểm tra nếu radio đang được chọn đã là giá trị của selectedRadio
-                if (selectedRadio === value) {
-                  setSelectedRadio(null); // Bỏ chọn radio đó
-                } else {
-                  setSelectedRadio(value); // Đặt radio được chọn
-                  handleCashRadioChange(e); // Gọi hàm handleCashRadioChange của bạn
-                  setIsPaymentSelected(true); // Đặt biến state khi radio được chọn
-                }
+                setSelectedRadio(value); // Đặt radio được chọn
+                handleCashRadioChange(e); // Gọi hàm handleCashRadioChange của bạn
+                setIsPaymentSelected(true); // Đặt biến state khi radio được chọn
               }}
               style={{ marginBottom: 15 }}
             >
               <Row gutter={[15, 15]} style={{ marginTop: 20 }}>
                 <Radio.Button
                   value={0}
-                  onClick={(value) => {
-                    setSelectedRadio(value.target.value);
-                    setIsPaymentSelected(false);
-                    setIsCashSelected(false);
-                  }}
                   style={{
                     height: 70,
                     width: 220,
@@ -646,9 +635,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </Radio.Button>
                 <Radio.Button
                   value={1}
-                  onClick={(value) => {
-                    setSelectedRadio(value.target.value);
-                  }}
                   style={{
                     height: 70,
                     width: 220,
