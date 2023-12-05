@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Badge, Button, Menu, Select, message, theme,Modal } from "antd";
+import {
+  Badge,
+  Button,
+  Menu,
+  Select,
+  message,
+  theme,
+  Modal,
+  MenuProps,
+} from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { PlusOutlined, ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
+import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import logo from "~/image/logo.jpg";
 import request, { requestLogout } from "~/utils/request";
-import { max } from "moment";
 
 type MenuItem = Required<MenuProps>["items"][number];
 const getItem = (
@@ -25,31 +33,37 @@ const getItem = (
 
 const Header: React.FC = () => {
   const [count, setCount] = useState<number | undefined>();
-  const id = localStorage.getItem("gioHang");
+  const idGioHangTaiKhoan = localStorage.getItem("cartIdTaiKhoan");
+  const idGioHangNull = localStorage.getItem("cartId");
+  const currentPathname = window.location.pathname;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await request.get(
-          "/gio-hang-chi-tiet/detail-gio-hang/" + id
+          `/gio-hang/${
+            idGioHangTaiKhoan != null ? idGioHangTaiKhoan : idGioHangNull
+          }`
         );
-        setCount(res.data.length);
+        console.log(res);
+        setCount(res.data.gioHangChiTietList.length);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
-  }, [id]);
+  }, [idGioHangTaiKhoan, idGioHangNull, currentPathname]);
+
   const navigate = useNavigate();
   const handleLogout = async () => {
     try {
       const response123 = await requestLogout.post("/logout");
-      console.log(response123.data)
+      console.log(response123.data);
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("acountId");
       localStorage.removeItem("roleId");
-      // localStorage.removeItem("idGioHang");
-      
+      localStorage.removeItem("cartIdTaiKhoan");
+
       navigate("/sign-in");
       message.success("Đăng xuất thành công");
     } catch (error) {
@@ -69,19 +83,10 @@ const Header: React.FC = () => {
     getItem(<Link to="/don-hang">Đơn hàng của tôi</Link>, "4"),
   ];
   const roleId = localStorage.getItem("roleId");
- console.log("aaaa",roleId)
   const { Option } = Select;
   const [modalVisible, setModalVisible] = useState(false);
   const showModal = () => {
     setModalVisible(true);
-  };
-  const handleOk = () => {
-    // Handle any logic you need when the OK button is clicked
-    setModalVisible(false);
-  };
-  const handleCancel = () => {
-    // Handle any logic you need when the Cancel button is clicked or modal is closed
-    setModalVisible(false);
   };
   return (
     <header
@@ -129,15 +134,15 @@ const Header: React.FC = () => {
           <Option value="logout">Logout</Option>
         </Select>
       ) : (
-      <Link
-        style={{ marginLeft: "850px" }}
-        to="/sign-in"
-        className="btn-sign-in"
-      >
-        <UserOutlined
-          style={{ fontSize: "22px", color: "black", marginRight: 10 }}
-        />
-      </Link>
+        <Link
+          style={{ marginLeft: "850px" }}
+          to="/sign-in"
+          className="btn-sign-in"
+        >
+          <UserOutlined
+            style={{ fontSize: "22px", color: "black", marginRight: 10 }}
+          />
+        </Link>
       )}
       <Link to="/gio-hang">
         <Badge count={count}>

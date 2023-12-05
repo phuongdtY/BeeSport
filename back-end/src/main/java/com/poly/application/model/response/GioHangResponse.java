@@ -1,6 +1,7 @@
 package com.poly.application.model.response;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.GioHangChiTiet;
 import com.poly.application.entity.TaiKhoan;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
@@ -16,6 +17,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,5 +36,7 @@ public class GioHangResponse {
     private Integer trangThai;
 
     private TaiKhoan taiKhoan;
+
+    private List<GioHangChiTiet> gioHangChiTietList;
 
 }

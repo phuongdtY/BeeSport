@@ -47,6 +47,7 @@ const detailSanPham: React.FC = () => {
   const [idKichCo, setIdKichCo] = useState(null);
   const [idLoaiDe, setIdLoaiDe] = useState(null);
   const [idDiaHinhSan, setIdDiaHinhSan] = useState(null);
+  const [idGioHang, setIdGioHang] = useState(null);
 
   const [anhDaiDien, setAnhDaiDien] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -56,7 +57,10 @@ const detailSanPham: React.FC = () => {
   const [quantity, setQuantity] = useState(1); // Số lượng sản phẩm, mặc định là 1
   const [form] = Form.useForm();
   const { id } = useParams();
-  const [selecteds, setSelecteds] = useState<DataParams>({});
+
+  const idGioHangTaiKhoan = localStorage.getItem("cartIdTaiKhoan");
+  const idGioHangNull = localStorage.getItem("cartId");
+
   // Hàm xử lý khi bấm nút cộng
   const handleIncrement = () => {
     if (quantity < totalQuantity) {
@@ -103,7 +107,6 @@ const detailSanPham: React.FC = () => {
       console.log(error);
     }
   };
-  localStorage.setItem("gioHang", "1");
 
   const sanPham = async () => {
     try {
@@ -157,6 +160,35 @@ const detailSanPham: React.FC = () => {
   };
   const totalQuantity = data.reduce((total, item) => total + item.soLuong, 0);
 
+  const generateUniqueCartId = async () => {
+    try {
+      const res = await request.post(`gio-hang`, {
+        ghiChu: "khong xac dinh",
+      });
+      console.log(res);
+
+      return res.data.id;
+    } catch (error) {
+      console.error("Lỗi khi tạo gio-hang:", error);
+      throw new Error("Lỗi khi tạo gio-hang");
+    }
+  };
+
+  const getCartId = async () => {
+    let cartId = localStorage.getItem("cartId");
+
+    if (!cartId) {
+      try {
+        cartId = await generateUniqueCartId();
+        localStorage.setItem("cartId", cartId);
+      } catch (error) {
+        console.error("Lỗi khi lấy ID giỏ hàng:", error);
+      }
+    }
+
+    return cartId;
+  };
+
   const onFinish = async () => {
     if (
       idMauSac === null ||
@@ -167,6 +199,13 @@ const detailSanPham: React.FC = () => {
       message.error("Bạn chưa thông tin sản phẩm muốn thêm vào giỏ hàng");
       return;
     }
+    if (idGioHangNull == null) {
+      getCartId();
+      let cartId = localStorage.getItem("cartId");
+      setIdGioHang(cartId);
+    } else {
+      setIdGioHang(idGioHangNull);
+    }
     try {
       const productResponse = await request.get(
         "/chi-tiet-san-pham/get-one/" + id,
@@ -174,14 +213,16 @@ const detailSanPham: React.FC = () => {
           params: {
             idMauSac: idMauSac,
             idKichCo: idKichCo,
-            idDiaHinhSan: idDiaHinhSan ,
-            idLoaiDe:idLoaiDe ,
+            idDiaHinhSan: idDiaHinhSan,
+            idLoaiDe: idLoaiDe,
           },
         }
       );
       if (productResponse.data) {
         await request.post("/gio-hang-chi-tiet", {
-          gioHang: { id: 1 },
+          gioHang: {
+            id: idGioHangTaiKhoan !== null ? idGioHangTaiKhoan : idGioHang,
+          },
           soLuong: quantity, // Số lượng
           chiTietSanPham: { id: productResponse.data.id },
         });
