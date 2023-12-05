@@ -9,6 +9,7 @@ import {
   Select,
   Slider,
   Table,
+  Typography,
   message,
 } from "antd";
 import { Option } from "antd/es/mentions";
@@ -16,6 +17,7 @@ import React, { useState, useEffect } from "react";
 import request, { request4s } from "~/utils/request";
 
 const { confirm } = Modal;
+const { Text } = Typography;
 
 interface ModalSanPhamProps {
   isModalVisible: boolean;
@@ -135,14 +137,19 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
       title: "Hành động",
       dataIndex: "",
       key: "",
-      render: (item, record) => (
-        <Button
-          type="primary"
-          onClick={() => handleChonSanPham(record.id, record.giaTien)}
-        >
-          Chọn
-        </Button>
-      ),
+      render: (item, record) =>
+        record.soLuong === 0 ? (
+          <Text strong type="danger">
+            Hết hàng
+          </Text>
+        ) : (
+          <Button
+            type="primary"
+            onClick={() => handleChonSanPham(record.id, record.giaTien)}
+          >
+            Chọn
+          </Button>
+        ),
     },
   ];
 

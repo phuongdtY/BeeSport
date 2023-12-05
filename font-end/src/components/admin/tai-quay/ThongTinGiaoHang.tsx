@@ -226,7 +226,7 @@ const ThongTinGiaoHang: React.FC<{
                   message: "Vui lòng nhập họ và tên",
                 },
                 {
-                  pattern: /^[A-Z ]+$/i,
+                  pattern: /^[A-Za-z\sÀ-Ỹà-ỹ]+$/i,
                   message: "Tên chỉ được viết chữ",
                 },
                 {
@@ -369,8 +369,8 @@ const ThongTinGiaoHang: React.FC<{
                   message: "Bạn chưa nhập địa chỉ cụ thể",
                 },
                 {
-                  max: 30,
-                  message: "Địa chỉ cụ thể không được vượt quá 30 ký tự",
+                  max: 100,
+                  message: "Địa chỉ cụ thể không được vượt quá 100 ký tự",
                 },
               ]}
             >
