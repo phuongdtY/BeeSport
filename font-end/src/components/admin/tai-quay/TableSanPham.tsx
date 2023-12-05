@@ -150,6 +150,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
           tongTien: newSoLuongValue * productToUpdate.donGia, // Cập nhật tổng tiền
         };
         setDataGioHang(updatedData);
+        setInputSoLuong(newSoLuongValue);
       } else {
         // Hiển thị thông báo lỗi khi số lượng không hợp lệ
         if (newSoLuongValue < 1) {
