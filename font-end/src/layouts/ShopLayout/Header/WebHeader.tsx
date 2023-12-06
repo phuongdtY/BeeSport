@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Badge, Menu, MenuProps, theme } from "antd";
-import { Link } from "react-router-dom";
+import {
+  Badge,
+  Button,
+  Menu,
+  Select,
+  message,
+  theme,
+  Modal,
+  MenuProps,
+} from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import logo from "~/image/logo.jpg";
-import request from "~/utils/request";
+import request, { requestLogout } from "~/utils/request";
 
 type MenuItem = Required<MenuProps>["items"][number];
 const getItem = (
@@ -24,21 +33,44 @@ const getItem = (
 
 const Header: React.FC = () => {
   const [count, setCount] = useState<number | undefined>();
-  const id = localStorage.getItem("gioHang");
+  const idGioHangTaiKhoan = localStorage.getItem("cartIdTaiKhoan");
+  const idGioHangNull = localStorage.getItem("cartId");
+  const currentPathname = window.location.pathname;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await request.get(
-          "/gio-hang-chi-tiet/detail-gio-hang/" + id
+          `/gio-hang/${
+            idGioHangTaiKhoan != null ? idGioHangTaiKhoan : idGioHangNull
+          }`
         );
-        setCount(res.data.length);
+        console.log(res);
+        setCount(res.data.gioHangChiTietList.length);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
-  }, [id]);
+  }, [idGioHangTaiKhoan, idGioHangNull, currentPathname]);
+
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    try {
+      const response123 = await requestLogout.post("/logout");
+      console.log(response123.data);
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("acountId");
+      localStorage.removeItem("roleId");
+      localStorage.removeItem("cartIdTaiKhoan");
+
+      navigate("/sign-in");
+      message.success("Đăng xuất thành công");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      message.error("Có lỗi xảy ra khi đăng xuất.");
+    }
+  };
 
   const {
     token: { colorBgContainer },
@@ -50,7 +82,12 @@ const Header: React.FC = () => {
     getItem(<Link to="/admin">Về chúng tôi</Link>, "3"),
     getItem(<Link to="/don-hang">Đơn hàng của tôi</Link>, "4"),
   ];
-
+  const roleId = localStorage.getItem("roleId");
+  const { Option } = Select;
+  const [modalVisible, setModalVisible] = useState(false);
+  const showModal = () => {
+    setModalVisible(true);
+  };
   return (
     <header
       style={{
@@ -78,15 +115,35 @@ const Header: React.FC = () => {
         defaultSelectedKeys={["1"]}
         items={items}
       />
-      <Link
-        style={{ marginLeft: "850px" }}
-        to="/sign-in"
-        className="btn-sign-in"
-      >
-        <UserOutlined
-          style={{ fontSize: "22px", color: "black", marginRight: 10 }}
-        />
-      </Link>
+      {roleId ? (
+        <Select
+          defaultValue={roleId}
+          style={{ width: 150, marginLeft: 700 }}
+          onChange={(value) => {
+            if (value === "logout") {
+              handleLogout();
+            } else if (value === "thongtin") {
+              showModal();
+            }
+          }}
+        >
+          {roleId === "1" && <Option value="1">Quản lý</Option>}
+          {roleId === "2" && <Option value="2">Nhân viên</Option>}
+          {roleId === "3" && <Option value="3">Khách hàng</Option>}
+          <Option value="thongtin">Thông tin</Option>
+          <Option value="logout">Logout</Option>
+        </Select>
+      ) : (
+        <Link
+          style={{ marginLeft: "850px" }}
+          to="/sign-in"
+          className="btn-sign-in"
+        >
+          <UserOutlined
+            style={{ fontSize: "22px", color: "black", marginRight: 10 }}
+          />
+        </Link>
+      )}
       <Link to="/gio-hang">
         <Badge count={count}>
           <ShoppingCartOutlined style={{ fontSize: "25px" }} />

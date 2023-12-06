@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import IndexNhanVien from "./pages/admin/nhan-vien/index";
 import IndexKhachHang from "./pages/admin/khach-hang/index";
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
@@ -30,7 +30,7 @@ import Signin from "./pages/login/sign-in/Signin";
 import Signup from "./pages/login/sign-up/Singup";
 import Forgotpassword from "./pages/login/forgot-password/Forgotpassword";
 import AddKH from "./pages/admin/khach-hang/add";
-// import UpdateKhachHang from "./pages/admin/khach-hang/update";
+import UpdateKhachHang from "./pages/admin/khach-hang/update";
 import IndexHoaDon from "./pages/admin/hoa-don";
 import IndexKichCo from "./pages/admin/kich-co";
 import AddKichCo from "./pages/admin/kich-co/add";
@@ -39,9 +39,12 @@ import DetailHoaDon from "./pages/admin/hoa-don/detailHoaDon";
 import DetailSanPham from "./pages/shop/san-pham/detail";
 import BanHangTaiQuay from "./pages/admin/ban-hang-tai-quay/BanHangTaiQuay.tsx";
 import UpdateSanPham from "./pages/admin/san-pham/UpdateSanPham.tsx";
+import ProtectedRoute1 from "./pages/admin/component/ProtectedRoute1.tsx";
 import SanPham from "./pages/shop/san-pham/SanPham.tsx";
 import ThongKe from "./pages/admin/thong-ke/ThongKe.tsx";
-import DonHangCuaToi from "./pages/shop/don-hang-cua-toi/DonHangCuaToi.tsx";
+import ProtectedRoute from "./pages/admin/component/ProtextedRoute.tsx";
+import React, { useEffect } from "react";
+import AuthContext from "./pages/admin/component/AuthContext.tsx";
 
 function App() {
   return (
@@ -49,35 +52,33 @@ function App() {
       <Route path="/sign-in" element={<Signin />} />
       <Route path="/sign-up" element={<Signup />} />
       <Route path="/forgot-password" element={<Forgotpassword />} />
-      <Route path="/thanh-toan" element={<ThanhToan />} />
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/san-pham" element={<SanPham />} />
         <Route path="/gio-hang" element={<GioHang />} />
         <Route path="/san-pham/detail/:id" element={<DetailSanPham />} />
-        <Route path="/don-hang" element={<DonHangCuaToi />} />
       </Route>
-      <Route path="/admin/*" element={<AdminLayout />}>
-        <Route path="nhan-vien" element={<IndexNhanVien />} />
+      <Route path="/admin/*" element={<ProtectedRoute element={<AdminLayout />} />} >
+        <Route path="nhan-vien" element={<ProtectedRoute1 element={<IndexNhanVien />} />}/>
         <Route path="ban-hang-tai-quay" element={<BanHangTaiQuay />} />
         <Route path="nhan-vien/add" element={<AddNV />} />
         <Route path="nhan-vien/edit/:id" element={<UpdateNhanVien />} />
-        <Route path="mau-sac" element={<IndexMauSac />} />
+        <Route path="mau-sac"  element={<IndexMauSac />} />
         <Route path="mau-sac/add" element={<AddMauSac />} />
         <Route path="mau-sac/update/:id" element={<UpdateMauSac />} />
-        <Route path="san-pham" element={<IndexSanPham />} />
+        <Route path="san-pham"  element={<IndexSanPham />} />
         <Route path="san-pham/add" element={<AddSanPham />} />
         <Route path="san-pham/update/:id" element={<UpdateSanPham />} />
         <Route path="thuong-hieu" element={<IndexThuongHieu />} />
         <Route path="thuong-hieu/add" element={<AddThuongHieu />} />
         <Route path="thuong-hieu/update/:id" element={<UpdateSanPham />} />
-        <Route path="dia-hinh-san" element={<IndexDiaHinhSan />} />
+        <Route path="dia-hinh-san"  element={<IndexDiaHinhSan />} />
         <Route path="dia-hinh-san/add" element={<AddDiaHinhSan />} />
         <Route path="dia-hinh-san/update/:id" element={<UpdateDiaHinhSan />} />
-        <Route path="loai-de" element={<IndexLoaiDe />} />
+        <Route path="loai-de"  element={<IndexLoaiDe />} />
         <Route path="loai-de/add" element={<AddLoaiDe />} />
         <Route path="loai-de/update/:id" element={<UpdateLoaiDe />} />
-        <Route path="voucher" element={<IndexVoucher />} />
+        <Route path="voucher" element={<ProtectedRoute1 element={<IndexVoucher />} />}/>
         <Route path="voucher/add" element={<AddVoucher />} />
         <Route path="voucher/:id" element={<UpdateVoucher />} />
         <Route path="hoa-don" element={<IndexHoaDon />} />
@@ -85,11 +86,11 @@ function App() {
         <Route path="kich-co/add" element={<AddKichCo />} />
         <Route path="kich-co/:id" element={<UpdateKichCo />} />
         <Route path="hoa-don/:id" element={<DetailHoaDon />} />
-        <Route path="khach-hang" element={<IndexKhachHang />} />
+        <Route path="khach-hang"  element={<IndexKhachHang />} />
         <Route path="khach-hang/add" element={<AddKH />} />
-        {/*<Route path="khach-hang/edit/:id" element={<UpdateKhachHang />} /> */}
+        <Route path="khach-hang/edit/:id" element={<UpdateKhachHang />} />
         <Route path="voucher/update/:id" element={<UpdateVoucher />} />
-        <Route path="thong-ke" element={<ThongKe />} />
+        <Route path="thong-ke" element={<ProtectedRoute1 element={<ThongKe />}/>} />
       </Route>
     </Routes>
   );

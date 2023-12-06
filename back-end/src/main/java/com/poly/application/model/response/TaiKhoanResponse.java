@@ -2,14 +2,16 @@ package com.poly.application.model.response;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.VaiTro;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TaiKhoanResponse {
 
     private  Long id;
@@ -48,6 +50,12 @@ public class TaiKhoanResponse {
 
     private VaiTro vaiTro;
 
+    public TaiKhoanResponse(Long id, String hoVaTen, String email, String matKhau) {
+        this.id = id;
+        this.hoVaTen = hoVaTen;
+        this.email = email;
+        this.matKhau = matKhau;
+    }
 
 
 }

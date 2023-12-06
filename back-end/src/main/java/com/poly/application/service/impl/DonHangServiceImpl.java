@@ -40,5 +40,20 @@ public class DonHangServiceImpl implements DonHangService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Long countSoHoaDon(Long taiKhoanId, String trangThaiHoaDon) {
+        CommonEnum.TrangThaiHoaDon trangThai = null;
+
+        if (trangThaiHoaDon != null && !trangThaiHoaDon.isEmpty()) {
+            try {
+                trangThai = CommonEnum.TrangThaiHoaDon.valueOf(trangThaiHoaDon.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+
+        Long soHoaDon = repository.countSoHoaDon(taiKhoanId, trangThai);
+        return soHoaDon;
+    }
 
 }

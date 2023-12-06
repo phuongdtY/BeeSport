@@ -18,6 +18,7 @@ export interface DataType {
   phuongXa: string;
   diaChiCuThe: string;
   anhDaiDien: string;
+  matKhau: string;
   ngayTao: string;
   ngaySua: string;
   trangThai: {
@@ -60,6 +61,6 @@ export interface QuenMatKhauRequest {
   email: String;
 }
 export interface DangNhapRequest {
-  email: String;
+  sdt: String;
   matKhau:String;
 }

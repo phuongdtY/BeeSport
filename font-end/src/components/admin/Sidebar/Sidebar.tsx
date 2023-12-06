@@ -36,7 +36,8 @@ const CustomSider: React.FC<{
   collapsed: boolean;
   colorBgContainer: string;
 }> = ({ collapsed, colorBgContainer }) => {
-  const items: MenuItem[] = [
+  const roleId = localStorage.getItem("roleId");
+  let items: MenuItem[] = [
     getItem(<Link to="/admin">Trang chủ</Link>, "1", <HomeOutlined />),
     getItem(
       <Link to="/admin/ban-hang-tai-quay">Bán hàng tại quầy</Link>,
@@ -48,7 +49,7 @@ const CustomSider: React.FC<{
       "3",
       <ContainerOutlined />
     ),
-
+      
     getItem("Quản lý sản phẩm", "sub1", <AppstoreAddOutlined />, [
       getItem(<Link to="/admin/san-pham">Sản phẩm</Link>, "5"),
       getItem("Thuộc tính", "sub1-2", null, [
@@ -62,8 +63,10 @@ const CustomSider: React.FC<{
 
     getItem("Quản lý tài khoản", "sub2", <TeamOutlined />, [
       getItem(<Link to="/admin/khach-hang">Khách hàng</Link>, "11"),
-      getItem(<Link to="/admin/nhan-vien">Nhân viên</Link>, "12"),
+      // Only hide "Nhân viên" if roleId is 2
+      roleId === "2" ? null : getItem(<Link to="/admin/nhan-vien">Nhân viên</Link>, "12"),
     ]),
+    
     getItem(
       <Link to="/admin/voucher">Quản lý voucher</Link>,
       "13",
@@ -71,6 +74,11 @@ const CustomSider: React.FC<{
     ),
     getItem(<Link to="/admin/thong-ke">Thống kê</Link>, "14", <FaChartBar />),
   ];
+  if (roleId === "2") {
+    items = items.filter(
+      (item) => item?.key !== "14" && item?.key !== "13"
+    );
+  }
 
   return (
     <Layout.Sider

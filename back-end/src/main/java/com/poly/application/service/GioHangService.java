@@ -8,7 +8,9 @@ public interface GioHangService {
 
     GioHangResponse create(CreatedGioHangRequest request);
 
-    GioHangResponse getOne(Long id);
+    GioHangResponse findByIdTK(Long id);
+
+    GioHangResponse findById(Long id);
 
     GioHangResponse update(Long id, UpdatedGioHangRequest request);
 

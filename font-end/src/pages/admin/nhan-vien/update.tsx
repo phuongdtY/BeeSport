@@ -138,7 +138,7 @@ const UpdateNhanVien: React.FC = () => {
             quanHuyen: Number(res.data?.quanHuyen),
             phuongXa: res.data?.phuongXa,
             diaChiCuThe: res.data?.diaChiCuThe,
-            matKhau:res.data?.matKhau,
+            // matKhau:res.data?.matKhau,
             trangThai: trangThaiValue, // Convert to boolean
         })
         ;
@@ -163,7 +163,6 @@ const UpdateNhanVien: React.FC = () => {
       onOk: async () => {
         try {
           const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
-          
           const res = await request.put("nhan-vien/update/" + id, {
             hoVaTen: values.hoVaTen,
             canCuocCongDan: values.canCuocCongDan,
@@ -175,7 +174,7 @@ const UpdateNhanVien: React.FC = () => {
             quanHuyen: values.quanHuyen,
             phuongXa: values.phuongXa,
             diaChiCuThe: values.diaChiCuThe,
-            matKhau: values.matKhau,
+            // matKhau: values.matKhau,
             trangThai: trangThai,
           });
           if (res.data) {
@@ -340,12 +339,7 @@ const UpdateNhanVien: React.FC = () => {
               >
             <Input/>
             </Form.Item>
-            <Form.Item
-              name="matKhau"
-              label="Mật khẩu"
-              >
-                <Input/>
-            </Form.Item>
+
             <Form.Item
               name="trangThai"
               label="Trạng thái"

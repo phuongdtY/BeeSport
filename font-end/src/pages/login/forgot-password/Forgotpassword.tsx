@@ -15,7 +15,7 @@ import * as React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { QuenMatKhauRequest, DataType } from "~/interfaces/taiKhoan.type";
-import {requestTimMatKhau} from "~/utils/request";
+import {requestTimMatKhau1} from "~/utils/request";
 const { confirm } = Modal;
 const add: React.FC = () => {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const add: React.FC = () => {
       onOk: async () => {
         try {
           setLoading(true);
-          const response = await requestTimMatKhau.post("forgot-password", {
+          const response = await requestTimMatKhau1.post("/forgot-password", {
             email: values.email,
           });
           console.log("Response from API:", response); // In dữ liệu từ API
@@ -78,7 +78,7 @@ const add: React.FC = () => {
                     message: "Vui lòng nhập email!",
                   },
                 ]}
-                style={{ width: "100%" }} // Đặt chiều rộng 100%
+                style={{ width: "500px" }} // Đặt chiều rộng 100%
               >
                 <Input prefix={<MailOutlined />} placeholder="E-mail" />
               </Form.Item>

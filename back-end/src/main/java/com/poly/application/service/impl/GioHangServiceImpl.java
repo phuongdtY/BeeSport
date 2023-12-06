@@ -58,7 +58,16 @@ public class GioHangServiceImpl implements GioHangService {
     }
 
     @Override
-    public GioHangResponse getOne(Long id) {
+    public GioHangResponse findByIdTK(Long id) {
+        GioHang optional = repository.getOne(id);
+        if (optional == null) {
+            throw new NotFoundException("Giỏ hàng không tồn tại");
+        }
+        return mapper.convertEntityToResponse(optional);
+    }
+
+    @Override
+    public GioHangResponse findById(Long id) {
         Optional<GioHang> optional = repository.findById(id);
         if (optional.isEmpty()) {
             throw new NotFoundException("Giỏ hàng không tồn tại");

@@ -2,22 +2,14 @@ import {
   ExclamationCircleFilled,
   MailOutlined,
   LockOutlined,
+  PhoneOutlined,
 } from "@ant-design/icons";
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Col,
-  message,
-} from "antd";
+import { Button, Card, Form, Input, Modal, Row, Col, message } from "antd";
 import * as React from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { DangNhapRequest } from "~/interfaces/taiKhoan.type";
-import {requestTimMatKhau} from "~/utils/request";
+import request, { requestDangNhap, requestLogout } from "~/utils/request";
 
 const { confirm } = Modal;
 
@@ -27,42 +19,42 @@ const DangNhap: React.FC = () => {
   const [error, setError] = useState<string | null>(null); // Thêm state để lưu thông báo lỗi
 
   const onFinish = async (values: DangNhapRequest) => {
-    confirm({
-      title: "Xác Nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn đăng nhập không?",
-      okText: "OK",
-      cancelText: "Hủy",
-      onOk: async () => {
+    try {
+      const response = await requestDangNhap.post("/sign-in", values);
+      const { refreshToken, roleId, acountId } = response.data; // Assuming your response contains accessToken and refreshToken
+      localStorage.setItem("refreshToken", refreshToken); // Store the access token
+      localStorage.setItem("roleId", roleId);
+      localStorage.setItem("acountId", acountId);
+
+      if (response.data.roleId === 1) {
+        // localStorage.setItem("2","11")
+        navigate("/admin");
+      } else if (response.data.roleId === 2) {
+        // localStorage.setItem("2","111111")
+        navigate("/admin/ban-hang-tai-quay");
+      } else if (response.data.roleId === 3) {
         try {
-          setLoading(true);
-          setError(null); // Xóa thông báo lỗi trước đó
-
-          const response = await requestTimMatKhau.post(`tai-khoan/dang-nhap/${values.email}/${values.matKhau}`);
-
-          if (response && response.data && response.data.vaiTro) {
-            const vaiTroId = response.data.vaiTro.id;
-            if (vaiTroId === 3) {
-              navigate("/khach-hang");
-            } else if (vaiTroId === 2) {
-              navigate("/nhan-vien");
-            }
-            message.success("Đăng nhập thành công");
-          } else {
-            message.error("Đăng nhập không thành công");
-          }
-        } catch (error:any) {
-          console.log("Error:", error); // In lỗi ra để xác định lý do
-          if (error.response && error.response.data) {
-            message.error(error.response.data.message);
-          } else {
-            message.error("Có lỗi xảy ra khi đăng nhập.");
-          }
-        } finally {
-          setLoading(false);
+          const res = await request.get(`gio-hang/tai-khoan/${acountId}`);
+          localStorage.setItem("cartIdTaiKhoan", res.data.id);
+        } catch (error) {
+          console.log(error);
         }
-      },
-    });
+        navigate("/");
+      }
+      message.success("Đăng nhập thành công");
+    } catch (error: any) {
+      console.log("Error:", error);
+      console.log("A123" + error.response.data.message);
+      if (error.response && error.response.status === 403) {
+        message.error("Tài khoản hoặc mật khẩu không tồn tại.");
+      } else if (error.response && error.response.data) {
+        message.error(error.response.data.message);
+      } else {
+        message.error("Có lỗi xảy ra khi đăng nhập.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -74,7 +66,7 @@ const DangNhap: React.FC = () => {
         minHeight: "70vh",
       }}
     >
-      <Card title="Log in">
+      <Card title="Đăng nhập">
         <Form
           labelCol={{ flex: "110px" }}
           labelAlign="left"
@@ -86,20 +78,20 @@ const DangNhap: React.FC = () => {
           layout="horizontal"
         >
           <Form.Item
-            name="email"
+            name="sdt"
             rules={[
               {
                 required: true,
-                message: "Bạn chưa điền E-mail!",
+                message: "Bạn chưa điền số điện thoại!",
               },
               {
-                type: "email",
-                message: "E-mail không hợp lệ!",
+                pattern: /^0[35789]\d{8}$/,
+                message: "Số điện thoại không hợp lệ!",
               },
             ]}
-            style={{ width: "100%" }}
+            style={{ width: "100%" }} // Đặt chiều rộng 100%
           >
-            <Input prefix={<MailOutlined />} placeholder="E-mail" />
+            <Input prefix={<PhoneOutlined />} placeholder="Số Điện Thoại" />
           </Form.Item>
           <Form.Item
             name="matKhau"
@@ -111,10 +103,7 @@ const DangNhap: React.FC = () => {
             ]}
             style={{ width: "100%" }}
           >
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="Mật khẩu"
-            />
+            <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
           </Form.Item>
           <Form.Item style={{ width: 500 }}>
             <Row style={{ marginBottom: 10, height: 35 }}>
@@ -125,7 +114,7 @@ const DangNhap: React.FC = () => {
                   htmlType="submit"
                   loading={loading}
                 >
-                  Log in
+                  Đăng nhập
                 </Button>
               </Col>
             </Row>
@@ -138,7 +127,7 @@ const DangNhap: React.FC = () => {
                     htmlType="submit"
                     loading={loading}
                   >
-                    Register
+                    Đăng ký
                   </Button>
                 </Link>
               </Col>
@@ -151,16 +140,14 @@ const DangNhap: React.FC = () => {
                     htmlType="submit"
                     loading={loading}
                   >
-                    Forgot your password?
+                    Quên mật khẩu?
                   </Button>
                 </Link>
               </Col>
             </Row>
           </Form.Item>
           {error && (
-            <div style={{ color: "red", marginTop: "10px" }}>
-              {error}
-            </div>
+            <div style={{ color: "red", marginTop: "10px" }}>{error}</div>
           )}
         </Form>
       </Card>

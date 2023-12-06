@@ -107,6 +107,10 @@ public class TaiKhoan implements Serializable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<GioHang> gioHangList;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<GiaoDich> giaoDichList;
 
     @ManyToOne
@@ -117,5 +121,12 @@ public class TaiKhoan implements Serializable {
     @OneToMany(mappedBy = "taiKhoan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<VoucherChiTiet> voucherChiTietList;
 
+
+    public TaiKhoan(String hoVaTen, String email, String matKhau, VaiTro vaiTro) {
+        this.hoVaTen = hoVaTen;
+        this.email = email;
+        this.matKhau = matKhau;
+        this.vaiTro = vaiTro;
+    }
 
 }
