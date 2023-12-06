@@ -7,6 +7,7 @@ import {
   Collapse,
   CollapseProps,
   ColorPicker,
+  Divider,
   Input,
   Pagination,
   PaginationProps,
@@ -24,6 +25,7 @@ import { Link } from "react-router-dom";
 import { DataParam } from "~/interfaces/filterSanPham.type";
 
 const { Title } = Typography;
+const { Text } = Typography;
 
 const SanPham: React.FC = () => {
   const [thuongHieus, setThuongHieus] = useState([]);
@@ -484,25 +486,23 @@ const SanPham: React.FC = () => {
           <Row gutter={16}>
             {sanPhams.map((product) => (
               <Col key={product.id}>
-                <Card
-                  hoverable
-                  style={{
-                    width: 260,
-                    marginRight: 30,
-                    marginLeft: 10,
-                    marginBottom: 15,
-                  }}
+                <Link
+                  to={`/san-pham/detail/${product.id}`}
+                  style={{ color: "black", margin: 0 }}
                 >
-                  <Link
-                    to={`/san-pham/detail/${product.id}`}
-                    style={{ fontWeight: "bold", margin: 0 }}
+                  <Card
+                    hoverable
+                    style={{ width: 267, marginBottom: 10 }}
+                    cover={
+                      <img
+                        style={{ padding: "0px 10px" }}
+                        alt="example"
+                        src={`http://localhost:8080/admin/api/file/view/${product.duongDan}`}
+                      />
+                    }
                   >
-                    <img
-                      style={{ padding: 30, height: 240 }}
-                      alt="example"
-                      src={`http://localhost:8080/admin/api/file/view/${product.duongDan}`}
-                    />
-                    <p style={{ textAlign: "left" }}>
+                    <Divider style={{ margin: 0, padding: 0 }} />
+                    <Text style={{ textAlign: "left" }} strong>
                       {product.ten}
                       <Title level={5} style={{ color: "red", margin: 0 }}>
                         {product.giaMin === product.giaMax
@@ -511,9 +511,9 @@ const SanPham: React.FC = () => {
                               product.giaMax
                             )}`}
                       </Title>
-                    </p>
-                  </Link>
-                </Card>
+                    </Text>
+                  </Card>
+                </Link>
               </Col>
             ))}
           </Row>

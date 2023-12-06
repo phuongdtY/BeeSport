@@ -20,7 +20,7 @@ public class HinhAnhSanPhamController {
     @GetMapping()
     public ResponseEntity<?> getAll(
             @RequestParam(name = "idSanPham") Long idSanPham,
-            @RequestParam(name = "idMauSac") Long idMauSac)
+            @RequestParam(name = "idMauSac",required = false) Long idMauSac)
     {
         return ResponseEntity.ok(service.getAll(idSanPham, idMauSac));
     }
