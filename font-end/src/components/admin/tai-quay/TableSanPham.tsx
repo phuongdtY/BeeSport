@@ -52,7 +52,12 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
 }) => {
   const [dataGioHang, setDataGioHang] = useState<DataGioHang[]>([]); // Specify the data type
   const { confirm } = Modal;
-  const [inputSoLuong, setInputSoLuong] = useState(0); // State để theo dõi giá trị nhập vào ô input
+  const [inputSoLuongList, setInputSoLuongList] = useState<Array<number>>([]);
+
+  useEffect(() => {
+    // Khởi tạo mảng inputSoLuongList với giá trị mặc định là 0 theo độ dài của dataGioHang
+    setInputSoLuongList(new Array(dataGioHang.length).fill(0));
+  }, [dataGioHang]);
 
   const tableGioHang: ColumnsType<DataGioHang> = [
     {
@@ -87,7 +92,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
       render: (text, record, index) => (
         <InputNumber
           style={{ width: 60 }}
-          value={inputSoLuong || record.soLuong} // Sử dụng inputSoLuong nếu đã thiết lập, nếu không dùng record.soLuong như cũ
+          value={inputSoLuongList[index] || record.soLuong}
           inputMode="numeric"
           onChange={(newSoLuong) => handleSoLuongChange(index, newSoLuong)}
         />
@@ -135,39 +140,52 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
 
   const handleSoLuongChange = (index, newSoLuong) => {
     const newSoLuongValue = typeof newSoLuong === "number" ? newSoLuong : 1;
-
-    // Tìm sản phẩm trong danh sách dựa trên index
     const productToUpdate = dataGioHang[index];
 
     if (productToUpdate) {
-      const soLuongTon = productToUpdate.chiTietSanPham.soLuong; // Số lượng tồn
       const updatedData = [...dataGioHang];
+      const updatedInputSoLuongList = [...inputSoLuongList];
+      const updatedSoLuongTon = updatedData[index].chiTietSanPham.soLuong;
 
-      if (newSoLuongValue >= 1 && newSoLuongValue <= soLuongTon) {
+      if (newSoLuongValue >= 1 && newSoLuongValue <= updatedSoLuongTon) {
         updatedData[index] = {
           ...productToUpdate,
           soLuong: newSoLuongValue,
-          tongTien: newSoLuongValue * productToUpdate.donGia, // Cập nhật tổng tiền
+          tongTien: newSoLuongValue * productToUpdate.donGia,
         };
-        setDataGioHang(updatedData);
-        setInputSoLuong(newSoLuongValue);
+        updatedInputSoLuongList[index] = newSoLuongValue;
       } else {
-        // Hiển thị thông báo lỗi khi số lượng không hợp lệ
         if (newSoLuongValue < 1) {
-          message.error("Số lượng không thể nhỏ hơn 1");
-          setInputSoLuong(1);
+          if (updatedSoLuongTon === 0) {
+            message.error(
+              `Sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] đã hết hàng`
+            );
+            updatedInputSoLuongList[index] = 0;
+          } else {
+            message.error("Số lượng không thể nhỏ hơn 1");
+            updatedData[index].soLuong = 1;
+            updatedData[index].tongTien = productToUpdate.donGia;
+            updatedInputSoLuongList[index] = 1;
+          }
         } else {
-          message.error("Số lượng vượt quá số lượng tồn");
-          // Nếu vượt quá số lượng tồn, đặt lại giá trị số lượng thành soLuongTon
-          updatedData[index] = {
-            ...productToUpdate,
-            soLuong: soLuongTon,
-            tongTien: soLuongTon * productToUpdate.donGia, // Cập nhật tổng tiền
-          };
-          setDataGioHang(updatedData);
-          setInputSoLuong(soLuongTon); // Cập nhật giá trị của ô input thành số lượng tồn
+          if (updatedSoLuongTon === 0) {
+            message.error(
+              `Sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] đã hết hàng nè`
+            );
+            updatedInputSoLuongList[index] = 0;
+          } else {
+            message.error(
+              `Bạn chỉ có thể mua tối đa ${updatedSoLuongTon} sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] `
+            );
+            updatedData[index].soLuong = updatedSoLuongTon;
+            updatedData[index].tongTien =
+              updatedSoLuongTon * productToUpdate.donGia;
+            updatedInputSoLuongList[index] = updatedSoLuongTon;
+          }
         }
       }
+      setDataGioHang(updatedData);
+      setInputSoLuongList(updatedInputSoLuongList);
     }
   };
 
