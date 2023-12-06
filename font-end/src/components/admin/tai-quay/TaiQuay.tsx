@@ -53,12 +53,13 @@ const TaiQuay: React.FC = () => {
   };
 
   const add = async () => {
-    if (items.length >= 7) {
-      message.warning("Số lượng hóa đơn chờ đã đạt mức tối đa");
-      return;
-    }
-
     try {
+      const res = await request.get("hoa-don/so-luong-hoa-don-cho");
+      const soLuongCho = res.data; // Số lượng hóa đơn chờ từ API
+      if (soLuongCho >= 8) {
+        message.warning("Số lượng hóa đơn chờ đã đạt mức tối đa");
+        return;
+      }
       // Thực hiện yêu cầu POST đến API
       const response = await request.post("hoa-don", {
         loaiHoaDon: "COUNTER",
@@ -99,7 +100,7 @@ const TaiQuay: React.FC = () => {
           <Text type="danger" strong>
             #{invoiceCode}
           </Text>{" "}
-          chưa được lưu. Bạn có chắc muốn hủy hóa đơn này không?
+          chưa được thanh toán. Bạn có chắc muốn hủy hóa đơn này không?
         </div>
       ),
       okText: "OK",

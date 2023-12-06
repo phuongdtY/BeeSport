@@ -27,5 +27,6 @@ public interface HoaDonService {
 
     void updateTrangThaiHoaDon(Long idHoadon, CommonEnum.TrangThaiHoaDon trangThaiHoaDon, String ghiChu, Long idPhuongThucThanhToan);
 
+    Long getSoLuongHoaDonCho();
 
 }

@@ -323,4 +323,9 @@ public class HoaDonServiceImpl implements HoaDonService {
         timelineRepository.save(timeLine);
     }
 
+    @Override
+    public Long getSoLuongHoaDonCho() {
+        return hoaDonRepository.getSoLuongHoaDonCho();
+    }
+
 }
