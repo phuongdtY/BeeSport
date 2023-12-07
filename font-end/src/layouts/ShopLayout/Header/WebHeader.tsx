@@ -126,6 +126,7 @@ const Header: React.FC = () => {
           {roleId === "2" && <Option value="2">Nhân viên</Option>}
           {roleId === "3" && <Option value="3">Khách hàng</Option>}
           <Option value="thongtin">Thông tin</Option>
+          <Option value="doiMatKhau"><Link to={"/doi-mat-khau"}>Đổi mật khẩu</Link></Option>
           <Option value="logout">Logout</Option>
         </Select>
       ) : (

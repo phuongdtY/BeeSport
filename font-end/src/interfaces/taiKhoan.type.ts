@@ -64,3 +64,9 @@ export interface DangNhapRequest {
   sdt: String;
   matKhau:String;
 }
+export interface DoiMatKhauRequest {
+  id: number;
+  matKhauCu:String;
+  matKhauMoi:String;
+  nhapLaiMatKhau:String;
+}

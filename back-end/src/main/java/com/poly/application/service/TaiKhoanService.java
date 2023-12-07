@@ -1,6 +1,7 @@
 package com.poly.application.service;
 
 import com.poly.application.entity.TaiKhoan;
+import com.poly.application.model.dto.PasswordRequest;
 import com.poly.application.model.request.create_request.CreatedTaiKhoanRequest;
 import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
 import com.poly.application.model.response.TaiKhoanResponse;
@@ -30,9 +31,7 @@ public interface TaiKhoanService {
 
     TaiKhoan getAllTaiKhoan(String email);
 
-
-
-
+    String changePassword(PasswordRequest passwordRequest);
 
 }
 ;
