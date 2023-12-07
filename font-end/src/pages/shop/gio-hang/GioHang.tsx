@@ -37,7 +37,6 @@ const { Title, Text } = Typography;
 
 const idGioHangTaiKhoan = localStorage.getItem("cartIdTaiKhoan");
 const idGioHangNull = localStorage.getItem("cartId");
-const currentPathname = window.location.pathname;
 
 const index: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -46,8 +45,6 @@ const index: React.FC = () => {
 
   useEffect(() => {
     gioHang();
-    console.log(idGioHangNull);
-    console.log(idGioHangTaiKhoan);
   }, [idGioHangNull, idGioHangTaiKhoan]);
 
   const confirmDelete = (id) => {
@@ -65,8 +62,8 @@ const index: React.FC = () => {
       setLoading(true);
       await request.delete(`gio-hang-chi-tiet/${id}`);
       setLoading(false);
-      message.success("Xóa sản phẩm thành công");
       gioHang();
+      message.success("Xóa sản phẩm thành công");
     } catch (error) {
       message.error("Xóa sản phẩm thất bại");
       setLoading(false);
@@ -74,20 +71,27 @@ const index: React.FC = () => {
   };
 
   const gioHang = async () => {
-    try {
-      setLoading(true);
-      const res = await request.get(
-        `gio-hang/${
-          idGioHangTaiKhoan != null ? idGioHangTaiKhoan : idGioHangNull
-        }`
-      );
-      console.log(res.data);
-
-      setData(res.data.gioHangChiTietList);
-      setLoading(false);
-    } catch (error) {
-      message.error("Xóa sản phẩm thất bại");
-      setLoading(false);
+    setData([]);
+    if (idGioHangTaiKhoan != null) {
+      try {
+        setLoading(true);
+        const res = await request.get(`gio-hang/${idGioHangTaiKhoan}`);
+        setData(res.data.gioHangChiTietList);
+        setLoading(false);
+      } catch (error) {
+        message.error("Lấy sản phẩm giỏ hàng thất bại");
+        setLoading(false);
+      }
+    } else {
+      try {
+        setLoading(true);
+        const res = await request.get(`gio-hang/${idGioHangNull}`);
+        setData(res.data.gioHangChiTietList);
+        setLoading(false);
+      } catch (error) {
+        message.error("Lấy sản phẩm giỏ hàng thất bại");
+        setLoading(false);
+      }
     }
   };
 
@@ -95,12 +99,22 @@ const index: React.FC = () => {
   const handleIncrement = (record: DataType) => {
     const newData = [...data];
     const index = newData.indexOf(record);
-    newData[index].soLuong += 1;
-    setData(newData);
 
-    // Add the item ID to updatedQuantities if not already in the array
-    if (!updatedQuantities.includes(record.id)) {
-      setUpdatedQuantities((prev) => [...prev, record.id]);
+    // Check if the incremented quantity is less than the limit
+    if (newData[index].soLuong < newData[index].chiTietSanPham.soLuong) {
+      newData[index].soLuong += 1;
+
+      // Add the item ID to updatedQuantities if not already in the array
+      if (!updatedQuantities.includes(record.id)) {
+        setUpdatedQuantities((prev) => [...prev, record.id]);
+      }
+
+      setData(newData);
+    } else {
+      // Handle when the quantity reaches the limit (if needed)
+      message.warning(
+        `Rất tiếc, bạn chỉ có thể mua tối đa ${newData[index].chiTietSanPham.soLuong} sản phẩm.`
+      );
     }
   };
 
@@ -137,12 +151,23 @@ const index: React.FC = () => {
       dataIndex: "chiTietSanPham",
       key: "ten",
       align: "left",
-      render: (chiTietSanPham) => (
+      render: (chiTietSanPham, record) => (
         <Space>
           <HinhAnhSanPham chiTietSanPham={chiTietSanPham} />
           <Space direction="vertical">
             <Text strong>{chiTietSanPham.sanPham.ten}</Text>
             <Text>{`[${chiTietSanPham.mauSac.ten} - ${chiTietSanPham.kichCo.kichCo} - ${chiTietSanPham.loaiDe.ten} - ${chiTietSanPham.diaHinhSan.ten}]`}</Text>
+            {chiTietSanPham.soLuong === 0 && (
+              <Text type="danger" strong italic>
+                Hết hàng
+              </Text>
+            )}
+            {chiTietSanPham.soLuong > 0 &&
+              record.soLuong > chiTietSanPham.soLuong && (
+                <Text type="danger" italic strong>
+                  Chỉ có thể mua tối đa {chiTietSanPham.soLuong} sản phẩm
+                </Text>
+              )}
           </Space>
         </Space>
       ),
@@ -196,9 +221,9 @@ const index: React.FC = () => {
     {
       dataIndex: "id",
       align: "center",
-      width: "1px",
-      render: (id) => (
-        <Space>
+      // width: "1px",
+      render: (id, record) => (
+        <>
           <Tooltip title="Xóa">
             <Button
               type="link"
@@ -208,7 +233,7 @@ const index: React.FC = () => {
               <DeleteOutlined style={{ color: "red" }} />
             </Button>
           </Tooltip>
-        </Space>
+        </>
       ),
     },
   ];
@@ -243,7 +268,6 @@ const index: React.FC = () => {
     try {
       setLoading(true);
       await request.put("/gio-hang-chi-tiet/update/" + id, updatedData);
-      fetchData();
       setLoading(false);
       message.success("Cập nhật giỏ hàng thành công");
     } catch (error) {

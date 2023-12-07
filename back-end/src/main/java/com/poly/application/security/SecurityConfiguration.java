@@ -35,6 +35,7 @@ public class SecurityConfiguration {
         return http.cors().and().csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request.requestMatchers(new AntPathRequestMatcher("/api/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/san-pham/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/admin/api/voucher/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/mau-sac/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/loai-de/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/dia-hinh-san/**")).permitAll()

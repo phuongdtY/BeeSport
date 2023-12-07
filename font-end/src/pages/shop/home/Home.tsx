@@ -21,7 +21,7 @@ import { Link } from "react-router-dom";
 import request from "~/utils/request";
 import { formatGiaTien } from "~/utils/formatResponse";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { Meta } = Card;
 const Home: React.FC = () => {
   const [sanPhamMoiNhat, setSanPhamMoiNhat] = useState([]);
@@ -78,7 +78,7 @@ const Home: React.FC = () => {
           <Col key={product.id}>
             <Link
               to={`/san-pham/detail/${product.id}`}
-              style={{ color: "black", fontWeight: "bold", margin: 0 }}
+              style={{ color: "black", margin: 0 }}
             >
               <Card
                 hoverable
@@ -92,7 +92,7 @@ const Home: React.FC = () => {
                 }
               >
                 <Divider style={{ margin: 0, padding: 0 }} />
-                <div style={{ textAlign: "left" }}>
+                <Text style={{ textAlign: "left" }} strong>
                   {product.ten}
                   <Title level={5} style={{ color: "red", margin: 0 }}>
                     {product.giaMin === product.giaMax
@@ -101,7 +101,7 @@ const Home: React.FC = () => {
                           product.giaMax
                         )}`}
                   </Title>
-                </div>
+                </Text>
               </Card>
             </Link>
           </Col>
@@ -115,7 +115,7 @@ const Home: React.FC = () => {
           <Col key={product.id}>
             <Link
               to={`/san-pham/detail/${product.id}`}
-              style={{ color: "black", fontWeight: "bold", margin: 0 }}
+              style={{ color: "black", margin: 0 }}
             >
               <Card
                 hoverable
@@ -129,7 +129,7 @@ const Home: React.FC = () => {
                 }
               >
                 <Divider style={{ margin: 0, padding: 0 }} />
-                <div style={{ textAlign: "left" }}>
+                <Text style={{ textAlign: "left" }} strong>
                   {product.ten}
                   <Title level={5} style={{ color: "red", margin: 0 }}>
                     {product.giaMin === product.giaMax
@@ -138,7 +138,7 @@ const Home: React.FC = () => {
                           product.giaMax
                         )}`}
                   </Title>
-                </div>
+                </Text>
               </Card>
             </Link>
           </Col>

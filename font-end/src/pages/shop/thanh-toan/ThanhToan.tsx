@@ -58,6 +58,8 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
   const [giamGiaGoiY, setGiamGiaGoiY] = useState(null);
   const [voucher, setVoucher] = useState(null);
 
+  const idTaiKhoan = localStorage.getItem("acountId");
+
   const tongTien = () => {
     return tamTinh - giamGiam + phiShip;
   };
@@ -115,6 +117,15 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
   };
 
   const onSubmit = async (values: any) => {
+    const isQuantityValid = dataSanPham.every(
+      (item) => item.soLuong > item.chiTietSanPham.soLuong
+    );
+
+    if (isQuantityValid) {
+      message.warning("Số lượng sản phẩm trong giỏ hàng không hợp lệ.");
+      return; // Prevent form submission
+    }
+
     const getProvinceLabelFromId = () => {
       const province = provinces.find((p) => p.value === values.thanhPho);
       return province?.label;
@@ -145,6 +156,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
           const res = await request.post("hoa-don", {
             loaiHoaDon: "ONLINE",
             voucher: idVoucher != null || undefined ? { id: idVoucher } : null,
+            taiKhoan: idTaiKhoan != null ? { id: idTaiKhoan } : null,
             phiShip: phiShip,
             tongTien: tamTinh,
             tongTienKhiGiam: tongTien(),

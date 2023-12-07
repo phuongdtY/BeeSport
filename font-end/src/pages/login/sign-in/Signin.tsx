@@ -40,6 +40,7 @@ const DangNhap: React.FC = () => {
           console.log(error);
         }
         navigate("/");
+        window.location.reload();
       }
       message.success("Đăng nhập thành công");
     } catch (error: any) {
