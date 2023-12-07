@@ -170,7 +170,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
         } else {
           if (updatedSoLuongTon === 0) {
             message.error(
-              `Sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] đã hết hàng nè`
+              `Sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] đã hết hàng`
             );
             updatedInputSoLuongList[index] = 0;
           } else {

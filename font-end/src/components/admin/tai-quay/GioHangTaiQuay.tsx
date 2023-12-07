@@ -45,6 +45,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [giaTriGiam, setGiaTriGiam] = useState(0); // New state for discount amount
   const [selectedVoucher, setSelectedVoucher] = useState([]);
   const [tongTienKhiGiam, setTongTienKhiGiam] = useState(0);
+  const [listChiTiet, setListChiTiet] = useState(null);
   const { confirm } = Modal;
 
   const calculateRemainingAmountForVoucher = () => {
@@ -170,6 +171,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     try {
       // Gọi API để lấy thông tin hóa đơn dựa trên idHoaDon
       const response = await request.get(`/hoa-don/${idHoaDon}`);
+      setListChiTiet(response.data.hoaDonChiTietList);
+
       if (response.status === 200) {
         const hoaDon = response.data; // Dữ liệu hóa đơn từ máy chủ
         setHoaDon(hoaDon); // Lưu hóa đơn vào state
@@ -287,6 +290,28 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   };
 
   const handleThanhToan = async (id) => {
+    fetchHoaDonDetails(id);
+    console.log(listChiTiet);
+
+    // Lấy danh sách các mặt hàng có số lượng không hợp lệ
+    const invalidQuantityItems = listChiTiet.filter(
+      (item) => item.soLuong > item.chiTietSanPham.soLuong
+    );
+
+    // Kiểm tra nếu có mặt hàng không hợp lệ
+    if (invalidQuantityItems.length > 0) {
+      // Lấy tên của các mặt hàng không hợp lệ
+      const invalidItemNames = invalidQuantityItems.map(
+        (item) =>
+          `${item.chiTietSanPham.sanPham.ten} [ ${item.chiTietSanPham.mauSac.ten} - ${item.chiTietSanPham.kichCo.kichCo} ]`
+      );
+
+      // Hiển thị thông báo với tên các mặt hàng không hợp lệ
+      message.warning(
+        `Sản phẩm ${invalidItemNames.join(", ")} có số lượng không hợp lệ`
+      );
+      return; // Ngăn chặn việc thanh toán nếu có mặt hàng không hợp lệ
+    }
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -318,6 +343,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           ngayThanhToan: ngayHomNay,
           tongTienKhiGiam: tongTienKhiGiam,
         };
+
+        console.log(hoaDonData);
 
         try {
           const response = await request.put(`/hoa-don/${id}`, hoaDonThanhToan);

@@ -77,6 +77,7 @@ const TaiQuay: React.FC = () => {
         ),
         key: newActiveKey,
       });
+
       setItems(newPanes);
       setActiveKey(newActiveKey);
     } catch (error) {
