@@ -63,8 +63,8 @@ const Header: React.FC = () => {
       localStorage.removeItem("acountId");
       localStorage.removeItem("roleId");
       localStorage.removeItem("cartIdTaiKhoan");
-
-      navigate("/sign-in");
+      navigate("/");
+      window.location.reload();
       message.success("Đăng xuất thành công");
     } catch (error) {
       console.error("Error during logout:", error);

@@ -196,16 +196,23 @@ const detailSanPham: React.FC = () => {
       idLoaiDe === null ||
       idDiaHinhSan === null
     ) {
-      message.error("Bạn chưa thông tin sản phẩm muốn thêm vào giỏ hàng");
+      message.error("Bạn chưa nhập thông tin sản phẩm muốn thêm vào giỏ hàng");
       return;
     }
-    if (idGioHangNull == null) {
+
+    let cartId;
+
+    // If idGioHangNull is null, get a new cartId
+    if (idGioHangNull == null && idGioHangTaiKhoan == null) {
       getCartId();
-      let cartId = localStorage.getItem("cartId");
-      setIdGioHang(cartId);
+      cartId = localStorage.getItem("cartId");
+    } else if (idGioHangTaiKhoan != null) {
+      cartId = idGioHangTaiKhoan;
     } else {
-      setIdGioHang(idGioHangNull);
+      // Otherwise, use the provided idGioHangNull
+      cartId = idGioHangNull;
     }
+
     try {
       const productResponse = await request.get(
         "/chi-tiet-san-pham/get-one/" + id,
@@ -218,14 +225,16 @@ const detailSanPham: React.FC = () => {
           },
         }
       );
+
       if (productResponse.data) {
         await request.post("/gio-hang-chi-tiet", {
           gioHang: {
-            id: idGioHangTaiKhoan !== null ? idGioHangTaiKhoan : idGioHang,
+            id: cartId,
           },
-          soLuong: quantity, // Số lượng
+          soLuong: quantity,
           chiTietSanPham: { id: productResponse.data.id },
         });
+
         message.success("Thêm sản phẩm vào giỏ hàng thành công");
         navigate("/gio-hang");
       }
@@ -277,19 +286,6 @@ const detailSanPham: React.FC = () => {
     setSelectedImageIndex(selectedImageIndex);
   };
 
-  const handleNextImage = () => {
-    const nextIndex = (selectedImageIndex + 1) % dataHinhAnh.length;
-    setSelectedImageIndex(nextIndex);
-    onChangeHinhAnh(dataHinhAnh[nextIndex]);
-  };
-
-  // Function to handle the previous image
-  const handlePrevImage = () => {
-    const prevIndex =
-      (selectedImageIndex - 1 + dataHinhAnh.length) % dataHinhAnh.length;
-    setSelectedImageIndex(prevIndex);
-    onChangeHinhAnh(dataHinhAnh[prevIndex]);
-  };
   const [currentPage, setCurrentPage] = useState(1);
   const imagesPerPage = 5;
 
@@ -312,50 +308,32 @@ const detailSanPham: React.FC = () => {
   const handlePrevPage = () => {
     setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
   };
-
+  const isLastPage =
+    currentPage >= Math.ceil(dataHinhAnh.length / imagesPerPage);
+  const isFirstPage = currentPage <= 1;
   return (
     <>
       <Row style={{ margin: 40 }}>
         <Col span={2}></Col>
         <Col span={9}>
-          <div
-            style={{ position: "relative", width: "100%", marginBottom: 10 }}
-          >
-            <Image
-              preview={false}
-              width={500}
-              height={500}
-              fallback="http://localhost:8080/admin/api/file/view/fallback.jpg"
-              src={`http://localhost:8080/admin/api/file/view/${anhDaiDien}`}
-            />
-            <Button
-              type="default"
-              shape="circle"
-              style={{ position: "absolute", top: 250, left: 10 }}
-              onClick={handlePrevImage}
-            >
-              <LeftOutlined />
-            </Button>
-            <Button
-              shape="circle"
-              style={{ position: "absolute", top: 250, right: 75 }}
-              onClick={handleNextImage}
-            >
-              <RightOutlined />
-            </Button>
-          </div>
+          <Image
+            preview={false}
+            width={500}
+            height={500}
+            fallback="http://localhost:8080/admin/api/file/view/fallback.jpg"
+            src={`http://localhost:8080/admin/api/file/view/${anhDaiDien}`}
+          />
           {dataHinhAnh.length > 0 && (
             <>
               <Space>
-                {currentPage > 1 && (
-                  <Button
-                    type="link"
-                    style={{ margin: 0, padding: 0 }}
-                    onClick={handlePrevPage}
-                  >
-                    <LeftOutlined style={{ fontSize: 25 }} />
-                  </Button>
-                )}
+                <Button
+                  type="link"
+                  style={{ margin: 0, padding: 0 }}
+                  onClick={handlePrevPage}
+                  disabled={isFirstPage}
+                >
+                  <LeftOutlined style={{ fontSize: 25 }} />
+                </Button>
                 <Radio.Group
                   // style={{ margin: "15px 0px" }}
                   buttonStyle="solid"
@@ -386,16 +364,14 @@ const detailSanPham: React.FC = () => {
 
                 {/* Add buttons to navigate to the next and previous pages */}
 
-                {currentPage <
-                  Math.ceil(dataHinhAnh.length / imagesPerPage) && (
-                  <Button
-                    type="link"
-                    style={{ margin: 0, padding: 0 }}
-                    onClick={handleNextPage}
-                  >
-                    <RightOutlined style={{ fontSize: 25 }} />
-                  </Button>
-                )}
+                <Button
+                  type="link"
+                  style={{ margin: 0, padding: 0 }}
+                  onClick={handleNextPage}
+                  disabled={isLastPage}
+                >
+                  <RightOutlined style={{ fontSize: 25 }} />
+                </Button>
               </Space>
             </>
           )}
@@ -430,6 +406,9 @@ const detailSanPham: React.FC = () => {
                           onClick={() => handleMauSac(record)}
                           value={record.id}
                           style={{ margin: 0, padding: 0, border: "0" }}
+                          disabled={
+                            !data.some((item) => item.mauSac.id === record.id)
+                          }
                         >
                           <ColorPicker
                             value={record.ma}
@@ -450,6 +429,9 @@ const detailSanPham: React.FC = () => {
                       <Radio.Button
                         onClick={() => handleKichCo(record)}
                         value={record.id}
+                        disabled={
+                          !data.some((item) => item.kichCo.id === record.id)
+                        }
                       >
                         {record.kichCo}
                       </Radio.Button>
@@ -513,15 +495,7 @@ const detailSanPham: React.FC = () => {
                 </Text>
               </Space>
               <Space style={{ marginTop: 8 }}>
-                <Button type="primary" danger>
-                  MUA NGAY
-                </Button>
-                <Button
-                  type="primary"
-                  style={{ background: "#b5bdbd" }}
-                  danger
-                  onClick={onFinish}
-                >
+                <Button type="primary" danger onClick={onFinish}>
                   THÊM VÀO GIỎ HÀNG
                 </Button>
               </Space>
