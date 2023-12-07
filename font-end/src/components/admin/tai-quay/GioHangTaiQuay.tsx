@@ -291,7 +291,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
 
   const handleThanhToan = async (id) => {
     fetchHoaDonDetails(id);
-    console.log(listChiTiet);
 
     // Lấy danh sách các mặt hàng có số lượng không hợp lệ
     const invalidQuantityItems = listChiTiet.filter(
