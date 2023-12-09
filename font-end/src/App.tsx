@@ -45,6 +45,7 @@ import ThongKe from "./pages/admin/thong-ke/ThongKe.tsx";
 import ProtectedRoute from "./pages/admin/component/ProtextedRoute.tsx";
 import React, { useEffect } from "react";
 import AuthContext from "./pages/admin/component/AuthContext.tsx";
+import DoiMatKhau from "./pages/login/doi-mat-khau/DoiMatKhau.tsx";
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
       <Route path="/sign-in" element={<Signin />} />
       <Route path="/sign-up" element={<Signup />} />
       <Route path="/forgot-password" element={<Forgotpassword />} />
+      <Route path="/doi-mat-khau" element={<DoiMatKhau />} />
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/san-pham" element={<SanPham />} />
@@ -61,8 +63,8 @@ function App() {
       <Route path="/admin/*" element={<ProtectedRoute element={<AdminLayout />} />} >
         <Route path="nhan-vien" element={<ProtectedRoute1 element={<IndexNhanVien />} />}/>
         <Route path="ban-hang-tai-quay" element={<BanHangTaiQuay />} />
-        <Route path="nhan-vien/add" element={<AddNV />} />
-        <Route path="nhan-vien/edit/:id" element={<UpdateNhanVien />} />
+        <Route path="nhan-vien/add" element={<ProtectedRoute1 element={<AddNV />} />}/>
+        <Route path="nhan-vien/edit/:id" element={<ProtectedRoute1 element={<UpdateNhanVien />} />}/>
         <Route path="mau-sac"  element={<IndexMauSac />} />
         <Route path="mau-sac/add" element={<AddMauSac />} />
         <Route path="mau-sac/update/:id" element={<UpdateMauSac />} />
@@ -79,8 +81,8 @@ function App() {
         <Route path="loai-de/add" element={<AddLoaiDe />} />
         <Route path="loai-de/update/:id" element={<UpdateLoaiDe />} />
         <Route path="voucher" element={<ProtectedRoute1 element={<IndexVoucher />} />}/>
-        <Route path="voucher/add" element={<AddVoucher />} />
-        <Route path="voucher/:id" element={<UpdateVoucher />} />
+        <Route path="voucher/add" element={<ProtectedRoute1 element={<AddVoucher />} />}/>
+        <Route path="voucher/:id" element={<ProtectedRoute1 element={<UpdateVoucher />} />}/>
         <Route path="hoa-don" element={<IndexHoaDon />} />
         <Route path="kich-co" element={<IndexKichCo />} />
         <Route path="kich-co/add" element={<AddKichCo />} />
