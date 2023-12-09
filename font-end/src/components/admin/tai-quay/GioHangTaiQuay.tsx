@@ -699,7 +699,9 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 <span
                   style={{ marginTop: 10, width: "100%", fontWeight: "bold" }}
                 >
-                  {formatGiaTienVND(giaTriTienTraKhach)}
+                  {totalPriceFromTable == 0
+                    ? formatGiaTienVND(0)
+                    : formatGiaTienVND(giaTriTienTraKhach)}
                 </span>
               </>
             )}
