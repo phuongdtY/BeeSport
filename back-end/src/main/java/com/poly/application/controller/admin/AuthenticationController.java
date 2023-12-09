@@ -2,6 +2,8 @@ package com.poly.application.controller.admin;
 
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.model.dto.*;
+import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
+import com.poly.application.model.response.TaiKhoanResponse;
 import com.poly.application.service.AuthenticationService;
 import com.poly.application.service.TaiKhoanService;
 import jakarta.servlet.http.Cookie;
@@ -58,5 +60,16 @@ public class AuthenticationController {
     @PostMapping("/doi-mat-khau")
     public ResponseEntity<?> doiMatKhau(@RequestBody PasswordRequest passwordRequest){
         return ResponseEntity.ok(taiKhoanService.changePassword(passwordRequest));
+    }
+
+    @GetMapping("/editTT/{id}")
+    public ResponseEntity<?> getOne(@PathVariable("id")Long id){
+        return ResponseEntity.ok(taiKhoanService.findById(id));
+    }
+
+    @PutMapping("/updateTT/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody UpdatedTaiKhoanRequest request) {
+        TaiKhoanResponse taiKhoan = taiKhoanService.updateKhachHang(id, request);
+        return ResponseEntity.ok(taiKhoan);
     }
 }

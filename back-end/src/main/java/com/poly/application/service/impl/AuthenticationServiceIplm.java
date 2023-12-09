@@ -80,6 +80,9 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         user.setVaiTro(roleRepository.findId(Long.valueOf(3)));
         user.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
         user.setAnhDaiDien("defaultAvatar.jpg");
+        if(user.getGioiTinh()==null){
+            user.setGioiTinh(CommonEnum.GioiTinh.OTHER);
+        }
         user.setMatKhau(passwordEncoder.encode(signUpRequest.getMatKhau()));
         TaiKhoan taiKhoan = userRepository.save(user);
         taiKhoan.setMatKhau(signUpRequest.getMatKhau());
@@ -100,9 +103,14 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         VaiTro role = roleId.get();
             TaiKhoan user = new TaiKhoan();
             user.setHoVaTen("hoanggiang");
-            user.setSoDienThoai("0348079272");
+            user.setSoDienThoai("0348079280");
             user.setEmail("giangminh0302@gmail.com");
             user.setVaiTro(role);
+            user.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
+            user.setAnhDaiDien("defaultAvatar.jpg");
+            if(user.getGioiTinh()==null){
+                user.setGioiTinh(CommonEnum.GioiTinh.OTHER);
+            }
             user.setMatKhau(new BCryptPasswordEncoder().encode("123123"));
             userRepository.save(user);
 //        GioHang gioHang = new GioHang();

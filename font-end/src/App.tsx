@@ -46,6 +46,7 @@ import ProtectedRoute from "./pages/admin/component/ProtextedRoute.tsx";
 import React, { useEffect } from "react";
 import AuthContext from "./pages/admin/component/AuthContext.tsx";
 import DoiMatKhau from "./pages/login/doi-mat-khau/DoiMatKhau.tsx";
+import UpdateTT from "./pages/login/thong-tin/ThongTin.tsx";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
       <Route path="/sign-up" element={<Signup />} />
       <Route path="/forgot-password" element={<Forgotpassword />} />
       <Route path="/doi-mat-khau" element={<DoiMatKhau />} />
+      <Route path="/thong-tin" element={<UpdateTT />} />
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/san-pham" element={<SanPham />} />

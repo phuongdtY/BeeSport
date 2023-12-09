@@ -36,7 +36,7 @@ export const requestDangNhap = axios.create({
 });
 export const requestDangKi = axios.create({
   baseURL: "http://localhost:8080/api",
-  timeout: 7000,
+  timeout: 10000,
 });
 export const request4s = axios.create({
   baseURL: "http://localhost:8080/admin/api",
