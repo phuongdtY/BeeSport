@@ -1,4 +1,13 @@
-import { Divider, Empty, Space, Spin, Table, Tag, Typography } from "antd";
+import {
+  Button,
+  Divider,
+  Empty,
+  Space,
+  Spin,
+  Table,
+  Tag,
+  Typography,
+} from "antd";
 import { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect } from "react";
 import requestClient from "~/utils/requestClient";
@@ -65,6 +74,7 @@ const DonHangChiTiet: React.FC<DonHangChiTietProps> = ({ currentKey }) => {
   const [data, setData] = useState<DataType[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const idTaiKhoan = localStorage.getItem("acountId");
+  const [showPaymentButton, setShowPaymentButton] = useState<boolean[]>([]);
 
   const param = {
     taiKhoanId: idTaiKhoan,
@@ -78,6 +88,14 @@ const DonHangChiTiet: React.FC<DonHangChiTietProps> = ({ currentKey }) => {
         params: param,
       });
       setData(response.data);
+      const showButtonArr = response.data.map((item: any) =>
+        item.giaoDichList.some(
+          (giaoDich: any) =>
+            giaoDich.phuongThucThanhToan.id === 2 &&
+            item.trangThaiHoaDon.ten === "PENDING"
+        )
+      );
+      setShowPaymentButton(showButtonArr);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -120,6 +138,11 @@ const DonHangChiTiet: React.FC<DonHangChiTietProps> = ({ currentKey }) => {
               dataSource={item.hoaDonChiTietList}
               pagination={false}
             />
+            <p style={{ float: "left", marginTop: 30, marginLeft: 50 }}>
+              {showPaymentButton[index] && (
+                <Button type="primary">Thanh toán ngay</Button>
+              )}
+            </p>
             <p style={{ float: "right" }}>
               <Text>
                 <Text italic strong>
@@ -133,7 +156,14 @@ const DonHangChiTiet: React.FC<DonHangChiTietProps> = ({ currentKey }) => {
               </Text>
               <br />
               <Text>
-                <Text strong>Tổng tiền: </Text>
+                <Text strong>Phí ship: </Text>
+                <Text italic strong style={{ color: "green" }}>
+                  {formatGiaTienVND(item.phiShip)}
+                </Text>
+              </Text>
+              <br />
+              <Text>
+                <Text strong>Thành tiền: </Text>
                 <Text strong style={{ color: "red", fontSize: 18 }}>
                   {formatGiaTienVND(item.tongTienKhiGiam)}
                 </Text>
