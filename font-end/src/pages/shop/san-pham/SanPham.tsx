@@ -467,7 +467,7 @@ const SanPham: React.FC = () => {
               <Input
                 style={{ width: 400, marginLeft: 60 }}
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => setSearch(e.target.value.trimStart())}
                 placeholder="Tìm kiếm Sản phẩm ..."
               />
             </Affix>

@@ -52,6 +52,12 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
 }) => {
   const [dataGioHang, setDataGioHang] = useState<DataGioHang[]>([]); // Specify the data type
   const { confirm } = Modal;
+  const [inputSoLuongList, setInputSoLuongList] = useState<Array<number>>([]);
+
+  useEffect(() => {
+    // Khởi tạo mảng inputSoLuongList với giá trị mặc định là 0 theo độ dài của dataGioHang
+    setInputSoLuongList(new Array(dataGioHang.length).fill(0));
+  }, [dataGioHang]);
 
   const tableGioHang: ColumnsType<DataGioHang> = [
     {
@@ -86,7 +92,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
       render: (text, record, index) => (
         <InputNumber
           style={{ width: 60 }}
-          value={record.soLuong}
+          value={inputSoLuongList[index] || record.soLuong}
           inputMode="numeric"
           onChange={(newSoLuong) => handleSoLuongChange(index, newSoLuong)}
         />
@@ -133,20 +139,53 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
   };
 
   const handleSoLuongChange = (index, newSoLuong) => {
-    const newSoLuongValue = typeof newSoLuong === "number" ? newSoLuong : 0;
-
-    // Tìm sản phẩm trong danh sách dựa trên index
+    const newSoLuongValue = typeof newSoLuong === "number" ? newSoLuong : 1;
     const productToUpdate = dataGioHang[index];
 
     if (productToUpdate) {
-      // Tạo một bản sao của dataGioHang và cập nhật số lượng và tổng tiền cho sản phẩm cụ thể
       const updatedData = [...dataGioHang];
-      updatedData[index] = {
-        ...productToUpdate,
-        soLuong: newSoLuongValue,
-        tongTien: newSoLuongValue * productToUpdate.donGia, // Cập nhật tổng tiền
-      };
+      const updatedInputSoLuongList = [...inputSoLuongList];
+      const updatedSoLuongTon = updatedData[index].chiTietSanPham.soLuong;
+
+      if (newSoLuongValue >= 1 && newSoLuongValue <= updatedSoLuongTon) {
+        updatedData[index] = {
+          ...productToUpdate,
+          soLuong: newSoLuongValue,
+          tongTien: newSoLuongValue * productToUpdate.donGia,
+        };
+        updatedInputSoLuongList[index] = newSoLuongValue;
+      } else {
+        if (newSoLuongValue < 1) {
+          if (updatedSoLuongTon === 0) {
+            message.error(
+              `Sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] đã hết hàng`
+            );
+            updatedInputSoLuongList[index] = 0;
+          } else {
+            message.error("Số lượng không thể nhỏ hơn 1");
+            updatedData[index].soLuong = 1;
+            updatedData[index].tongTien = productToUpdate.donGia;
+            updatedInputSoLuongList[index] = 1;
+          }
+        } else {
+          if (updatedSoLuongTon === 0) {
+            message.error(
+              `Sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] đã hết hàng`
+            );
+            updatedInputSoLuongList[index] = 0;
+          } else {
+            message.error(
+              `Bạn chỉ có thể mua tối đa ${updatedSoLuongTon} sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] `
+            );
+            updatedData[index].soLuong = updatedSoLuongTon;
+            updatedData[index].tongTien =
+              updatedSoLuongTon * productToUpdate.donGia;
+            updatedInputSoLuongList[index] = updatedSoLuongTon;
+          }
+        }
+      }
       setDataGioHang(updatedData);
+      setInputSoLuongList(updatedInputSoLuongList);
     }
   };
 

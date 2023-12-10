@@ -17,7 +17,7 @@ public interface VoucherService {
                                  String searchText, Long hinhThucGiamGiaId, String trangThaiString,
                                  LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc);
 
-    List<VoucherResponse> getListVoucher();
+    List<VoucherResponse> getListVoucher(Long id);
 
     List<VoucherResponse> getListVoucherSuDung();
 

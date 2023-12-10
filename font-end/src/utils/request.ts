@@ -5,7 +5,7 @@ const request = axios.create({
 });
 request.interceptors.request.use(
   (config) => {
-    const local123 = localStorage.getItem('refreshToken');
+    const local123 = localStorage.getItem("refreshToken");
     if (local123) {
       config.headers.Authorization = `Bearer ${local123}`;
     }
@@ -22,17 +22,14 @@ export const request1 = axios.create({
 export const requestTimMatKhau = axios.create({
   baseURL: "http://localhost:8080/admin/api",
   timeout: 10000,
-  
 });
 export const requestTimMatKhau1 = axios.create({
   baseURL: "http://localhost:8080/api",
   timeout: 5000,
-  
 });
 export const requestDangNhap = axios.create({
   baseURL: "http://localhost:8080/api",
   timeout: 5000,
-  
 });
 export const requestDangKi = axios.create({
   baseURL: "http://localhost:8080/api",
@@ -45,7 +42,6 @@ export const request4s = axios.create({
 export const requestLogout = axios.create({
   baseURL: "http://localhost:8080/api",
   timeout: 5000,
-  
 });
 
 export default request;
