@@ -58,7 +58,7 @@ public class VoucherController {
     }
 
     @GetMapping("/da-su-dung-tai-khoan")
-    public ResponseEntity<?> getDaSuDungTaiKhaon(@RequestParam("idVoucher") Long idVoucher,
+    public ResponseEntity<?> getDaSuDungTaiKhoan(@RequestParam("idVoucher") Long idVoucher,
                                                  @RequestParam("idTaiKhoan") Long idTaiKhoan) {
         return ResponseEntity.ok(service.soLanDaSuDungVoucherTaiKhoan(idVoucher, idTaiKhoan));
     }
