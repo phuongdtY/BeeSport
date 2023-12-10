@@ -10,6 +10,7 @@ import com.poly.application.entity.PhuongThucThanhToan;
 import com.poly.application.entity.SanPham;
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.entity.TimeLine;
+import com.poly.application.entity.Voucher;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.HoaDonMapper;
@@ -25,6 +26,7 @@ import com.poly.application.repository.HoaDonRepository;
 import com.poly.application.repository.PhuongThucThanhToanRepository;
 import com.poly.application.repository.TaiKhoanRepository;
 import com.poly.application.repository.TimelineRepository;
+import com.poly.application.repository.VoucherRepository;
 import com.poly.application.service.HoaDonService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,9 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Autowired
     private GiaoDichRepository giaoDichRepository;
+
+    @Autowired
+    private VoucherRepository voucherRepository;
 
     @Autowired
     private PhuongThucThanhToanRepository phuongThucThanhToanRepository;
@@ -122,6 +127,15 @@ public class HoaDonServiceImpl implements HoaDonService {
         timelineRepository.save(timeLine);
         if (createHoaDonRequest.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE
                 && createHoaDonRequest.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.PENDING) {
+            if (createHoaDonRequest.getVoucher() != null) {
+                Voucher voucherFind = voucherRepository.findById(createHoaDonRequest.getVoucher().getId()).get();
+                System.out.println(voucherFind);
+                System.out.println(voucherFind.getId());
+                System.out.println(voucherFind.getSoLuong());
+                voucherFind.setSoLuong(voucherFind.getSoLuong() - 1);
+                hoaDonRepository.updateSoLuongVoucherHoaDon(voucherFind.getSoLuong(), createHoaDonRequest.getVoucher().getId());
+            }
+
             GiaoDich giaoDich = new GiaoDich();
             giaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
             giaoDich.setSoTienGiaoDich(savedHoaDon.getTongTienKhiGiam());
@@ -235,6 +249,7 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Override
     public void updateTrangThaiHoaDon(Long idHoadon, CommonEnum.TrangThaiHoaDon trangThaiHoaDon, String ghiChu, Long idPhuongThucThanhToan) {
+        Voucher voucherFind = null;
         if (trangThaiHoaDon == null) {
             return;
         }
@@ -246,6 +261,12 @@ public class HoaDonServiceImpl implements HoaDonService {
         if (phuongThucThanhToan.getId() == 2){
             giaoDichFind = giaoDichRepository.findGiaoDich(idHoadon, idPhuongThucThanhToan,CommonEnum.TrangThaiGiaoDich.SUCCESS);
         }
+        if (hoaDon.getVoucher() != null){
+             voucherFind = voucherRepository.findById(hoaDon.getVoucher().getId())
+                    .orElseThrow(() -> new NotFoundException("Không tìm thấy phương thức thanh toán có id " + idPhuongThucThanhToan));
+        }
+
+        System.out.println(voucherFind + " voucher");
 
         TimeLine timeLine = new TimeLine();
         GiaoDich giaoDich = new GiaoDich();
@@ -269,6 +290,10 @@ public class HoaDonServiceImpl implements HoaDonService {
                             ctsp.setTrangThai(CommonEnum.TrangThaiChiTietSanPham.OUT_OF_STOCK);
                         }
                         chiTietSanPhamRepository.save(ctsp);
+                    }
+                    if (voucherFind != null) {
+                        voucherFind.setSoLuong(voucherFind.getSoLuong() - 1);
+                        hoaDonRepository.updateSoLuongVoucherHoaDon(voucherFind.getSoLuong(),voucherFind.getId());
                     }
                 }
                 giaoDich.setTrangThaiGiaoDich(CommonEnum.TrangThaiGiaoDich.SUCCESS);

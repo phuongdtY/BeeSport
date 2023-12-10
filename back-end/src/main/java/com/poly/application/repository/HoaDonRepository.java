@@ -39,4 +39,13 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
             @Param("trangThai") CommonEnum.TrangThaiHoaDon trangThaiHoaDon,
             @Param("id")Long id
     );
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Voucher v SET v.soLuong = :soLuong WHERE v.id = :id")
+    void updateSoLuongVoucherHoaDon(
+            @Param("soLuong") Integer soLuong,
+            @Param("id")Long id
+    );
+
 }
