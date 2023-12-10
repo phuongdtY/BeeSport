@@ -30,8 +30,8 @@ public class ThongKeRepository {
                 "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_thanh_cong,\n" +
                 "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'CANCELLED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_huy,\n" +
                 "   SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don_chi_tiet.so_luong ELSE 0 END) AS tong_so_san_pham_ban_ra,\n" +
-                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'COUNTER' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_tai_quay,\n" +  // Đếm các hóa đơn có loại 'COUNTER'
-                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'ONLINE' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_online \n" +  // Đếm các hóa đơn có loại 'ONLINE'
+                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'COUNTER' AND du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_tai_quay,\n" +  // Đếm các hóa đơn có loại 'COUNTER'
+                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'ONLINE' AND du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_online \n" +  // Đếm các hóa đơn có loại 'ONLINE'
                 "\n" +
                 "FROM hoa_don\n" +
                 "LEFT JOIN du_an_tot_nghiep.hoa_don_chi_tiet ON du_an_tot_nghiep.hoa_don.id = du_an_tot_nghiep.hoa_don_chi_tiet.hoa_don_id\n" +
@@ -71,8 +71,8 @@ public class ThongKeRepository {
                 "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_thanh_cong,\n" +
                 "    COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'CANCELLED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_huy,\n" +
                 "   SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don_chi_tiet.so_luong ELSE 0 END) AS tong_so_san_pham_ban_ra,\n" +
-                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'COUNTER' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_tai_quay,\n" +  // Đếm các hóa đơn có loại 'COUNTER'
-                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'ONLINE' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_online \n" +  // Đếm các hóa đơn có loại 'ONLINE'
+                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'COUNTER' AND du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_tai_quay,\n" +  // Đếm các hóa đơn có loại 'COUNTER'
+                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'ONLINE' AND du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_online \n" +  // Đếm các hóa đơn có loại 'ONLINE'
                 "\n" +
                 "FROM hoa_don\n" +
                 "LEFT JOIN du_an_tot_nghiep.hoa_don_chi_tiet ON du_an_tot_nghiep.hoa_don.id = du_an_tot_nghiep.hoa_don_chi_tiet.hoa_don_id\n" +

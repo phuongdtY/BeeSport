@@ -4,6 +4,7 @@ import com.poly.application.model.request.create_request.CreatedVoucherRequest;
 import com.poly.application.model.request.update_request.UpdatedVoucherRequest;
 import com.poly.application.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +39,10 @@ public class VoucherController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> getList() {
-        return ResponseEntity.ok(service.getListVoucher());
+    public ResponseEntity<?> getList(
+                @RequestParam(name = "idTaiKhoan", defaultValue = "") Long id
+    ) {
+        return ResponseEntity.ok(service.getListVoucher(id));
     }
 
     @GetMapping("/list-su-dung")
@@ -55,7 +58,7 @@ public class VoucherController {
     }
 
     @GetMapping("/da-su-dung-tai-khoan")
-    public ResponseEntity<?> getDaSuDungTaiKhaon(@RequestParam("idVoucher") Long idVoucher,
+    public ResponseEntity<?> getDaSuDungTaiKhoan(@RequestParam("idVoucher") Long idVoucher,
                                                  @RequestParam("idTaiKhoan") Long idTaiKhoan) {
         return ResponseEntity.ok(service.soLanDaSuDungVoucherTaiKhoan(idVoucher, idTaiKhoan));
     }

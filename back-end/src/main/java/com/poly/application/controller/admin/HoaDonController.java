@@ -108,6 +108,9 @@ public class HoaDonController {
         return ResponseEntity.ok(hoaDonService.get7HoaDonPendingByDateNew());
     }
 
-
+    @GetMapping("/so-luong-hoa-don-cho")
+    public ResponseEntity<?> getSoluongHoaDonCho() {
+        return ResponseEntity.ok(hoaDonService.getSoLuongHoaDonCho());
+    }
 
 }

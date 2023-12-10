@@ -29,7 +29,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
 
     Boolean existsByMa(String ma);
 
-    @Query("SELECT hd FROM HoaDon hd WHERE hd.trangThaiHoaDon = 'PENDING' AND hd.loaiHoaDon = 'COUNTER' ORDER BY hd.ngayTao DESC LIMIT 3")
+    @Query("SELECT hd FROM HoaDon hd WHERE hd.trangThaiHoaDon = 'PENDING' AND hd.loaiHoaDon = 'COUNTER' ORDER BY hd.ngayTao")
     List<HoaDon> get7HoaDonPendingByDate();
 
     @Transactional
@@ -39,6 +39,8 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
             @Param("trangThai") CommonEnum.TrangThaiHoaDon trangThaiHoaDon,
             @Param("id")Long id
     );
+    @Query("SELECT COUNT(hd) FROM HoaDon hd WHERE hd.trangThaiHoaDon = 'PENDING' AND hd.loaiHoaDon = 'COUNTER'")
+    Long getSoLuongHoaDonCho();
 
     @Transactional
     @Modifying

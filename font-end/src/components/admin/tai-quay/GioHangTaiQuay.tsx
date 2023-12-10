@@ -10,6 +10,7 @@ import {
   Select,
   Space,
   Switch,
+  Typography,
   message,
 } from "antd";
 import { BsCashCoin, BsCreditCard2Back } from "react-icons/bs";
@@ -45,7 +46,10 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [giaTriGiam, setGiaTriGiam] = useState(0); // New state for discount amount
   const [selectedVoucher, setSelectedVoucher] = useState([]);
   const [tongTienKhiGiam, setTongTienKhiGiam] = useState(0);
+  const [listChiTiet, setListChiTiet] = useState(null);
   const { confirm } = Modal;
+  const [idTaiKhoan, setIdTaiKhoan] = useState(null);
+  const { Text } = Typography;
 
   const calculateRemainingAmountForVoucher = () => {
     // Sắp xếp các voucher theo giaToiThieu theo thứ tự tăng dần
@@ -61,30 +65,44 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     if (nextVoucher) {
       const remainingAmount = nextVoucher.donToiThieu - totalPriceFromTable;
 
-      return { remainingAmount, nextVoucher };
+      // Tính toán số tiền được giảm giá cho nextVoucher
+      let discountedAmount = 0;
+
+      if (nextVoucher.hinhThucGiam.id === 1) {
+        discountedAmount = nextVoucher.giaTriGiam;
+      } else {
+        // Tính toán số tiền được giảm giá dựa trên phần trăm
+        discountedAmount = (totalPriceFromTable / 100) * nextVoucher.giaTriGiam;
+      }
+
+      return { remainingAmount, nextVoucher, discountedAmount };
     } else {
-      return { remainingAmount: 0, nextVoucher: null }; // Không còn voucher nào khả dụng
+      return { remainingAmount: 0, nextVoucher: null, discountedAmount: 0 }; // Không còn voucher nào khả dụng
     }
   };
 
-  const handleTienKhachDuaChange = (event) => {
-    const giaTriTienKhachDua = event.target.value;
-    setTienKhachDua(giaTriTienKhachDua);
-  };
-
-  const { remainingAmount, nextVoucher } = calculateRemainingAmountForVoucher();
+  const { remainingAmount, nextVoucher, discountedAmount } =
+    calculateRemainingAmountForVoucher();
 
   const getVouchers = async () => {
+    const idKhachHang = selectKhachHang ? selectKhachHang.id : null;
+
+    setIdTaiKhoan(idKhachHang);
+
     try {
-      const response = await request.get("/voucher/list");
+      const response = await request.get("/voucher/list", {
+        params: {
+          idTaiKhoan: idKhachHang,
+        },
+      });
 
       if (response.status === 200) {
         const fetchedVouchers = response.data;
 
         if (totalPriceFromTable === 0) {
-          setSelectedVoucher(null); // Reset the selected voucher if total price is 0
-          setGiaTriGiam(0); // Reset giaTriGiam if total price is 0
-          return; // Exit the function early as no voucher can be applied
+          setSelectedVoucher(null);
+          setGiaTriGiam(0);
+          return;
         }
 
         // Sort vouchers by donToiThieu in ascending order
@@ -92,36 +110,41 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           (a, b) => a.donToiThieu - b.donToiThieu
         );
 
-        let newSelectedVoucher = null; // Initialize a variable to track the new selected voucher
-        let newGiaTriGiam = 0; // Initialize the discount value for the new selected voucher
+        let maxDiscount = 0; // Initialize the maximum discount value
+        let selectedVoucher = null; // Initialize the selected voucher
 
         sortedVouchers.forEach((voucher) => {
-          if (
-            totalPriceFromTable >= voucher.donToiThieu &&
-            (!newSelectedVoucher ||
-              voucher.donToiThieu > newSelectedVoucher.donToiThieu)
-          ) {
-            // Check if the current voucher meets the condition and has a higher donToiThieu than the current selectedVoucher
-            newSelectedVoucher = voucher; // Set the new selected voucher
+          if (totalPriceFromTable >= voucher.donToiThieu) {
+            let discount = 0;
+
             if (voucher.hinhThucGiam.id === 1) {
-              newGiaTriGiam = voucher.giaTriGiam;
+              discount = voucher.giaTriGiam;
             } else {
-              const giam = (totalPriceFromTable / 100) * voucher.giaTriGiam;
-              newGiaTriGiam =
-                giam > voucher.giamToiDa ? voucher.giamToiDa : giam;
+              const calculatedDiscount =
+                (totalPriceFromTable / 100) * voucher.giaTriGiam;
+              discount =
+                calculatedDiscount > voucher.giamToiDa
+                  ? voucher.giamToiDa
+                  : calculatedDiscount;
+            }
+
+            if (discount > maxDiscount) {
+              maxDiscount = discount;
+              selectedVoucher = voucher;
             }
           }
         });
 
-        if (newSelectedVoucher) {
-          setSelectedVoucher(newSelectedVoucher); // Set the new selected voucher
-          setGiaTriGiam(newGiaTriGiam); // Set the discount value for the new selected voucher
+        if (selectedVoucher) {
+          setSelectedVoucher(selectedVoucher);
+          setGiaTriGiam(maxDiscount);
+          console.log(selectedVoucher);
         } else {
-          setSelectedVoucher(null); // Reset the selected voucher if none is selected
-          setGiaTriGiam(0); // Reset giaTriGiam if no voucher is selected
+          setSelectedVoucher(null);
+          setGiaTriGiam(0);
         }
 
-        setVouchers(sortedVouchers); // Set the sorted vouchers
+        setVouchers(sortedVouchers);
       } else {
         message.error("Error fetching vouchers");
       }
@@ -170,6 +193,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     try {
       // Gọi API để lấy thông tin hóa đơn dựa trên idHoaDon
       const response = await request.get(`/hoa-don/${idHoaDon}`);
+      setListChiTiet(response.data.hoaDonChiTietList);
+
       if (response.status === 200) {
         const hoaDon = response.data; // Dữ liệu hóa đơn từ máy chủ
         setHoaDon(hoaDon); // Lưu hóa đơn vào state
@@ -287,6 +312,27 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   };
 
   const handleThanhToan = async (id) => {
+    fetchHoaDonDetails(id);
+
+    // Lấy danh sách các mặt hàng có số lượng không hợp lệ
+    const invalidQuantityItems = listChiTiet.filter(
+      (item) => item.soLuong > item.chiTietSanPham.soLuong
+    );
+
+    // Kiểm tra nếu có mặt hàng không hợp lệ
+    if (invalidQuantityItems.length > 0) {
+      // Lấy tên của các mặt hàng không hợp lệ
+      const invalidItemNames = invalidQuantityItems.map(
+        (item) =>
+          `${item.chiTietSanPham.sanPham.ten} [ ${item.chiTietSanPham.mauSac.ten} - ${item.chiTietSanPham.kichCo.kichCo} ]`
+      );
+
+      // Hiển thị thông báo với tên các mặt hàng không hợp lệ
+      message.warning(
+        `Sản phẩm ${invalidItemNames.join(", ")} có số lượng không hợp lệ`
+      );
+      return; // Ngăn chặn việc thanh toán nếu có mặt hàng không hợp lệ
+    }
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -319,6 +365,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           tongTienKhiGiam: tongTienKhiGiam,
         };
 
+        console.log(hoaDonData);
+
         try {
           const response = await request.put(`/hoa-don/${id}`, hoaDonThanhToan);
           if (response.status === 200) {
@@ -337,7 +385,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
 
   useEffect(() => {
     getVouchers();
-  }, [vouchers, totalPriceFromTable]);
+  }, [vouchers, totalPriceFromTable, idTaiKhoan]);
 
   useEffect(() => {
     const tienGiam = totalPriceFromTable + phiShip - giaTriGiam;
@@ -563,7 +611,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                           )}`
                       : "Thông tin giảm giá không khả dụng"}
                   </span>
-                  {nextVoucher ? (
+
+                  {nextVoucher && discountedAmount > giaTriGiam ? (
                     <>
                       <span style={{ color: "orange", fontStyle: "italic" }}>
                         Gợi ý: Mua thêm {formatGiaTienVND(remainingAmount)} để
@@ -579,6 +628,11 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </Space>
               </Row>
             )}
+            {selectedVoucher?.voucherChiTietList?.length > 0 ? (
+              <Text strong style={{ fontWeight: "bold" }} type="danger">
+                (Voucher Khách hàng)
+              </Text>
+            ) : null}
             <Divider style={{ marginBottom: 0 }} />
             <Row>
               <Col span={5}>
@@ -605,26 +659,15 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               optionType="button"
               onChange={(e) => {
                 const value = e.target.value;
-
-                // Kiểm tra nếu radio đang được chọn đã là giá trị của selectedRadio
-                if (selectedRadio === value) {
-                  setSelectedRadio(null); // Bỏ chọn radio đó
-                } else {
-                  setSelectedRadio(value); // Đặt radio được chọn
-                  handleCashRadioChange(e); // Gọi hàm handleCashRadioChange của bạn
-                  setIsPaymentSelected(true); // Đặt biến state khi radio được chọn
-                }
+                setSelectedRadio(value); // Đặt radio được chọn
+                handleCashRadioChange(e); // Gọi hàm handleCashRadioChange của bạn
+                setIsPaymentSelected(true); // Đặt biến state khi radio được chọn
               }}
               style={{ marginBottom: 15 }}
             >
               <Row gutter={[15, 15]} style={{ marginTop: 20 }}>
                 <Radio.Button
                   value={0}
-                  onClick={(value) => {
-                    setSelectedRadio(value.target.value);
-                    setIsPaymentSelected(false);
-                    setIsCashSelected(false);
-                  }}
                   style={{
                     height: 70,
                     width: 220,
@@ -646,9 +689,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </Radio.Button>
                 <Radio.Button
                   value={1}
-                  onClick={(value) => {
-                    setSelectedRadio(value.target.value);
-                  }}
                   style={{
                     height: 70,
                     width: 220,
@@ -687,7 +727,9 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 <span
                   style={{ marginTop: 10, width: "100%", fontWeight: "bold" }}
                 >
-                  {formatGiaTienVND(giaTriTienTraKhach)}
+                  {totalPriceFromTable == 0
+                    ? formatGiaTienVND(0)
+                    : formatGiaTienVND(giaTriTienTraKhach)}
                 </span>
               </>
             )}

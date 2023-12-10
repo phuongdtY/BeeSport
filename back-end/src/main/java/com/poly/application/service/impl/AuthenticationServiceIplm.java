@@ -99,11 +99,11 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         Optional<VaiTro> roleId = roleRepository.findById(Long.valueOf(1));
         VaiTro role = roleId.get();
             TaiKhoan user = new TaiKhoan();
-            user.setHoVaTen("hoanggiang");
-            user.setSoDienThoai("0348079272");
+            user.setHoVaTen("canh");
+            user.setSoDienThoai("0346544561");
             user.setEmail("giangminh0302@gmail.com");
             user.setVaiTro(role);
-            user.setMatKhau(new BCryptPasswordEncoder().encode("123123"));
+            user.setMatKhau(new BCryptPasswordEncoder().encode("123"));
             userRepository.save(user);
 //        GioHang gioHang = new GioHang();
 //        gioHang.setMaGioHang(GenCode.generateGioHangCode());
