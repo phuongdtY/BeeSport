@@ -149,45 +149,58 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
+        // console.log(values);
+
+        // if (values.phuongThucThanhToan == "2") {
         try {
-          setLoading(true);
-          console.log(idVoucher);
-
-          const res = await request.post("hoa-don", {
-            loaiHoaDon: "ONLINE",
-            voucher: idVoucher != null || undefined ? { id: idVoucher } : null,
-            taiKhoan: idTaiKhoan != null ? { id: idTaiKhoan } : null,
-            phiShip: phiShip,
-            tongTien: tamTinh,
-            tongTienKhiGiam: tongTien(),
-            ghiChu: values.ghiChu,
-            nguoiNhan: values.hoVaTen,
-            sdtNguoiNhan: values.soDienThoai,
-            emailNguoiNhan: values.email,
-            diaChiNguoiNhan: diaChi,
-            trangThaiHoaDon: "PENDING",
+          const res = await request.get("/vn-pay/create-payment", {
+            params: { soTienThanhToan: tongTien() },
           });
-          try {
-            console.log(dataHoaDonChiTiet(res.data.id));
-
-            const response = await request.post(
-              "hoa-don-chi-tiet/add-list",
-              dataHoaDonChiTiet(res.data.id)
-            );
-            console.log(response);
-            await request.delete("gio-hang-chi-tiet/delete-all");
-            if (response.status == 200) {
-              setLoading(false);
-              navigate("/");
-              message.success("Đặt hàng thành công");
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        } catch (error: any) {
-          message.error(error.response.data.message);
-          setLoading(false);
+          console.log(res.data);
+          window.location.href = res.data.url;
+        } catch (error) {
+          console.log(error);
         }
+        // }
+        // try {
+        //   setLoading(true);
+        //   console.log(idVoucher);
+
+        //   const res = await request.post("hoa-don", {
+        //     loaiHoaDon: "ONLINE",
+        //     voucher: idVoucher != null || undefined ? { id: idVoucher } : null,
+        //     taiKhoan: idTaiKhoan != null ? { id: idTaiKhoan } : null,
+        //     phiShip: phiShip,
+        //     tongTien: tamTinh,
+        //     tongTienKhiGiam: tongTien(),
+        //     ghiChu: values.ghiChu,
+        //     nguoiNhan: values.hoVaTen,
+        //     sdtNguoiNhan: values.soDienThoai,
+        //     emailNguoiNhan: values.email,
+        //     diaChiNguoiNhan: diaChi,
+        //     trangThaiHoaDon: "PENDING",
+        //   });
+        //   try {
+        //     console.log(dataHoaDonChiTiet(res.data.id));
+
+        //     const response = await request.post(
+        //       "hoa-don-chi-tiet/add-list",
+        //       dataHoaDonChiTiet(res.data.id)
+        //     );
+        //     console.log(response);
+        //     await request.delete("gio-hang-chi-tiet/delete-all");
+        //     if (response.status == 200) {
+        //       setLoading(false);
+        //       navigate("/");
+        //       message.success("Đặt hàng thành công");
+        //     }
+        //   } catch (error) {
+        //     console.log(error);
+        //   }
+        // } catch (error: any) {
+        //   message.error(error.response.data.message);
+        //   setLoading(false);
+        // }
       },
     });
   };
@@ -452,21 +465,24 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
             <TextArea showCount maxLength={100} />
           </Form.Item>
         </Card>
-
-        <Card title="PHƯƠNG THỨC THANH TOÁN">
-          <Radio.Group onChange={onChangeRadio} value={radioOnchageValue}>
-            <Space direction="vertical">
-              <Radio value={1}>
-                <Card style={{ width: "450px" }}>Thanh toán khi nhận hàng</Card>
-              </Radio>
-              <Radio value={2}>
-                <Card style={{ width: "450px" }}>
-                  Thanh toán qua cổng VNPAY
-                </Card>
-              </Radio>
-            </Space>
-          </Radio.Group>
-        </Card>
+        <Form.Item name="phuongThucThanhToan">
+          <Card title="PHƯƠNG THỨC THANH TOÁN">
+            <Radio.Group onChange={onChangeRadio} value={radioOnchageValue}>
+              <Space direction="vertical">
+                <Radio value={1}>
+                  <Card style={{ width: "450px" }}>
+                    Thanh toán khi nhận hàng
+                  </Card>
+                </Radio>
+                <Radio value={2}>
+                  <Card style={{ width: "450px" }}>
+                    Thanh toán qua cổng VNPAY
+                  </Card>
+                </Radio>
+              </Space>
+            </Radio.Group>
+          </Card>
+        </Form.Item>
         <Card title={`Đơn hàng (${soSanPham} sản phẩm)`}>
           <div>
             <Space.Compact>
