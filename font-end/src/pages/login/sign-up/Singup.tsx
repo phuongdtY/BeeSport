@@ -222,6 +222,10 @@ const dangKiKhachHang: React.FC = () => {
                     message: "Bạn chưa điền E-mail!",
                   },
                   {
+                    max: 200,
+                    message: 'Email không được vượt quá 200 ký tự',
+                  },
+                  {
                     type: "email",
                     message: "E-mail không hợp lệ!",
                   },
@@ -235,7 +239,15 @@ const dangKiKhachHang: React.FC = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Bạn chưa điền Mật khẩu!",
+                    message: 'Bạn chưa điền Mật khẩu!',
+                  },
+                  {
+                    min: 8,
+                    message: 'Mật khẩu phải có ít nhất 8 ký tự',
+                  },
+                  {
+                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+                    message: 'Mật khẩu phải chứa ít nhất một chữ in hoa, một chữ thường, một số và một ký tự đặc biệt',
                   },
                 ]}
                 style={{ width: "100%" }} // Đặt chiều rộng 100%

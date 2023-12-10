@@ -87,9 +87,9 @@ const CustomHeader: React.FC<{
         {roleId === "1" && <Option value="1">Quản lý</Option>}
           {roleId === "2" && <Option value="2">Nhân viên</Option>}
           {roleId === "3" && <Option value="3">Khách hàng</Option>}
-        <Option value="thongTin">Thông tin</Option>
+        <Option value="thongTin"><Link to={"/thong-tin"}>Thông tin</Link></Option>
         <Option value="doiMatKhau"><Link to={"/doi-mat-khau"}>Đổi mật khẩu</Link></Option>
-        <Option value="logout">Logout</Option>
+        <Option style={{ color: '#3D6EE0' }} value="logout">Logout</Option>
       </Select>
 
       {/* <HoaDonChiTietComponent

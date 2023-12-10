@@ -1,6 +1,7 @@
 package com.poly.application.repository;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.DiaChi;
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.entity.VaiTro;
 import org.springframework.data.domain.Page;
@@ -74,6 +75,7 @@ public interface    TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
     List<TaiKhoan> findByMatKhau(String matKhau);
 
 
-
+    @Query("SELECT tk FROM TaiKhoan tk WHERE tk.id =:id")
+    TaiKhoan findId(@Param("id") Long id);
 
 }

@@ -130,21 +130,20 @@ const UpdateTT: React.FC = () => {
         fetchProvinces();
         fetchDistricts(res.data?.thanhPho);
         fetchWards(res.data?.quanHuyen);
-        // const trangThaiValue = res.data?.trangThai.ten === "ACTIVE";
           const gioiTinhValue = res.data?.gioiTinh?.ten || "OTHER";
           const ngaySinhValue = dayjs(res.data?.ngaySinh);
         form.setFieldsValue({
             hoVaTen: res.data?.hoVaTen,
-            // canCuocCongDan: res.data?.canCuocCongDan,
+            canCuocCongDan: res.data?.canCuocCongDan,
             ngaySinh: ngaySinhValue,
             gioiTinh: gioiTinhValue,
             soDienThoai: res.data?.soDienThoai,
             email: res.data?.email,
-            // thanhPho: Number(res.data?.thanhPho) ,
-            // quanHuyen: Number(res.data?.quanHuyen),
-            // phuongXa: res.data?.phuongXa,
-            // diaChiCuThe: res.data?.diaChiCuThe,
-            // trangThai: trangThaiValue, // Convert to boolean
+            thanhPho: Number(res.data?.thanhPho) ,
+            quanHuyen: Number(res.data?.quanHuyen),
+            phuongXa: res.data?.phuongXa,
+            diaChiCuThe: res.data?.diaChiCuThe,
+            // matKhau:res.data?.matKhau,
         })
         ;
         setData(res.data);
@@ -203,7 +202,7 @@ const UpdateTT: React.FC = () => {
       },
     });
   };
-  
+  const roleId = localStorage.getItem("roleId");
   return (
     <div
       style={{
@@ -214,12 +213,15 @@ const UpdateTT: React.FC = () => {
       }}
     >
     <>
-      <Card title="CẬP NHẬT THÔNG TIN">
+      <Card style={{
+            width:"700px",
+            display: "grid",
+            placeItems: "center",
+            minHeight: "60vh",
+            minWidth: "50vh",
+          }} title="THÔNG TIN TÀI KHOẢN">
         <Skeleton loading={loadingForm}>
           <Form
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 30 }}
-            style={{ maxWidth: 700 }}
             onFinish={onFinish}
             layout="horizontal"
             form={form}
@@ -287,17 +289,94 @@ const UpdateTT: React.FC = () => {
               >
                 <Input/>
             </Form.Item>
+            {(roleId==="2" &&  <Form.Item
+              name="canCuocCongDan"
+              label="CCCD"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập căn cước công dân!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            )}
+            {(roleId==="2" &&  <Form.Item
+              name="thanhPho"
+              label="Tỉnh / Thành"
+              rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa điền Tỉnh / Thành !",
+                },
+              ]}
+            >
+              <Select
+                options={provinces}
+                placeholder="Tỉnh/ Thành Phố"
+                onChange={(value) => {
+                  form.setFieldsValue({
+                    quanHuyen: undefined,
+                    phuongXa: undefined,
+                  });
+                  fetchDistricts(value);
+                }}
+              />
+            </Form.Item>
+            )}
+            {(roleId==="2" &&  <Form.Item
+              name="quanHuyen"
+              label="Quận / Huyện:"
+              rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa điền Quận / Huyện!",
+                },
+              ]}
+            >
+              <Select
+                options={districts}
+                placeholder="Quận / Huyện"
+                onChange={(value) => {
+                  form.setFieldsValue({ phuongXa: undefined });
+                  fetchWards(value);
+                }}
+              />
+            </Form.Item>
+            )}
+            {(roleId==="2" &&  <Form.Item
+              name="phuongXa"
+              label="Phường / Xã"
+              rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa điền Phường / Xã !",
+                },
+              ]}
+            >
+              <Select options={wards}
+              placeholder="Phường / Xã" />
+            </Form.Item>
+            )}
+            {(roleId==="2" &&  <Form.Item
+              name="diaChiCuThe"
+              label="Địa chỉ cụ thể"
+              >
+            <Input/>
+            </Form.Item>
+            )}
             <Form.Item wrapperCol={{ offset: 1 }}>
               <Space>
-                <Button type="dashed" htmlType="reset">
+              {(roleId === "1" || roleId === "3") &&<Button type="dashed" htmlType="reset">
                   Reset
-                </Button>
-                <Button  type="primary">
+                </Button>}
+                {roleId === "3" && <Button  type="primary">
                     <Link to={"/them-dia-chi"}>Thêm địa chỉ mới</Link>
-                </Button>
-                <Button type="primary" htmlType="submit">
+                </Button> }
+                {(roleId === "1" || roleId === "3") &&<Button type="primary" htmlType="submit">
                   Cập nhật
-                </Button>
+                </Button>}
               </Space>
             </Form.Item>
           </Form>

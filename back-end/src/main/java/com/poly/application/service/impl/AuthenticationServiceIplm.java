@@ -111,7 +111,7 @@ public class AuthenticationServiceIplm implements AuthenticationService {
             if(user.getGioiTinh()==null){
                 user.setGioiTinh(CommonEnum.GioiTinh.OTHER);
             }
-            user.setMatKhau(new BCryptPasswordEncoder().encode("123123"));
+            user.setMatKhau(new BCryptPasswordEncoder().encode("Aa123123@"));
             userRepository.save(user);
 //        GioHang gioHang = new GioHang();
 //        gioHang.setMaGioHang(GenCode.generateGioHangCode());

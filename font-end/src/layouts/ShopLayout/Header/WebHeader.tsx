@@ -127,7 +127,7 @@ const Header: React.FC = () => {
           {roleId === "3" && <Option value="3">Khách hàng</Option>}
           <Option value="thongtin"><Link to={"/thong-tin"}>Thông tin</Link></Option>
           <Option value="doiMatKhau"><Link to={"/doi-mat-khau"}>Đổi mật khẩu</Link></Option>
-          <Option value="logout">Logout</Option>
+          <Option style={{ color: '#3D6EE0' }} value="logout">Logout</Option>
         </Select>
       ) : (
       <Link

@@ -77,4 +77,7 @@ public class DiaChi {
     @JoinColumn(name = "tai_khoan_id",referencedColumnName = "id")
     private TaiKhoan taiKhoan;
 
+    @Column(name = "email")
+    private String email;
+
 }
