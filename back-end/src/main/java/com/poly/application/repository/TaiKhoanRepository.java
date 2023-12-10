@@ -70,5 +70,10 @@ public interface    TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
 
 //    TaiKhoan findByVaitro(VaiTro vaiTro);
 
+    @Query("SELECT tk FROM TaiKhoan tk WHERE tk.matKhau = :matKhau")
+    List<TaiKhoan> findByMatKhau(String matKhau);
+
+
+
 
 }

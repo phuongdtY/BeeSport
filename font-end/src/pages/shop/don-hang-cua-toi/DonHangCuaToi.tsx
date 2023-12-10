@@ -10,7 +10,7 @@ import {
 } from "react-icons/md";
 import { GoChecklist } from "react-icons/go";
 import { BsBoxSeam } from "react-icons/bs";
-import { requestClient } from "~/utils/request";
+import requestClient from "~/utils/requestClient";
 
 const DonHangCuaToi: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -20,6 +20,7 @@ const DonHangCuaToi: React.FC = () => {
   const [badgeSHIPPING, setBadgeSHIPPING] = useState(0);
   const [badgeAPPROVED, setBadgeAPPROVED] = useState(0);
   const [badgeCANCELLED, setBadgeCANCELLED] = useState(0);
+  const idTaiKhoan = localStorage.getItem("acountId");
 
   const onChange = (key: string) => {
     console.log(key);
@@ -27,10 +28,12 @@ const DonHangCuaToi: React.FC = () => {
 
   const getAll = async () => {
     setLoading(true);
+    console.log(idTaiKhoan);
+
     try {
       const response = await requestClient.get("/don-hang/count", {
         params: {
-          taiKhoanId: 3,
+          taiKhoanId: idTaiKhoan,
           trangThai: "",
         },
       });
@@ -46,7 +49,7 @@ const DonHangCuaToi: React.FC = () => {
     try {
       const response = await requestClient.get("/don-hang/count", {
         params: {
-          taiKhoanId: 3,
+          taiKhoanId: idTaiKhoan,
           trangThai: "PENDING",
         },
       });
@@ -62,7 +65,7 @@ const DonHangCuaToi: React.FC = () => {
     try {
       const response = await requestClient.get("/don-hang/count", {
         params: {
-          taiKhoanId: 3,
+          taiKhoanId: idTaiKhoan,
           trangThai: "PICKUP",
         },
       });
@@ -78,7 +81,7 @@ const DonHangCuaToi: React.FC = () => {
     try {
       const response = await requestClient.get("/don-hang/count", {
         params: {
-          taiKhoanId: 3,
+          taiKhoanId: idTaiKhoan,
           trangThai: "SHIPPING",
         },
       });
@@ -94,7 +97,7 @@ const DonHangCuaToi: React.FC = () => {
     try {
       const response = await requestClient.get("/don-hang/count", {
         params: {
-          taiKhoanId: 3,
+          taiKhoanId: idTaiKhoan,
           trangThai: "APPROVED",
         },
       });
@@ -110,7 +113,7 @@ const DonHangCuaToi: React.FC = () => {
     try {
       const response = await requestClient.get("/don-hang/count", {
         params: {
-          taiKhoanId: 3,
+          taiKhoanId: idTaiKhoan,
           trangThai: "CANCELLED",
         },
       });
