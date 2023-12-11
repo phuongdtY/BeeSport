@@ -17,7 +17,7 @@ import {
   Select,
 } from "antd";
 
-import {requestTimMatKhau} from "~/utils/request";
+import { requestTimMatKhau } from "~/utils/request";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import axios from "axios";
 import { Option } from "antd/es/mentions";
@@ -32,7 +32,7 @@ interface Option {
   isLeaf?: boolean;
 }
 
-function ModalAddDiaChi({ openModal,closeModal }) {
+function ModalAddDiaChi({ openModal, closeModal }) {
   const [form] = Form.useForm();
   const [provinces, setProvinces] = useState<Option[]>([]);
   const [test, setTest] = useState(false);
@@ -52,23 +52,26 @@ function ModalAddDiaChi({ openModal,closeModal }) {
         try {
           setLoading(true);
           const idTaiKhoan = localStorage.getItem("acountId");
-          const local123 = localStorage.getItem('refreshToken');
-          const response = await requestDC.post(`/dia-chi/khach-hang/add?id=${idTaiKhoan}`, values,
-          {
-            headers: {
-              Authorization: `Bearer ${local123}`
+          const local123 = localStorage.getItem("refreshToken");
+          const response = await requestDC.post(
+            `/dia-chi/add?id=${idTaiKhoan}`,
+            values,
+            {
+              headers: {
+                Authorization: `Bearer ${local123}`,
+              },
             }
-          }
           );
           console.log("Response from API:", response); // In dữ liệu từ API
           setLoading(false);
           message.success("Thêm địa chỉ mới thành công");
+          closeModal();
           navigate("/");
         } catch (error: any) {
           console.log("Error:", error); // In lỗi ra để xác định lý do
           if (error.response && error.response.data) {
             message.error(error.response.data.message);
-          }  else {
+          } else {
             message.error("Có lỗi xảy ra khi địa chỉ mới.");
           }
           setLoading(false);
@@ -231,145 +234,156 @@ function ModalAddDiaChi({ openModal,closeModal }) {
       }
     }
   };
-  
+
   return (
-    <Modal style={{ top: 20 }}
-    width={600} title="Địa chỉ của tôi" open={openModal} onCancel={closeModal}>
-          <Form form={form} onFinish={onSubmit} {...formItemLayout}>
-            <Form.Item
-              name="hoVaTen"
-              label="Họ và Tên:"
-              rules={[ 
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Vui lòng nhập họ và tên!",
-                },
-                {
-                  pattern: /^[\p{L}\s']+$/u,
-                  message: "Họ và tên không hợp lệ!",
-                },
-              ]}
+    <Modal
+      style={{ top: 20 }}
+      width={600}
+      title="Địa chỉ của tôi"
+      open={openModal}
+      onCancel={closeModal}
+      footer
+    >
+      <Form form={form} onFinish={onSubmit} {...formItemLayout}>
+        <Form.Item
+          name="hoVaTen"
+          label="Họ và Tên:"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: "Vui lòng nhập họ và tên!",
+            },
+            {
+              pattern: /^[\p{L}\s']+$/u,
+              message: "Họ và tên không hợp lệ!",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="soDienThoai"
+          label="Số Điện Thoại:"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: "Bạn chưa điền số điện thoại!",
+            },
+            {
+              pattern: /^0[35789]\d{8}$/,
+              message: "Số điện thoại không hợp lệ!",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="email"
+          label="E-mail:"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: "Bạn chưa điền e-mail!",
+            },
+            {
+              type: "email",
+              message: "E-mail không hợp lệ!",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="thanhPho"
+          label="Tỉnh / Thành"
+          rules={[
+            {
+              required: true,
+              message: "Bạn chưa điền Tỉnh / Thành !",
+            },
+          ]}
+        >
+          <Select
+            options={provinces}
+            placeholder="Tỉnh/ Thành Phố"
+            onChange={(value) => {
+              form.setFieldsValue({
+                quanHuyen: undefined,
+                phuongXa: undefined,
+              });
+              fetchDistricts(value);
+            }}
+          />
+        </Form.Item>
+        <Form.Item
+          name="quanHuyen"
+          label="Quận / Huyện:"
+          rules={[
+            {
+              required: true,
+              message: "Bạn chưa điền Quận / Huyện!",
+            },
+          ]}
+        >
+          <Select
+            options={districts}
+            placeholder="Quận / Huyện"
+            onChange={(value) => {
+              form.setFieldsValue({ phuongXa: undefined });
+              fetchWards(value);
+            }}
+          />
+        </Form.Item>
+        <Form.Item
+          name="phuongXa"
+          label="Phường / Xã"
+          rules={[
+            {
+              required: true,
+              message: "Bạn chưa điền Phường / Xã !",
+            },
+          ]}
+        >
+          <Select options={wards} placeholder="Phường / Xã" />
+        </Form.Item>
+        <Form.Item
+          name="diaChiCuThe"
+          label="Địa chỉ cụ thể"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: "Bạn chưa điền đia chỉ!",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item {...tailLayout}>
+          <Space>
+            <Button
+              type="dashed"
+              htmlType="reset"
+              // style={{marginRight:"100px" }}
             >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="soDienThoai"
-              label="Số Điện Thoại:"
-              rules={[
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Bạn chưa điền số điện thoại!",
-                },
-                {
-                  pattern: /^0[35789]\d{8}$/,
-                  message: "Số điện thoại không hợp lệ!",
-                },
-              ]}
+              Reset
+            </Button>
+            <Button
+              style={{ marginRight: "110px" }}
+              type="primary"
+              htmlType="submit"
+              loading={loading}
             >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="email"
-              label="E-mail:"
-              rules={[
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Bạn chưa điền e-mail!",
-                },
-                {
-                  type: "email",
-                  message: "E-mail không hợp lệ!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="thanhPho"
-              label="Tỉnh / Thành"
-              rules={[
-                {
-                  required: true,
-                  message: "Bạn chưa điền Tỉnh / Thành !",
-                },
-              ]}
-            >
-              <Select
-                options={provinces}
-                placeholder="Tỉnh/ Thành Phố"
-                onChange={(value) => {
-                  form.setFieldsValue({
-                    quanHuyen: undefined,
-                    phuongXa: undefined,
-                  });
-                  fetchDistricts(value);
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              name="quanHuyen"
-              label="Quận / Huyện:"
-              rules={[
-                {
-                  required: true,
-                  message: "Bạn chưa điền Quận / Huyện!",
-                },
-              ]}
-            >
-              <Select
-                options={districts}
-                placeholder="Quận / Huyện"
-                onChange={(value) => {
-                  form.setFieldsValue({ phuongXa: undefined });
-                  fetchWards(value);
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              name="phuongXa"
-              label="Phường / Xã"
-              rules={[
-                {
-                  required: true,
-                  message: "Bạn chưa điền Phường / Xã !",
-                },
-              ]}
-            >
-              <Select options={wards} placeholder="Phường / Xã" />
-            </Form.Item>
-            <Form.Item
-              name="diaChiCuThe"
-              label="Địa chỉ cụ thể"
-              rules={[
-                {
-                  required: true,
-                  whitespace: true,
-                  message: "Bạn chưa điền đia chỉ!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item {...tailLayout}>
-              <Space >
-                <Button
-                  type="dashed"
-                  htmlType="reset"
-                  // style={{marginRight:"100px" }}
-                >
-                  Reset
-                </Button>
-                <Button style={{marginRight:"110px" }} type="primary" htmlType="submit" loading={loading}>
-                  Thêm
-                </Button>
-              </Space>
-            </Form.Item>
-          </Form>
-          </Modal>
+              Thêm
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Modal>
   );
-};
+}
 
 export default ModalAddDiaChi;

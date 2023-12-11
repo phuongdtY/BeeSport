@@ -5,10 +5,8 @@ import { requestDC } from "~/utils/requestDiaChi";
 export const fetchData = async (params: TableParams) => {
   const doiMK = localStorage.getItem("acountId");
   try {
-    const res = await requestDC.get(`/dia-chi/khach-hang?taiKhoanId=${doiMK}`, {
-      
-      params // Chỉ gửi params thay vì { params: { params } }
-      
+    const res = await requestDC.get(`/dia-chi?taiKhoanId=${doiMK}`, {
+      params, // Chỉ gửi params thay vì { params: { params } }
     });
     console.log(res);
     return res.data;
@@ -16,7 +14,6 @@ export const fetchData = async (params: TableParams) => {
     console.log(error);
   }
 };
-
 
 export const getOneUser = async (id: number) => {
   try {
@@ -26,5 +23,3 @@ export const getOneUser = async (id: number) => {
     console.log(error);
   }
 };
-
-

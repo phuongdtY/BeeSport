@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/dia-chi/khach-hang")
+@RequestMapping("/api/dia-chi")
 public class DiaChiController {
 
     @Autowired

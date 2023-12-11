@@ -1,6 +1,7 @@
 package com.poly.application.model.request.update_request;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.TaiKhoan;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,8 @@ public class UpdatedDiaChiRequest {
     private String hoVaTen;
 
     private String soDienThoai;
+
+    private String email;
 
     private String thanhPho;
 
@@ -25,5 +28,5 @@ public class UpdatedDiaChiRequest {
 
     private CommonEnum.TrangThaiDiaChi trangThaiDiaChi;
 
-    private String email;
+    private TaiKhoan taiKhoan;
 }

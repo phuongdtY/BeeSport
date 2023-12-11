@@ -91,6 +91,7 @@ public class DiaChiServiceImpl implements DiaChiService {
 
         DiaChi detail = optional.get();
         diaChiMapper.convertUpdateRequestToEntity(request, detail);
+        System.out.println(detail);
         DiaChiReponse diaChiReponse = diaChiMapper.convertEntityToResponse(diaChiRepository.save(detail));
         System.out.println(diaChiReponse.getId());
         System.out.println(diaChiReponse);
