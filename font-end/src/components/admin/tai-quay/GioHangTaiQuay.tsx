@@ -138,7 +138,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         if (selectedVoucher) {
           setSelectedVoucher(selectedVoucher);
           setGiaTriGiam(maxDiscount);
-          console.log(selectedVoucher);
         } else {
           setSelectedVoucher(null);
           setGiaTriGiam(0);
