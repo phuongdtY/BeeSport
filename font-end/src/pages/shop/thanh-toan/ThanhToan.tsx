@@ -40,7 +40,6 @@ interface Option {
   isLeaf?: boolean;
 }
 const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
-  const [radioOnchageValue, setRadioOnchageValue] = useState(1);
   const [form] = Form.useForm();
   const [provinces, setProvinces] = useState<Option[]>([]);
   const [districts, setDistricts] = useState<Option[]>([]);
@@ -89,8 +88,6 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
 
         if (feeRes.status === 200) {
           const feeResponse = feeRes.data.data.total;
-          console.log(feeResponse);
-
           // Cập nhật state phiShip sau khi tính phí ship thành công
           setPhiShip(feeResponse);
         } else {
@@ -149,58 +146,80 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
-        // console.log(values);
+        console.log(values);
 
-        // if (values.phuongThucThanhToan == "2") {
         try {
-          const res = await request.get("/vn-pay/create-payment", {
-            params: { soTienThanhToan: tongTien() },
+          setLoading(true);
+
+          const voucherObject = idVoucher != null ? { id: idVoucher } : null;
+          const taiKhoanObject = idTaiKhoan != null ? { id: idTaiKhoan } : null;
+
+          const res = await request.post("hoa-don", {
+            loaiHoaDon: "ONLINE",
+            voucher: voucherObject,
+            taiKhoan: taiKhoanObject,
+            phiShip: phiShip,
+            tongTien: tamTinh,
+            tongTienKhiGiam: tongTien(),
+            ghiChu: values.ghiChu,
+            nguoiNhan: values.hoVaTen,
+            sdtNguoiNhan: values.soDienThoai,
+            emailNguoiNhan: values.email,
+            diaChiNguoiNhan: diaChi,
+            trangThaiHoaDon: "PENDING",
+            idPhuongThuc: values.phuongThucThanhToan,
           });
-          console.log(res.data);
-          window.location.href = res.data.url;
+
+          console.log(res);
+
+          if (res.status === 201) {
+            try {
+              const hoaDonChiTietData = dataHoaDonChiTiet(res.data.id);
+              console.log(hoaDonChiTietData);
+
+              const response = await request.post(
+                "hoa-don-chi-tiet/add-list",
+                hoaDonChiTietData
+              );
+              await request.delete("gio-hang-chi-tiet/delete-all");
+
+              message.success("Đặt hàng thành công");
+            } catch (error) {
+              console.log(error);
+            }
+
+            try {
+              const resGD = await request.post("giao-dich", {
+                taiKhoan: taiKhoanObject,
+                soTienGiaoDich: tongTien(),
+                hoaDon: {
+                  id: res.data.id,
+                },
+                phuongThucThanhToan: {
+                  id: values.phuongThucThanhToan,
+                },
+                trangThaiGiaoDich: "PENDING",
+              });
+              console.log(resGD);
+              if (res.status == 201 && values.phuongThucThanhToan == 2) {
+                const resVNPay = await request.get("vn-pay/create-payment", {
+                  params: {
+                    soTienThanhToan: tongTien(),
+                    idGiaoDich: resGD.data.id,
+                    maDonHang: res.data.ma,
+                  },
+                });
+                window.location.href = resVNPay.data.url;
+              }
+            } catch (error) {
+              console.log(error);
+            }
+          }
         } catch (error) {
-          console.log(error);
+          message.error(error?.response?.data?.message || "Có lỗi xảy ra");
+        } finally {
+          setLoading(false);
         }
-        // }
-        // try {
-        //   setLoading(true);
-        //   console.log(idVoucher);
-
-        //   const res = await request.post("hoa-don", {
-        //     loaiHoaDon: "ONLINE",
-        //     voucher: idVoucher != null || undefined ? { id: idVoucher } : null,
-        //     taiKhoan: idTaiKhoan != null ? { id: idTaiKhoan } : null,
-        //     phiShip: phiShip,
-        //     tongTien: tamTinh,
-        //     tongTienKhiGiam: tongTien(),
-        //     ghiChu: values.ghiChu,
-        //     nguoiNhan: values.hoVaTen,
-        //     sdtNguoiNhan: values.soDienThoai,
-        //     emailNguoiNhan: values.email,
-        //     diaChiNguoiNhan: diaChi,
-        //     trangThaiHoaDon: "PENDING",
-        //   });
-        //   try {
-        //     console.log(dataHoaDonChiTiet(res.data.id));
-
-        //     const response = await request.post(
-        //       "hoa-don-chi-tiet/add-list",
-        //       dataHoaDonChiTiet(res.data.id)
-        //     );
-        //     console.log(response);
-        //     await request.delete("gio-hang-chi-tiet/delete-all");
-        //     if (response.status == 200) {
-        //       setLoading(false);
-        //       navigate("/");
-        //       message.success("Đặt hàng thành công");
-        //     }
-        //   } catch (error) {
-        //     console.log(error);
-        //   }
-        // } catch (error: any) {
-        //   message.error(error.response.data.message);
-        //   setLoading(false);
-        // }
       },
     });
   };
@@ -287,11 +306,6 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
     }
   };
 
-  const onChangeRadio = (e: RadioChangeEvent) => {
-    console.log("radio checked", e.target.value);
-    setRadioOnchageValue(e.target.value);
-  };
-
   const addVoucher = (obj, value) => {
     setVoucher(obj);
     setIdVoucher(obj?.id);
@@ -314,6 +328,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
         layout="vertical"
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
+        initialValues={{ phuongThucThanhToan: 1 }}
       >
         <Card title="THÔNG TIN NHẬN HÀNG" bordered={true}>
           <Form.Item label="Họ và Tên:">
@@ -465,9 +480,9 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
             <TextArea showCount maxLength={100} />
           </Form.Item>
         </Card>
-        <Form.Item name="phuongThucThanhToan">
-          <Card title="PHƯƠNG THỨC THANH TOÁN">
-            <Radio.Group onChange={onChangeRadio} value={radioOnchageValue}>
+        <Card title="PHƯƠNG THỨC THANH TOÁN">
+          <Form.Item name="phuongThucThanhToan">
+            <Radio.Group>
               <Space direction="vertical">
                 <Radio value={1}>
                   <Card style={{ width: "450px" }}>
@@ -481,8 +496,8 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
                 </Radio>
               </Space>
             </Radio.Group>
-          </Card>
-        </Form.Item>
+          </Form.Item>
+        </Card>
         <Card title={`Đơn hàng (${soSanPham} sản phẩm)`}>
           <div>
             <Space.Compact>

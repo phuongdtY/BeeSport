@@ -29,17 +29,21 @@ import java.util.TimeZone;
 public class VNPayController {
 
     @GetMapping("/create-payment")
-    public ResponseEntity<?> createdPayment(@RequestParam("soTienThanhToan") long soTienThanhToan) throws UnsupportedEncodingException {
+    public ResponseEntity<?> createdPayment(@RequestParam("soTienThanhToan") long soTienThanhToan,
+                                            @RequestParam("idGiaoDich") String idGiaoDich,
+                                            @RequestParam("maDonHang") String vnp_TxnRef
+
+    ) throws UnsupportedEncodingException {
         String vnp_IpAddr = "127.0.0.1";
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        String bankCode = "NCB";
+//        String bankCode = "NCB";
 
-        String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
+//        String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
 
-        long amount = soTienThanhToan*100;
+        long amount = soTienThanhToan * 100;
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
@@ -48,7 +52,7 @@ public class VNPayController {
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
 
-        vnp_Params.put("vnp_BankCode", bankCode);
+//        vnp_Params.put("vnp_IdGiaoDich", idGiaoDich);
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", orderType);

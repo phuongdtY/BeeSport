@@ -22,7 +22,6 @@ import "./App.css";
 import ShopLayout from "./layouts/ShopLayout/ShopLayout";
 import Home from "./pages/shop/home/Home";
 import GioHang from "./pages/shop/gio-hang/GioHang";
-import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
 import IndexVoucher from "./pages/admin/voucher/index";
 import AddVoucher from "./pages/admin/voucher/addVoucher.tsx";
 import UpdateVoucher from "./pages/admin/voucher/updateVoucher.tsx";
@@ -46,6 +45,7 @@ import ProtectedRoute from "./pages/admin/component/ProtextedRoute.tsx";
 import React, { useEffect } from "react";
 import AuthContext from "./pages/admin/component/AuthContext.tsx";
 import DonHangCuaToi from "./pages/shop/don-hang-cua-toi/DonHangCuaToi.tsx";
+import ThanhToanVNPay from "./pages/shop/thanh-toan/ThanhToanVNPay.tsx";
 
 function App() {
   return (
@@ -53,6 +53,7 @@ function App() {
       <Route path="/sign-in" element={<Signin />} />
       <Route path="/sign-up" element={<Signup />} />
       <Route path="/forgot-password" element={<Forgotpassword />} />
+      <Route path="/thanh-toan" element={<ThanhToanVNPay />} />
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/san-pham" element={<SanPham />} />
