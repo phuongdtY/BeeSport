@@ -1,6 +1,6 @@
 import axios from "axios";
 export const requestDC = axios.create({
-  baseURL: "http://localhost:8080/api/khach-hang",
+  baseURL: "http://localhost:8080/api/",
   timeout: 2000,
 });
 requestDC.interceptors.request.use(

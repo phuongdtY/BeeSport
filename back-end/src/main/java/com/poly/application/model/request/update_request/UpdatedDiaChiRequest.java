@@ -1,13 +1,14 @@
-package com.poly.application.model.request.create_request;
+package com.poly.application.model.request.update_request;
 
 import com.poly.application.common.CommonEnum;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+
 @Getter
 @Setter
-public class CreatedDiaChiRequest {
+public class UpdatedDiaChiRequest {
     private String hoVaTen;
 
     private String soDienThoai;
@@ -21,10 +22,6 @@ public class CreatedDiaChiRequest {
     private String diaChiCuThe;
 
     private CommonEnum.LoaiDiaChi loaiDiaChi;
-
-    private LocalDateTime ngayTao;
-
-    private LocalDateTime ngaySua;
 
     private CommonEnum.TrangThaiDiaChi trangThaiDiaChi;
 

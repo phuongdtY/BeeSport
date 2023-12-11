@@ -25,30 +25,27 @@ export interface DataType {
 }
 export interface UpdatedRequest {
   hoVaTen: string;
-  canCuocCongDan: string;
-  ngaySinh: string | undefined;
-  gioiTinh: {
-    ten: string;
-    moTa: string;
-    mauSac: string;
-  };
   soDienThoai: string;
-  email: string;
   thanhPho: number;
   quanHuyen: number;
-  phuongXa: number;
+  phuongXa: string;
   diaChiCuThe: string;
-  anhDaiDien: string;
-  ngayTao: string;
-  ngaySua: string;
-  trangThai: {
+  loaiDiaChi: {
     ten: string;
     mota: string;
     mauSac: string;
   };
+  ngayTao: string;
+  ngaySua: string;
+  trangThaiDiaChi: {
+    ten: string;
+    mota: string;
+    mauSac: string;
+  };
+  email: string;
 }
-export interface ResponseNhanVien {
-  taiKhoan: DataType;
+export interface ResponseDiaChi {
+  diaChi: DataType;
 }
 
 export interface Sorter {
@@ -60,7 +57,7 @@ export interface DataParams {
   currentPage: number;
   pageSize: number;
   searchText: string;
-  gioiTinh: string;
+  loaiDiaChi: string;
   sorter: string;
   sortOrder: string;
 }
@@ -68,8 +65,8 @@ export interface DataParams {
 export interface TableParams {
   pagination?: TablePaginationConfig;
   searchText?: string;
-  trangThai?: string;
-  gioiTinh?: string;
+  trangThaiDiaChi?: string;
+  loaiDiaChi?: string;
   sortField?: string;
   sortOrder?: string;
   filters?: Record<string, FilterValue>;

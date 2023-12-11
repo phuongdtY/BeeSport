@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { DoiMatKhauRequest } from "~/interfaces/taiKhoan.type";
 import { requestDoiMK }  from "~/utils/requestDoiMK";
 const { confirm } = Modal;
-const add: React.FC = () => {
+function ModalDoiMK({ openModal,closeModal }) {
     const doiMK = localStorage.getItem("acountId");
     const roleId = localStorage.getItem("roleId");
   const navigate = useNavigate();
@@ -60,8 +60,9 @@ const add: React.FC = () => {
     });
   };
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <Card title="ĐỔI MẬT KHẨU">
+    <Modal style={{ top: 20 }}
+    width={450} title="ĐỔI MẬT KHẨU" open={openModal} onCancel={closeModal}>
+      <Card title="">
         <Form
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
@@ -135,8 +136,8 @@ const add: React.FC = () => {
           </Form.Item>
         </Form>
       </Card>
-    </div>
+      </Modal>
   );
 };
 
-export default add;
+export default ModalDoiMK;

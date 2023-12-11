@@ -32,7 +32,7 @@ interface Option {
   isLeaf?: boolean;
 }
 
-const AddDCKh: React.FC = () => {
+function ModalAddDiaChi({ openModal,closeModal }) {
   const [form] = Form.useForm();
   const [provinces, setProvinces] = useState<Option[]>([]);
   const [test, setTest] = useState(false);
@@ -53,7 +53,7 @@ const AddDCKh: React.FC = () => {
           setLoading(true);
           const idTaiKhoan = localStorage.getItem("acountId");
           const local123 = localStorage.getItem('refreshToken');
-          const response = await requestDC.post(`/dia-chi/add?id=${idTaiKhoan}`, values,
+          const response = await requestDC.post(`/dia-chi/khach-hang/add?id=${idTaiKhoan}`, values,
           {
             headers: {
               Authorization: `Bearer ${local123}`
@@ -231,34 +231,15 @@ const AddDCKh: React.FC = () => {
       }
     }
   };
-  const getProvinceLabelFromId = (id: number | null | undefined) => {
-    const province = provinces.find((p) => p.value === id);
-    return province?.label;
-  };
-
-  const getDistrictLabelFromId = (id: number | null | undefined) => {
-    const district = districts.find((d) => d.value === id);
-    return district?.label;
-  };
-
-  const getWardLabelFromId = (id: number | null | undefined) => {
-    const ward = wards.find((w) => w.value === id);
-    return ward?.label;
-  };
-  const onChange = (value: (string | number)[], selectedOptions: Option[]) => {
-    console.log(value, selectedOptions);
-  };
+  
   return (
-    
-    <Card title="THÊM ĐỊA CHỈ">
-      <Row>
-        
-        <Col span={16}>
+    <Modal style={{ top: 20 }}
+    width={600} title="Địa chỉ của tôi" open={openModal} onCancel={closeModal}>
           <Form form={form} onFinish={onSubmit} {...formItemLayout}>
             <Form.Item
               name="hoVaTen"
               label="Họ và Tên:"
-              rules={[
+              rules={[ 
                 {
                   required: true,
                   whitespace: true,
@@ -373,25 +354,22 @@ const AddDCKh: React.FC = () => {
               <Input />
             </Form.Item>
             <Form.Item {...tailLayout}>
-              <Space>
+              <Space >
                 <Button
                   type="dashed"
                   htmlType="reset"
-                  style={{ margin: "0 12px" }}
+                  // style={{marginRight:"100px" }}
                 >
                   Reset
                 </Button>
-                <Button type="primary" htmlType="submit" loading={loading}>
+                <Button style={{marginRight:"110px" }} type="primary" htmlType="submit" loading={loading}>
                   Thêm
                 </Button>
               </Space>
             </Form.Item>
           </Form>
-        </Col>
-        <Col span={4}></Col>
-      </Row>
-    </Card>
+          </Modal>
   );
 };
 
-export default AddDCKh;
+export default ModalAddDiaChi;

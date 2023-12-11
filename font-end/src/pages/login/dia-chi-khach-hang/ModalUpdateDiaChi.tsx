@@ -1,7 +1,6 @@
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import ModalAddDiaChi from '~/pages/login/dia-chi-khach-hang/DiaChiMoi'
 dayjs.extend(customParseFormat);
 import axios from "axios";
 import {
@@ -19,8 +18,8 @@ import {
   message,
 } from "antd";
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { UpdatedRequest,DataType } from "~/interfaces/khachHang.type";
+import { useNavigate, useParams } from "react-router-dom";
+import { UpdatedRequest,DataType } from "~/interfaces/diaChi.type";
 interface Option {
   value?: number | null;
   label: React.ReactNode;
@@ -29,13 +28,10 @@ interface Option {
 }
 
 import request from "~/utils/request";
-import { requestDoiMK } from "~/utils/requestDoiMK";
-import ModalDiaChi from "../dia-chi-khach-hang/DiaChiTableModal";
+import { requestDC } from "~/utils/requestDiaChi";
 
 const { confirm } = Modal;
-function ModalThongTin({ openModal,closeModal }) {
-  const [modalAddDiaChi, setModalAddDiaChi] = useState(false); 
-  const [modalDiaChi, setModalDiaChi] = useState(false); 
+function ModalUpdateDCKhachHang({ openModal,closeModal,id }) {
   const [data, setData] = useState<DataType|null>(null);
   const [wardCode1, setWardCode1] = useState(data?.phuongXa);
   const [provinces, setProvinces] = useState<Option[]>([]);
@@ -44,7 +40,7 @@ function ModalThongTin({ openModal,closeModal }) {
   const navigate = useNavigate();
   const [loadingForm, setLoadingForm] = useState(false);
   const [form] = Form.useForm();
-  let { id } = useParams();
+//   let { id } = useParams();
   const fetchProvinces = async () => {
     try {
       const provinceRes = await axios.get(
@@ -72,7 +68,7 @@ function ModalThongTin({ openModal,closeModal }) {
   const fetchDistricts = async (idProvince: number|undefined) => {
     try {
       const districtRes = await axios.get(
-        `https://online-gateway.ghn.vn/shiip/public-api/master-data/district?`,
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/district`,
         {
           params: {
             province_id: idProvince,
@@ -83,7 +79,6 @@ function ModalThongTin({ openModal,closeModal }) {
           },
         }
       );
-
       const districtOptions: Option[] = districtRes.data.data.map(
         (district: any) => ({
           value: district.DistrictID,
@@ -110,7 +105,6 @@ function ModalThongTin({ openModal,closeModal }) {
           },
         }
       );
-
       const wardOptions: Option[] = wardRes.data.data.map((ward: any) => ({
         value: ward.WardCode,
         label: ward.WardName,
@@ -126,27 +120,25 @@ function ModalThongTin({ openModal,closeModal }) {
       
       setLoadingForm(true);
       try {
-        const doiMK = localStorage.getItem("acountId");
-        const res = await requestDoiMK.get("/editTT/" + doiMK);
-        console.log("aaaa",res.data)
-        //fix
+        const res = await requestDC.get("/dia-chi/khach-hang/edit/" + id);
+        console.log("id   +"+res.data.id)
         fetchProvinces();
         fetchDistricts(res.data?.thanhPho);
         fetchWards(res.data?.quanHuyen);
-          const gioiTinhValue = res.data?.gioiTinh?.ten || "OTHER";
-          const ngaySinhValue = dayjs(res.data?.ngaySinh);
+        // const trangThaiValue = res.data?.trangThai.ten === "ACTIVE";
+        const loaiDiaChi = res.data?.loaiDiaChi?.ten || "OTHER";
+        const trangThaiDiaChi = res.data?.trangThaiDiaChi?.ten || "DELETED";
         form.setFieldsValue({
             hoVaTen: res.data?.hoVaTen,
-            canCuocCongDan: res.data?.canCuocCongDan,
-            ngaySinh: ngaySinhValue,
-            gioiTinh: gioiTinhValue,
             soDienThoai: res.data?.soDienThoai,
             email: res.data?.email,
             thanhPho: Number(res.data?.thanhPho) ,
             quanHuyen: Number(res.data?.quanHuyen),
             phuongXa: res.data?.phuongXa,
             diaChiCuThe: res.data?.diaChiCuThe,
+            loaiDiaChi:loaiDiaChi,
             // matKhau:res.data?.matKhau,
+            trangThaiDiaChi: trangThaiDiaChi, // Convert to boolean
         })
         ;
         setData(res.data);
@@ -156,6 +148,7 @@ function ModalThongTin({ openModal,closeModal }) {
         setLoadingForm(false);
       }
     };
+    
     getOne();
   }, [id]);
   
@@ -163,34 +156,28 @@ function ModalThongTin({ openModal,closeModal }) {
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc cập nhật thông tin không?",
+      content: "Bạn có chắc cập nhật địa chỉ này không?",
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
         try {
-            const doiMK = localStorage.getItem("acountId");
-          const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
-          const res = await requestDoiMK.put("updateTT/" + doiMK, {
+        //   const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
+        
+          const res = await requestDC.put("dia-chi/khach-hang/update/" + id, {
             hoVaTen: values.hoVaTen,
-            // canCuocCongDan: values.canCuocCongDan,
-            ngaySinh: values.ngaySinh,
-            gioiTinh: values.gioiTinh,
             soDienThoai: values.soDienThoai,
             email: values.email,
-            // thanhPho: values.thanhPho,
-            // quanHuyen: values.quanHuyen,
-            // phuongXa: values.phuongXa,
-            // diaChiCuThe: values.diaChiCuThe,
-            // trangThai: trangThai,
-          }
-          );
+            thanhPho: values.thanhPho,
+            quanHuyen: values.quanHuyen,
+            phuongXa: values.phuongXa,
+            diaChiCuThe: values.diaChiCuThe,
+            loaiDiaChi: values.loaiDiaChi,
+            trangThaiDiaChi: values.trangThaiDiaChi,
+          });
+          console.log("Id++++",res)
           if (res.data) {
-            message.success("Cập nhật thông tin thành công");
-            localStorage.removeItem("refreshToken");
-            localStorage.removeItem("acountId");
-            localStorage.removeItem("roleId");
-            navigate("/sign-in");
-            console.log(values.trangThai)
+            message.success("Cập nhật địa chỉ thành công");
+            navigate("/");
           } else {
             console.error("Phản hồi API không như mong đợi:", res);
           }
@@ -199,26 +186,24 @@ function ModalThongTin({ openModal,closeModal }) {
             message.error(error.response.data.message);
           } else {
             console.error("Lỗi không xác định:", error);
-            message.error("Cập nhật thông tin thất bại");
+            message.error("Cập nhật địa chỉ thất bại");
           }
         }
       },
     });
   };
-  const roleId = localStorage.getItem("roleId");
+  
   return (
-       <Modal style={{ top: 20 }}
-    width={600} title="THÔNG TIN TÀI KHOẢN" open={openModal} onCancel={closeModal}>
+    <Modal style={{ top: 20 }}
+    width={600} open={openModal} onCancel={closeModal}>
     <>
-      <Card style={{
-            width:"550px",
-            display: "grid",
-            placeItems: "center",
-            minHeight: "60vh",
-            minWidth: "50vh",
-          }} title="">
+    
+      <Card title="CẬP NHẬT ĐỊA CHỈ">
         <Skeleton loading={loadingForm}>
           <Form
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            style={{ maxWidth: 500 }}
             onFinish={onFinish}
             layout="horizontal"
             form={form}
@@ -229,43 +214,12 @@ function ModalThongTin({ openModal,closeModal }) {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập tên khách hàng!",
+                  message: "Vui lòng nhập tên !",
                 },
               ]}
             >
               <Input />
             </Form.Item>
-            <Form.Item
-              name="ngaySinh"
-             label="Ngày Sinh:"
-
-              rules={[
-                    {
-                    required: true,
-                    message: "Vui lòng chọn ngày sinh!",
-                    },
-                  ]   }
-                  >
-          <DatePicker format={"DD/MM/YYYY"} placeholder="Chọn ngày sinh" />
-          </Form.Item>
-
-          <Form.Item
-              name="gioiTinh"
-              label="Giới tính"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng chọn giới tính",
-                },
-              ]}
-            >
-              <Radio.Group>
-                <Radio value="MALE">Nam</Radio>
-                <Radio value="FEMALE">Nữ</Radio>
-                <Radio value="OTHER">Khác</Radio>
-              </Radio.Group>
-            </Form.Item>
-
             <Form.Item name="soDienThoai"
               label="Số điện thoại"
               rules={[{
@@ -278,28 +232,16 @@ function ModalThongTin({ openModal,closeModal }) {
             <Form.Item
               name="email"
               label="Email"
-              rules={[{
-                required: true,
-                message: "Vui lòng chọn email!"
-              }
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập email !",
+                },
               ]}
               >
                 <Input/>
             </Form.Item>
-            {(roleId==="2" &&  <Form.Item
-              name="canCuocCongDan"
-              label="CCCD"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập căn cước công dân!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            )}
-            {(roleId==="2" &&  <Form.Item
+            <Form.Item
               name="thanhPho"
               label="Tỉnh / Thành"
               rules={[
@@ -321,8 +263,7 @@ function ModalThongTin({ openModal,closeModal }) {
                 }}
               />
             </Form.Item>
-            )}
-            {(roleId==="2" &&  <Form.Item
+            <Form.Item
               name="quanHuyen"
               label="Quận / Huyện:"
               rules={[
@@ -341,8 +282,7 @@ function ModalThongTin({ openModal,closeModal }) {
                 }}
               />
             </Form.Item>
-            )}
-            {(roleId==="2" &&  <Form.Item
+            <Form.Item
               name="phuongXa"
               label="Phường / Xã"
               rules={[
@@ -355,32 +295,67 @@ function ModalThongTin({ openModal,closeModal }) {
               <Select options={wards}
               placeholder="Phường / Xã" />
             </Form.Item>
-            )}
-            {(roleId==="2" &&  <Form.Item
+            <Form.Item
               name="diaChiCuThe"
               label="Địa chỉ cụ thể"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập địa chỉ cụ thể !",
+                },
+              ]}
               >
             <Input/>
             </Form.Item>
-            )}
-            <Form.Item wrapperCol={{ offset: 10 }}>
+            <Form.Item
+              name="loaiDiaChi"
+              label="Loại địa chỉ"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn loại địa chỉ",
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value="HOME">Nhà</Radio>
+                <Radio value="COMPANY">Nơi làm việc</Radio>
+                <Radio value="OTHER">Khác</Radio>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item
+              name="trangThaiDiaChi"
+              label="Trạng thái địa chỉ"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn trạng thái địa chỉ",
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value="ACTIVE">Hoạt động</Radio>
+                <Radio value="INACTIVE">Không hoạt động</Radio>
+                <Radio value="DELETED">Xóa</Radio>
+                <Radio value="DEFAULT">Mặc định</Radio>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 17 }}>
               <Space>
-              {(roleId === "1" || roleId === "3") &&<Button type="dashed" htmlType="reset">
+                <Button type="dashed" htmlType="reset">
                   Reset
-                </Button>}
-                {(roleId === "1" || roleId === "3") &&<Button type="primary" htmlType="submit">
+                </Button>
+                <Button type="primary" htmlType="submit">
                   Cập nhật
-                </Button>}
+                </Button>
               </Space>
             </Form.Item>
           </Form>
         </Skeleton>
       </Card>
-      <ModalAddDiaChi openModal={modalAddDiaChi} closeModal={()=>setModalAddDiaChi(false)} />
-      
     </>
     </Modal>
   );
 };
 
-export default ModalThongTin;
+export default ModalUpdateDCKhachHang;

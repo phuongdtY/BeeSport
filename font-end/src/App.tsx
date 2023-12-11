@@ -45,9 +45,9 @@ import ThongKe from "./pages/admin/thong-ke/ThongKe.tsx";
 import ProtectedRoute from "./pages/admin/component/ProtextedRoute.tsx";
 import React, { useEffect } from "react";
 import ProtectedKH from "./pages/admin/component/AuthContext.tsx";
-import DoiMatKhau from "./pages/login/doi-mat-khau/DoiMatKhau.tsx";AddDCKh
+import DoiMatKhau from "./pages/login/doi-mat-khau/DoiMatKhau.tsx";
 import UpdateTT from "./pages/login/thong-tin/ThongTin.tsx";
-import AddDCKh from "./pages/login/thong-tin/DiaChiMoi.tsx";
+import AddDCKh from "./pages/login/dia-chi-khach-hang/DiaChiMoi.tsx";
 
 function App() {
   return (
