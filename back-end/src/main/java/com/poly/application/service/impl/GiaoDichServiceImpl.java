@@ -76,6 +76,21 @@ public class GiaoDichServiceImpl implements GiaoDichService {
         }
         return giaoDichMapper.convertGiaoDichEntityToGiaoDichResponse(giaoDichRepository.save(giaoDich));
     }
+
+    @Override
+    public GiaoDichResponse updateByMa(String ma, UpdatedGiaoDichRequest request) {
+        Optional<GiaoDich> detail = giaoDichRepository.findByMaGiaoDich(ma);
+        if (detail.isEmpty()) {
+            throw new NotFoundException("Giao dịch không tồn tại trong hệ thống!");
+        }
+        GiaoDich giaoDich = detail.get();
+        System.out.println(giaoDich);
+//        giaoDichMapper.convertUpdatedGiaoDichRequestToGiaoDichEntity(request, giaoDich);
+//        return giaoDichMapper.convertGiaoDichEntityToGiaoDichResponse(giaoDichRepository.save(giaoDich));
+        return null;
+    }
+
+
     @Override
     public List<GiaoDichResponse> getListGiaoDich(Long idHoaDon) {
         List<GiaoDich> giaoDichList = giaoDichRepository.findGiaoDichesByHoaDonId(idHoaDon);
@@ -84,4 +99,11 @@ public class GiaoDichServiceImpl implements GiaoDichService {
                 .map(giaoDichMapper::convertGiaoDichEntityToGiaoDichResponse)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public GiaoDichResponse findByMaGiaoDich(String maGiaoDich) {
+        Optional<GiaoDich> giaoDich = giaoDichRepository.findByMaGiaoDich(maGiaoDich);
+        return giaoDichMapper.convertGiaoDichEntityToGiaoDichResponse(giaoDich.get());
+    }
+
 }

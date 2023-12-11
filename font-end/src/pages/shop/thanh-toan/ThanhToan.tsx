@@ -205,8 +205,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
                 const resVNPay = await request.get("vn-pay/create-payment", {
                   params: {
                     soTienThanhToan: tongTien(),
-                    idGiaoDich: resGD.data.id,
-                    maDonHang: res.data.ma,
+                    maGiaoDich: resGD.data.maGiaoDich,
                   },
                 });
                 window.location.href = resVNPay.data.url;

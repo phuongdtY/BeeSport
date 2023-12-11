@@ -7,17 +7,22 @@ const { Text, Title } = Typography;
 
 const ThanhToanVNPay: React.FC = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const idGiaoDich = urlParams.get("idGiaoDich");
+  const maGiaoDich = urlParams.get("vnp_TxnRef");
+  const status = urlParams.get("vnp_TransactionStatus");
   useEffect(() => {
     updateGD();
-    console.log(idGiaoDich);
-  }, [idGiaoDich]);
+    console.log(status);
+  }, [status]);
   const updateGD = async () => {
-    try {
-      const res = await request.put(`giao-dich/${idGiaoDich}`);
-      console.log(res);
-    } catch (error) {
-      console.log(error);
+    if (status == "00") {
+      try {
+        const res = await request.put(`giao-dich/${maGiaoDich}`, {
+          trangThaiGiaoDich: "SUCCESS",
+        });
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
   return (
@@ -34,7 +39,7 @@ const ThanhToanVNPay: React.FC = () => {
           Thành công
         </Title>
         <div style={{ background: "#dee2e6", width: 360 }}>
-          <Text type="secondary">Mã tra cứu:</Text>
+          <Text type="secondary">Mã giao dịch:{maGiaoDich}</Text>
           <br />
           <Text type="secondary">Thời gian giao dịch:</Text>
         </div>

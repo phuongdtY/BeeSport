@@ -30,8 +30,7 @@ public class VNPayController {
 
     @GetMapping("/create-payment")
     public ResponseEntity<?> createdPayment(@RequestParam("soTienThanhToan") long soTienThanhToan,
-                                            @RequestParam("idGiaoDich") String idGiaoDich,
-                                            @RequestParam("maDonHang") String vnp_TxnRef
+                                            @RequestParam("maGiaoDich") String vnp_TxnRef
 
     ) throws UnsupportedEncodingException {
         String vnp_IpAddr = "127.0.0.1";

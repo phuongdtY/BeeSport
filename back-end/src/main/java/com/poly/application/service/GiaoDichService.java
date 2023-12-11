@@ -20,8 +20,11 @@ public interface GiaoDichService {
 
     GiaoDichResponse update(Long id, UpdatedGiaoDichRequest request);
 
+    GiaoDichResponse updateByMa(String ma, UpdatedGiaoDichRequest request);
+
     List<GiaoDichResponse> getListGiaoDich(Long idHoaDon);
 
+    GiaoDichResponse findByMaGiaoDich(String maGiaoDich);
 
 
 }
