@@ -395,6 +395,29 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           if (response.status === 200) {
             loadHoaDon();
             message.success("Hóa đơn đã được thanh toán thành công.");
+            try {
+              const response = await request.get('/hoa-don/export/pdf', {
+                params: { id: 41 },
+                responseType: 'blob', // Quan trọng để xác định kiểu dữ liệu trả về là một Blob
+              });
+              // Tạo một URL tạm thời từ blob
+              const file = new Blob(
+                [response.data], 
+                { type: 'application/pdf' }
+              );
+              const fileURL = URL.createObjectURL(file);
+              // Tạo một thẻ <a> tạm thời để tải xuống
+              const downloadLink = document.createElement('a');
+              downloadLink.href = fileURL;
+              downloadLink.setAttribute('download', `HoaDon_${hoaDonData.ma}.pdf`); // Đặt tên file ở đây
+              document.body.appendChild(downloadLink);
+              downloadLink.click();
+              // Dọn dẹp sau khi tải xuống
+              URL.revokeObjectURL(fileURL);
+              document.body.removeChild(downloadLink);
+            } catch (error) {
+              console.log(error);
+            }
           } else {
             message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
           }
