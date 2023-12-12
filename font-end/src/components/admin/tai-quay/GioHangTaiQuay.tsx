@@ -167,7 +167,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
 
   // Xử lý sự kiện khi radio "Tiền mặt" được chọn
   const handleCashRadioChange = (e) => {
-    setIsCashSelected(e.target.value === 0);
+    setIsCashSelected(e.target.value === 1);
   };
 
   const handleCustomerInfoChange = (formValues) => {
