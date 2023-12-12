@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import IndexNhanVien from "./pages/admin/nhan-vien/index";
 import IndexKhachHang from "./pages/admin/khach-hang/index";
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
@@ -11,7 +11,7 @@ import IndexSanPham from "./pages/admin/san-pham/index";
 import AddSanPham from "./pages/admin/san-pham/AddSanPham.tsx";
 import IndexThuongHieu from "./pages/admin/thuong-hieu/index";
 import AddThuongHieu from "./pages/admin/thuong-hieu/add";
-// import UpdateThuongHieu from "./pages/admin/thuong-hieu/update";
+import UpdateThuongHieu from "./pages/admin/thuong-hieu/update";
 import IndexDiaHinhSan from "./pages/admin/dia-hinh-san/index";
 import AddDiaHinhSan from "./pages/admin/dia-hinh-san/add";
 import UpdateDiaHinhSan from "./pages/admin/dia-hinh-san/update";
@@ -22,7 +22,6 @@ import "./App.css";
 import ShopLayout from "./layouts/ShopLayout/ShopLayout";
 import Home from "./pages/shop/home/Home";
 import GioHang from "./pages/shop/gio-hang/GioHang";
-import ThanhToan from "./pages/shop/thanh-toan/ThanhToan";
 import IndexVoucher from "./pages/admin/voucher/index";
 import AddVoucher from "./pages/admin/voucher/addVoucher.tsx";
 import UpdateVoucher from "./pages/admin/voucher/updateVoucher.tsx";
@@ -43,8 +42,6 @@ import ProtectedRoute1 from "./pages/admin/component/ProtectedRoute1.tsx";
 import SanPham from "./pages/shop/san-pham/SanPham.tsx";
 import ThongKe from "./pages/admin/thong-ke/ThongKe.tsx";
 import ProtectedRoute from "./pages/admin/component/ProtextedRoute.tsx";
-import React, { useEffect } from "react";
-import AuthContext from "./pages/admin/component/AuthContext.tsx";
 import DonHangCuaToi from "./pages/shop/don-hang-cua-toi/DonHangCuaToi.tsx";
 
 function App() {
@@ -79,7 +76,7 @@ function App() {
         <Route path="san-pham/update/:id" element={<UpdateSanPham />} />
         <Route path="thuong-hieu" element={<IndexThuongHieu />} />
         <Route path="thuong-hieu/add" element={<AddThuongHieu />} />
-        <Route path="thuong-hieu/update/:id" element={<UpdateSanPham />} />
+        <Route path="thuong-hieu/update/:id" element={<UpdateThuongHieu />} />
         <Route path="dia-hinh-san" element={<IndexDiaHinhSan />} />
         <Route path="dia-hinh-san/add" element={<AddDiaHinhSan />} />
         <Route path="dia-hinh-san/update/:id" element={<UpdateDiaHinhSan />} />
@@ -95,7 +92,7 @@ function App() {
         <Route path="hoa-don" element={<IndexHoaDon />} />
         <Route path="kich-co" element={<IndexKichCo />} />
         <Route path="kich-co/add" element={<AddKichCo />} />
-        <Route path="kich-co/:id" element={<UpdateKichCo />} />
+        <Route path="kich-co/update/:id" element={<UpdateKichCo />} />
         <Route path="hoa-don/:id" element={<DetailHoaDon />} />
         <Route path="khach-hang" element={<IndexKhachHang />} />
         <Route path="khach-hang/add" element={<AddKH />} />

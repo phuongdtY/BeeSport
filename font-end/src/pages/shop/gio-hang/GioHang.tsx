@@ -195,10 +195,35 @@ const index: React.FC = () => {
             onClick={() => handleDecrement(record)}
           />
           <Input
-            style={{ textAlign: "center", width: 40 }}
+            style={{ textAlign: "center", width: 70 }}
             value={soLuong.toString()}
-            readOnly
+            onChange={(e) => {
+              const newValue = parseInt(e.target.value, 10);
+              if (isNaN(newValue) || newValue < 1) {
+                const newData = [...data];
+                const index = newData.findIndex(
+                  (item) => item.id === record.id
+                );
+                newData[index].soLuong = 1; // Set to 1 if the entered value is empty or less than 1
+                setData(newData);
+              } else {
+                const newData = [...data];
+                const index = newData.findIndex(
+                  (item) => item.id === record.id
+                );
+                newData[index].soLuong = Math.min(
+                  newValue,
+                  newData[index].chiTietSanPham.soLuong
+                );
+                setData(newData);
+              }
+              // Add the item ID to updatedQuantities if not already in the array
+              if (!updatedQuantities.includes(record.id)) {
+                setUpdatedQuantities((prev) => [...prev, record.id]);
+              }
+            }}
           />
+
           <Button
             icon={<PlusOutlined />}
             onClick={() => handleIncrement(record)}

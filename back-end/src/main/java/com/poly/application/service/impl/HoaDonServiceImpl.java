@@ -117,6 +117,7 @@ public class HoaDonServiceImpl implements HoaDonService {
     public HoaDonResponse add(CreateHoaDonRequest createHoaDonRequest) {
         HoaDon createHoaDon = hoaDonMapper.convertCreateHoaDonRequestToHoaDonEntity(createHoaDonRequest);
 
+//        PhuongThucThanhToan phuongThucThanhToan = phuongThucThanhToanRepository.findPhuongThucThanhToanById(createHoaDonRequest.getIdPhuongThuc());
         TimeLine timeLine = new TimeLine();
         if (createHoaDonRequest.getTaiKhoan() != null) {
             TaiKhoan taiKhoan = taiKhoanRepository.findById(createHoaDonRequest.getTaiKhoan().getId()).orElse(null);
@@ -129,17 +130,8 @@ public class HoaDonServiceImpl implements HoaDonService {
         timeLine.setHoaDon(savedHoaDon);
         timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.PENDING);
         timelineRepository.save(timeLine);
-        if (createHoaDonRequest.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE
-                && createHoaDonRequest.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.PENDING) {
-            if (createHoaDonRequest.getVoucher() != null) {
-                Voucher voucherFind = voucherRepository.findById(createHoaDonRequest.getVoucher().getId()).get();
-                System.out.println(voucherFind);
-                System.out.println(voucherFind.getId());
-                System.out.println(voucherFind.getSoLuong());
-                voucherFind.setSoLuong(voucherFind.getSoLuong() - 1);
-                voucherRepository.updateSoLuongVoucherHoaDon(voucherFind.getSoLuong(), createHoaDonRequest.getVoucher().getId());
-            }
-
+//        if (createHoaDonRequest.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE
+//                && createHoaDonRequest.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.PENDING) {
 //            GiaoDich giaoDich = new GiaoDich();
 //            giaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
 //            giaoDich.setSoTienGiaoDich(savedHoaDon.getTongTienKhiGiam());
@@ -155,7 +147,7 @@ public class HoaDonServiceImpl implements HoaDonService {
 //            giaoDich.setHoaDon(savedHoaDon);
 //            giaoDich.setTaiKhoan(savedHoaDon.getTaiKhoan());
 //            giaoDichRepository.save(giaoDich);
-        }
+//        }
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(savedHoaDon);
     }
 
@@ -260,12 +252,12 @@ public class HoaDonServiceImpl implements HoaDonService {
         }
         HoaDon hoaDon = hoaDonRepository.findById(idHoadon)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy hóa đơn có id " + idHoadon));
-        PhuongThucThanhToan phuongThucThanhToan = phuongThucThanhToanRepository.findById(1L)
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy phương thức thanh toán có id " + idPhuongThucThanhToan));
-        GiaoDich giaoDichFind = giaoDichRepository.findGiaoDich(idHoadon, idPhuongThucThanhToan, CommonEnum.TrangThaiGiaoDich.PENDING);
-        if (phuongThucThanhToan.getId() == 2) {
-            giaoDichFind = giaoDichRepository.findGiaoDich(idHoadon, idPhuongThucThanhToan, CommonEnum.TrangThaiGiaoDich.SUCCESS);
-        }
+//        PhuongThucThanhToan phuongThucThanhToan = phuongThucThanhToanRepository.findById(1L)
+//                .orElseThrow(() -> new NotFoundException("Không tìm thấy phương thức thanh toán có id " + idPhuongThucThanhToan));
+//        GiaoDich giaoDichFind = giaoDichRepository.findGiaoDich(idHoadon, idPhuongThucThanhToan, CommonEnum.TrangThaiGiaoDich.PENDING);
+//        if (phuongThucThanhToan.getId() == 2) {
+//            giaoDichFind = giaoDichRepository.findGiaoDich(idHoadon, idPhuongThucThanhToan, CommonEnum.TrangThaiGiaoDich.SUCCESS);
+//        }
         if (hoaDon.getVoucher() != null) {
             voucherFind = voucherRepository.findById(hoaDon.getVoucher().getId())
                     .orElseThrow(() -> new NotFoundException("Không tìm thấy phương thức thanh toán có id " + idPhuongThucThanhToan));
@@ -313,13 +305,13 @@ public class HoaDonServiceImpl implements HoaDonService {
                         }
                     }
                 }
-                giaoDich.setTrangThaiGiaoDich(CommonEnum.TrangThaiGiaoDich.SUCCESS);
-                giaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
-                giaoDich.setSoTienGiaoDich(hoaDon.getTongTienKhiGiam());
-                giaoDich.setHoaDon(hoaDon);
-                giaoDich.setTaiKhoan(hoaDon.getTaiKhoan());
-                giaoDich.setPhuongThucThanhToan(phuongThucThanhToan);
-                giaoDichRepository.save(giaoDich);
+//                giaoDich.setTrangThaiGiaoDich(CommonEnum.TrangThaiGiaoDich.SUCCESS);
+//                giaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
+//                giaoDich.setSoTienGiaoDich(hoaDon.getTongTienKhiGiam());
+//                giaoDich.setHoaDon(hoaDon);
+//                giaoDich.setTaiKhoan(hoaDon.getTaiKhoan());
+//                giaoDich.setPhuongThucThanhToan(phuongThucThanhToan);
+//                giaoDichRepository.save(giaoDich);
                 hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
                 break;
             case PICKUP:
@@ -347,8 +339,8 @@ public class HoaDonServiceImpl implements HoaDonService {
                     timeLine2.setHoaDon(hoaDon);
                     timeLine2.setTrangThai(CommonEnum.TrangThaiHoaDon.PICKUP);
                     timeLine2.setGhiChu("Đang lấy hàng");
-                    giaoDichFind.setSoTienGiaoDich(hoaDon.getTongTienKhiGiam());
-                    giaoDichRepository.save(giaoDichFind);
+//                    giaoDichFind.setSoTienGiaoDich(hoaDon.getTongTienKhiGiam());
+//                    giaoDichRepository.save(giaoDichFind);
                     timelineRepository.save(timeLine2);
                     hoaDonRepository.updateTrangThaiHoaDon(CommonEnum.TrangThaiHoaDon.PICKUP, idHoadon);
                 } else {

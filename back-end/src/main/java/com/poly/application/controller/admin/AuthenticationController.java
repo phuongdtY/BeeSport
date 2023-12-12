@@ -1,14 +1,13 @@
 package com.poly.application.controller.admin;
 
 import com.poly.application.entity.TaiKhoan;
-import com.poly.application.model.dto.JwtAuthenticationResponse;
-import com.poly.application.model.dto.RefreshTokenRequest;
-import com.poly.application.model.dto.SignUpRequest;
-import com.poly.application.model.dto.SigninRequest;
+import com.poly.application.model.dto.*;
 import com.poly.application.service.AuthenticationService;
+import com.poly.application.service.TaiKhoanService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 
     private AuthenticationService authenticationService;
+
+    @Autowired
+    private TaiKhoanService taiKhoanService;
 
     public AuthenticationController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
@@ -52,5 +54,9 @@ public class AuthenticationController {
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
         return ResponseEntity.ok("Đăng xuất thành công");
+    }
+    @PostMapping("/doi-mat-khau")
+    public ResponseEntity<?> doiMatKhau(@RequestBody PasswordRequest passwordRequest){
+        return ResponseEntity.ok(taiKhoanService.changePassword(passwordRequest));
     }
 }

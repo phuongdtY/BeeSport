@@ -41,7 +41,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [phiShip, setPhiShip] = useState(0);
   const [isCashSelected, setIsCashSelected] = useState(false); // State để kiểm tra xem "Tiền mặt" được chọn hay không
   const [isPaymentSelected, setIsPaymentSelected] = useState(false);
-  const [selectedRadio, setSelectedRadio] = useState(null);
+  const [selectedRadio, setSelectedRadio] = useState(1);
   const [tienKhachDua, setTienKhachDua] = useState(0);
   const [giaTriGiam, setGiaTriGiam] = useState(0); // New state for discount amount
   const [selectedVoucher, setSelectedVoucher] = useState([]);
@@ -333,6 +333,18 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       );
       return; // Ngăn chặn việc thanh toán nếu có mặt hàng không hợp lệ
     }
+    if (totalPriceFromTable == 0) {
+      // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
+      message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
+      return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
+    }
+    if (selectedRadio == 1) {
+      // Nếu tiền trả lại khách là số âm, hiển thị thông báo và ngăn chặn việc thanh toán
+      if (tienTraKhach < 0) {
+        message.error("Số tiền khách đưa không đủ để thanh toán.");
+        return;
+      }
+    }
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -340,20 +352,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       okText: "OK",
       cancelText: "Hủy",
       onOk: async () => {
-        if (totalPriceFromTable == 0) {
-          // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
-          message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
-          return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
-        }
-
-        if (selectedRadio !== 1) {
-          // Nếu tiền trả lại khách là số âm, hiển thị thông báo và ngăn chặn việc thanh toán
-          if (tienTraKhach < 0) {
-            message.error("Số tiền khách đưa không đủ để thanh toán.");
-            return;
-          }
-        }
-
         // Tạo đối tượng hóa đơn với trạng thái APPROVE
         const hoaDonData = getHoaDonData();
         const trangThai = isChecked ? "CONFIRMED" : "APPROVED";
@@ -366,7 +364,32 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         };
 
         console.log(hoaDonData);
+        try {
+          console.log(selectedRadio);
 
+          const resGD = await request.post("giao-dich", {
+            taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
+            soTienGiaoDich: tongTienKhiGiam,
+            hoaDon: {
+              id: id,
+            },
+            phuongThucThanhToan: {
+              id: selectedRadio,
+            },
+            trangThaiGiaoDich: selectedRadio == 2 ? "PENDING" : "SUCCESS",
+          });
+          if (resGD.status == 201 && selectedRadio == 2) {
+            const resVNPay = await request.get("vn-pay/create-payment", {
+              params: {
+                soTienThanhToan: tongTienKhiGiam,
+                maGiaoDich: resGD.data.maGiaoDich,
+              },
+            });
+            window.location.href = resVNPay.data;
+          }
+        } catch (error) {
+          console.log(error);
+        }
         try {
           const response = await request.put(`/hoa-don/${id}`, hoaDonThanhToan);
           if (response.status === 200) {
@@ -408,7 +431,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     } else {
       setGiaTriGiam(0);
     }
-    setSelectedRadio(0);
+    setSelectedRadio(1);
     setIsCashSelected(true);
   }, []);
 
@@ -418,7 +441,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
 
   useEffect(() => {
     // When the component mounts, trigger the selection manually
-    setSelectedRadio(0); // Assuming the 'Tiền mặt' radio has a value of 0
     setIsCashSelected(true);
     setIsPaymentSelected(true); // Set to true to display the 'Thanh toán' button
   }, []); // Empty dependency array to run this effect only once on mount
@@ -543,26 +565,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 <p>{formatGiaTienVND(totalPriceFromTable)}</p>
               </Col>
             </Row>
-            {/* Phí vận chuyển */}
-            {checked ? (
-              <Row>
-                <Col span={7}>
-                  <p>Phí vận chuyển: </p>
-                </Col>
-                <Col span={10}></Col>
-                <Col span={7}>
-                  <InputNumber
-                    value={phiShip}
-                    style={{ width: "100%" }}
-                    min={1000}
-                    step={10000}
-                    formatter={(value) => `${formatGiaTienVND(value)}`}
-                    parser={(value: any) => value.replace(/\D/g, "")}
-                    onChange={(value) => setPhiShip(value)}
-                  />
-                </Col>
-              </Row>
-            ) : null}
             {/* Giảm giá */}
             <Row>
               <Col span={5}>
@@ -589,6 +591,26 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </p>
               </Col>
             </Row>
+            {/* Phí vận chuyển */}
+            {checked ? (
+              <Row>
+                <Col span={7}>
+                  <p>Phí vận chuyển: </p>
+                </Col>
+                <Col span={10}></Col>
+                <Col span={7}>
+                  <InputNumber
+                    value={phiShip}
+                    style={{ width: "100%" }}
+                    min={1000}
+                    step={10000}
+                    formatter={(value) => `${formatGiaTienVND(value)}`}
+                    parser={(value: any) => value.replace(/\D/g, "")}
+                    onChange={(value) => setPhiShip(value)}
+                  />
+                </Col>
+              </Row>
+            ) : null}
             {selectedVoucher && (
               <Row>
                 <Space direction="vertical">
@@ -667,7 +689,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
             >
               <Row gutter={[15, 15]} style={{ marginTop: 20 }}>
                 <Radio.Button
-                  value={0}
+                  value={1}
                   style={{
                     height: 70,
                     width: 220,
@@ -688,7 +710,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                   </Space>
                 </Radio.Button>
                 <Radio.Button
-                  value={1}
+                  value={2}
                   style={{
                     height: 70,
                     width: 220,
@@ -700,11 +722,14 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                   }}
                 >
                   <Space>
-                    <BsCreditCard2Back
+                    {/* <BsCreditCard2Back
                       style={{ fontSize: 30, marginTop: 10 }}
-                    />
+                    /> */}
                     <span style={{ fontSize: 17, fontWeight: "bold" }}>
-                      Chuyển khoản
+                      <img
+                        src="https://pay.vnpay.vn/images/brands/logo-en.svg"
+                        alt=""
+                      />
                     </span>
                   </Space>
                 </Radio.Button>
