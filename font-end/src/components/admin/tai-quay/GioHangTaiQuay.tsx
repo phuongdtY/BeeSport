@@ -138,7 +138,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         if (selectedVoucher) {
           setSelectedVoucher(selectedVoucher);
           setGiaTriGiam(maxDiscount);
-          console.log(selectedVoucher);
         } else {
           setSelectedVoucher(null);
           setGiaTriGiam(0);
@@ -704,7 +703,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                       style={{ fontSize: 30, marginTop: 10 }}
                     />
                     <span style={{ fontSize: 17, fontWeight: "bold" }}>
-                      Chuyển khoản
+                      VNPay
                     </span>
                   </Space>
                 </Radio.Button>
