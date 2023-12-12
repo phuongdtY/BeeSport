@@ -28,7 +28,6 @@ public class DiaChiReponse {
 
     private String diaChiCuThe;
 
-    private CommonEnum.LoaiDiaChi loaiDiaChi;
 
     private LocalDateTime ngayTao;
 

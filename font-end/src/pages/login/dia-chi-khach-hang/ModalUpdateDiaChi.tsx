@@ -125,7 +125,6 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
         fetchDistricts(res.data?.thanhPho);
         fetchWards(res.data?.quanHuyen);
         // const trangThaiValue = res.data?.trangThai.ten === "ACTIVE";
-        const loaiDiaChi = res.data?.loaiDiaChi?.ten || "OTHER";
         const trangThaiDiaChi = res.data?.trangThaiDiaChi?.ten || "DELETED";
         form.setFieldsValue({
           hoVaTen: res.data?.hoVaTen,
@@ -135,7 +134,6 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
           quanHuyen: Number(res.data?.quanHuyen),
           phuongXa: res.data?.phuongXa,
           diaChiCuThe: res.data?.diaChiCuThe,
-          loaiDiaChi: loaiDiaChi,
           // matKhau:res.data?.matKhau,
           trangThaiDiaChi: trangThaiDiaChi, // Convert to boolean
         });
@@ -160,7 +158,7 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
       onOk: async () => {
         try {
           //   const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
-
+          const idTaiKhoan = localStorage.getItem("acountId");
           const res = await requestDC.put("dia-chi/update/" + id, {
             hoVaTen: values.hoVaTen,
             soDienThoai: values.soDienThoai,
@@ -169,8 +167,7 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
             quanHuyen: values.quanHuyen,
             phuongXa: values.phuongXa,
             diaChiCuThe: values.diaChiCuThe,
-            loaiDiaChi: values.loaiDiaChi,
-            taiKhoan: { id: 18 },
+            taiKhoan: { id: idTaiKhoan },
 
             trangThaiDiaChi: values.trangThaiDiaChi,
           });
@@ -312,22 +309,6 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
                 ]}
               >
                 <Input />
-              </Form.Item>
-              <Form.Item
-                name="loaiDiaChi"
-                label="Loại địa chỉ"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn loại địa chỉ",
-                  },
-                ]}
-              >
-                <Radio.Group>
-                  <Radio value="HOME">Nhà</Radio>
-                  <Radio value="COMPANY">Nơi làm việc</Radio>
-                  <Radio value="OTHER">Khác</Radio>
-                </Radio.Group>
               </Form.Item>
               <Form.Item
                 name="trangThaiDiaChi"

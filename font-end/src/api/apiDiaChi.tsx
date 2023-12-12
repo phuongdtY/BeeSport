@@ -8,7 +8,7 @@ export const fetchData = async (params: TableParams) => {
     const res = await requestDC.get(`/dia-chi?taiKhoanId=${doiMK}`, {
       params, // Chỉ gửi params thay vì { params: { params } }
     });
-    console.log(res);
+    console.log("ThanhPho",res.data.content);
     return res.data;
   } catch (error) {
     console.log(error);

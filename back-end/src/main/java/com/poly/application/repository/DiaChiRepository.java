@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,13 +21,11 @@ public interface DiaChiRepository extends JpaRepository<DiaChi,Long> {
     @Query("SELECT dc FROM DiaChi dc " +
             "WHERE (dc.hoVaTen LIKE %:searchText% OR dc.soDienThoai LIKE %:searchText% OR dc.email LIKE %:searchText%) " +
             "AND (:trangThaiDiaChi IS NULL OR dc.trangThaiDiaChi = :trangThaiDiaChi) " +
-            "AND (:loaiDiaChi IS NULL OR dc.loaiDiaChi = :loaiDiaChi) " +
             "AND dc.taiKhoan.id = :taiKhoanId")
     Page<DiaChi> findAllByTaiKhoanId(
             Pageable pageable,
             @Param("searchText") String searchText,
             @Param("trangThaiDiaChi") CommonEnum.TrangThaiDiaChi trangThaiDiaChi,
-            @Param("loaiDiaChi") CommonEnum.LoaiDiaChi loaiDiaChi,
             @Param("taiKhoanId") Long taiKhoanId
     );
     @Query("SELECT dc FROM DiaChi dc WHERE dc.id =:id")
@@ -38,4 +37,23 @@ public interface DiaChiRepository extends JpaRepository<DiaChi,Long> {
     @Modifying
     @Query("UPDATE DiaChi d SET d.trangThaiDiaChi = :trangThaiDiaChi")
     void updateAllTrangThaiDiaChi(@Param("trangThaiDiaChi") CommonEnum.TrangThaiDiaChi trangThaiDiaChi);
+
+    @Modifying
+    @Query("UPDATE DiaChi d SET d.trangThaiDiaChi = :trangThaiDiaChi WHERE d.id = :id")
+    void updateTrangThai(@Param("id") Long id, @Param("trangThaiDiaChi") CommonEnum.TrangThaiDiaChi trangThaiDiaChi);
+
+    @Modifying
+    @Query("UPDATE DiaChi d SET d.trangThaiDiaChi = :trangThaiDiaChi WHERE d.taiKhoan = :taiKhoan AND d.id != :id")
+    void updateTrangThaiForOtherAddresses(@Param("taiKhoan") TaiKhoan taiKhoan, @Param("id") Long id, @Param("trangThaiDiaChi") CommonEnum.TrangThaiDiaChi trangThaiDiaChi);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE DiaChi dc SET dc.trangThaiDiaChi = :trangThaiDiaChi WHERE dc.id = :id")
+    void updateTrangThaiDiaChiKH(
+            @Param("trangThaiDiaChi") CommonEnum.TrangThaiDiaChi trangThaiDiaChi,
+            @Param("id")Long id
+    );
+
+    List<DiaChi> findByTaiKhoanAndIdNot(TaiKhoan taiKhoan, Long id);
+
 }

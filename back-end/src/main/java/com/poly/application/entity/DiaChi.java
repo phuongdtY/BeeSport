@@ -58,10 +58,6 @@ public class DiaChi implements Serializable {
     @Column(name = "dia_chi_cu_the")
     private String diaChiCuThe;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "loai_dia_chi")
-    private CommonEnum.LoaiDiaChi loaiDiaChi;
-
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")

@@ -7,6 +7,7 @@ import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.DiaChiMapper;
 import com.poly.application.model.request.create_request.CreatedDiaChiRequest;
+import com.poly.application.model.request.update_request.UpdateDCReuest;
 import com.poly.application.model.request.update_request.UpdatedDiaChiRequest;
 import com.poly.application.model.response.DiaChiReponse;
 import com.poly.application.repository.DiaChiRepository;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,7 +37,7 @@ public class DiaChiServiceImpl implements DiaChiService {
     private TaiKhoanRepository taiKhoanRepository;
 
     @Override
-    public Page<DiaChiReponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String trangThaiDiaChi, String searchText, String loaiDiaChi,Long taiKhoanId) {
+    public Page<DiaChiReponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String trangThaiDiaChi, String searchText,Long taiKhoanId) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
@@ -51,22 +53,14 @@ public class DiaChiServiceImpl implements DiaChiService {
         }else {
             trangThai = CommonEnum.TrangThaiDiaChi.valueOf(trangThaiDiaChi);
         }
-        CommonEnum.LoaiDiaChi loaiDiaChi1;
-
-        if (loaiDiaChi == null || loaiDiaChi.equals("")) {
-            loaiDiaChi1 = null;
-        } else {
-            loaiDiaChi1 = CommonEnum.LoaiDiaChi.valueOf(loaiDiaChi);
-        }
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<DiaChi> diaChiPage = diaChiRepository.findAllByTaiKhoanId(pageable, searchText,trangThai,loaiDiaChi1,taiKhoanId);
+        Page<DiaChi> diaChiPage = diaChiRepository.findAllByTaiKhoanId(pageable, searchText,trangThai,taiKhoanId);
         return diaChiPage.map(diaChiMapper::convertEntityToResponse);
     }
 
     @Override
     public DiaChiReponse add(Long id,CreatedDiaChiRequest request) {
         DiaChi createdDiaChi = diaChiMapper.convertCreateResponseToEntity(request);
-        createdDiaChi.setLoaiDiaChi(CommonEnum.LoaiDiaChi.OTHER);
         createdDiaChi.setTrangThaiDiaChi(CommonEnum.TrangThaiDiaChi.ACTIVE);
         createdDiaChi.setTaiKhoan(taiKhoanRepository.findId(id));
         DiaChi savedDC = diaChiRepository.save(createdDiaChi);
@@ -83,20 +77,64 @@ public class DiaChiServiceImpl implements DiaChiService {
     }
 
     @Override
-    public DiaChiReponse update(Long id, UpdatedDiaChiRequest request) {
+    public DiaChi update(Long id, UpdatedDiaChiRequest request) {
         Optional<DiaChi> optional = diaChiRepository.findById(id);
         if (optional.isEmpty()) {
             throw new NotFoundException("Địa chỉ không tồn tại");
         }
 
         DiaChi detail = optional.get();
-        diaChiMapper.convertUpdateRequestToEntity(request, detail);
-        System.out.println(detail);
-        DiaChiReponse diaChiReponse = diaChiMapper.convertEntityToResponse(diaChiRepository.save(detail));
-        System.out.println(diaChiReponse.getId());
-        System.out.println(diaChiReponse);
-        return diaChiReponse;
+        CommonEnum.TrangThaiDiaChi trangThaiCu = detail.getTrangThaiDiaChi();
+//        diaChiMapper.convertUpdateRequestToEntity(request, detail);
+//        System.out.println(detail);
+//        DiaChi diaChi = ;
+//        System.out.println(diaChiReponse.getId());
+//        System.out.println(diaChiReponse);
+        detail.setHoVaTen(request.getHoVaTen());
+        detail.setSoDienThoai(request.getSoDienThoai());
+        detail.setThanhPho(request.getThanhPho());
+        detail.setQuanHuyen(request.getQuanHuyen());
+        detail.setPhuongXa(request.getPhuongXa());
+        detail.setDiaChiCuThe(request.getDiaChiCuThe());
+//        detail.setTrangThaiDiaChi(request.getTrangThaiDiaChi());
+        if (request.getTrangThaiDiaChi() == CommonEnum.TrangThaiDiaChi.DEFAULT) {
+            List<DiaChi> otherAddresses = diaChiRepository.findByTaiKhoanAndIdNot(detail.getTaiKhoan(), id);
+            for (DiaChi otherAddress : otherAddresses) {
+                otherAddress.setTrangThaiDiaChi(CommonEnum.TrangThaiDiaChi.ACTIVE);
+                diaChiRepository.save(otherAddress);
+            }
+        }
+
+        // Cập nhật trạng thái mới cho địa chỉ hiện tại
+        detail.setTrangThaiDiaChi(request.getTrangThaiDiaChi());
+        detail.setTaiKhoan(request.getTaiKhoan());
+        detail.setPhuongXa(request.getPhuongXa());
+        detail.setEmail(request.getEmail());
+        return diaChiRepository.save(detail);
     }
+
+    public DiaChi updateTrangThai(Long id, UpdateDCReuest request) {
+        Optional<DiaChi> optional = diaChiRepository.findById(id);
+        if (optional.isEmpty()) {
+            throw new NotFoundException("Địa chỉ không tồn tại");
+        }
+
+        DiaChi detail = optional.get();
+
+        if (request.getTrangThaiDiaChi() == CommonEnum.TrangThaiDiaChi.DEFAULT) {
+            // Đặt các địa chỉ khác thành ACTIVE
+            diaChiRepository.findByTaiKhoanAndIdNot(detail.getTaiKhoan(), id)
+                    .forEach(address -> {
+                        address.setTrangThaiDiaChi(CommonEnum.TrangThaiDiaChi.ACTIVE);
+                        diaChiRepository.save(address);
+                    });
+        }
+
+        // Đặt địa chỉ hiện tại thành trạng thái được yêu cầu
+        detail.setTrangThaiDiaChi(request.getTrangThaiDiaChi());
+        return diaChiRepository.save(detail);
+    }
+
 
 
 }

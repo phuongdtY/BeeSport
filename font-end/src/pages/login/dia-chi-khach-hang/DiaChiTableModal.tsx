@@ -20,6 +20,12 @@ import {
 import type { MenuProps } from "antd";
 import { GrMoreVertical } from "react-icons/gr";
 import { Link } from "react-router-dom";
+interface Option {
+  value?: number | null;
+  label: React.ReactNode;
+  children?: Option[];
+  isLeaf?: boolean;
+}
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { FilterValue, SorterResult } from "antd/es/table/interface";
 import {
@@ -42,6 +48,7 @@ import ModalAddDiaChi from "./DiaChiMoi";
 import ModalUpdateDiaChi from "./ModalUpdateDiaChi";
 import { requestDC } from "~/utils/requestDiaChi";
 import ModalUpdateDCKhachHang from "./ModalUpdateDiaChi";
+import axios from "axios";
 
 const DescriptionItem: React.FC<DescriptionItemProps> = ({
   title,
@@ -76,17 +83,32 @@ function ModalDiaChi({ openModal, closeModal }) {
     console.log("Id+" + id);
     setModalUpdateDiaChi(true);
   };
+  const handOnClickUpdateTT = async (id: any) => {
+    try {
+      //   const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
+      const idTaiKhoan = localStorage.getItem("acountId");
+      const res = await requestDC.put("dia-chi/updateTT/" + id, {
+        trangThaiDiaChi: "DEFAULT",
+      });
+      fetchDataAndLoadData();
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+      } else {
+        console.error("Lỗi không xác định:", error);
+      }
+    }
+};
   const getParams = (params: TableParams) => ({
     currentPage: data.length !== 0 ? params.pagination?.current : 1,
     pageSize: params.pagination?.pageSize,
     searchText: params.searchText,
-    trangThai: params.trangThaiDiaChi,
-    gioiTinh: params.loaiDiaChi,
+    trangThaiDiaChi: params.trangThaiDiaChi,
+    loaiDiaChi: params.loaiDiaChi,
     sortField: params.sortField,
     sortOrder: params.sortOrder,
     gioiTinhList: params.filters?.gioiTinh,
   });
-
+  
   const columns: ColumnsType<DataType> = [
     {
       title: "STT",
@@ -172,7 +194,7 @@ function ModalDiaChi({ openModal, closeModal }) {
       key: "thanhPho",
       sorter: true,
       ellipsis: true,
-      // render: (text) => <a>{text}</a>,
+      render: (thanhPho) => <a href={`mailto:${thanhPho}`}>{thanhPho}</a>,
     },
     {
       title: "Quận huyện",
@@ -213,7 +235,7 @@ function ModalDiaChi({ openModal, closeModal }) {
       render: (id) => {
         const actionItems: MenuProps["items"] = [
           {
-            icon: <EditOutlined />,
+            // icon: <EditOutlined />,
             label: (
               <Button
                 style={{ margin: 0, padding: 0 }}
@@ -228,14 +250,19 @@ function ModalDiaChi({ openModal, closeModal }) {
           {
             type: "divider",
           },
-          // {
-          //   icon: <DeleteOutlined />,
-          //   danger: true,
-          //   label: (
-          //     <Link to={`/admin/nhan-vien/status/${id}`}>Ngưng kích hoạt</Link>
-          //   ),
-          //   key: "3",
-          // },
+          {
+            // icon: <EditOutlined />,
+            label: (
+              <Button
+                style={{ margin: 0, padding: 0 }}
+                type="link"
+                onClick={() => handOnClickUpdateTT(id)}
+              >
+                Đặt làm mặc định
+              </Button>
+            ),
+            key: "2",
+          },
         ];
 
         return (
@@ -257,34 +284,38 @@ function ModalDiaChi({ openModal, closeModal }) {
       },
     },
   ];
-  useEffect(() => {
-    const fetchDataAndLoadData = async () => {
-      setLoading(true);
-      const fetchedData = await fetchData(getParams(tableParams));
-      setData(fetchedData.content);
-      setCurrentPage(fetchedData.pageable.pageNumber + 1);
-      setPageSize(fetchedData.pageable.pageSize);
-      setLoading(false);
-      const updatedTableParams = {
-        ...tableParams,
-        pagination: {
-          showSizeChanger: true,
-          ...tableParams.pagination,
-          total: fetchedData.totalElements,
-          showTotal: (total: number, range: [number, number]) =>
-            `${range[0]}-${range[1]} of ${total} items`,
-        },
-      };
-
-      // Kiểm tra xem tableParams thực sự đã thay đổi
-      if (JSON.stringify(updatedTableParams) !== JSON.stringify(tableParams)) {
-        setTableParams(updatedTableParams);
-      }
-      console.log(fetchedData.content);
+  const fetchDataAndLoadData = async () => {
+    setLoading(true);
+    const fetchedData = await fetchData(getParams(tableParams));
+    console.log("Dịa chỉ"+fetchData)
+    // fetchProvinces();
+    //   fetchDistricts(fetchedData.data?.thanhPho);
+    //   fetchWards(fetchedData.data?.quanHuyen);
+    setData(fetchedData.content);
+    setCurrentPage(fetchedData.pageable.pageNumber + 1);
+    setPageSize(fetchedData.pageable.pageSize);
+    setLoading(false);
+    const updatedTableParams = {
+      ...tableParams,
+      pagination: {
+        showSizeChanger: true,
+        ...tableParams.pagination,
+        total: fetchedData.totalElements,
+        showTotal: (total: number, range: [number, number]) =>
+          `${range[0]}-${range[1]} of ${total} items`,
+      },
     };
 
+    // Kiểm tra xem tableParams thực sự đã thay đổi
+    if (JSON.stringify(updatedTableParams) !== JSON.stringify(tableParams)) {
+      setTableParams(updatedTableParams);
+    }
+    console.log(fetchedData.content);
+
+  };
+  useEffect(() => {
     fetchDataAndLoadData();
-  }, [tableParams, modalAddDiaChi, modalUpdateDiaChi]);
+  }, [tableParams, modalAddDiaChi, modalUpdateDiaChi,]);
 
   const handleTableChange = (
     pagination: TablePaginationConfig,
@@ -414,7 +445,7 @@ function ModalDiaChi({ openModal, closeModal }) {
             <Col span={4}></Col>
             <Col span={9}>
               <Space>
-                <Form.Item
+                {/* <Form.Item
                   label="Loại địa chỉ"
                   style={{ fontWeight: "bold", marginLeft: 10 }}
                 >
@@ -429,7 +460,7 @@ function ModalDiaChi({ openModal, closeModal }) {
                       { value: "OTHER", label: "Khác" },
                     ]}
                   />
-                </Form.Item>
+                </Form.Item> */}
                 <Form.Item label="Trạng thái" style={{ fontWeight: "bold" }}>
                   <Select
                     defaultValue=""

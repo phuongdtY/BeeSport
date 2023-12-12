@@ -43,6 +43,7 @@ export interface UpdatedRequest {
     mauSac: string;
   };
   email: string;
+  taiKhoan:{id:number};
 }
 export interface ResponseDiaChi {
   diaChi: DataType;
