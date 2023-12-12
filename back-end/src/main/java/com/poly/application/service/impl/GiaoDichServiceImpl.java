@@ -93,7 +93,7 @@ public class GiaoDichServiceImpl implements GiaoDichService {
         } else if (giaoDich.getHoaDon().getLoaiHoaDon().getTen().equals("ONLINE") && giaoDich.getTaiKhoan() == null) {
             return "http://localhost:5173/san-pham";
         } else if (giaoDich.getHoaDon().getLoaiHoaDon().getTen().equals("COUNTER")) {
-            return "http://localhost:5173/ban-hang-tai-quay";
+            return "http://localhost:5173/admin/ban-hang-tai-quay";
         }
         return null;
     }

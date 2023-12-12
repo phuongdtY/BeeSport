@@ -240,12 +240,6 @@ public class HoaDonServiceImpl implements HoaDonService {
         }
         HoaDon hoaDon = hoaDonRepository.findById(idHoadon)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy hóa đơn có id " + idHoadon));
-        PhuongThucThanhToan phuongThucThanhToan = phuongThucThanhToanRepository.findById(1L)
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy phương thức thanh toán có id " + idPhuongThucThanhToan));
-        GiaoDich giaoDichFind = giaoDichRepository.findGiaoDich(idHoadon, idPhuongThucThanhToan,CommonEnum.TrangThaiGiaoDich.PENDING);
-        if (phuongThucThanhToan.getId() == 2){
-            giaoDichFind = giaoDichRepository.findGiaoDich(idHoadon, idPhuongThucThanhToan,CommonEnum.TrangThaiGiaoDich.SUCCESS);
-        }
 
         TimeLine timeLine = new TimeLine();
         GiaoDich giaoDich = new GiaoDich();
@@ -271,13 +265,7 @@ public class HoaDonServiceImpl implements HoaDonService {
                         chiTietSanPhamRepository.save(ctsp);
                     }
                 }
-                giaoDich.setTrangThaiGiaoDich(CommonEnum.TrangThaiGiaoDich.SUCCESS);
-                giaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
-                giaoDich.setSoTienGiaoDich(hoaDon.getTongTienKhiGiam());
-                giaoDich.setHoaDon(hoaDon);
-                giaoDich.setTaiKhoan(hoaDon.getTaiKhoan());
-                giaoDich.setPhuongThucThanhToan(phuongThucThanhToan);
-                giaoDichRepository.save(giaoDich);
+
                 hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
                 break;
             case PICKUP:
@@ -305,8 +293,6 @@ public class HoaDonServiceImpl implements HoaDonService {
                     timeLine2.setHoaDon(hoaDon);
                     timeLine2.setTrangThai(CommonEnum.TrangThaiHoaDon.PICKUP);
                     timeLine2.setGhiChu("Đang lấy hàng");
-                    giaoDichFind.setSoTienGiaoDich(hoaDon.getTongTienKhiGiam());
-                    giaoDichRepository.save(giaoDichFind);
                     timelineRepository.save(timeLine2);
                     hoaDonRepository.updateTrangThaiHoaDon(CommonEnum.TrangThaiHoaDon.PICKUP, idHoadon);
                 } else {
