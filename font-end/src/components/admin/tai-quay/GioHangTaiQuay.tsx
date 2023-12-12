@@ -703,7 +703,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                       style={{ fontSize: 30, marginTop: 10 }}
                     />
                     <span style={{ fontSize: 17, fontWeight: "bold" }}>
-                      Chuyển khoản
+                      VNPay
                     </span>
                   </Space>
                 </Radio.Button>
