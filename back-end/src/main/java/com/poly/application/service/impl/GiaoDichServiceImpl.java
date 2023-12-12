@@ -1,8 +1,10 @@
 package com.poly.application.service.impl;
 
+import com.poly.application.common.CommonEnum;
 import com.poly.application.common.GenCode;
 import com.poly.application.entity.GiaoDich;
 import com.poly.application.entity.HoaDon;
+import com.poly.application.entity.MauSac;
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
@@ -78,15 +80,21 @@ public class GiaoDichServiceImpl implements GiaoDichService {
     }
 
     @Override
-    public GiaoDichResponse updateByMa(String ma, UpdatedGiaoDichRequest request) {
+    public String updateByMa(String ma, CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich) {
         Optional<GiaoDich> detail = giaoDichRepository.findByMaGiaoDich(ma);
         if (detail.isEmpty()) {
             throw new NotFoundException("Giao dịch không tồn tại trong hệ thống!");
         }
         GiaoDich giaoDich = detail.get();
-        System.out.println(giaoDich);
-//        giaoDichMapper.convertUpdatedGiaoDichRequestToGiaoDichEntity(request, giaoDich);
-//        return giaoDichMapper.convertGiaoDichEntityToGiaoDichResponse(giaoDichRepository.save(giaoDich));
+        giaoDich.setTrangThaiGiaoDich(trangThaiGiaoDich);
+        giaoDichRepository.save(giaoDich);
+        if (giaoDich.getHoaDon().getLoaiHoaDon().getTen().equals("ONLINE") && giaoDich.getTaiKhoan() != null) {
+            return "http://localhost:5173/don-hang";
+        } else if (giaoDich.getHoaDon().getLoaiHoaDon().getTen().equals("ONLINE") && giaoDich.getTaiKhoan() == null) {
+            return "http://localhost:5173/san-pham";
+        } else if (giaoDich.getHoaDon().getLoaiHoaDon().getTen().equals("COUNTER")) {
+            return "http://localhost:5173/ban-hang-tai-quay";
+        }
         return null;
     }
 
@@ -102,8 +110,12 @@ public class GiaoDichServiceImpl implements GiaoDichService {
 
     @Override
     public GiaoDichResponse findByMaGiaoDich(String maGiaoDich) {
-        Optional<GiaoDich> giaoDich = giaoDichRepository.findByMaGiaoDich(maGiaoDich);
-        return giaoDichMapper.convertGiaoDichEntityToGiaoDichResponse(giaoDich.get());
+        Optional<GiaoDich> optional = giaoDichRepository.findByMaGiaoDich(maGiaoDich);
+        if (optional.isEmpty()) {
+            throw new NotFoundException("Giao dịch không tồn tại");
+        }
+
+        return giaoDichMapper.convertGiaoDichEntityToGiaoDichResponse(optional.get());
     }
 
 }

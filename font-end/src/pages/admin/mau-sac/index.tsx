@@ -91,7 +91,7 @@ const index: React.FC = () => {
             </Tooltip>
           </Button>
           <Tooltip title="Chỉnh sửa">
-            <Link to={`/admin/mau-sac/${id}`}>
+            <Link to={`/admin/mau-sac/update/${id}`}>
               <Button type="link" style={{ padding: 0 }}>
                 <EditOutlined />
               </Button>

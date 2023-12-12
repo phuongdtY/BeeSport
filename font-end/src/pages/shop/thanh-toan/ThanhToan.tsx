@@ -182,8 +182,6 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
                 hoaDonChiTietData
               );
               await request.delete("gio-hang-chi-tiet/delete-all");
-
-              message.success("Đặt hàng thành công");
             } catch (error) {
               console.log(error);
             }
@@ -200,7 +198,6 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
                 },
                 trangThaiGiaoDich: "PENDING",
               });
-              console.log(resGD);
               if (res.status == 201 && values.phuongThucThanhToan == 2) {
                 const resVNPay = await request.get("vn-pay/create-payment", {
                   params: {
@@ -208,7 +205,11 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
                     maGiaoDich: resGD.data.maGiaoDich,
                   },
                 });
-                window.location.href = resVNPay.data.url;
+                window.location.href = resVNPay.data;
+              } else if (res.status == 201 && values.phuongThucThanhToan == 1) {
+                setLoading(false);
+                navigate("/");
+                message.success("Đặt hàng thành công");
               }
             } catch (error) {
               console.log(error);
@@ -590,6 +591,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
           </div>
         </Card>
         <Button
+          loading={loading}
           htmlType="submit"
           type="primary"
           style={{

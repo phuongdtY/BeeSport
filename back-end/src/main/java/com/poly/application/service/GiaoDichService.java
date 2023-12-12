@@ -1,5 +1,6 @@
 package com.poly.application.service;
 
+import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.GiaoDich;
 import com.poly.application.model.request.create_request.CreateGiaoDichRequest;
 import com.poly.application.model.request.create_request.CreatedGioHangChiTietRequest;
@@ -20,7 +21,7 @@ public interface GiaoDichService {
 
     GiaoDichResponse update(Long id, UpdatedGiaoDichRequest request);
 
-    GiaoDichResponse updateByMa(String ma, UpdatedGiaoDichRequest request);
+    String updateByMa(String ma, CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich);
 
     List<GiaoDichResponse> getListGiaoDich(Long idHoaDon);
 

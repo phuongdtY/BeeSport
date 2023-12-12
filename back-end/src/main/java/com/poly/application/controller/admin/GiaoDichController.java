@@ -34,11 +34,6 @@ public class GiaoDichController {
         return ResponseEntity.ok(giaoDichService.update(id, updatedGiaoDichRequest));
     }
 
-    @PutMapping("/{ma}")
-    public ResponseEntity<?> updateByMa(@PathVariable("ma") String ma, @RequestBody UpdatedGiaoDichRequest updatedGiaoDichRequest) {
-        return ResponseEntity.ok(giaoDichService.updateByMa(ma, updatedGiaoDichRequest));
-    }
-
     @GetMapping("/{ma}")
     public ResponseEntity<?> getByMa(@PathVariable("ma") String ma) {
         return ResponseEntity.ok(giaoDichService.findByMaGiaoDich(ma));

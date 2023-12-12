@@ -1,14 +1,17 @@
 package com.poly.application.controller;
 
+import com.poly.application.common.CommonEnum;
 import com.poly.application.config.VNPayConfig;
-import com.poly.application.model.dto.PaymentDTO;
-import org.springframework.http.HttpStatus;
+import com.poly.application.service.GiaoDichService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -17,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,16 +32,20 @@ import java.util.TimeZone;
 @RequestMapping("/admin/api/vn-pay")
 public class VNPayController {
 
+    @Autowired
+    private GiaoDichService service;
+
     @GetMapping("/create-payment")
     public ResponseEntity<?> createdPayment(@RequestParam("soTienThanhToan") long soTienThanhToan,
-                                            @RequestParam("maGiaoDich") String vnp_TxnRef
+                                            @RequestParam("maGiaoDich") String vnp_TxnRef,
+                                            @RequestParam(value = "vnp_BankCode",defaultValue = "") String vnp_BankCode
+
 
     ) throws UnsupportedEncodingException {
         String vnp_IpAddr = "127.0.0.1";
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-//        String bankCode = "NCB";
 
 //        String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
@@ -50,8 +58,8 @@ public class VNPayController {
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
+        vnp_Params.put("vnp_BankCode", vnp_BankCode);
 
-//        vnp_Params.put("vnp_IdGiaoDich", idGiaoDich);
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", orderType);
@@ -96,11 +104,37 @@ public class VNPayController {
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.secretKey, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
-        PaymentDTO paymentDTO = new PaymentDTO();
-        paymentDTO.setStatus("done");
-        paymentDTO.setMessage("success");
-        paymentDTO.setURL(paymentUrl);
-        return ResponseEntity.status(HttpStatus.OK).body(paymentDTO);
+        return ResponseEntity.ok(paymentUrl);
+    }
+
+    @GetMapping("end-payment")
+    public RedirectView endPayment(HttpServletRequest request) {
+        // Process return from VNPAY
+        Map<String, String> fields = new HashMap<>();
+        Enumeration<String> params = request.getParameterNames();
+        while (params.hasMoreElements()) {
+            String fieldName = params.nextElement();
+            String fieldValue = request.getParameter(fieldName);
+            if (fieldValue != null && !fieldValue.isEmpty()) {
+                fields.put(fieldName, fieldValue);
+            }
+        }
+
+        String vnp_SecureHash = request.getParameter("vnp_SecureHash");
+        if (fields.containsKey("vnp_SecureHashType")) {
+            fields.remove("vnp_SecureHashType");
+        }
+        if (fields.containsKey("vnp_SecureHash")) {
+            fields.remove("vnp_SecureHash");
+        }
+        String maGiaoDich = request.getParameter("vnp_TxnRef");
+        if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
+            String url = service.updateByMa(maGiaoDich, CommonEnum.TrangThaiGiaoDich.SUCCESS);
+            return new RedirectView(url + "?thanhToan=success");
+        } else {
+            String url = service.updateByMa(maGiaoDich, CommonEnum.TrangThaiGiaoDich.FAILED);
+            return new RedirectView(url + "?thanhToan=failed");
+        }
     }
 
 }
