@@ -8,6 +8,7 @@ import {
   Row,
   Select,
   Slider,
+  Space,
   Table,
   Typography,
   message,
@@ -83,17 +84,14 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
       title: "Sản phẩm",
       dataIndex: "sanPham",
       key: "ten",
-      render: (item, record) => {
-        return (
-          item.ten +
-          " / " +
-          " [" +
-          record.mauSac.ten +
-          " - " +
-          record.kichCo.kichCo +
-          "]"
-        );
-      },
+      render: (item, record) => (
+        <Space>
+          <Space direction="vertical">
+            <Text strong>{item.ten}</Text>
+            <Text>{`[${record.mauSac.ten} - ${record.kichCo.kichCo} - ${record.loaiDe.ten} - ${record.diaHinhSan.ten}]`}</Text>
+          </Space>
+        </Space>
+      ),
     },
     {
       title: "Số lượng",
