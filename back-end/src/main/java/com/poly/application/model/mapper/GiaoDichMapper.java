@@ -34,7 +34,6 @@ public class GiaoDichMapper {
     }
 
     public void convertUpdatedGiaoDichRequestToGiaoDichEntity(UpdatedGiaoDichRequest updatedGiaoDichRequest, GiaoDich giaoDich){
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         modelMapper.map(updatedGiaoDichRequest, giaoDich);
     }
 

@@ -198,6 +198,9 @@ const detailSanPham: React.FC = () => {
     ) {
       message.error("Bạn chưa nhập thông tin sản phẩm muốn thêm vào giỏ hàng");
       return;
+    } else if (totalQuantity == 0) {
+      message.error("Sản phẩm đã hết hàng");
+      return;
     }
 
     let cartId;
@@ -484,10 +487,18 @@ const detailSanPham: React.FC = () => {
                 <Space.Compact block>
                   <Button icon={<MinusOutlined />} onClick={handleDecrement} />
                   <Input
-                    style={{ textAlign: "center", width: 40 }}
+                    style={{ textAlign: "center", width: 70 }}
                     value={quantity}
-                    readOnly
+                    onChange={(e) => {
+                      const newValue = parseInt(e.target.value, 10);
+                      if (isNaN(newValue) || newValue < 1) {
+                        setQuantity(1);
+                      } else {
+                        setQuantity(Math.min(newValue, totalQuantity));
+                      }
+                    }}
                   />
+
                   <Button icon={<PlusOutlined />} onClick={handleIncrement} />
                 </Space.Compact>
                 <Text style={{ color: "red" }}>

@@ -26,16 +26,21 @@ public class GiaoDichController {
 
     @PostMapping()
     public ResponseEntity<?> add(@RequestBody CreateGiaoDichRequest createGiaoDichRequest) {
-        return  new ResponseEntity<>(giaoDichService.add(createGiaoDichRequest), HttpStatus.CREATED);
+        return new ResponseEntity<>(giaoDichService.add(createGiaoDichRequest), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable("id")Long id,  @RequestBody UpdatedGiaoDichRequest updatedGiaoDichRequest) {
-        return ResponseEntity.ok(giaoDichService.update(id,updatedGiaoDichRequest));
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody UpdatedGiaoDichRequest updatedGiaoDichRequest) {
+        return ResponseEntity.ok(giaoDichService.update(id, updatedGiaoDichRequest));
+    }
+
+    @GetMapping("/{ma}")
+    public ResponseEntity<?> getByMa(@PathVariable("ma") String ma) {
+        return ResponseEntity.ok(giaoDichService.findByMaGiaoDich(ma));
     }
 
     @GetMapping("/list/{id}")
-    public ResponseEntity<?> listGiaoDich(@PathVariable("id")Long idHhoaDon) {
+    public ResponseEntity<?> listGiaoDich(@PathVariable("id") Long idHhoaDon) {
         return ResponseEntity.ok(giaoDichService.getListGiaoDich(idHhoaDon));
     }
 
