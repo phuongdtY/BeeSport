@@ -8,6 +8,7 @@ import {
   Space,
   Table,
   Tooltip,
+  Typography,
   message,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
@@ -53,6 +54,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
   const [dataGioHang, setDataGioHang] = useState<DataGioHang[]>([]); // Specify the data type
   const { confirm } = Modal;
   const [inputSoLuongList, setInputSoLuongList] = useState<Array<number>>([]);
+  const { Text } = Typography;
 
   useEffect(() => {
     // Khởi tạo mảng inputSoLuongList với giá trị mặc định là 0 theo độ dài của dataGioHang
@@ -81,9 +83,14 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
     {
       title: "Tên Sản Phẩm",
       dataIndex: ["chiTietSanPham", "sanPham", "ten"],
-      render: (_, record) => {
-        return `${record.chiTietSanPham.sanPham.ten} [ ${record.chiTietSanPham.mauSac.ten} - ${record.chiTietSanPham.kichCo.kichCo}]`;
-      },
+      render: (_, record) => (
+        <Space>
+          <Space direction="vertical">
+            <Text strong>{record.chiTietSanPham.sanPham.ten}</Text>
+            <Text>{`[${record.chiTietSanPham.mauSac.ten} - ${record.chiTietSanPham.kichCo.kichCo} - ${record.chiTietSanPham.loaiDe.ten} - ${record.chiTietSanPham.diaHinhSan.ten}]`}</Text>
+          </Space>
+        </Space>
+      ),
     },
     {
       title: "Số Lượng",
