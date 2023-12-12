@@ -32,8 +32,6 @@ public class CreateGiaoDichRequest {
 
     private HoaDon hoaDon;
 
-    private Voucher voucher;
-
     private TaiKhoan taiKhoan;
 
     private PhuongThucThanhToan phuongThucThanhToan;

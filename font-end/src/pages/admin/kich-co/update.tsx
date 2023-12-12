@@ -28,7 +28,7 @@ const UpdateKichCo: React.FC = () => {
         const trangThaiValue =
           res.data?.trangThai.ten === "ACTIVE" ? true : false;
         form.setFieldsValue({
-          ten: res.data?.ten,
+          kichCo: res.data?.kichCo,
           trangThai: trangThaiValue,
         });
         setLoadingForm(false);
@@ -59,7 +59,9 @@ const UpdateKichCo: React.FC = () => {
             console.error("Phản hồi API không như mong đợi:", res);
           }
         } catch (error: any) {
-          if (error.response && error.response.status === 400) {
+          console.log(error);
+
+          if (error.response && error.response.status === 403) {
             message.error(error.response.data.message);
           } else {
             console.error("Lỗi không xác định:", error);

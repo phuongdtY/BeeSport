@@ -4,6 +4,7 @@ import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
+import com.poly.application.model.dto.PasswordRequest;
 import com.poly.application.model.mapper.TaiKhoanMapper;
 import com.poly.application.model.request.create_request.CreatedTaiKhoanRequest;
 import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
@@ -17,7 +18,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,6 +43,12 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
 
     @Autowired
     private EmailSend emailSender;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Page<TaiKhoanResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String gioiTinhString, String searchText, String trangThaiString) {
@@ -164,6 +175,34 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     public TaiKhoan getAllTaiKhoan(String email) {
         TaiKhoan listTaiKhoan = taiKhoanRepository.findTaiKhoanByEmail(email);
         return listTaiKhoan;
+    }
+
+    @Override
+    public String changePassword(PasswordRequest passwordRequest) {
+        Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findById(passwordRequest.getId());
+        if (optionalTaiKhoan.isPresent()) {
+            TaiKhoan accountId = optionalTaiKhoan.get();
+            System.out.println("aaaa"+accountId);
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(accountId.getSoDienThoai(), passwordRequest.getMatKhauCu()));
+
+            if (authentication.isAuthenticated()) {
+                System.out.println("da vao");
+
+                if(!passwordRequest.getMatKhauMoi().equals(passwordRequest.getNhapLaiMatKhau())){
+                    return"Mật khẩu nhập lại phải trùng nhau";
+                }
+
+                accountId.setMatKhau(passwordEncoder.encode(passwordRequest.getNhapLaiMatKhau()));
+                taiKhoanRepository.save(accountId);
+                return"Bạn đã đổi mật khẩu thành công";
+            }
+
+            else {
+                return"Mật khẩu cũ không trùng với mật khẩu của tài khoản";
+            }
+        } else {
+            return "Đổi mật khẩu thất bại";
+        }
     }
 
 //    public TaiKhoanResponse converToResponse(TaiKhoan taiKhoan){
