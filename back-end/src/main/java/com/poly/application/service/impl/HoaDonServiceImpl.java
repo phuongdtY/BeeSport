@@ -10,6 +10,8 @@ import com.poly.application.entity.PhuongThucThanhToan;
 import com.poly.application.entity.SanPham;
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.entity.TimeLine;
+import com.poly.application.entity.Voucher;
+import com.poly.application.entity.VoucherChiTiet;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.HoaDonMapper;
@@ -25,6 +27,8 @@ import com.poly.application.repository.HoaDonRepository;
 import com.poly.application.repository.PhuongThucThanhToanRepository;
 import com.poly.application.repository.TaiKhoanRepository;
 import com.poly.application.repository.TimelineRepository;
+import com.poly.application.repository.VoucherChiTietRepository;
+import com.poly.application.repository.VoucherRepository;
 import com.poly.application.service.HoaDonService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +59,12 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Autowired
     private GiaoDichRepository giaoDichRepository;
+
+    @Autowired
+    private VoucherRepository voucherRepository;
+
+    @Autowired
+    private VoucherChiTietRepository voucherChiTietRepository;
 
     @Autowired
     private PhuongThucThanhToanRepository phuongThucThanhToanRepository;
@@ -197,8 +207,8 @@ public class HoaDonServiceImpl implements HoaDonService {
             }
         }
 
-        if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CONFIRMED && isExistConfirmedTimeLine){
-            TimeLine timeLine = timelineRepository.findTimeLinesByHoaDonIdAndAndTrangThai(hoaDon.getId(),CommonEnum.TrangThaiHoaDon.CONFIRMED);
+        if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CONFIRMED && isExistConfirmedTimeLine) {
+            TimeLine timeLine = timelineRepository.findTimeLinesByHoaDonIdAndAndTrangThai(hoaDon.getId(), CommonEnum.TrangThaiHoaDon.CONFIRMED);
             TimeLine timeLineNew = new TimeLine();
             timelineRepository.delete(timeLine);
             timeLineNew.setGhiChu(updatedHoaDonRequest.getGhiChuTimeLine());
@@ -235,11 +245,26 @@ public class HoaDonServiceImpl implements HoaDonService {
 
     @Override
     public void updateTrangThaiHoaDon(Long idHoadon, CommonEnum.TrangThaiHoaDon trangThaiHoaDon, String ghiChu, Long idPhuongThucThanhToan) {
+        Voucher voucherFind = null;
+        VoucherChiTiet voucherChiTietFind = null;
         if (trangThaiHoaDon == null) {
             return;
         }
         HoaDon hoaDon = hoaDonRepository.findById(idHoadon)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy hóa đơn có id " + idHoadon));
+//        PhuongThucThanhToan phuongThucThanhToan = phuongThucThanhToanRepository.findById(1L)
+//                .orElseThrow(() -> new NotFoundException("Không tìm thấy phương thức thanh toán có id " + idPhuongThucThanhToan));
+//        GiaoDich giaoDichFind = giaoDichRepository.findGiaoDich(idHoadon, idPhuongThucThanhToan, CommonEnum.TrangThaiGiaoDich.PENDING);
+//        if (phuongThucThanhToan.getId() == 2) {
+//            giaoDichFind = giaoDichRepository.findGiaoDich(idHoadon, idPhuongThucThanhToan, CommonEnum.TrangThaiGiaoDich.SUCCESS);
+//        }
+        if (hoaDon.getVoucher() != null) {
+            voucherFind = voucherRepository.findById(hoaDon.getVoucher().getId())
+                    .orElseThrow(() -> new NotFoundException("Không tìm thấy phương thức thanh toán có id " + idPhuongThucThanhToan));
+            if (hoaDon.getTaiKhoan() != null){
+                voucherChiTietFind = voucherRepository.findVoucherChiTiet(voucherFind.getId(), hoaDon.getTaiKhoan().getId());
+            }
+        }
 
         TimeLine timeLine = new TimeLine();
         GiaoDich giaoDich = new GiaoDich();
@@ -264,8 +289,29 @@ public class HoaDonServiceImpl implements HoaDonService {
                         }
                         chiTietSanPhamRepository.save(ctsp);
                     }
+                    if (voucherFind != null) {
+                        if (voucherFind.getSoLuong() != null) {
+                            voucherFind.setSoLuong(voucherFind.getSoLuong() - 1);
+                            voucherRepository.updateSoLuongVoucherHoaDon(voucherFind.getSoLuong(), voucherFind.getId());
+                        }
+                        if (hoaDon.getTaiKhoan() != null) {
+                            if (voucherChiTietFind.getSoLanSuDung() > 0) {
+                                voucherChiTietFind.setSoLanSuDung(voucherChiTietFind.getSoLanSuDung() - 1);
+                                if (voucherChiTietFind.getSoLanSuDung() <= 0) {
+                                    voucherChiTietFind.setTrangThai(CommonEnum.TrangThaiVoucherChiTiet.INACTIVE);
+                                }
+                                voucherChiTietRepository.save(voucherChiTietFind);
+                            }
+                        }
+                    }
                 }
-
+//                giaoDich.setTrangThaiGiaoDich(CommonEnum.TrangThaiGiaoDich.SUCCESS);
+//                giaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
+//                giaoDich.setSoTienGiaoDich(hoaDon.getTongTienKhiGiam());
+//                giaoDich.setHoaDon(hoaDon);
+//                giaoDich.setTaiKhoan(hoaDon.getTaiKhoan());
+//                giaoDich.setPhuongThucThanhToan(phuongThucThanhToan);
+//                giaoDichRepository.save(giaoDich);
                 hoaDonRepository.updateTrangThaiHoaDon(trangThaiHoaDon, idHoadon);
                 break;
             case PICKUP:
@@ -293,6 +339,8 @@ public class HoaDonServiceImpl implements HoaDonService {
                     timeLine2.setHoaDon(hoaDon);
                     timeLine2.setTrangThai(CommonEnum.TrangThaiHoaDon.PICKUP);
                     timeLine2.setGhiChu("Đang lấy hàng");
+//                    giaoDichFind.setSoTienGiaoDich(hoaDon.getTongTienKhiGiam());
+//                    giaoDichRepository.save(giaoDichFind);
                     timelineRepository.save(timeLine2);
                     hoaDonRepository.updateTrangThaiHoaDon(CommonEnum.TrangThaiHoaDon.PICKUP, idHoadon);
                 } else {

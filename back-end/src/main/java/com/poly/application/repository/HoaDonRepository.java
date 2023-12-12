@@ -41,4 +41,13 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
     );
     @Query("SELECT COUNT(hd) FROM HoaDon hd WHERE hd.trangThaiHoaDon = 'PENDING' AND hd.loaiHoaDon = 'COUNTER'")
     Long getSoLuongHoaDonCho();
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Voucher v SET v.soLuong = :soLuong WHERE v.id = :id")
+    void updateSoLuongVoucherHoaDon(
+            @Param("soLuong") Integer soLuong,
+            @Param("id")Long id
+    );
+
 }

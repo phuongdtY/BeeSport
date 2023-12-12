@@ -2,12 +2,15 @@ package com.poly.application.repository;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.Voucher;
+import com.poly.application.entity.VoucherChiTiet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,7 +44,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
     @Query("SELECT v FROM Voucher v WHERE v.trangThai IN ('ONGOING', 'ENDING_SOON') AND (v.soLuong > 0 OR v.soLuong IS NULL) ORDER BY v.ngaySua DESC")
     List<Voucher> getListVoucherSuDung();
 
-
     @Query("SELECT v FROM Voucher v WHERE v.trangThai != 'CANCELLED'")
     List<Voucher> danhSachVoucherKhongHuy();
 
@@ -62,5 +64,26 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
     Long soLanDaSuDungVoucherTaiKhoan(@Param("idVoucher") Long idVoucher,
                                       @Param("idTaiKhoan") Long idTaiKhoan);
 
+    @Transactional
+    @Modifying
+    @Query("UPDATE Voucher v SET v.soLuong = :soLuong WHERE v.id = :id")
+    void updateSoLuongVoucherHoaDon(
+            @Param("soLuong") Integer soLuong,
+            @Param("id")Long id
+    );
+
+    @Query("SELECT vct FROM VoucherChiTiet vct WHERE vct.voucher.id = :idVoucher AND vct.taiKhoan.id = :idTaiKhoan")
+    VoucherChiTiet findVoucherChiTiet(
+            @Param("idVoucher") Long idVoucher,
+            @Param("idTaiKhoan")Long idTaiKhoan
+    );
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE VoucherChiTiet vct SET vct.soLanSuDung = :soLuong WHERE vct.id= :id")
+    void updateSoLuongVoucherChiTietHoaDon(
+            @Param("soLuong") Integer soLuong,
+            @Param("id")Long id
+    );
 
 }

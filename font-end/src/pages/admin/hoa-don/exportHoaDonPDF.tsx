@@ -124,12 +124,7 @@ const exportHoaDonPDF: React.FC<exportHoaDonPDFProps> = ({
 
   useEffect(() => {
     fetchHoaDonData();
-    if (open) {
-      fetchHoaDonData();
-      downloadPdf();
-      handleCancelV2();
-    }
-  }, [open, id]);
+  }, [id]);
 
   const tinhTongTien = () => {
     return (listHoaDonChiTiet || [])
