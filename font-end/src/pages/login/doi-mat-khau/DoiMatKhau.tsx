@@ -43,6 +43,7 @@ function ModalDoiMK({ openModal,closeModal }) {
         }else{
             navigate("/admin")
         }
+        closeModal();
         } catch (error: any) {
             console.log("Error:", error);
             console.log("A123"+error.response.data.message)
@@ -60,7 +61,7 @@ function ModalDoiMK({ openModal,closeModal }) {
     });
   };
   return (
-    <Modal style={{ top: 20 }}
+    <Modal style={{ top: 20 }} footer
     width={450} title="ĐỔI MẬT KHẨU" open={openModal} onCancel={closeModal}>
       <Card title="">
         <Form
@@ -90,7 +91,15 @@ function ModalDoiMK({ openModal,closeModal }) {
                 rules={[
                   {
                     required: true,
-                    message: "Bạn chưa điền mật khẩu mới!",
+                    message: 'Bạn chưa điền Mật khẩu mới!',
+                  },
+                  {
+                    min: 8,
+                    message: 'Mật khẩu phải có ít nhất 8 ký tự',
+                  },
+                  {
+                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+                    message: 'Mật khẩu phải chứa ít nhất một chữ in hoa, một chữ thường, một số và một ký tự đặc biệt',
                   },
                 ]}
                 style={{ width: "500px" }} // Đặt chiều rộng 100%

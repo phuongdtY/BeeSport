@@ -207,7 +207,7 @@ function ModalThongTin({ openModal,closeModal }) {
   };
   const roleId = localStorage.getItem("roleId");
   return (
-       <Modal style={{ top: 20 }}
+       <Modal style={{ top: 20 }} footer
     width={600} title="THÔNG TIN TÀI KHOẢN" open={openModal} onCancel={closeModal}>
     <>
       <Card style={{

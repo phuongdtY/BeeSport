@@ -4,9 +4,12 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import {requestDangNhap, requestLogout} from "~/utils/request";
 import { Link, useNavigate } from "react-router-dom";
 import { FaDoorOpen } from "react-icons/fa";
+import ModalThongTin from "~/pages/login/thong-tin/ThongTin";
+import ModalDoiMK from "~/pages/login/doi-mat-khau/DoiMatKhau";
 
 
 const CustomHeader: React.FC<{
+  
   collapsed: boolean;
   setCollapsed: (collapsed: boolean) => void;
   colorBgContainer: string;
@@ -19,6 +22,8 @@ const CustomHeader: React.FC<{
   //   navigate("/sign-in");
   //   message.success("Đăng xuất thành công");
   // }
+  const [modalThongTin, setModalThongTin] = useState(false); 
+  const [modalDoiMK, setModalDoiMK] = useState(false); 
   const { Option } = Select;
   const navigate = useNavigate();
   const handleLogout = async () => {
@@ -87,8 +92,8 @@ const CustomHeader: React.FC<{
         {roleId === "1" && <Option value="1">Quản lý</Option>}
           {roleId === "2" && <Option value="2">Nhân viên</Option>}
           {roleId === "3" && <Option value="3">Khách hàng</Option>}
-        <Option value="thongTin"><Link to={"/thong-tin"}>Thông tin</Link></Option>
-        <Option value="doiMatKhau"><Link to={"/doi-mat-khau"}>Đổi mật khẩu</Link></Option>
+          <Option value="thongtin"><Button style={{margin:0,padding:0}} type="link" onClick={()=>setModalThongTin(true)} >Thông tin</Button></Option>
+          <Option value="doiMatKhau"><Button style={{margin:0,padding:0}} type="link" onClick={()=>setModalDoiMK(true)} >Đổi mật khẩu</Button></Option>
         <Option style={{ color: '#3D6EE0' }} value="logout">Logout</Option>
       </Select>
 
@@ -98,6 +103,8 @@ const CustomHeader: React.FC<{
         idHoaDon={Number(id)}
         loadData={fetchHoaDonData}
       /> */}
+      <ModalThongTin openModal={modalThongTin} closeModal={()=>setModalThongTin(false)} />
+      <ModalDoiMK openModal={modalDoiMK} closeModal={()=>setModalDoiMK(false)} />
     </Layout.Header>
     
 

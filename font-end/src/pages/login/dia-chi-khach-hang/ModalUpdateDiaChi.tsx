@@ -125,7 +125,7 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
         fetchDistricts(res.data?.thanhPho);
         fetchWards(res.data?.quanHuyen);
         // const trangThaiValue = res.data?.trangThai.ten === "ACTIVE";
-        const trangThaiDiaChi = res.data?.trangThaiDiaChi?.ten || "DELETED";
+        const trangThaiDiaChi = res.data?.trangThaiDiaChi?.ten || "ACTIVE";
         form.setFieldsValue({
           hoVaTen: res.data?.hoVaTen,
           soDienThoai: res.data?.soDienThoai,

@@ -116,9 +116,9 @@ public class CommonEnum {
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum TrangThaiDiaChi{
         ACTIVE("ACTIVE", "Hoạt động", "success"),
-        INACTIVE("INACTIVE", "Không hoạt động", "yellow"),
-        DELETED("DELETED", "Xóa", "red"),
-        DEFAULT("DEFAULT", "Mặc định", "green");
+//        INACTIVE("INACTIVE", "Không hoạt động", "yellow"),
+//        DELETED("DELETED", "Xóa", "red"),
+        DEFAULT("DEFAULT", "Mặc định", "red");
 
         private final String ten;
         private final String moTa;

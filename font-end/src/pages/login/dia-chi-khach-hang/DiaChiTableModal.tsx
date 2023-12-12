@@ -469,9 +469,9 @@ function ModalDiaChi({ openModal, closeModal }) {
                     options={[
                       { value: "", label: "Tất cả" },
                       { value: "ACTIVE", label: "Hoạt động" },
-                      { value: "INACTIVE", label: "Không hoạt động" },
+                      // { value: "INACTIVE", label: "Không hoạt động" },
                       { value: "DEFAULT", label: "Mặc định" },
-                      { value: "DELETED", label: "Xóa" },
+                      // { value: "DELETED", label: "Xóa" },
                     ]}
                   />
                 </Form.Item>
