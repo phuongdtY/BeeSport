@@ -86,4 +86,10 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
             @Param("id")Long id
     );
 
+    @Query("SELECT CASE WHEN COUNT(vct) > 0 THEN true ELSE false END FROM VoucherChiTiet vct WHERE vct.taiKhoan.id = :idTaiKhoan AND vct.voucher.id = :idVoucher")
+    Boolean existVoucherChiTietBySs(
+            @Param("idTaiKhoan") Long idTaiKhoan,
+            @Param("idVoucher") Long idVoucher
+            );
+
 }
