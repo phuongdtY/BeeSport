@@ -1,5 +1,6 @@
 package com.poly.application.controller.admin;
 
+import com.lowagie.text.DocumentException;
 import com.poly.application.model.dto.HoaDonHoaDonChiTietListResponseDTO;
 import com.poly.application.model.request.create_request.CreateHoaDonChiTietRequest;
 import com.poly.application.model.request.create_request.CreateHoaDonRequest;
@@ -10,12 +11,19 @@ import com.poly.application.model.response.HoaDonResponse;
 import com.poly.application.service.ChiTietSanPhamService;
 import com.poly.application.service.HoaDonChiTietService;
 import com.poly.application.service.HoaDonService;
+import com.poly.application.service.PDFExportService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -31,6 +39,9 @@ public class HoaDonController {
 
     @Autowired
     private ChiTietSanPhamService chiTietSanPhamService;
+
+    @Autowired
+    private PDFExportService pdfExportService;
 
     @GetMapping()
     public ResponseEntity<?> getAll(
@@ -111,6 +122,19 @@ public class HoaDonController {
     @GetMapping("/so-luong-hoa-don-cho")
     public ResponseEntity<?> getSoluongHoaDonCho() {
         return ResponseEntity.ok(hoaDonService.getSoLuongHoaDonCho());
+    }
+
+    @GetMapping("/export/pdf")
+    public void exportToPDF(HttpServletResponse response, @Param("id")Long id) throws DocumentException, IOException {
+        response.setContentType("application/pdf");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=users_" + currentDateTime + ".pdf";
+        response.setHeader(headerKey, headerValue);
+
+        pdfExportService.exportPDF(response,id);
     }
 
 }

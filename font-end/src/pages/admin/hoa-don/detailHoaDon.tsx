@@ -1021,11 +1021,11 @@ const detailHoaDon: React.FC = () => {
                           Hoàn thành
                         </Button>
                       )}
-                      {/* {orderStatus?.ten === "CONFIRMED" && showExportButton && (
+                      {/* {orderStatus?.ten === "CONFIRMED" && showExportButton && ( */}
                         <Button type="primary" onClick={showExportHoaDonModal}>
                           Export PDF
                         </Button>
-                      )} */}
+                      {/* )} */}
                     </Space>
                   </Form.Item>
                 </Col>
