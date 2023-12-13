@@ -49,6 +49,36 @@ public class PDFExporter {
         return ngayThangNam;
     }
 
+    private String getHoaDonTenKhachHang(HoaDon hoaDon) {
+        String ten = "Khách hàng lẻ";
+        if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.COUNTER){
+            ten = hoaDon.getTaiKhoan().getHoVaTen();
+        } else if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
+            ten = hoaDon.getNguoiNhan();
+        }
+        return ten;
+    }
+
+    private String getHoaDonSdtKhachHang(HoaDon hoaDon) {
+        String ten = "Khách hàng lẻ";
+        if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.COUNTER){
+            ten = hoaDon.getTaiKhoan().getSoDienThoai();
+        } else if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
+            ten = hoaDon.getSdtNguoiNhan();
+        }
+        return ten;
+    }
+
+    private String getHoaDonDiaChiKhachHang(HoaDon hoaDon) {
+        String ten = "123, đường 123, quận 12, thành phố Hà nội";
+        if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.COUNTER){
+            ten = "123, đường 123, quận 12, thành phố Hà nội";
+        } else if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
+            ten = hoaDon.getDiaChiNguoiNhan();
+        }
+        return ten;
+    }
+
     private void writeTableHeader(PdfPTable table) {
         PdfPCell cell = new PdfPCell();
 //        cell.setBackgroundColor(Color.BLUE);
@@ -76,7 +106,7 @@ public class PDFExporter {
 
     private void writeTableData(PdfPTable table, HoaDon hoaDon) {
         int stt = 1;
-        Font boldFont = FontFactory.getFont("Times New Roman", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, 12, Font.BOLD);
+        Font font = FontFactory.getFont("Times New Roman", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, 12);
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         BigDecimal tongThanhTien = BigDecimal.ZERO;
         BigDecimal tienShip = hoaDon.getPhiShip();
@@ -93,10 +123,20 @@ public class PDFExporter {
             sttCell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(sttCell);
 
-//            tên sản phẩm
-            PdfPCell sanPhamCell = new PdfPCell(new Phrase(String.valueOf(hdct.getChiTietSanPham().getSanPham().getTen())));
+//             sản phẩm
+            String tenSanPham = hdct.getChiTietSanPham().getSanPham().getTen();
+            String thuocTinhSanPham = "[" + hdct.getChiTietSanPham().getMauSac().getTen()
+                    + " - " + hdct.getChiTietSanPham().getKichCo().getKichCo()
+                    + " - " + hdct.getChiTietSanPham().getLoaiDe().getTen()
+                    + " - " + hdct.getChiTietSanPham().getDiaHinhSan().getTen()
+                    + "]";
+            Paragraph sanPham = new Paragraph(tenSanPham, font);
+            Paragraph thuocTinh = new Paragraph(thuocTinhSanPham, font);
+            PdfPCell sanPhamCell = new PdfPCell();
             sanPhamCell.setPadding(10f);
             sanPhamCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            sanPhamCell.addElement(sanPham);
+            sanPhamCell.addElement(thuocTinh);
             table.addCell(sanPhamCell);
 
 //            số lượng
@@ -128,7 +168,7 @@ public class PDFExporter {
         tongTienCell.setColspan(4);
         tongTienCell.setPadding(10f);
         tongTienCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        PdfPCell tongTienValueCell = new PdfPCell(new Phrase(currencyFormat.format(hoaDon.getTongTien()), boldFont));
+        PdfPCell tongTienValueCell = new PdfPCell(new Phrase(currencyFormat.format(hoaDon.getTongTien()), font));
         tongTienValueCell.setPadding(10f);
         tongTienValueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(tongTienCell);
@@ -139,7 +179,7 @@ public class PDFExporter {
         giamGiaCell.setColspan(4);
         giamGiaCell.setPadding(10f);
         giamGiaCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        PdfPCell giamGiaValueCell = new PdfPCell(new Phrase(currencyFormat.format(giamGiaVoucher), boldFont));
+        PdfPCell giamGiaValueCell = new PdfPCell(new Phrase(currencyFormat.format(giamGiaVoucher), font));
         giamGiaValueCell.setPadding(10f);
         giamGiaValueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(giamGiaCell);
@@ -150,7 +190,7 @@ public class PDFExporter {
         tienShipCell.setColspan(4);
         tienShipCell.setPadding(10f);
         tienShipCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        PdfPCell tienShipValueCell = new PdfPCell(new Phrase(currencyFormat.format(tienShip), boldFont));
+        PdfPCell tienShipValueCell = new PdfPCell(new Phrase(currencyFormat.format(tienShip), font));
         tienShipValueCell.setPadding(10f);
         tienShipValueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(tienShipCell);
@@ -188,7 +228,7 @@ public class PDFExporter {
 
         PdfPTable table = new PdfPTable(5);
         table.setWidthPercentage(100f);
-        table.setWidths(new float[]{1.0f, 2.0f, 2.0f, 3.0f, 3.0f});
+        table.setWidths(new float[]{1.0f, 3.0f, 2.0f, 3.0f, 3.0f});
         table.setSpacingBefore(10);
         writeTableHeader(table);
         writeTableData(table, hoaDon);
@@ -226,16 +266,16 @@ public class PDFExporter {
         shipInfoTable.setWidths(new float[]{1f});
         shipInfoTable.setSpacingBefore(10f);
 
-        Paragraph columnName = new Paragraph("Thông tin giao hàng",fontInfoKhach);
+        Paragraph columnName = new Paragraph("Thông tin khách hàng",fontInfoKhach);
         PdfPCell columnNameCell = new PdfPCell();
         columnNameCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 //        columnNameCell.setBorder(Rectangle.NO_BORDER);
         columnNameCell.addElement(columnName);
         columnNameCell.setPadding(10);
 
-        Paragraph khachHang = new Paragraph("Khách hàng: " + hoaDon.getNguoiNhan(), fontInfoKhach);
-        Paragraph sdtKhachHang = new Paragraph("Điện thoại:    " + hoaDon.getSdtNguoiNhan(), fontInfoKhach);
-        Paragraph diaChiKhachHang = new Paragraph("Địa chỉ:         " + hoaDon.getDiaChiNguoiNhan(), fontInfoKhach);
+        Paragraph khachHang = new Paragraph("Khách hàng: " + getHoaDonTenKhachHang(hoaDon), fontInfoKhach);
+        Paragraph sdtKhachHang = new Paragraph("Điện thoại:    " + getHoaDonSdtKhachHang(hoaDon), fontInfoKhach);
+        Paragraph diaChiKhachHang = new Paragraph("Địa chỉ:         " + getHoaDonDiaChiKhachHang(hoaDon), fontInfoKhach);
 
         PdfPCell shipInfoCell = new PdfPCell();
 //        shipInfoCell.setBorder(Rectangle.NO_BORDER);
@@ -257,7 +297,7 @@ public class PDFExporter {
 
         Paragraph maHoaDon = new Paragraph("Mã hóa đơn: " + hoaDon.getMa(), fontInfoKhach);
         Paragraph ngayTao = new Paragraph("Ngày tạo:    " + formatLocalDateTime(hoaDon.getNgayTao()), fontInfoKhach);
-        Paragraph loaiHoaDon = new Paragraph("Loại hóa đơn:         " + hoaDon.getLoaiHoaDon(), fontInfoKhach);
+        Paragraph loaiHoaDon = new Paragraph("Loại hóa đơn:         " + hoaDon.getLoaiHoaDon().getMoTa(), fontInfoKhach);
 
         PdfPCell infoHoaDonCell = new PdfPCell();
         infoHoaDonCell.setBorder(Rectangle.NO_BORDER);

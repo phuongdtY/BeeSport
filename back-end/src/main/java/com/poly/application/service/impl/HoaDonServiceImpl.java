@@ -246,6 +246,7 @@ public class HoaDonServiceImpl implements HoaDonService {
     @Override
     public void updateTrangThaiHoaDon(Long idHoadon, CommonEnum.TrangThaiHoaDon trangThaiHoaDon, String ghiChu, Long idPhuongThucThanhToan) {
         Voucher voucherFind = null;
+        boolean checkVct = false;
         VoucherChiTiet voucherChiTietFind = null;
         if (trangThaiHoaDon == null) {
             return;
@@ -262,7 +263,10 @@ public class HoaDonServiceImpl implements HoaDonService {
             voucherFind = voucherRepository.findById(hoaDon.getVoucher().getId())
                     .orElseThrow(() -> new NotFoundException("Không tìm thấy phương thức thanh toán có id " + idPhuongThucThanhToan));
             if (hoaDon.getTaiKhoan() != null){
-                voucherChiTietFind = voucherRepository.findVoucherChiTiet(voucherFind.getId(), hoaDon.getTaiKhoan().getId());
+                checkVct = voucherRepository.existVoucherChiTietBySs(hoaDon.getTaiKhoan().getId(),voucherFind.getId());
+                if (checkVct) {
+                    voucherChiTietFind = voucherRepository.findVoucherChiTiet(voucherFind.getId(), hoaDon.getTaiKhoan().getId());
+                }
             }
         }
 
@@ -294,7 +298,7 @@ public class HoaDonServiceImpl implements HoaDonService {
                             voucherFind.setSoLuong(voucherFind.getSoLuong() - 1);
                             voucherRepository.updateSoLuongVoucherHoaDon(voucherFind.getSoLuong(), voucherFind.getId());
                         }
-                        if (hoaDon.getTaiKhoan() != null) {
+                        if (hoaDon.getTaiKhoan() != null && checkVct) {
                             if (voucherChiTietFind.getSoLanSuDung() > 0) {
                                 voucherChiTietFind.setSoLanSuDung(voucherChiTietFind.getSoLanSuDung() - 1);
                                 if (voucherChiTietFind.getSoLanSuDung() <= 0) {
