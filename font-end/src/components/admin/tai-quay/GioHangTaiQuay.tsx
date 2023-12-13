@@ -315,6 +315,43 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           const response = await request.put(`/hoa-don/${id}`, hoaDonCho);
           if (response.status === 200) {
             loadHoaDon();
+            try {
+              const response = await request.get("/hoa-don/export/pdf", {
+                params: { id: id },
+                responseType: "blob", // Quan trọng để xác định kiểu dữ liệu trả về là một Blob
+              });
+              // Tạo một URL tạm thời từ blob
+              const file = new Blob([response.data], {
+                type: "application/pdf",
+              });
+              const fileURL = URL.createObjectURL(file);
+              // Tạo một thẻ <a> tạm thời để tải xuống
+              const downloadLink = document.createElement("a");
+              downloadLink.href = fileURL;
+              downloadLink.setAttribute(
+                "download",
+                `HoaDon_${hoaDonData.ma}.pdf`
+              ); // Đặt tên file ở đây
+              document.body.appendChild(downloadLink);
+              downloadLink.click();
+              // Dọn dẹp sau khi tải xuống
+              URL.revokeObjectURL(fileURL);
+              document.body.removeChild(downloadLink);
+            } catch (error) {
+              console.log(error);
+            }
+          } else {
+            message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
+          }
+        } catch (error) {
+          console.error("Error making payment:", error);
+          message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
+        }
+
+        try {
+          const response = await request.put(`/hoa-don/${id}`, hoaDonCho);
+          if (response.status === 200) {
+            loadHoaDon();
             message.success("Hóa đơn đã được lưu thành công.");
           } else {
             message.error("Có lỗi xảy ra khi lưu hóa đơn.");
@@ -477,11 +514,13 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   }, [selectedRadio]);
 
   useEffect(() => {
-    // When the component mounts, trigger the selection manually
     setIsCashSelected(true);
-    setIsPaymentSelected(true); // Set to true to display the 'Thanh toán' button
-    setCheckedCOD(false);
-  }, []); // Empty dependency array to run this effect only once on mount
+    setIsPaymentSelected(true);
+  }, []);
+
+  useEffect(() => {
+    setCheckedCOD(checkedCOD);
+  }, [checkedCOD]);
 
   const onChangeGiaoHang = (checked: boolean) => {
     setIsChecked(checked);
@@ -831,7 +870,9 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               </Row>
             )}
             {checked && isCashSelected && (
-              <Checkbox onChange={onChange}>Thanh toán khi nhận hàng</Checkbox>
+              <Checkbox onChange={onChange} value={checkedCOD}>
+                Thanh toán khi nhận hàng
+              </Checkbox>
             )}
             <br />
             <br />
