@@ -1,6 +1,7 @@
 import {
   Button,
   Card,
+  Checkbox,
   Col,
   Divider,
   InputNumber,
@@ -50,6 +51,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const { confirm } = Modal;
   const [idTaiKhoan, setIdTaiKhoan] = useState(null);
   const { Text } = Typography;
+  const [checkedCOD, setCheckedCOD] = useState(false);
 
   const calculateRemainingAmountForVoucher = () => {
     // Sắp xếp các voucher theo giaToiThieu theo thứ tự tăng dần
@@ -274,6 +276,11 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   };
 
   const handleLuuHoaDon = async (id) => {
+    if (totalPriceFromTable == 0) {
+      // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
+      message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
+      return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
+    }
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -288,10 +295,20 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           trangThaiHoaDon: "CONFIRMED",
         };
 
-        if (totalPriceFromTable == 0) {
-          // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
-          message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
-          return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
+        try {
+          const resGD = await request.post("giao-dich", {
+            taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
+            soTienGiaoDich: tongTienKhiGiam,
+            hoaDon: {
+              id: id,
+            },
+            phuongThucThanhToan: {
+              id: checkedCOD == true ? "3" : selectedRadio,
+            },
+            trangThaiGiaoDich: checkedCOD == true ? "PENDING" : "SUCCESS",
+          });
+        } catch (error) {
+          console.log(error);
         }
 
         try {
@@ -463,11 +480,16 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     // When the component mounts, trigger the selection manually
     setIsCashSelected(true);
     setIsPaymentSelected(true); // Set to true to display the 'Thanh toán' button
+    setCheckedCOD(false);
   }, []); // Empty dependency array to run this effect only once on mount
 
   const onChangeGiaoHang = (checked: boolean) => {
     setIsChecked(checked);
     setChecked(checked);
+  };
+
+  const onChange = (e: CheckboxChangeEvent) => {
+    setCheckedCOD(e.target.checked);
   };
 
   const onChangeKhachHang = (value: string) => {
@@ -796,7 +818,11 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 <Col span={24}>
                   <Button
                     type="primary"
-                    style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
+                    style={{
+                      width: "100%",
+                      marginTop: 20,
+                      fontWeight: "bold",
+                    }}
                     onClick={() => handleThanhToan(id)}
                   >
                     Thanh toán
@@ -805,6 +831,33 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               </Row>
             )}
             {checked && isCashSelected && (
+              <Checkbox onChange={onChange}>Thanh toán khi nhận hàng</Checkbox>
+            )}
+            <br />
+            <br />
+            {checked && isCashSelected && !checkedCOD && (
+              <>
+                {/* Hiển thị hai ô input khi "Tiền mặt" được chọn */}
+                <span>Tiền khách đưa: </span>
+                <InputNumber
+                  style={{ marginTop: 10, width: "100%" }}
+                  value={tienKhachDua}
+                  formatter={(value) => `${formatGiaTienVND(value)}`}
+                  parser={(value: any) => value.replace(/\D/g, "")}
+                  onChange={(value) => setTienKhachDua(value)}
+                />
+                <br />
+                <span>Tiền trả khách: </span>
+                <span
+                  style={{ marginTop: 10, width: "100%", fontWeight: "bold" }}
+                >
+                  {totalPriceFromTable == 0
+                    ? formatGiaTienVND(0)
+                    : formatGiaTienVND(giaTriTienTraKhach)}
+                </span>
+              </>
+            )}
+            {checked && isCashSelected && checkedCOD == true && (
               <Row>
                 <Col span={24}>
                   <Button
@@ -817,6 +870,19 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                     onClick={() => handleLuuHoaDon(id)}
                   >
                     Xác nhận
+                  </Button>
+                </Col>
+              </Row>
+            )}
+            {!checkedCOD && checked && isCashSelected && (
+              <Row>
+                <Col span={24}>
+                  <Button
+                    type="primary"
+                    style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
+                    onClick={() => handleThanhToan(id)}
+                  >
+                    Thanh toán
                   </Button>
                 </Col>
               </Row>
