@@ -78,4 +78,12 @@ public interface    TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
     @Query("SELECT tk FROM TaiKhoan tk WHERE tk.id =:id")
     TaiKhoan findId(@Param("id") Long id);
 
+    @Query("SELECT tk FROM TaiKhoan tk " +
+            "WHERE tk.vaiTro.id = 3")
+    List<TaiKhoan> findAllKhachHangExcel();
+
+    @Query("SELECT tk FROM TaiKhoan tk " +
+            "WHERE tk.vaiTro.id = 2")
+    List<TaiKhoan> findAllNhanVienExcel();
+
 }

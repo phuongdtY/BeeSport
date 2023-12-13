@@ -54,6 +54,7 @@ const Header: React.FC = () => {
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("acountId");
       localStorage.removeItem("roleId");
+      localStorage.removeItem("ten");
       // localStorage.removeItem("idGioHang");
       
       navigate("/sign-in");
@@ -75,6 +76,7 @@ const Header: React.FC = () => {
     getItem(<Link to="/admin"></Link>, "4"),
   ];
   const roleId = localStorage.getItem("roleId");
+  const ten = localStorage.getItem("ten");
  console.log("aaaa",roleId) 
   const { Option } = Select;
   const [modalVisible, setModalVisible] = useState(false);
@@ -129,9 +131,9 @@ const Header: React.FC = () => {
             } 
           }}
         >
-          {roleId === "1" && <Option value="1">Quản lý</Option>}
-          {roleId === "2" && <Option value="2">Nhân viên</Option>}
-          {roleId === "3" && <Option value="3">Khách hàng</Option>}
+          {roleId === "1" && <Option value="1">{ten}</Option>}
+          {roleId === "2" && <Option value="2">{ten}</Option>}
+          {roleId === "3" && <Option value="3">{ten}</Option>}
           {roleId === "3" && <Option><Button style={{margin:0,padding:0}} type="link" onClick={()=>setModalDiaChi(true)} >Địa chỉ của tôi</Button> </Option>}
           <Option value="thongtin"><Button style={{margin:0,padding:0}} type="link" onClick={()=>setModalThongTin(true)} >Thông tin</Button></Option>
           <Option value="doiMatKhau"><Button style={{margin:0,padding:0}} type="link" onClick={()=>setModalDoiMK(true)} >Đổi mật khẩu</Button></Option>

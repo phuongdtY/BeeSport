@@ -322,8 +322,8 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
               >
                 <Radio.Group>
                   <Radio value="ACTIVE">Hoạt động</Radio>
-                  <Radio value="INACTIVE">Không hoạt động</Radio>
-                  <Radio value="DELETED">Xóa</Radio>
+                  {/* <Radio value="INACTIVE">Không hoạt động</Radio> */}
+                  {/* <Radio value="DELETED">Xóa</Radio> */}
                   <Radio value="DEFAULT">Mặc định</Radio>
                 </Radio.Group>
               </Form.Item>

@@ -31,6 +31,7 @@ import {
   ManOutlined,
   WomanOutlined,
   UserOutlined,
+  FileExcelOutlined,
 } from "@ant-design/icons";
 import { formatNgaySinh, formatPhoneNumber } from "~/utils/formatResponse";
 import {
@@ -326,6 +327,42 @@ const index: React.FC = () => {
       trangThai: value,
     });
   };
+  const exportToExcel = async () => {
+    try {
+      const currentTime = new Date();
+      const dateString = currentTime
+        .toISOString()
+        .slice(0, 10)
+        .replace(/-/g, "");
+      const timeString = currentTime
+        .toTimeString()
+        .slice(0, 8)
+        .replace(/:/g, "");
+
+      const fileName = `khach-hang_${dateString}_${timeString}.xlsx`;
+
+      const response = await request.get("khach-hang/excel", {
+        responseType: "blob", // Yêu cầu response là dạng blob
+      });
+
+      const blob = new Blob([response.data], {
+        type: "application/octet-stream",
+      });
+
+      // Tạo một URL tạm thời để download file Excel
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+
+      // Xoá URL tạm thời
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error exporting to Excel: ", error);
+    }
+  };
   return (
     <>
       <Card title="DANH SÁCH KHÁCH HÀNG" bordered={true}>
@@ -436,6 +473,13 @@ const index: React.FC = () => {
                 Thêm khách hàng
               </Button>
             </Link>
+            <Button
+                  style={{ float: "right", backgroundColor: "green", marginTop:"10px" }}
+                  type="primary"
+                  onClick={exportToExcel}
+                >
+                  <FileExcelOutlined /> Xuất File Excel
+                </Button>
           </Col>
         </Row>
         <Table

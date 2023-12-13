@@ -56,4 +56,10 @@ public class DiaChiController {
         return ResponseEntity.ok(diaChi);
     }
 
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable(name = "id") Long id) {
+        diaChiService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

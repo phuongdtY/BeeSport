@@ -34,10 +34,11 @@ const DangNhap: React.FC = () => {
   const onFinish = async (values: DangNhapRequest) => {
     try {
       const response = await requestDangNhap.post("/sign-in", values);
-      const { refreshToken,roleId,acountId } = response.data; // Assuming your response contains accessToken and refreshToken
+      const { refreshToken,roleId,acountId,ten } = response.data; // Assuming your response contains accessToken and refreshToken
       localStorage.setItem("refreshToken", refreshToken); // Store the access token
       localStorage.setItem("roleId", roleId);
       localStorage.setItem("acountId", acountId);
+      localStorage.setItem("ten", ten);
       // localStorage.setItem("idGioHang", idGioHang);
       // console.log("IdGioHang",idGioHang)
       console.log("acountId",acountId)

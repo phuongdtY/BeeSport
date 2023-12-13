@@ -20,4 +20,6 @@ public interface DiaChiService {
 
     DiaChi updateTrangThai(Long id, UpdateDCReuest request);
 
+    void delete(Long id);
+
 }

@@ -98,6 +98,19 @@ function ModalDiaChi({ openModal, closeModal }) {
       }
     }
 };
+const handOnClickDeleteTT = async (id: any) => {
+  try {
+    //   const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
+    const idTaiKhoan = localStorage.getItem("acountId");
+    const res = await requestDC.delete("dia-chi/delete/" + id);
+    fetchDataAndLoadData();
+  } catch (error: any) {
+    if (error.response && error.response.status === 400) {
+    } else {
+      console.error("Lỗi không xác định:", error);
+    }
+  }
+};
   const getParams = (params: TableParams) => ({
     currentPage: data.length !== 0 ? params.pagination?.current : 1,
     pageSize: params.pagination?.pageSize,
@@ -108,7 +121,6 @@ function ModalDiaChi({ openModal, closeModal }) {
     sortOrder: params.sortOrder,
     gioiTinhList: params.filters?.gioiTinh,
   });
-  
   const columns: ColumnsType<DataType> = [
     {
       title: "STT",
@@ -203,7 +215,8 @@ function ModalDiaChi({ openModal, closeModal }) {
       key: "quanHuyen",
       sorter: true,
       ellipsis: true,
-      // render: (text) => <a>{text}</a>,
+      render: (quanHuyen) => <a href={`mailto:${quanHuyen}`}>{quanHuyen}</a>,
+      
     },
     {
       title: "Phường xã",
@@ -248,9 +261,6 @@ function ModalDiaChi({ openModal, closeModal }) {
             key: "1",
           },
           {
-            type: "divider",
-          },
-          {
             // icon: <EditOutlined />,
             label: (
               <Button
@@ -262,6 +272,19 @@ function ModalDiaChi({ openModal, closeModal }) {
               </Button>
             ),
             key: "2",
+          },
+          {
+            // icon: <EditOutlined />,
+            label: (
+              <Button
+                style={{ margin: 0, padding: 0 }}
+                type="link"
+                onClick={() => handOnClickDeleteTT(id)}
+              >
+                Xóa địa chỉ
+              </Button>
+            ),
+            key: "3",
           },
         ];
 
@@ -310,7 +333,7 @@ function ModalDiaChi({ openModal, closeModal }) {
     if (JSON.stringify(updatedTableParams) !== JSON.stringify(tableParams)) {
       setTableParams(updatedTableParams);
     }
-    console.log(fetchedData.content);
+    console.log("10"+fetchedData.content);
 
   };
   useEffect(() => {

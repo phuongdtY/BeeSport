@@ -47,6 +47,7 @@ const CustomHeader: React.FC<{
   };
 
   const roleId = localStorage.getItem("roleId");
+  const ten = localStorage.getItem("ten");
   return (
     <Layout.Header
       style={{
@@ -89,9 +90,9 @@ const CustomHeader: React.FC<{
           }
         }}
       >
-        {roleId === "1" && <Option value="1">Quản lý</Option>}
-          {roleId === "2" && <Option value="2">Nhân viên</Option>}
-          {roleId === "3" && <Option value="3">Khách hàng</Option>}
+        {roleId === "1" && <Option value="1">{ten}</Option>}
+          {roleId === "2" && <Option value="2">{ten}</Option>}
+          {roleId === "3" && <Option value="3">{ten}</Option>}
           <Option value="thongtin"><Button style={{margin:0,padding:0}} type="link" onClick={()=>setModalThongTin(true)} >Thông tin</Button></Option>
           <Option value="doiMatKhau"><Button style={{margin:0,padding:0}} type="link" onClick={()=>setModalDoiMK(true)} >Đổi mật khẩu</Button></Option>
         <Option style={{ color: '#3D6EE0' }} value="logout">Logout</Option>

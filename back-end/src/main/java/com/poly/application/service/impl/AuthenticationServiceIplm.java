@@ -144,6 +144,7 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         jwtAuthenticationResponse.setRoleId(taiKhoan.getVaiTro().getId());
         jwtAuthenticationResponse.setAcountId(taiKhoan.getId());
         jwtAuthenticationResponse.setSdt(taiKhoan.getSoDienThoai());
+        jwtAuthenticationResponse.setTen(taiKhoan.getHoVaTen());
 //        jwtAuthenticationResponse.setIdGioHang(gioHang.getId());
         return jwtAuthenticationResponse;
     }

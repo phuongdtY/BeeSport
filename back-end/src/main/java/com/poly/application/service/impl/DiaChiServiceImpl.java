@@ -2,6 +2,7 @@ package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.DiaChi;
+import com.poly.application.entity.DiaHinhSan;
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
@@ -135,6 +136,15 @@ public class DiaChiServiceImpl implements DiaChiService {
         return diaChiRepository.save(detail);
     }
 
+    @Override
+    public void delete(Long id) {
+        Optional<DiaChi> optional = diaChiRepository.findById(id);
+        if (optional.isEmpty()) {
+            throw new com.amazonaws.services.mq.model.NotFoundException("Địa hình sân không tồn tại");
+        }
+        DiaChi diaChi = optional.get();
+        diaChiRepository.delete(diaChi);
+    }
 
 
 }
