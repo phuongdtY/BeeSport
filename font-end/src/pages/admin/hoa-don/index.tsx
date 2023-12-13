@@ -56,11 +56,7 @@ const index: React.FC = () => {
       align: "center",
       sorter: true,
       width: "20%",
-      render: (tongTien) => (
-        <span>
-          {formatGiaTienVND(tongTien)}
-        </span>
-        ),
+      render: (tongTien) => <span>{formatGiaTienVND(tongTien)}</span>,
     },
     {
       title: "Số điện thoại người nhận",
@@ -71,7 +67,8 @@ const index: React.FC = () => {
       width: "20%",
       render: (sdtNguoiNhan, record) => (
         <span>
-          {(sdtNguoiNhan == null || sdtNguoiNhan === "") && record.loaiHoaDon?.ten === "COUNTER"
+          {(sdtNguoiNhan == null || sdtNguoiNhan === "") &&
+          record.loaiHoaDon?.ten === "COUNTER"
             ? "Khách hàng lẻ"
             : sdtNguoiNhan}
         </span>
@@ -86,7 +83,8 @@ const index: React.FC = () => {
       width: "20%",
       render: (nguoiNhan, record) => (
         <span>
-          {(nguoiNhan == null || nguoiNhan === "") && record.loaiHoaDon?.ten === "COUNTER"
+          {(nguoiNhan == null || nguoiNhan === "") &&
+          record.loaiHoaDon?.ten === "COUNTER"
             ? "Khách hàng lẻ"
             : nguoiNhan}
         </span>
@@ -207,7 +205,7 @@ const index: React.FC = () => {
   };
   return (
     <>
-      <Card title="DANH SÁCH HÓA ĐƠN">
+      <Card title="DANH SÁCH ĐƠN HÀNG">
         <Row>
           <Col span={8}>
             <Input

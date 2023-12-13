@@ -157,7 +157,7 @@ const Home: React.FC = () => {
           </a>
         </Col>
         <Col span={7} style={{ marginRight: 85 }}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={adidas} alt="" width={"100%"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               GIÀY ĐÁ BÓNG ADIDAS{" "}
@@ -165,7 +165,7 @@ const Home: React.FC = () => {
           </a>
         </Col>
         <Col span={7}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={puma} alt="" width={"100%"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               GIÀY ĐÁ BÓNG PUMA{" "}
@@ -176,7 +176,7 @@ const Home: React.FC = () => {
       {/* // Dòng 2 */}
       <Row style={{ marginTop: 30 }}>
         <Col span={7} style={{ marginRight: 85 }}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={mizuno} alt="" width={"100%"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               GIÀY ĐÁ BÓNG MIZUNO{" "}
@@ -184,7 +184,7 @@ const Home: React.FC = () => {
           </a>
         </Col>
         <Col span={7} style={{ marginRight: 85 }}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={asics} alt="" width={"100%"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               GIÀY ĐÁ BÓNG ASICS{" "}
@@ -192,7 +192,7 @@ const Home: React.FC = () => {
           </a>
         </Col>
         <Col span={7}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={kamito} alt="" width={"100%"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               GIÀY ĐÁ BÓNG KAMITO{" "}
@@ -203,7 +203,7 @@ const Home: React.FC = () => {
       {/* // Dòng 3 */}
       <Row style={{ marginTop: 30 }}>
         <Col span={7} style={{ marginRight: 85 }}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={grandsport} alt="" width={"100%"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               GIÀY ĐÁ BÓNG GRANDSPORT{" "}
@@ -211,7 +211,7 @@ const Home: React.FC = () => {
           </a>
         </Col>
         <Col span={7} style={{ marginRight: 85 }}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={xmunich} alt="" width={"100%"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               GIÀY ĐÁ BÓNG X MUNICH{" "}
@@ -219,7 +219,7 @@ const Home: React.FC = () => {
           </a>
         </Col>
         <Col span={7}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={joma} alt="" width={"100%"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               GIÀY ĐÁ BÓNG JOMA{" "}
@@ -233,7 +233,7 @@ const Home: React.FC = () => {
       </Divider>
       <Row style={{ marginTop: 30, marginBottom: 30 }}>
         <Col span={5} style={{ marginRight: 75 }}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={santunhien} alt="" width={"100%"} height={"300px"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               SÂN CỎ TỰ NHIÊN{" "}
@@ -241,7 +241,7 @@ const Home: React.FC = () => {
           </a>
         </Col>
         <Col span={5} style={{ marginRight: 75 }}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={sannhantao} alt="" width={"100%"} height={"300px"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               SÂN CỎ NHÂN TẠO{" "}
@@ -249,7 +249,7 @@ const Home: React.FC = () => {
           </a>
         </Col>
         <Col span={5} style={{ marginRight: 75 }}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={sanfutsal} alt="" width={"100%"} height={"300px"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               SÂN FUTSAL{" "}
@@ -257,7 +257,7 @@ const Home: React.FC = () => {
           </a>
         </Col>
         <Col span={5}>
-          <a href="">
+          <a href="http://localhost:5173/san-pham">
             <img src={sancat} alt="" width={"100%"} height={"300px"} />
             <span style={{ color: "#FF6600", fontWeight: "bolder" }}>
               SÂN CÁT{" "}

@@ -15,7 +15,7 @@ export const CustomFooter: React.FC = () => {
         zIndex: 1,
       }}
     >
-      Ant Design ©2023 Created by Ant UED
+      BeeSport ©2023 Created by SD-16
     </Layout.Footer>
   );
 };

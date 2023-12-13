@@ -35,6 +35,7 @@ const Header: React.FC = () => {
   const [count, setCount] = useState<number | undefined>();
   const idGioHangTaiKhoan = localStorage.getItem("cartIdTaiKhoan");
   const idGioHangNull = localStorage.getItem("cartId");
+  const idTaiKhoan = localStorage.getItem("acountId");
   const currentPathname = window.location.pathname;
 
   useEffect(() => {
@@ -79,9 +80,8 @@ const Header: React.FC = () => {
   const items: MenuItem[] = [
     getItem(<Link to="/">Trang chủ</Link>, "1"),
     getItem(<Link to="/san-pham">Sản phẩm</Link>, "2"),
-    getItem(<Link to="/admin">Về chúng tôi</Link>, "3"),
-    getItem(<Link to="/don-hang">Đơn hàng của tôi</Link>, "4"),
   ];
+
   const roleId = localStorage.getItem("roleId");
   const { Option } = Select;
   const [modalVisible, setModalVisible] = useState(false);
@@ -111,6 +111,7 @@ const Header: React.FC = () => {
       </div>
       <Menu
         theme="light"
+        style={{ width: 400 }}
         mode="horizontal"
         defaultSelectedKeys={["1"]}
         items={items}
@@ -131,7 +132,14 @@ const Header: React.FC = () => {
           {roleId === "2" && <Option value="2">Nhân viên</Option>}
           {roleId === "3" && <Option value="3">Khách hàng</Option>}
           <Option value="thongtin">Thông tin</Option>
-          <Option value="doiMatKhau"><Link to={"/doi-mat-khau"}>Đổi mật khẩu</Link></Option>
+          {idTaiKhoan != null ? (
+            <Option value="donHang">
+              <Link to={"/don-hang"}>Đơn hàng của tôi</Link>
+            </Option>
+          ) : null}
+          <Option value="doiMatKhau">
+            <Link to={"/doi-mat-khau"}>Đổi mật khẩu</Link>
+          </Option>
           <Option value="logout">Logout</Option>
         </Select>
       ) : (

@@ -28,7 +28,7 @@ const DangNhap: React.FC = () => {
 
       if (response.data.roleId === 1) {
         // localStorage.setItem("2","11")
-        navigate("/admin");
+        navigate("/admin/ban-hang-tai-quay");
       } else if (response.data.roleId === 2) {
         // localStorage.setItem("2","111111")
         navigate("/admin/ban-hang-tai-quay");
