@@ -130,24 +130,6 @@ public class HoaDonServiceImpl implements HoaDonService {
         timeLine.setHoaDon(savedHoaDon);
         timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.PENDING);
         timelineRepository.save(timeLine);
-//        if (createHoaDonRequest.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE
-//                && createHoaDonRequest.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.PENDING) {
-//            GiaoDich giaoDich = new GiaoDich();
-//            giaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
-//            giaoDich.setSoTienGiaoDich(savedHoaDon.getTongTienKhiGiam());
-////            nếu phương thức thanh toàn là tiền mặt sẽ set PENDING (1. tiền mặt)
-//            if (phuongThucThanhToan.getId() == 1) {
-//                giaoDich.setTrangThaiGiaoDich(CommonEnum.TrangThaiGiaoDich.PENDING);
-//            }
-////            nếu phương thức thanh toàn là tiền mặt sẽ set PENDING (2. VNPay)
-//            if (phuongThucThanhToan.getId() == 2) {
-//                giaoDich.setTrangThaiGiaoDich(CommonEnum.TrangThaiGiaoDich.SUCCESS);
-//            }
-//            giaoDich.setPhuongThucThanhToan(phuongThucThanhToan);
-//            giaoDich.setHoaDon(savedHoaDon);
-//            giaoDich.setTaiKhoan(savedHoaDon.getTaiKhoan());
-//            giaoDichRepository.save(giaoDich);
-//        }
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(savedHoaDon);
     }
 
@@ -173,6 +155,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         Optional.ofNullable(updatedHoaDonRequest.getTongTien()).ifPresent(hoaDon::setTongTien);
         Optional.ofNullable(updatedHoaDonRequest.getGhiChu()).ifPresent(hoaDon::setGhiChu);
         Optional.ofNullable(updatedHoaDonRequest.getTongTienKhiGiam()).ifPresent(hoaDon::setTongTienKhiGiam);
+        Optional.ofNullable(updatedHoaDonRequest.getGiamGia()).ifPresent(hoaDon::setGiamGia);
         Optional.ofNullable(updatedHoaDonRequest.getSdtNguoiNhan()).ifPresent(hoaDon::setSdtNguoiNhan);
         Optional.ofNullable(updatedHoaDonRequest.getNguoiNhan()).ifPresent(hoaDon::setNguoiNhan);
         Optional.ofNullable(updatedHoaDonRequest.getDiaChiNguoiNhan()).ifPresent(hoaDon::setDiaChiNguoiNhan);

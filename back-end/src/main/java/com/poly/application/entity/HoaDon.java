@@ -60,6 +60,9 @@ public class HoaDon {
     @Column(name = "tong_tien_khi_giam")
     private BigDecimal tongTienKhiGiam;
 
+    @Column(name = "giam_gia")
+    private BigDecimal giamGia;
+
     @Column(name = "ghi_chu")
     private String ghiChu;
 

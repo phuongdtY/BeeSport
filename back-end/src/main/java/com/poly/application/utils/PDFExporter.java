@@ -70,9 +70,9 @@ public class PDFExporter {
     }
 
     private String getHoaDonDiaChiKhachHang(HoaDon hoaDon) {
-        String ten = "123, đường 123, quận 12, thành phố Hà nội";
+        String ten = "Trịnh Văn Bô - Nam Từ Liêm - Hà Nội";
         if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.COUNTER){
-            ten = "123, đường 123, quận 12, thành phố Hà nội";
+            ten = "Trịnh Văn Bô - Nam Từ Liêm - Hà Nội";
         } else if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
             ten = hoaDon.getDiaChiNguoiNhan();
         }
@@ -246,7 +246,7 @@ public class PDFExporter {
         infoCell.setBorder(Rectangle.NO_BORDER);
         infoCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 
-        Paragraph diaChi = new Paragraph("Địa Chỉ: 123, đường 123, quận 12, thành phố Hà nội", fontInfo);
+        Paragraph diaChi = new Paragraph("Địa Chỉ: Trịnh Văn Bô - Nam Từ Liêm - Hà Nội", fontInfo);
         Paragraph sdt = new Paragraph("Số điện thoại : 0987654321 - 0971852413", fontInfo);
         Paragraph email = new Paragraph("Email : beesport.soccer@gmail.com", fontInfo);
 
