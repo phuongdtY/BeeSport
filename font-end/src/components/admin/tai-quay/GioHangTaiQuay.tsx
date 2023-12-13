@@ -361,11 +361,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           ngayThanhToan: ngayHomNay,
           tongTienKhiGiam: tongTienKhiGiam,
         };
-
-        console.log(hoaDonData);
         try {
-          console.log(selectedRadio);
-
           const resGD = await request.post("giao-dich", {
             taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
             soTienGiaoDich: tongTienKhiGiam,
@@ -795,25 +791,29 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </Col>
               </Row>
             )}
-            {!isPaymentSelected && !checked && (
+            {isPaymentSelected && checked && !isCashSelected && (
               <Row>
                 <Col span={24}>
                   <Button
                     type="primary"
                     style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
-                    onClick={() => handleLuuHoaDon(id)}
+                    onClick={() => handleThanhToan(id)}
                   >
-                    Xác nhận
+                    Thanh toán
                   </Button>
                 </Col>
               </Row>
             )}
-            {isPaymentSelected && checked && (
+            {checked && isCashSelected && (
               <Row>
                 <Col span={24}>
                   <Button
                     type="primary"
-                    style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
+                    style={{
+                      width: "100%",
+                      marginTop: 20,
+                      fontWeight: "bold",
+                    }}
                     onClick={() => handleLuuHoaDon(id)}
                   >
                     Xác nhận

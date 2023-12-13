@@ -35,7 +35,7 @@ const App: React.FC = () => {
             textAlign: "center",
           }}
         >
-          Ant Design ©2023 Created by Ant UED
+          BeeSport ©2023 Created by SD-16
         </Layout.Footer>
       </Layout>
       <FloatButton.BackTop />
