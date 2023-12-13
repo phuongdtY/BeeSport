@@ -1,6 +1,8 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.common.GenCode;
+import com.poly.application.entity.GioHang;
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
@@ -9,6 +11,7 @@ import com.poly.application.model.mapper.TaiKhoanMapper;
 import com.poly.application.model.request.create_request.CreatedTaiKhoanRequest;
 import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
 import com.poly.application.model.response.TaiKhoanResponse;
+import com.poly.application.repository.GioHangRepository;
 import com.poly.application.repository.TaiKhoanRepository;
 import com.poly.application.repository.VaiTroRepository;
 import com.poly.application.service.TaiKhoanService;
@@ -57,6 +60,9 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private GioHangRepository gioHangRepository;
 
     @Override
     public Page<TaiKhoanResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String gioiTinhString, String searchText, String trangThaiString) {
@@ -167,6 +173,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         if(request.getGioiTinh()==null){
             request.setGioiTinh(CommonEnum.GioiTinh.OTHER);
         }
+
         TaiKhoan createdTaiKhoan = taiKhoanMapper.convertCreateRequestToEntity(request);
         createdTaiKhoan.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
         createdTaiKhoan.setVaiTro(vaiTroRepository.findId(Long.valueOf(3)));
@@ -176,6 +183,11 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         emailSender.sendEmail(savedTaiKhoan);
         createdTaiKhoan.setMatKhau(new BCryptPasswordEncoder().encode(savedTaiKhoan.getMatKhau()));
         savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
+        GioHang gioHang = new GioHang();
+        gioHang.setMaGioHang(GenCode.generateGioHangCode());
+        gioHang.setTrangThai(1);
+        gioHang.setTaiKhoan(taiKhoanRepository.getOne(savedTaiKhoan.getId()));
+        gioHangRepository.save(gioHang);
         return taiKhoanMapper.convertEntityToResponse(savedTaiKhoan);
     }
 
