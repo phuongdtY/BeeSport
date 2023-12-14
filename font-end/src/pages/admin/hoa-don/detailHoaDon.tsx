@@ -145,8 +145,19 @@ const detailHoaDon: React.FC = () => {
         <Space>
           <HinhAnhSanPham chiTietSanPham={chiTietSanPham} />
           <Space direction="vertical">
-            <Text strong>{chiTietSanPham?.sanPham.ten}</Text>
-            <Text>{`[${chiTietSanPham?.mauSac.ten} - ${chiTietSanPham?.kichCo.kichCo} - ${chiTietSanPham?.loaiDe.ten} - ${chiTietSanPham?.diaHinhSan.ten}]`}</Text>
+            <Text strong>{chiTietSanPham.sanPham.ten}</Text>
+            <Text>{`[${chiTietSanPham.mauSac.ten} - ${chiTietSanPham.kichCo.kichCo} - ${chiTietSanPham.loaiDe.ten} - ${chiTietSanPham.diaHinhSan.ten}]`}</Text>
+            {chiTietSanPham.soLuong === 0 && (
+              <Text type="danger" strong italic>
+                Hết hàng
+              </Text>
+            )}
+            {chiTietSanPham.soLuong > 0 &&
+              record.soLuong > chiTietSanPham.soLuong && (
+                <Text type="danger" italic strong>
+                  Chỉ có thể mua tối đa {chiTietSanPham.soLuong} sản phẩm
+                </Text>
+              )}
           </Space>
         </Space>
       ),
@@ -242,7 +253,7 @@ const detailHoaDon: React.FC = () => {
               : "default"
           }
         >
-          {phuongThucThanhToan.ten}
+          {phuongThucThanhToan?.ten}
         </Tag>
       ),
     },
@@ -309,6 +320,7 @@ const detailHoaDon: React.FC = () => {
       }));
       setDataTableSanPham(dataT);
       form.setFieldsValue({
+        ghiChu: res.data?.ghiChu,
         phiShip: res.data?.phiShip,
         diaChiNguoiNhan: res.data?.diaChiNguoiNhan,
         emailNguoiNhan: res.data?.emailNguoiNhan,
@@ -548,21 +560,44 @@ const detailHoaDon: React.FC = () => {
     };
   });
 
-  const onFinish = (values: UpdatedRequest) => {
-    console.log(data?.tongTien);
+  const onFinish = async (values: UpdatedRequest) => {
+    const foundItemCOD = data?.giaoDichList.find(
+      (item) => item.phuongThucThanhToan.ten === "COD"
+    );
+    const foundItemVNPay = data?.giaoDichList.find(
+      (item) => item.phuongThucThanhToan.ten === "Ví VNPay"
+    );
 
-    if (data?.tongTien < totalAmount) {
-      message.success(totalAmount - data?.tongTien);
-      return;
-    }
+    const tienUpdate = () => {
+      return totalAmount - data?.giamGia + values.phiShip;
+    };
+
+    const tienMoi = () => {
+      return tienUpdate() - data?.tongTienKhiGiam;
+    };
+
+    const tienGiaoDich =
+      foundItemVNPay !== undefined
+        ? tienUpdate() - foundItemVNPay.soTienGiaoDich
+        : tienUpdate();
+
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
       content: (
         <>
           <Text>Bạn có chắc cập nhật hóa đơn này không?</Text>
-          <Divider />
-          <Text>Bạn có chắc cập nhật hóa đơn này không?</Text>
+          <Divider style={{ margin: 10 }} />
+          <Text>
+            Tổng tiền ban đầu: {formatGiaTienVND(data?.tongTienKhiGiam)}
+          </Text>
+          <br />
+          <Text>Tổng tiền mới: {formatGiaTienVND(tienUpdate())}</Text>
+          <br />
+          <Text strong>
+            Khách hàng phải thanh toán thêm:{" "}
+            {formatGiaTienVND(tienUpdate() - data?.tongTienKhiGiam)}
+          </Text>
         </>
       ),
       okText: "OK",
@@ -580,6 +615,26 @@ const detailHoaDon: React.FC = () => {
           console.error(error);
         }
 
+        if (tienMoi() !== 0) {
+          try {
+            const res = await request.post("giao-dich", {
+              id: foundItemCOD == undefined ? null : foundItemCOD.id,
+              phuongThucThanhToan: { id: 3 },
+              soTienGiaoDich: tienGiaoDich,
+              hoaDon: {
+                id: data?.id,
+              },
+              taiKhoan:
+                data?.taiKhoan !== null
+                  ? {
+                      id: data?.taiKhoan.id,
+                    }
+                  : null,
+              trangThaiGiaoDich: "PENDING",
+            });
+          } catch (error) {}
+        }
+
         try {
           const res = await request.put("hoa-don/" + id, {
             diaChiNguoiNhan: values.diaChiNguoiNhan,
@@ -587,6 +642,9 @@ const detailHoaDon: React.FC = () => {
             nguoiNhan: values.nguoiNhan,
             sdtNguoiNhan: data?.sdtNguoiNhan,
             phiShip: Number(values.phiShip),
+            tongTien: totalAmount,
+            tongTienKhiGiam: tienUpdate(),
+            ghiChu: values.ghiChu,
           });
           if (res.data) {
             fetchDataTimeline();
@@ -789,84 +847,78 @@ const detailHoaDon: React.FC = () => {
                       {data?.trangThaiHoaDon?.moTa}
                     </Tag>
                   </Space>
+
                   <Space>
-                    <Text strong>Ghi chú đơn hàng:</Text>
-                    <Text>{data?.ghiChu}</Text>
+                    <Text strong>Tổng tiền sản phẩm:</Text>
+                    <Text>{formatGiaTienVND(data?.tongTien)}</Text>
                   </Space>
                   <Space>
                     <Text strong>Giảm giá:</Text>
-                    <Text>
-                      {formatGiaTienVND(
-                        data?.tongTien + data?.phiShip - data?.tongTienKhiGiam
-                      )}
-                    </Text>
+                    <Text>{formatGiaTienVND(data?.giamGia)}</Text>
                   </Space>
                   <Space>
                     <Text strong>Tổng tiền đơn hàng:</Text>
                     <Text>{formatGiaTienVND(data?.tongTienKhiGiam)}</Text>
                   </Space>
-                  <Space>
-                    {((orderStatus?.ten === "PENDING" &&
-                      data?.loaiHoaDon?.ten === "COUNTER") ||
-                      (orderStatus?.ten === "CONFIRMED" &&
+                  {edit == false && (
+                    <Space>
+                      {((orderStatus?.ten === "PENDING" &&
                         data?.loaiHoaDon?.ten === "COUNTER") ||
-                      (orderStatus?.ten === "PENDING" &&
-                        data?.loaiHoaDon?.ten === "ONLINE")) && (
-                      <Button
-                        type="primary"
-                        onClick={async () => {
-                          showConfirmModal(confirmedStatus, "Xác nhận");
-                        }}
-                      >
-                        Xác nhận
-                      </Button>
-                    )}
+                        (orderStatus?.ten === "CONFIRMED" &&
+                          data?.loaiHoaDon?.ten === "COUNTER") ||
+                        (orderStatus?.ten === "PENDING" &&
+                          data?.loaiHoaDon?.ten === "ONLINE")) && (
+                        <Button
+                          type="primary"
+                          onClick={async () => {
+                            showConfirmModal(confirmedStatus, "Xác nhận");
+                          }}
+                        >
+                          Xác nhận
+                        </Button>
+                      )}
 
-                    {((orderStatus?.ten === "PENDING" &&
-                      data?.loaiHoaDon?.ten === "COUNTER") ||
-                      (orderStatus?.ten === "CONFIRMED" &&
+                      {((orderStatus?.ten === "PENDING" &&
                         data?.loaiHoaDon?.ten === "COUNTER") ||
-                      (orderStatus?.ten === "PENDING" &&
-                        data?.loaiHoaDon?.ten === "ONLINE")) && (
-                      <Button
-                        type="primary"
-                        danger
-                        onClick={async () => {
-                          showConfirmModal(cancelledStatus, "Hủy");
-                        }}
-                      >
-                        Hủy
-                      </Button>
-                    )}
-                    {orderStatus?.ten === "PICKUP" && (
-                      <Button
-                        type="primary"
-                        onClick={async () => {
-                          showConfirmModal(shipingStatus, "Giao hàng");
-                        }}
-                      >
-                        Giao hàng
-                      </Button>
-                    )}
-                    {((orderStatus?.ten === "CONFIRMED" &&
-                      data?.loaiHoaDon?.ten === "COUNTER") ||
-                      (orderStatus?.ten === "SHIPPING" &&
-                        data?.loaiHoaDon?.ten === "ONLINE")) && (
-                      <Button
-                        type="primary"
-                        onClick={async () => {
-                          showConfirmModal(approvedStatus, "Hoàn thành");
-                        }}
-                      >
-                        Hoàn thành
-                      </Button>
-                    )}
-                    {/* {orderStatus?.ten === "CONFIRMED" && showExportButton && ( */}
-                    <Button type="primary" onClick={showExportHoaDonModal}>
-                      Export PDF
-                    </Button>
-                    {/* )} */}
-                  </Space>
+                        (orderStatus?.ten === "CONFIRMED" &&
+                          data?.loaiHoaDon?.ten === "COUNTER") ||
+                        (orderStatus?.ten === "PENDING" &&
+                          data?.loaiHoaDon?.ten === "ONLINE")) && (
+                        <Button
+                          type="primary"
+                          danger
+                          onClick={async () => {
+                            showConfirmModal(cancelledStatus, "Hủy");
+                          }}
+                        >
+                          Hủy
+                        </Button>
+                      )}
+                      {orderStatus?.ten === "PICKUP" && (
+                        <Button
+                          type="primary"
+                          onClick={async () => {
+                            showConfirmModal(shipingStatus, "Giao hàng");
+                          }}
+                        >
+                          Giao hàng
+                        </Button>
+                      )}
+                      {((orderStatus?.ten === "CONFIRMED" &&
+                        data?.loaiHoaDon?.ten === "COUNTER") ||
+                        (orderStatus?.ten === "SHIPPING" &&
+                          data?.loaiHoaDon?.ten === "ONLINE")) && (
+                        <Button
+                          type="primary"
+                          onClick={async () => {
+                            showConfirmModal(approvedStatus, "Hoàn thành");
+                          }}
+                        >
+                          Hoàn thành
+                        </Button>
+                      )}
+                    </Space>
+                  )}
                 </Space>
               </Col>
               <Col span={8}>
@@ -936,6 +988,16 @@ const detailHoaDon: React.FC = () => {
                       )}
                     </Form.Item>
 
+                    <Form.Item label={<Text strong>Ghi chú đơn hàng</Text>}>
+                      {edit == true ? (
+                        <Form.Item name="ghiChu" style={{ margin: 0 }}>
+                          <Input />
+                        </Form.Item>
+                      ) : (
+                        <Text>{data?.ghiChu}</Text>
+                      )}
+                    </Form.Item>
+
                     <Form.Item label={<Text strong>Phí ship</Text>}>
                       {edit == true ? (
                         <Form.Item
@@ -987,6 +1049,7 @@ const detailHoaDon: React.FC = () => {
                           : data?.diaChiNguoiNhan}
                       </Text>
                     </Form.Item>
+
                     {data?.trangThaiHoaDon.ten == "PENDING" && (
                       <Form.Item>
                         <Space>
