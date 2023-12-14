@@ -15,9 +15,12 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.GiaoDich;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.HoaDonChiTiet;
+import com.poly.application.repository.GiaoDichRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.awt.Color;
@@ -49,13 +52,60 @@ public class PDFExporter {
         return ngayThangNam;
     }
 
+    private String formatNumberVietNam(BigDecimal number) {
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        return currencyFormat.format(number);
+    }
+
+    private String getHoaDonTenKhachHang(HoaDon hoaDon) {
+        String ten = "Khách hàng lẻ";
+        if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.COUNTER) {
+            ten = hoaDon.getTaiKhoan().getHoVaTen();
+        } else if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
+            ten = hoaDon.getNguoiNhan();
+        }
+        return ten;
+    }
+
+    private String getHoaDonSdtKhachHang(HoaDon hoaDon) {
+        String ten = "Khách hàng lẻ";
+        if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.COUNTER) {
+            ten = hoaDon.getTaiKhoan().getSoDienThoai();
+        } else if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
+            ten = hoaDon.getSdtNguoiNhan();
+        }
+        return ten;
+    }
+
+    private String getHoaDonDiaChiKhachHang(HoaDon hoaDon) {
+        String ten = "Trịnh Văn Bô - Nam Từ Liêm - Hà Nội";
+        GiaoDich giaoDich = hoaDon.getGiaoDichList().get(0);
+        if (hoaDon.getGiaoDichList().size() > 1) {
+            giaoDich = hoaDon.getGiaoDichList().get(1);
+        }
+        if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.COUNTER) {
+            ten = "Trịnh Văn Bô - Nam Từ Liêm - Hà Nội";
+        } else if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
+            ten = hoaDon.getDiaChiNguoiNhan();
+        }
+        return ten;
+    }
+
+    private String getTenLoaiHoaDon(HoaDon hoaDon) {
+        String ten = "Tại quầy";
+        if (hoaDon.getLoaiHoaDon().getTen() == CommonEnum.LoaiHoaDon.ONLINE.getTen()) {
+            ten = "Giao hàng";
+        }
+        return ten;
+    }
+
     private void writeTableHeader(PdfPTable table) {
         PdfPCell cell = new PdfPCell();
 //        cell.setBackgroundColor(Color.BLUE);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setPadding(8);
 
-        Font font = FontFactory.getFont("Times New Roman", "UTF-8", true,14, Font.BOLD);
+        Font font = FontFactory.getFont("Times New Roman", "UTF-8", true, 14, Font.BOLD);
 //        font.setColor(Color.WHITE);
 
         cell.setPhrase(new Phrase("STT", font));
@@ -75,14 +125,15 @@ public class PDFExporter {
     }
 
     private void writeTableData(PdfPTable table, HoaDon hoaDon) {
+
         int stt = 1;
-        Font boldFont = FontFactory.getFont("Times New Roman", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, 12, Font.BOLD);
+        Font font = FontFactory.getFont("Times New Roman", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, 12);
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         BigDecimal tongThanhTien = BigDecimal.ZERO;
         BigDecimal tienShip = hoaDon.getPhiShip();
 
         BigDecimal giamGiaVoucher = BigDecimal.ZERO;
-        if (hoaDon.getVoucher() != null){
+        if (hoaDon.getVoucher() != null) {
             giamGiaVoucher = hoaDon.getTongTien().add(hoaDon.getPhiShip()).subtract(hoaDon.getTongTienKhiGiam());
         }
 
@@ -93,10 +144,20 @@ public class PDFExporter {
             sttCell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(sttCell);
 
-//            tên sản phẩm
-            PdfPCell sanPhamCell = new PdfPCell(new Phrase(String.valueOf(hdct.getChiTietSanPham().getSanPham().getTen())));
+//             sản phẩm
+            String tenSanPham = hdct.getChiTietSanPham().getSanPham().getTen();
+            String thuocTinhSanPham = "[" + hdct.getChiTietSanPham().getMauSac().getTen()
+                    + " - " + hdct.getChiTietSanPham().getKichCo().getKichCo()
+                    + " - " + hdct.getChiTietSanPham().getLoaiDe().getTen()
+                    + " - " + hdct.getChiTietSanPham().getDiaHinhSan().getTen()
+                    + "]";
+            Paragraph sanPham = new Paragraph(tenSanPham, font);
+            Paragraph thuocTinh = new Paragraph(thuocTinhSanPham, font);
+            PdfPCell sanPhamCell = new PdfPCell();
             sanPhamCell.setPadding(10f);
             sanPhamCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            sanPhamCell.addElement(sanPham);
+            sanPhamCell.addElement(thuocTinh);
             table.addCell(sanPhamCell);
 
 //            số lượng
@@ -128,7 +189,7 @@ public class PDFExporter {
         tongTienCell.setColspan(4);
         tongTienCell.setPadding(10f);
         tongTienCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        PdfPCell tongTienValueCell = new PdfPCell(new Phrase(currencyFormat.format(hoaDon.getTongTien()), boldFont));
+        PdfPCell tongTienValueCell = new PdfPCell(new Phrase(currencyFormat.format(hoaDon.getTongTien()), font));
         tongTienValueCell.setPadding(10f);
         tongTienValueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(tongTienCell);
@@ -139,7 +200,7 @@ public class PDFExporter {
         giamGiaCell.setColspan(4);
         giamGiaCell.setPadding(10f);
         giamGiaCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        PdfPCell giamGiaValueCell = new PdfPCell(new Phrase(currencyFormat.format(giamGiaVoucher), boldFont));
+        PdfPCell giamGiaValueCell = new PdfPCell(new Phrase(currencyFormat.format(giamGiaVoucher), font));
         giamGiaValueCell.setPadding(10f);
         giamGiaValueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(giamGiaCell);
@@ -150,7 +211,7 @@ public class PDFExporter {
         tienShipCell.setColspan(4);
         tienShipCell.setPadding(10f);
         tienShipCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        PdfPCell tienShipValueCell = new PdfPCell(new Phrase(currencyFormat.format(tienShip), boldFont));
+        PdfPCell tienShipValueCell = new PdfPCell(new Phrase(currencyFormat.format(tienShip), font));
         tienShipValueCell.setPadding(10f);
         tienShipValueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(tienShipCell);
@@ -172,23 +233,71 @@ public class PDFExporter {
         Document document = new Document(PageSize.A4);
         PdfWriter.getInstance(document, response.getOutputStream());
 
+        BigDecimal soTienDaThanhToan = BigDecimal.ZERO;
+        String trangThaiGiaoDich = "Chưa trạng thái giao dịch";
+        String loaiGiaoDich = "Chưa có loại giao dịch";
+        GiaoDich giaoDich = hoaDon.getGiaoDichList().get(0);
+        if (hoaDon.getGiaoDichList().size() > 1) {
+            giaoDich = hoaDon.getGiaoDichList().get(1);
+        }
+
+        if (giaoDich.getPhuongThucThanhToan().getId() == 1) {
+            loaiGiaoDich = "Tiền Mặt";
+            if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.SUCCESS) {
+                trangThaiGiaoDich = "Đã Thanh Toán / tiền mặt";
+                soTienDaThanhToan = giaoDich.getSoTienGiaoDich();
+            }
+            if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.PENDING) {
+                trangThaiGiaoDich = "Chưa Thanh Toán / tiền mặt";
+            }
+            if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.FAILED) {
+                trangThaiGiaoDich = "Thanh toán Thất bại / tiền mặt";
+            }
+        }
+        if (giaoDich.getPhuongThucThanhToan().getId() == 2) {
+            loaiGiaoDich = "VNPay";
+            if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.SUCCESS) {
+                trangThaiGiaoDich = "Đã Thanh Toán / vnPay";
+                soTienDaThanhToan = giaoDich.getSoTienGiaoDich();
+            }
+            if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.PENDING) {
+                trangThaiGiaoDich = "Chưa Thanh Toán / vnPay";
+            }
+            if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.FAILED) {
+                trangThaiGiaoDich = "Thanh toán Thất bại / vnPay";
+            }
+        }
+        if (giaoDich.getPhuongThucThanhToan().getId() == 3) {
+            loaiGiaoDich = "COD";
+            if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.SUCCESS) {
+                trangThaiGiaoDich = "Đã Thanh Toán / COD";
+                soTienDaThanhToan = giaoDich.getSoTienGiaoDich();
+            }
+            if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.PENDING) {
+                trangThaiGiaoDich = "Chưa Thanh Toán / COD";
+            }
+            if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.FAILED) {
+                trangThaiGiaoDich = "Thanh toán Thất bại / COD";
+            }
+        }
+
         document.open();
 
         String imagePath = "src/main/java/com/poly/application/images/logo.jpg";
         Image image = Image.getInstance(imagePath);
         image.scaleAbsolute(200, 100); // Điều chỉnh kích thước của ảnh
 
-        Font fontTitle = FontFactory.getFont("Times New Roman","UTF-8",true,18, 1);
+        Font fontTitle = FontFactory.getFont("Times New Roman", "UTF-8", true, 18, 1);
 
-        Font fontContent = FontFactory.getFont("Times New Roman","UTF-8",true,14, 1);
+        Font fontContent = FontFactory.getFont("Times New Roman", "UTF-8", true, 14, 1);
 
         Font fontInfo = FontFactory.getFont("Times New Roman", "UTF-8", true, 14);
 
-        Font fontInfoKhach = FontFactory.getFont("Times New Roman", "UTF-8",true,12, 1);
+        Font fontInfoKhach = FontFactory.getFont("Times New Roman", "UTF-8", true, 11);
 
         PdfPTable table = new PdfPTable(5);
         table.setWidthPercentage(100f);
-        table.setWidths(new float[]{1.0f, 2.0f, 2.0f, 3.0f, 3.0f});
+        table.setWidths(new float[]{1.0f, 5.0f, 2.0f, 2.0f, 2.0f});
         table.setSpacingBefore(10);
         writeTableHeader(table);
         writeTableData(table, hoaDon);
@@ -206,7 +315,7 @@ public class PDFExporter {
         infoCell.setBorder(Rectangle.NO_BORDER);
         infoCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 
-        Paragraph diaChi = new Paragraph("Địa Chỉ: 123, đường 123, quận 12, thành phố Hà nội", fontInfo);
+        Paragraph diaChi = new Paragraph("Địa Chỉ: Trịnh Văn Bô - Nam Từ Liêm - Hà Nội", fontInfo);
         Paragraph sdt = new Paragraph("Số điện thoại : 0987654321 - 0971852413", fontInfo);
         Paragraph email = new Paragraph("Email : beesport.soccer@gmail.com", fontInfo);
 
@@ -226,16 +335,16 @@ public class PDFExporter {
         shipInfoTable.setWidths(new float[]{1f});
         shipInfoTable.setSpacingBefore(10f);
 
-        Paragraph columnName = new Paragraph("Thông tin giao hàng",fontInfoKhach);
+        Paragraph columnName = new Paragraph("Thông tin khách hàng", fontInfoKhach);
         PdfPCell columnNameCell = new PdfPCell();
         columnNameCell.setHorizontalAlignment(Element.ALIGN_LEFT);
 //        columnNameCell.setBorder(Rectangle.NO_BORDER);
         columnNameCell.addElement(columnName);
         columnNameCell.setPadding(10);
 
-        Paragraph khachHang = new Paragraph("Khách hàng: " + hoaDon.getNguoiNhan(), fontInfoKhach);
-        Paragraph sdtKhachHang = new Paragraph("Điện thoại:    " + hoaDon.getSdtNguoiNhan(), fontInfoKhach);
-        Paragraph diaChiKhachHang = new Paragraph("Địa chỉ:         " + hoaDon.getDiaChiNguoiNhan(), fontInfoKhach);
+        Paragraph khachHang = new Paragraph("Khách hàng: " + getHoaDonTenKhachHang(hoaDon), fontInfoKhach);
+        Paragraph sdtKhachHang = new Paragraph("Điện thoại:    " + getHoaDonSdtKhachHang(hoaDon), fontInfoKhach);
+        Paragraph diaChiKhachHang = new Paragraph("Địa chỉ:         " + getHoaDonDiaChiKhachHang(hoaDon), fontInfoKhach);
 
         PdfPCell shipInfoCell = new PdfPCell();
 //        shipInfoCell.setBorder(Rectangle.NO_BORDER);
@@ -248,7 +357,7 @@ public class PDFExporter {
         shipInfoTable.addCell(columnNameCell);
         shipInfoTable.addCell(shipInfoCell);
 //
- //        Thông tin hóa đơn
+        //        Thông tin hóa đơn
         PdfPTable billInfoTable = new PdfPTable(1);
         billInfoTable.setWidthPercentage(100);
         billInfoTable.setWidths(new float[]{1f});
@@ -257,7 +366,10 @@ public class PDFExporter {
 
         Paragraph maHoaDon = new Paragraph("Mã hóa đơn: " + hoaDon.getMa(), fontInfoKhach);
         Paragraph ngayTao = new Paragraph("Ngày tạo:    " + formatLocalDateTime(hoaDon.getNgayTao()), fontInfoKhach);
-        Paragraph loaiHoaDon = new Paragraph("Loại hóa đơn:         " + hoaDon.getLoaiHoaDon(), fontInfoKhach);
+        Paragraph loaiHoaDon = new Paragraph("Loại hóa đơn:         " + getTenLoaiHoaDon(hoaDon), fontInfoKhach);
+        Paragraph loaiGiaoDichText = new Paragraph("Loại giao dịch:         " + loaiGiaoDich, fontInfoKhach);
+        Paragraph trangThaiGiaoDichText = new Paragraph("Trạng thái giao dịch:         " + trangThaiGiaoDich, fontInfoKhach);
+        Paragraph soTienDaThanhToanText = new Paragraph("Số tiền đã thanh toán:         " + formatNumberVietNam(soTienDaThanhToan), fontInfoKhach);
 
         PdfPCell infoHoaDonCell = new PdfPCell();
         infoHoaDonCell.setBorder(Rectangle.NO_BORDER);
@@ -265,6 +377,9 @@ public class PDFExporter {
         infoHoaDonCell.addElement(maHoaDon);
         infoHoaDonCell.addElement(ngayTao);
         infoHoaDonCell.addElement(loaiHoaDon);
+        infoHoaDonCell.addElement(loaiGiaoDichText);
+        infoHoaDonCell.addElement(trangThaiGiaoDichText);
+        infoHoaDonCell.addElement(soTienDaThanhToanText);
         infoHoaDonCell.setPadding(10);
 
         billInfoTable.addCell(infoHoaDonCell);

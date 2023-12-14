@@ -1,7 +1,9 @@
 package com.poly.application.service.impl;
 
+import com.poly.application.entity.GiaoDich;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.exception.NotFoundException;
+import com.poly.application.repository.GiaoDichRepository;
 import com.poly.application.repository.HoaDonRepository;
 import com.poly.application.service.PDFExportService;
 import com.poly.application.utils.PDFExporter;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class PDFExportServiceImpl implements PDFExportService {

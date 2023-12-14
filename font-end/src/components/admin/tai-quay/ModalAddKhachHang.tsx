@@ -1,7 +1,8 @@
 import { Button, Card, Input, Modal, message } from "antd";
 import React, { useState } from "react";
 import { Form } from "antd";
-import request, { request4s } from "~/utils/request";
+import { request4s } from "~/utils/request";
+import request4ss from "~/utils/requestImg";
 
 interface ModalAddKhachHangProps {
   open: boolean;
@@ -19,7 +20,7 @@ const ModalAddKhachHang: React.FC<ModalAddKhachHangProps> = ({
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const response = await request4s.post("khach-hang/add", values);
+      const response = await request4ss.post("khach-hang/add", values);
       console.log("Kết quả từ API:", response.data);
       // Hiển thị thông báo thành công
       message.success("Thêm khách hàng thành công");

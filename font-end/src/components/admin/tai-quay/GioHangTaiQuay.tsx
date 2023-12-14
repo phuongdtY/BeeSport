@@ -1,6 +1,7 @@
 import {
   Button,
   Card,
+  Checkbox,
   Col,
   Divider,
   InputNumber,
@@ -50,6 +51,28 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const { confirm } = Modal;
   const [idTaiKhoan, setIdTaiKhoan] = useState(null);
   const { Text } = Typography;
+  const [checkedCOD, setCheckedCOD] = useState(false);
+  const [giamGia, setGiamGia] = useState(0);
+
+  const getGiamGia = () => {
+    if (selectedVoucher && selectedVoucher.hinhThucGiam) {
+      if (selectedVoucher.hinhThucGiam.id === 1) {
+        setGiamGia(giaTriGiam);
+      } else {
+        if (
+          selectedVoucher.giaTriGiam &&
+          (totalPriceFromTable / 100) * selectedVoucher.giaTriGiam <=
+            selectedVoucher.giamToiDa
+        ) {
+          setGiamGia((totalPriceFromTable / 100) * selectedVoucher.giaTriGiam);
+        } else {
+          setGiamGia(selectedVoucher.giamToiDa);
+        }
+      }
+    } else {
+      setGiamGia(0);
+    }
+  };
 
   const calculateRemainingAmountForVoucher = () => {
     // Sắp xếp các voucher theo giaToiThieu theo thứ tự tăng dần
@@ -138,7 +161,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         if (selectedVoucher) {
           setSelectedVoucher(selectedVoucher);
           setGiaTriGiam(maxDiscount);
-          console.log(selectedVoucher);
         } else {
           setSelectedVoucher(null);
           setGiaTriGiam(0);
@@ -167,7 +189,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
 
   // Xử lý sự kiện khi radio "Tiền mặt" được chọn
   const handleCashRadioChange = (e) => {
-    setIsCashSelected(e.target.value === 0);
+    setIsCashSelected(e.target.value === 1);
   };
 
   const handleCustomerInfoChange = (formValues) => {
@@ -275,6 +297,11 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   };
 
   const handleLuuHoaDon = async (id) => {
+    if (totalPriceFromTable == 0) {
+      // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
+      message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
+      return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
+    }
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -287,12 +314,63 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         const hoaDonCho = {
           ...hoaDonData,
           trangThaiHoaDon: "CONFIRMED",
+          giamGia: giamGia,
+          loaiHoaDon: "ONLINE",
         };
 
-        if (totalPriceFromTable == 0) {
-          // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
-          message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
-          return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
+        console.log(hoaDonCho);
+
+        try {
+          const resGD = await request.post("giao-dich", {
+            taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
+            soTienGiaoDich: tongTienKhiGiam,
+            hoaDon: {
+              id: id,
+            },
+            phuongThucThanhToan: {
+              id: checkedCOD == true ? "3" : selectedRadio,
+            },
+            trangThaiGiaoDich: checkedCOD == true ? "PENDING" : "SUCCESS",
+          });
+        } catch (error) {
+          console.log(error);
+        }
+
+        try {
+          const response = await request.put(`/hoa-don/${id}`, hoaDonCho);
+          if (response.status === 200) {
+            loadHoaDon();
+            try {
+              const response = await request.get("/hoa-don/export/pdf", {
+                params: { id: id },
+                responseType: "blob", // Quan trọng để xác định kiểu dữ liệu trả về là một Blob
+              });
+              // Tạo một URL tạm thời từ blob
+              const file = new Blob([response.data], {
+                type: "application/pdf",
+              });
+              const fileURL = URL.createObjectURL(file);
+              // Tạo một thẻ <a> tạm thời để tải xuống
+              const downloadLink = document.createElement("a");
+              downloadLink.href = fileURL;
+              downloadLink.setAttribute(
+                "download",
+                `HoaDon_${hoaDonData.ma}.pdf`
+              ); // Đặt tên file ở đây
+              document.body.appendChild(downloadLink);
+              downloadLink.click();
+              // Dọn dẹp sau khi tải xuống
+              URL.revokeObjectURL(fileURL);
+              document.body.removeChild(downloadLink);
+            } catch (error) {
+              console.log(error);
+            }
+          } else {
+            message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
+          }
+        } catch (error) {
+          console.error("Error making payment:", error);
+          message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
         }
 
         try {
@@ -361,12 +439,12 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           trangThaiHoaDon: trangThai,
           ngayThanhToan: ngayHomNay,
           tongTienKhiGiam: tongTienKhiGiam,
+          giamGia: giamGia,
+          loaiHoaDon: checked ? "ONLINE" : "COUNTER",
         };
+        console.log(hoaDonThanhToan);
 
-        console.log(hoaDonData);
         try {
-          console.log(selectedRadio);
-
           const resGD = await request.post("giao-dich", {
             taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
             soTienGiaoDich: tongTienKhiGiam,
@@ -395,6 +473,31 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           if (response.status === 200) {
             loadHoaDon();
             message.success("Hóa đơn đã được thanh toán thành công.");
+            try {
+              const response = await request.get("/hoa-don/export/pdf", {
+                params: { id: id },
+                responseType: "blob", // Quan trọng để xác định kiểu dữ liệu trả về là một Blob
+              });
+              // Tạo một URL tạm thời từ blob
+              const file = new Blob([response.data], {
+                type: "application/pdf",
+              });
+              const fileURL = URL.createObjectURL(file);
+              // Tạo một thẻ <a> tạm thời để tải xuống
+              const downloadLink = document.createElement("a");
+              downloadLink.href = fileURL;
+              downloadLink.setAttribute(
+                "download",
+                `HoaDon_${hoaDonData.ma}.pdf`
+              ); // Đặt tên file ở đây
+              document.body.appendChild(downloadLink);
+              downloadLink.click();
+              // Dọn dẹp sau khi tải xuống
+              URL.revokeObjectURL(fileURL);
+              document.body.removeChild(downloadLink);
+            } catch (error) {
+              console.log(error);
+            }
           } else {
             message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
           }
@@ -440,14 +543,24 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   }, [selectedRadio]);
 
   useEffect(() => {
-    // When the component mounts, trigger the selection manually
     setIsCashSelected(true);
-    setIsPaymentSelected(true); // Set to true to display the 'Thanh toán' button
-  }, []); // Empty dependency array to run this effect only once on mount
+    setIsPaymentSelected(true);
+  }, []);
+
+  useEffect(() => {
+    setCheckedCOD(checkedCOD);
+  }, [checkedCOD]);
+  useEffect(() => {
+    getGiamGia();
+  }, [selectedVoucher]);
 
   const onChangeGiaoHang = (checked: boolean) => {
     setIsChecked(checked);
     setChecked(checked);
+  };
+
+  const onChange = (e: CheckboxChangeEvent) => {
+    setCheckedCOD(e.target.checked);
   };
 
   const onChangeKhachHang = (value: string) => {
@@ -771,12 +884,62 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </Col>
               </Row>
             )}
-            {!isPaymentSelected && !checked && (
+            {isPaymentSelected && checked && !isCashSelected && (
               <Row>
                 <Col span={24}>
                   <Button
                     type="primary"
-                    style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
+                    style={{
+                      width: "100%",
+                      marginTop: 20,
+                      fontWeight: "bold",
+                    }}
+                    onClick={() => handleThanhToan(id)}
+                  >
+                    Thanh toán
+                  </Button>
+                </Col>
+              </Row>
+            )}
+            {checked && isCashSelected && (
+              <Checkbox onChange={onChange} value={checkedCOD}>
+                Thanh toán khi nhận hàng
+              </Checkbox>
+            )}
+            <br />
+            <br />
+            {checked && isCashSelected && !checkedCOD && (
+              <>
+                {/* Hiển thị hai ô input khi "Tiền mặt" được chọn */}
+                <span>Tiền khách đưa: </span>
+                <InputNumber
+                  style={{ marginTop: 10, width: "100%" }}
+                  value={tienKhachDua}
+                  formatter={(value) => `${formatGiaTienVND(value)}`}
+                  parser={(value: any) => value.replace(/\D/g, "")}
+                  onChange={(value) => setTienKhachDua(value)}
+                />
+                <br />
+                <span>Tiền trả khách: </span>
+                <span
+                  style={{ marginTop: 10, width: "100%", fontWeight: "bold" }}
+                >
+                  {totalPriceFromTable == 0
+                    ? formatGiaTienVND(0)
+                    : formatGiaTienVND(giaTriTienTraKhach)}
+                </span>
+              </>
+            )}
+            {checked && isCashSelected && checkedCOD == true && (
+              <Row>
+                <Col span={24}>
+                  <Button
+                    type="primary"
+                    style={{
+                      width: "100%",
+                      marginTop: 20,
+                      fontWeight: "bold",
+                    }}
                     onClick={() => handleLuuHoaDon(id)}
                   >
                     Xác nhận
@@ -784,15 +947,15 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
                 </Col>
               </Row>
             )}
-            {isPaymentSelected && checked && (
+            {!checkedCOD && checked && isCashSelected && (
               <Row>
                 <Col span={24}>
                   <Button
                     type="primary"
                     style={{ width: "100%", marginTop: 20, fontWeight: "bold" }}
-                    onClick={() => handleLuuHoaDon(id)}
+                    onClick={() => handleThanhToan(id)}
                   >
-                    Xác nhận
+                    Thanh toán
                   </Button>
                 </Col>
               </Row>

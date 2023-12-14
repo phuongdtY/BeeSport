@@ -88,11 +88,14 @@ const DonHangChiTiet: React.FC<DonHangChiTietProps> = ({ currentKey }) => {
         params: param,
       });
       setData(response.data);
+      console.log(response.data);
+
       const showButtonArr = response.data.map((item: any) =>
         item.giaoDichList.some(
           (giaoDich: any) =>
             giaoDich.phuongThucThanhToan.id === 2 &&
-            item.trangThaiHoaDon.ten === "PENDING"
+            item.trangThaiHoaDon.ten === "PENDING" &&
+            giaoDich.trangThaiGiaoDich.ten != "SUCCESS"
         )
       );
       setShowPaymentButton(showButtonArr);

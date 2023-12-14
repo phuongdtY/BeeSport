@@ -35,9 +35,18 @@ const ThongTinGiaoHang: React.FC<{
 
   useEffect(() => {
     getFullAddress(); // Export the getFullAddress function
-    calculateShippingFee(form.getFieldsValue());
     onFormValuesChange(formValues);
   }, [form, formValues]);
+
+  useEffect(() => {
+    form.validateFields(); // Kiểm tra các trường khi form được mở
+
+    // Rest of your useEffect logic
+  }, [form]); // Đảm bảo chỉ gọi khi form thay đổi
+
+  // useEffect(() => {
+  //   calculateShippingFee(form.getFieldsValue());
+  // }, []);
 
   const onFinish = (values: any) => {};
 
@@ -234,6 +243,7 @@ const ThongTinGiaoHang: React.FC<{
                   message: "Tên chỉ được tối đa 50 ký tự",
                 },
               ]}
+              validateTrigger="onFocus" // Thêm validateTrigger vào đây
             >
               <Input
                 value={formValues.nguoiNhan}

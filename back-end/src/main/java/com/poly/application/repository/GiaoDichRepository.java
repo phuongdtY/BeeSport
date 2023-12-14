@@ -25,4 +25,7 @@ public interface GiaoDichRepository extends JpaRepository<GiaoDich, Long> {
     List<GiaoDich> findGiaoDichesByHoaDonId(Long idHoaDon);
 
     Optional<GiaoDich> findByMaGiaoDich(String maGiaoDich);
+
+    @Query("SELECT gd FROM GiaoDich gd WHERE gd.hoaDon.id = :idHoaDon")
+    List<GiaoDich> getGiaoDichByHoaDon(@Param("idHoaDon") Long idHoaDon);
 }

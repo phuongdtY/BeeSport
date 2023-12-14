@@ -34,6 +34,8 @@ public class UpdatedHoaDonRequest {
 
     private BigDecimal tongTienKhiGiam;
 
+    private BigDecimal giamGia;
+
     private String ghiChu;
 
     private String nguoiNhan;

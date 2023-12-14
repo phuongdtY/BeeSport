@@ -10,6 +10,7 @@ export interface DataType {
   phiShip: string;
   tongTien: number;
   tongTienKhiGiam: string;
+  giamGia: number;
   ghiChu: string;
   nguoiNhan: string;
   sdtNguoiNhan: string;

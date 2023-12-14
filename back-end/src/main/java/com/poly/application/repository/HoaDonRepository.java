@@ -17,7 +17,10 @@ import java.util.List;
 public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
 
     @Query("SELECT hd FROM HoaDon hd " +
-            "WHERE (hd.ma LIKE %:searchText%) " +
+            "WHERE (hd.ma LIKE %:searchText% OR hd.taiKhoan.hoVaTen LIKE %:searchText% OR " +
+            "hd.taiKhoan.soDienThoai LIKE %:searchText% OR hd.taiKhoan.email LIKE %:searchText% OR " +
+            "hd.nguoiNhan LIKE %:searchText% OR hd.sdtNguoiNhan LIKE %:searchText% OR " +
+            "hd.emailNguoiNhan LIKE %:searchText%) " +
             "AND (:loaiHoaDon IS NULL OR hd.loaiHoaDon = :loaiHoaDon ) " +
             "AND (:trangThaiHoaDon IS NULL OR hd.trangThaiHoaDon = :trangThaiHoaDon)")
     Page<HoaDon> findPageHoaDon(

@@ -80,7 +80,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         } else if ("descend".equals(sortOrder)) {
             sort = Sort.by(sorter).descending();
         } else {
-            sort = Sort.by("ngayTao").descending();
+            sort = Sort.by("ngaySua").descending();
         }
 
         CommonEnum.LoaiHoaDon loaiHoaDon;
@@ -130,24 +130,6 @@ public class HoaDonServiceImpl implements HoaDonService {
         timeLine.setHoaDon(savedHoaDon);
         timeLine.setTrangThai(CommonEnum.TrangThaiHoaDon.PENDING);
         timelineRepository.save(timeLine);
-//        if (createHoaDonRequest.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE
-//                && createHoaDonRequest.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.PENDING) {
-//            GiaoDich giaoDich = new GiaoDich();
-//            giaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
-//            giaoDich.setSoTienGiaoDich(savedHoaDon.getTongTienKhiGiam());
-////            nếu phương thức thanh toàn là tiền mặt sẽ set PENDING (1. tiền mặt)
-//            if (phuongThucThanhToan.getId() == 1) {
-//                giaoDich.setTrangThaiGiaoDich(CommonEnum.TrangThaiGiaoDich.PENDING);
-//            }
-////            nếu phương thức thanh toàn là tiền mặt sẽ set PENDING (2. VNPay)
-//            if (phuongThucThanhToan.getId() == 2) {
-//                giaoDich.setTrangThaiGiaoDich(CommonEnum.TrangThaiGiaoDich.SUCCESS);
-//            }
-//            giaoDich.setPhuongThucThanhToan(phuongThucThanhToan);
-//            giaoDich.setHoaDon(savedHoaDon);
-//            giaoDich.setTaiKhoan(savedHoaDon.getTaiKhoan());
-//            giaoDichRepository.save(giaoDich);
-//        }
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(savedHoaDon);
     }
 
@@ -173,6 +155,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         Optional.ofNullable(updatedHoaDonRequest.getTongTien()).ifPresent(hoaDon::setTongTien);
         Optional.ofNullable(updatedHoaDonRequest.getGhiChu()).ifPresent(hoaDon::setGhiChu);
         Optional.ofNullable(updatedHoaDonRequest.getTongTienKhiGiam()).ifPresent(hoaDon::setTongTienKhiGiam);
+        Optional.ofNullable(updatedHoaDonRequest.getGiamGia()).ifPresent(hoaDon::setGiamGia);
         Optional.ofNullable(updatedHoaDonRequest.getSdtNguoiNhan()).ifPresent(hoaDon::setSdtNguoiNhan);
         Optional.ofNullable(updatedHoaDonRequest.getNguoiNhan()).ifPresent(hoaDon::setNguoiNhan);
         Optional.ofNullable(updatedHoaDonRequest.getDiaChiNguoiNhan()).ifPresent(hoaDon::setDiaChiNguoiNhan);
@@ -246,6 +229,7 @@ public class HoaDonServiceImpl implements HoaDonService {
     @Override
     public void updateTrangThaiHoaDon(Long idHoadon, CommonEnum.TrangThaiHoaDon trangThaiHoaDon, String ghiChu, Long idPhuongThucThanhToan) {
         Voucher voucherFind = null;
+        boolean checkVct = false;
         VoucherChiTiet voucherChiTietFind = null;
         if (trangThaiHoaDon == null) {
             return;
@@ -262,7 +246,10 @@ public class HoaDonServiceImpl implements HoaDonService {
             voucherFind = voucherRepository.findById(hoaDon.getVoucher().getId())
                     .orElseThrow(() -> new NotFoundException("Không tìm thấy phương thức thanh toán có id " + idPhuongThucThanhToan));
             if (hoaDon.getTaiKhoan() != null){
-                voucherChiTietFind = voucherRepository.findVoucherChiTiet(voucherFind.getId(), hoaDon.getTaiKhoan().getId());
+                checkVct = voucherRepository.existVoucherChiTietBySs(hoaDon.getTaiKhoan().getId(),voucherFind.getId());
+                if (checkVct) {
+                    voucherChiTietFind = voucherRepository.findVoucherChiTiet(voucherFind.getId(), hoaDon.getTaiKhoan().getId());
+                }
             }
         }
 
@@ -294,7 +281,7 @@ public class HoaDonServiceImpl implements HoaDonService {
                             voucherFind.setSoLuong(voucherFind.getSoLuong() - 1);
                             voucherRepository.updateSoLuongVoucherHoaDon(voucherFind.getSoLuong(), voucherFind.getId());
                         }
-                        if (hoaDon.getTaiKhoan() != null) {
+                        if (hoaDon.getTaiKhoan() != null && checkVct) {
                             if (voucherChiTietFind.getSoLanSuDung() > 0) {
                                 voucherChiTietFind.setSoLanSuDung(voucherChiTietFind.getSoLanSuDung() - 1);
                                 if (voucherChiTietFind.getSoLanSuDung() <= 0) {

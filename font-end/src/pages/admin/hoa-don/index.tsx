@@ -206,7 +206,7 @@ const index: React.FC = () => {
   };
   return (
     <>
-      <Card title="DANH SÁCH HÓA ĐƠN">
+      <Card title="DANH SÁCH ĐƠN HÀNG">
         <Row>
           <Col span={8}>
             <Input
