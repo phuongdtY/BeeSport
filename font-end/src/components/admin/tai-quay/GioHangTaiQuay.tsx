@@ -54,6 +54,22 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [checkedCOD, setCheckedCOD] = useState(false);
   const [giamGia, setGiamGia] = useState(0);
 
+  const handleCapNhatGioHang = async (id) => {
+    try {
+      const response = await request4s.put(
+        `/hoa-don/hoa-don-chi-tiet/${id}`,
+        dataGioHang?.map((item) => ({
+          id: item.id,
+          soLuong: item.soLuong,
+        }))
+      );
+    } catch (error) {
+      console.error("Error updating cart:", error);
+      // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
+      message.error("Có lỗi xảy ra khi cập nhật giỏ hàng.");
+    }
+  };
+
   const getGiamGia = () => {
     if (selectedVoucher && selectedVoucher.hinhThucGiam) {
       if (selectedVoucher.hinhThucGiam.id === 1) {
@@ -397,18 +413,15 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       (item) => item.soLuong > item.chiTietSanPham.soLuong
     );
 
-    // Kiểm tra nếu có mặt hàng không hợp lệ
     if (invalidQuantityItems.length > 0) {
-      // Lấy tên của các mặt hàng không hợp lệ
-      const invalidItemNames = invalidQuantityItems.map(
-        (item) =>
-          `${item.chiTietSanPham.sanPham.ten} [ ${item.chiTietSanPham.mauSac.ten} - ${item.chiTietSanPham.kichCo.kichCo} ]`
-      );
+      // const invalidItemNames = invalidQuantityItems.map(
+      //   (item) =>
+      //     `${item.chiTietSanPham.sanPham.ten} [ ${item.chiTietSanPham.mauSac.ten} - ${item.chiTietSanPham.kichCo.kichCo} ]`
+      // );
+      // message.warning(
+      //   `Sản phẩm ${invalidItemNames.join(", ")} có số lượng không hợp lệ`
+      // );
 
-      // Hiển thị thông báo với tên các mặt hàng không hợp lệ
-      message.warning(
-        `Sản phẩm ${invalidItemNames.join(", ")} có số lượng không hợp lệ`
-      );
       return; // Ngăn chặn việc thanh toán nếu có mặt hàng không hợp lệ
     }
     if (totalPriceFromTable == 0) {

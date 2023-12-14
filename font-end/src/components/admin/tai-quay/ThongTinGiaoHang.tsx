@@ -243,7 +243,6 @@ const ThongTinGiaoHang: React.FC<{
                   message: "Tên chỉ được tối đa 50 ký tự",
                 },
               ]}
-              validateTrigger="onFocus" // Thêm validateTrigger vào đây
             >
               <Input
                 value={formValues.nguoiNhan}
