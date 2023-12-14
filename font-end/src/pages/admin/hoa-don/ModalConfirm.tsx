@@ -1,4 +1,14 @@
-import { Modal, Form, Select, Col, Row, Input, Card } from "antd";
+import {
+  Modal,
+  Form,
+  Select,
+  Col,
+  Row,
+  Input,
+  Card,
+  Button,
+  Divider,
+} from "antd";
 import React, { useState } from "react";
 import { UpdatedRequest } from "~/interfaces/hoaDon.type";
 
@@ -40,30 +50,32 @@ const ConfirmHoaDonComponent: React.FC<ConfirmHoaDonGhiChuProps> = ({
     setVisible(open);
   }, [open]);
 
+  const closeModal = () => {
+    setGhiChuTimeLine("");
+    onCancel();
+  };
+
   return (
     <Modal
-      title={"Mổ tả"}
+      title={"Ghi chú"}
       open={visible}
-      onCancel={onCancel}
+      onCancel={closeModal}
+      okText="Xong"
+      cancelText="Hủy"
       onOk={() => {
         handleOk();
         setGhiChuTimeLine("");
         onCancel();
       }}
     >
-      <Card size="small" style={{margin: "0 auto"}} title="Ghi chú">
-        <Row>
-          <Col span={24}>
-            <Input.TextArea
-              showCount
-              style={{ width: "100%", height: "100%" }}
-              maxLength={100}
-              value={ghiChuTimeLine}
-              onChange={(e) => setGhiChuTimeLine(e.target.value)}
-            />
-          </Col>
-        </Row>
-      </Card>
+      <Input.TextArea
+        showCount
+        style={{ width: "100%", height: 100, resize: "none" }}
+        maxLength={200}
+        value={ghiChuTimeLine}
+        onChange={(e) => setGhiChuTimeLine(e.target.value)}
+      />
+      <Button type="link"></Button>
     </Modal>
   );
 };

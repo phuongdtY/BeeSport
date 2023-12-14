@@ -1,4 +1,4 @@
-import { ReloadOutlined } from "@ant-design/icons";
+import { ExclamationCircleFilled, ReloadOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -9,24 +9,31 @@ import {
   Select,
   Slider,
   Table,
+  Typography,
   message,
 } from "antd";
 import { Option } from "antd/es/mentions";
 import React, { useState, useEffect } from "react";
+import { FaCartPlus } from "react-icons/fa";
 import request, { request4s } from "~/utils/request";
+
+const { confirm } = Modal;
+const { Text } = Typography;
 
 interface ModalSanPhamProps {
   isModalVisible: boolean;
   setIsModalVisible: (value: boolean) => void;
   idHoaDon: number;
   loadData: () => void;
+  objectSanPham: (values: any) => void;
 }
 
-const ModalSanPhamHoaDonChiTiet: React.FC<ModalSanPhamProps> = ({
+const ModalSanPham: React.FC<ModalSanPhamProps> = ({
   isModalVisible,
   setIsModalVisible,
   idHoaDon,
   loadData,
+  objectSanPham,
 }) => {
   const [dataSanPham, setDataSanPham] = useState([]);
   const [loaiDeOptions, setLoaiDeOptions] = useState([]);
@@ -133,39 +140,56 @@ const ModalSanPhamHoaDonChiTiet: React.FC<ModalSanPhamProps> = ({
       title: "Hành động",
       dataIndex: "",
       key: "",
-      render: (item, record) => (
-        <Button
-          type="primary"
-          onClick={() => handleChonSanPham(record.id, record.giaTien)}
-        >
-          Chọn
-        </Button>
-      ),
+      render: (item, record) =>
+        record.soLuong === 0 ? (
+          <Text strong type="danger">
+            Hết hàng
+          </Text>
+        ) : (
+          <Button
+            type="primary"
+            style={{ background: "green" }}
+            onClick={() => handleChonSanPham(record.id, record.giaTien)}
+          >
+            <FaCartPlus />
+          </Button>
+        ),
     },
   ];
 
-  const handleChonSanPham = async (idHoaDonChiTiet, donGia) => {
-    try {
-      // Make an API call to add the product to the invoice
-      const res = await request.post("hoa-don/add-san-pham/" + idHoaDon, {
-        soLuong: 1,
-        donGia: donGia,
-        trangThaiHoaDonChiTiet: "APPROVED",
-        chiTietSanPham: {
-          id: idHoaDonChiTiet,
-        },
-      });
-      loadData();
-      message.success("Thêm sản phẩm vào giỏ hàng thành công !");
-      // Handle the response, e.g., display a success message or update the invoice data
-      console.log("Product added to invoice:", res.data);
-
-      // Close the modal or perform any other necessary actions
-      setIsModalVisible(false);
-    } catch (error) {
-      console.error("Error adding product to invoice:", error);
-      // Handle errors, e.g., display an error message
-    }
+  const handleChonSanPham = async (record) => {
+    // console.log(record);
+    objectSanPham(record);
+    setIsModalVisible(false);
+    // confirm({
+    //   title: "Xác Nhận",
+    //   icon: <ExclamationCircleFilled />,
+    //   content: "Bạn có chắc muốn thêm sản phẩm không?",
+    //   okText: "OK",
+    //   cancelText: "Hủy",
+    //   onOk: async () => {
+    //     try {
+    //       // Make an API call to add the product to the invoice
+    //       const response = await request4s.post(
+    //         `hoa-don/add-san-pham/${idHoaDon}`,
+    //         {
+    //           chiTietSanPham: {
+    //             id: idHoaDonChiTiet,
+    //           },
+    //           soLuong: 1,
+    //           trangThaiHoaDonChiTiet: "APPROVED",
+    //           donGia: donGia,
+    //         }
+    //       );
+    //       loadData();
+    //       message.success("Thêm sản phẩm vào giỏ hàng thành công !");
+    //       setIsModalVisible(false);
+    //     } catch (error) {
+    //       console.error("Error adding product to invoice:", error);
+    //       // Handle errors, e.g., display an error message
+    //     }
+    //   },
+    // });
   };
 
   const handleCancel = () => {
@@ -272,6 +296,7 @@ const ModalSanPhamHoaDonChiTiet: React.FC<ModalSanPhamProps> = ({
   return (
     <>
       <Modal
+        style={{ top: 0 }}
         width={1050}
         title="Danh sách Sản phẩm"
         open={isModalVisible}
@@ -417,4 +442,4 @@ const ModalSanPhamHoaDonChiTiet: React.FC<ModalSanPhamProps> = ({
   );
 };
 
-export default ModalSanPhamHoaDonChiTiet;
+export default ModalSanPham;

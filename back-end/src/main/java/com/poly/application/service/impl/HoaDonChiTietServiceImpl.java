@@ -10,6 +10,7 @@ import com.poly.application.model.mapper.HoaDonMapper;
 import com.poly.application.model.request.create_request.CreateHoaDonChiTietRequest;
 import com.poly.application.model.request.create_request.CreatedVoucherChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonChiTietRequest;
+import com.poly.application.model.request.update_request.UpdatedVoucherChiTietRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
 import com.poly.application.repository.HoaDonChiTietRepository;
@@ -81,6 +82,41 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
         }
         System.out.println(list);
      hoaDonChiTietRepository.saveAll(list);
+    }
+
+    @Override
+    public void updateList(List<UpdatedHoaDonChiTietRequest> requestList) {
+        List<HoaDonChiTiet> newHoaDonChiTietList = new ArrayList<>();
+        List<HoaDonChiTiet> updatedHoaDonChiTietList = new ArrayList<>();
+
+        for (UpdatedHoaDonChiTietRequest updateRequest : requestList) {
+            if (updateRequest.getId() != null) {
+                // If the DTO has an ID, it means it's an update
+                Optional<HoaDonChiTiet> optional = hoaDonChiTietRepository.findById(updateRequest.getId());
+                if (optional.isPresent()) {
+                    HoaDonChiTiet existingHoaDonChiTiet = optional.get();
+                    updateRequest.setId(existingHoaDonChiTiet.getId());
+                    hoaDonChiTietMapper.convertUpdateRequestToEntity(updateRequest, existingHoaDonChiTiet);
+                    updatedHoaDonChiTietList.add(existingHoaDonChiTiet);
+                }
+            } else if (updateRequest.getId() == null) {
+                HoaDonChiTiet newHoaDonChiTiet = new HoaDonChiTiet();
+                newHoaDonChiTiet.setTrangThaiHoaDonChiTiet(CommonEnum.TrangThaiHoaDonChiTiet.APPROVED);
+                hoaDonChiTietMapper.convertUpdateRequestToEntity(updateRequest, newHoaDonChiTiet);
+                newHoaDonChiTietList.add(newHoaDonChiTiet);
+            }
+        }
+        // Add new objects to the database
+        if (!newHoaDonChiTietList.isEmpty()) {
+            hoaDonChiTietRepository.saveAll(newHoaDonChiTietList);
+        }
+
+        // Update existing objects in the database
+        if (!updatedHoaDonChiTietList.isEmpty()) {
+            hoaDonChiTietRepository.saveAll(updatedHoaDonChiTietList);
+        }
+
+        // You might want to return an appropriate response here based on the operation
     }
 
     @Override
