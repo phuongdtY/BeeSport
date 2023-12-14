@@ -1,8 +1,10 @@
 package com.poly.application.model.mapper;
 
 import com.poly.application.entity.HoaDonChiTiet;
+import com.poly.application.entity.VoucherChiTiet;
 import com.poly.application.model.request.create_request.CreateHoaDonChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonChiTietRequest;
+import com.poly.application.model.request.update_request.UpdatedVoucherChiTietRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -35,6 +37,11 @@ public class HoaDonChiTietMapper {
     public HoaDonChiTiet convertUpdatedHoaDonChiTietRequestToHoaDonChiTietEntity(UpdatedHoaDonChiTietRequest updatedHoaDonChiTietRequest) {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         return modelMapper.map(updatedHoaDonChiTietRequest, HoaDonChiTiet.class);
+    }
+
+    public HoaDonChiTiet convertUpdateRequestToEntity(UpdatedHoaDonChiTietRequest request, HoaDonChiTiet detail) {
+        modelMapper.map(request, detail);
+        return detail;
     }
 
     public List<HoaDonChiTietResponse> convertListHoaDonChiTietEntityToHoaDonChiTietResponse(List<HoaDonChiTiet> hoaDonChiTietList) {

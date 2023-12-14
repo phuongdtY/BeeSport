@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 import { EditOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import {
@@ -14,6 +14,7 @@ import {
   TablePaginationConfig,
   Tag,
   Tooltip,
+  Typography,
   message,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
@@ -22,7 +23,7 @@ import { DataParams, DataType } from "~/interfaces/hoaDon.type";
 import { FilterValue, SorterResult } from "antd/es/table/interface";
 import request from "~/utils/request";
 import { formatGiaTienVND } from "~/utils/formatResponse";
-
+const { Text, Title } = Typography;
 const index: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<DataType[]>([]);
@@ -56,11 +57,7 @@ const index: React.FC = () => {
       align: "center",
       sorter: true,
       width: "20%",
-      render: (tongTien) => (
-        <span>
-          {formatGiaTienVND(tongTien)}
-        </span>
-        ),
+      render: (tongTien) => <span>{formatGiaTienVND(tongTien)}</span>,
     },
     {
       title: "Số điện thoại người nhận",
@@ -71,7 +68,8 @@ const index: React.FC = () => {
       width: "20%",
       render: (sdtNguoiNhan, record) => (
         <span>
-          {(sdtNguoiNhan == null || sdtNguoiNhan === "") && record.loaiHoaDon?.ten === "COUNTER"
+          {(sdtNguoiNhan == null || sdtNguoiNhan === "") &&
+          record.loaiHoaDon?.ten === "COUNTER"
             ? "Khách hàng lẻ"
             : sdtNguoiNhan}
         </span>
@@ -86,7 +84,8 @@ const index: React.FC = () => {
       width: "20%",
       render: (nguoiNhan, record) => (
         <span>
-          {(nguoiNhan == null || nguoiNhan === "") && record.loaiHoaDon?.ten === "COUNTER"
+          {(nguoiNhan == null || nguoiNhan === "") &&
+          record.loaiHoaDon?.ten === "COUNTER"
             ? "Khách hàng lẻ"
             : nguoiNhan}
         </span>

@@ -1,6 +1,7 @@
 package com.poly.application.controller.admin;
 
 import com.poly.application.model.request.create_request.CreateHoaDonChiTietRequest;
+import com.poly.application.model.request.update_request.UpdatedHoaDonChiTietRequest;
 import com.poly.application.service.HoaDonChiTietService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,5 +26,12 @@ public class HoaDonChiTietController {
         service.addList(requestList);
         return ResponseEntity.ok("Thành công");
     }
+    @PostMapping("/update-list")
+    public ResponseEntity<?> updateList(@RequestBody  List<UpdatedHoaDonChiTietRequest> requestList) {
+        System.out.println(requestList);
+        service.updateList(requestList);
+        return ResponseEntity.ok("Thành công");
+    }
 
 }
+

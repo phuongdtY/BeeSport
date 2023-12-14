@@ -21,10 +21,6 @@ public class UpdatedHoaDonChiTietRequest {
 
     private String ghiChu;
 
-    private LocalDateTime ngayTao;
-
-    private LocalDateTime ngaySua;
-
     private String nguoiTao;
 
     private String nguoiSua;
@@ -34,6 +30,5 @@ public class UpdatedHoaDonChiTietRequest {
     private HoaDon hoaDon;
 
     private ChiTietSanPham chiTietSanPham;
-
 
 }
