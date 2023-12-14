@@ -7,7 +7,7 @@ export interface DataType {
   soDienThoai: string;
   thanhPho: number;
   quanHuyen: number;
-  phuongXa: string;
+  phuongXa: number;
   diaChiCuThe: string;
   loaiDiaChi: {
     ten: string;
