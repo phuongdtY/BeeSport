@@ -155,6 +155,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
           const taiKhoanObject = idTaiKhoan != null ? { id: idTaiKhoan } : null;
 
           const res = await request.post("hoa-don", {
+            giamGia: giamGiam,
             loaiHoaDon: "ONLINE",
             voucher: voucherObject,
             taiKhoan: taiKhoanObject,

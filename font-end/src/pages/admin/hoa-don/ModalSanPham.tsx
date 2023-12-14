@@ -14,6 +14,7 @@ import {
 } from "antd";
 import { Option } from "antd/es/mentions";
 import React, { useState, useEffect } from "react";
+import { FaCartPlus } from "react-icons/fa";
 import request, { request4s } from "~/utils/request";
 
 const { confirm } = Modal;
@@ -145,8 +146,12 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
             Hết hàng
           </Text>
         ) : (
-          <Button type="primary" onClick={() => handleChonSanPham(record)}>
-            Chọn
+          <Button
+            type="primary"
+            style={{ background: "green" }}
+            onClick={() => handleChonSanPham(record.id, record.giaTien)}
+          >
+            <FaCartPlus />
           </Button>
         ),
     },

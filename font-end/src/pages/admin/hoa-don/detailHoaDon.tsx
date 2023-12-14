@@ -565,7 +565,7 @@ const detailHoaDon: React.FC = () => {
       (item) => item.phuongThucThanhToan.ten === "COD"
     );
     const foundItemVNPay = data?.giaoDichList.find(
-      (item) => item.phuongThucThanhToan.ten === "Ví VNPay"
+      (item) => item.phuongThucThanhToan.ten === "VNPay"
     );
 
     const tienUpdate = () => {
