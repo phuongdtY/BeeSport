@@ -69,31 +69,6 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
       dataIndex: "rowIndex",
       render: (text, record, index) => index + 1,
     },
-    // {
-    //   title: "Hình ảnh",
-    //   dataIndex: "duongDan",
-    //   render: (item, record) => {
-    //     return (
-    //       <img
-    //         src={`http://localhost:8080/admin/api/file/view/${record.duongDan}`}
-    //         alt="Hình ảnh"
-    //         style={{ maxWidth: "100px" }}
-    //       />
-    //     );
-    //   },
-    // },
-    // {
-    //   title: "Tên Sản Phẩm",
-    //   dataIndex: ["chiTietSanPham", "sanPham", "ten"],
-    //   render: (_, record) => (
-    //     <Space>
-    //       <Space direction="vertical">
-    //         <Text strong>{record.chiTietSanPham.sanPham.ten}</Text>
-    //         <Text>{`[${record.chiTietSanPham.mauSac.ten} - ${record.chiTietSanPham.kichCo.kichCo} - ${record.chiTietSanPham.loaiDe.ten} - ${record.chiTietSanPham.diaHinhSan.ten}]`}</Text>
-    //       </Space>
-    //     </Space>
-    //   ),
-    // },
     {
       title: "Thông tin sản phẩm",
       dataIndex: "chiTietSanPham",
