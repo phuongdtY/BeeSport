@@ -52,6 +52,27 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   const [idTaiKhoan, setIdTaiKhoan] = useState(null);
   const { Text } = Typography;
   const [checkedCOD, setCheckedCOD] = useState(false);
+  const [giamGia, setGiamGia] = useState(0);
+
+  const getGiamGia = () => {
+    if (selectedVoucher && selectedVoucher.hinhThucGiam) {
+      if (selectedVoucher.hinhThucGiam.id === 1) {
+        setGiamGia(giaTriGiam);
+      } else {
+        if (
+          selectedVoucher.giaTriGiam &&
+          (totalPriceFromTable / 100) * selectedVoucher.giaTriGiam <=
+            selectedVoucher.giamToiDa
+        ) {
+          setGiamGia((totalPriceFromTable / 100) * selectedVoucher.giaTriGiam);
+        } else {
+          setGiamGia(selectedVoucher.giamToiDa);
+        }
+      }
+    } else {
+      setGiamGia(0);
+    }
+  };
 
   const calculateRemainingAmountForVoucher = () => {
     // Sắp xếp các voucher theo giaToiThieu theo thứ tự tăng dần
@@ -293,7 +314,11 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         const hoaDonCho = {
           ...hoaDonData,
           trangThaiHoaDon: "CONFIRMED",
+          giamGia: giamGia,
+          loaiHoaDon: "ONLINE",
         };
+
+        console.log(hoaDonCho);
 
         try {
           const resGD = await request.post("giao-dich", {
@@ -414,7 +439,11 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           trangThaiHoaDon: trangThai,
           ngayThanhToan: ngayHomNay,
           tongTienKhiGiam: tongTienKhiGiam,
+          giamGia: giamGia,
+          loaiHoaDon: checked ? "ONLINE" : "COUNTER",
         };
+        console.log(hoaDonThanhToan);
+
         try {
           const resGD = await request.post("giao-dich", {
             taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
@@ -521,6 +550,9 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   useEffect(() => {
     setCheckedCOD(checkedCOD);
   }, [checkedCOD]);
+  useEffect(() => {
+    getGiamGia();
+  }, [selectedVoucher]);
 
   const onChangeGiaoHang = (checked: boolean) => {
     setIsChecked(checked);

@@ -18,6 +18,7 @@ import ModalSanPham from "./ModalSanPham";
 import { DeleteOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import { formatGiaTienVND } from "~/utils/formatResponse";
 const { confirm } = Modal;
+import { MdAddShoppingCart } from "react-icons/md";
 
 interface DataGioHang {
   key: React.Key;
@@ -297,7 +298,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
                   style={{ float: "right", marginBottom: 15 }}
                   onClick={showModal}
                 >
-                  Thêm Sản phẩm
+                  <Space>Thêm Sản phẩm</Space>
                 </Button>
               </Col>
             </Row>
