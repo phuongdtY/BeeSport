@@ -100,8 +100,8 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         VaiTro role = roleId.get();
             TaiKhoan user = new TaiKhoan();
             user.setHoVaTen("hoanggiang");
-            user.setSoDienThoai("0865636648");
-            user.setEmail("cvdoanh2k3@gmail.com");
+            user.setSoDienThoai("0971852413");
+            user.setEmail("dtphuong2k3@gmail.com");
             user.setVaiTro(role);
             user.setMatKhau(new BCryptPasswordEncoder().encode("123"));
             userRepository.save(user);
