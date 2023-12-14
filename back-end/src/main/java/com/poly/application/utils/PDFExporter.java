@@ -63,6 +63,8 @@ public class PDFExporter {
             ten = hoaDon.getTaiKhoan().getHoVaTen();
         } else if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
             ten = hoaDon.getNguoiNhan();
+        } else if (hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE){
+            ten = hoaDon.getNguoiNhan();
         }
         return ten;
     }
@@ -73,19 +75,19 @@ public class PDFExporter {
             ten = hoaDon.getTaiKhoan().getSoDienThoai();
         } else if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
             ten = hoaDon.getSdtNguoiNhan();
+        } else if (hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE){
+            ten = hoaDon.getSdtNguoiNhan();
         }
         return ten;
     }
 
     private String getHoaDonDiaChiKhachHang(HoaDon hoaDon) {
         String ten = "Trịnh Văn Bô - Nam Từ Liêm - Hà Nội";
-        GiaoDich giaoDich = hoaDon.getGiaoDichList().get(0);
-        if (hoaDon.getGiaoDichList().size() > 1) {
-            giaoDich = hoaDon.getGiaoDichList().get(1);
-        }
         if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.COUNTER) {
             ten = "Trịnh Văn Bô - Nam Từ Liêm - Hà Nội";
         } else if (hoaDon.getTaiKhoan() != null && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
+            ten = hoaDon.getDiaChiNguoiNhan();
+        } else if (hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE){
             ten = hoaDon.getDiaChiNguoiNhan();
         }
         return ten;
@@ -111,7 +113,7 @@ public class PDFExporter {
         cell.setPhrase(new Phrase("STT", font));
         table.addCell(cell);
 
-        cell.setPhrase(new Phrase("Tên sản phâm", font));
+        cell.setPhrase(new Phrase("Tên sản phẩm", font));
         table.addCell(cell);
 
         cell.setPhrase(new Phrase("Số lượng", font));
@@ -242,29 +244,29 @@ public class PDFExporter {
         }
 
         if (giaoDich.getPhuongThucThanhToan().getId() == 1) {
-            loaiGiaoDich = "Tiền Mặt";
+            loaiGiaoDich = "Tiền mặt";
             if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.SUCCESS) {
-                trangThaiGiaoDich = "Đã Thanh Toán / tiền mặt";
+                trangThaiGiaoDich = "Đã Thanh Toán / Tiền mặt";
                 soTienDaThanhToan = giaoDich.getSoTienGiaoDich();
             }
             if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.PENDING) {
-                trangThaiGiaoDich = "Chưa Thanh Toán / tiền mặt";
+                trangThaiGiaoDich = "Chưa Thanh Toán / Tiền mặt";
             }
             if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.FAILED) {
-                trangThaiGiaoDich = "Thanh toán Thất bại / tiền mặt";
+                trangThaiGiaoDich = "Thanh toán Thất bại / Tiền mặt";
             }
         }
         if (giaoDich.getPhuongThucThanhToan().getId() == 2) {
             loaiGiaoDich = "VNPay";
             if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.SUCCESS) {
-                trangThaiGiaoDich = "Đã Thanh Toán / vnPay";
+                trangThaiGiaoDich = "Đã Thanh Toán / VNPay";
                 soTienDaThanhToan = giaoDich.getSoTienGiaoDich();
             }
             if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.PENDING) {
-                trangThaiGiaoDich = "Chưa Thanh Toán / vnPay";
+                trangThaiGiaoDich = "Chưa Thanh Toán / VNPay";
             }
             if (giaoDich.getTrangThaiGiaoDich() == CommonEnum.TrangThaiGiaoDich.FAILED) {
-                trangThaiGiaoDich = "Thanh toán Thất bại / vnPay";
+                trangThaiGiaoDich = "Thanh toán Thất bại / VNPay";
             }
         }
         if (giaoDich.getPhuongThucThanhToan().getId() == 3) {
@@ -315,7 +317,7 @@ public class PDFExporter {
         infoCell.setBorder(Rectangle.NO_BORDER);
         infoCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 
-        Paragraph diaChi = new Paragraph("Địa Chỉ: Trịnh Văn Bô - Nam Từ Liêm - Hà Nội", fontInfo);
+        Paragraph diaChi = new Paragraph("Địa chỉ: Trịnh Văn Bô - Nam Từ Liêm - Hà Nội", fontInfo);
         Paragraph sdt = new Paragraph("Số điện thoại : 0987654321 - 0971852413", fontInfo);
         Paragraph email = new Paragraph("Email : beesport.soccer@gmail.com", fontInfo);
 
