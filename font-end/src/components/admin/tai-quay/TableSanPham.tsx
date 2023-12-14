@@ -19,6 +19,7 @@ import { DeleteOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import { formatGiaTienVND } from "~/utils/formatResponse";
 const { confirm } = Modal;
 import { MdAddShoppingCart } from "react-icons/md";
+import HinhAnhSanPham from "~/pages/shop/gio-hang/HinhAnhSanPham";
 
 interface DataGioHang {
   key: React.Key;
@@ -68,27 +69,53 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
       dataIndex: "rowIndex",
       render: (text, record, index) => index + 1,
     },
+    // {
+    //   title: "Hình ảnh",
+    //   dataIndex: "duongDan",
+    //   render: (item, record) => {
+    //     return (
+    //       <img
+    //         src={`http://localhost:8080/admin/api/file/view/${record.duongDan}`}
+    //         alt="Hình ảnh"
+    //         style={{ maxWidth: "100px" }}
+    //       />
+    //     );
+    //   },
+    // },
+    // {
+    //   title: "Tên Sản Phẩm",
+    //   dataIndex: ["chiTietSanPham", "sanPham", "ten"],
+    //   render: (_, record) => (
+    //     <Space>
+    //       <Space direction="vertical">
+    //         <Text strong>{record.chiTietSanPham.sanPham.ten}</Text>
+    //         <Text>{`[${record.chiTietSanPham.mauSac.ten} - ${record.chiTietSanPham.kichCo.kichCo} - ${record.chiTietSanPham.loaiDe.ten} - ${record.chiTietSanPham.diaHinhSan.ten}]`}</Text>
+    //       </Space>
+    //     </Space>
+    //   ),
+    // },
     {
-      title: "Hình ảnh",
-      dataIndex: "duongDan",
-      render: (item, record) => {
-        return (
-          <img
-            src={`http://localhost:8080/admin/api/file/view/${record.duongDan}`}
-            alt="Hình ảnh"
-            style={{ maxWidth: "100px" }}
-          />
-        );
-      },
-    },
-    {
-      title: "Tên Sản Phẩm",
-      dataIndex: ["chiTietSanPham", "sanPham", "ten"],
-      render: (_, record) => (
+      title: "Thông tin sản phẩm",
+      dataIndex: "chiTietSanPham",
+      key: "ten",
+      align: "left",
+      render: (chiTietSanPham, record) => (
         <Space>
+          <HinhAnhSanPham chiTietSanPham={chiTietSanPham} />
           <Space direction="vertical">
-            <Text strong>{record.chiTietSanPham.sanPham.ten}</Text>
-            <Text>{`[${record.chiTietSanPham.mauSac.ten} - ${record.chiTietSanPham.kichCo.kichCo} - ${record.chiTietSanPham.loaiDe.ten} - ${record.chiTietSanPham.diaHinhSan.ten}]`}</Text>
+            <Text strong>{chiTietSanPham.sanPham.ten}</Text>
+            <Text>{`[${chiTietSanPham.mauSac.ten} - ${chiTietSanPham.kichCo.kichCo} - ${chiTietSanPham.loaiDe.ten} - ${chiTietSanPham.diaHinhSan.ten}]`}</Text>
+            {chiTietSanPham.soLuong === 0 && (
+              <Text type="danger" strong italic>
+                Hết hàng
+              </Text>
+            )}
+            {chiTietSanPham.soLuong > 0 &&
+              record.soLuong > chiTietSanPham.soLuong && (
+                <Text type="danger" italic strong>
+                  Chỉ có thể mua tối đa {chiTietSanPham.soLuong} sản phẩm
+                </Text>
+              )}
           </Space>
         </Space>
       ),
@@ -117,7 +144,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
       render: (text, record) => formatGiaTienVND(record.tongTien),
     },
     {
-      title: "Hành động",
+      title: "Xóa",
       dataIndex: "",
       key: "",
       render: (item, record) => (
