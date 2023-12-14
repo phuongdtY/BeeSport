@@ -315,6 +315,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           ...hoaDonData,
           trangThaiHoaDon: "CONFIRMED",
           giamGia: giamGia,
+          loaiHoaDon: "ONLINE",
         };
 
         console.log(hoaDonCho);
@@ -439,6 +440,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           ngayThanhToan: ngayHomNay,
           tongTienKhiGiam: tongTienKhiGiam,
           giamGia: giamGia,
+          loaiHoaDon: checked ? "ONLINE" : "COUNTER",
         };
         console.log(hoaDonThanhToan);
 
