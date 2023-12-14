@@ -80,7 +80,7 @@ public class HoaDonServiceImpl implements HoaDonService {
         } else if ("descend".equals(sortOrder)) {
             sort = Sort.by(sorter).descending();
         } else {
-            sort = Sort.by("ngayTao").descending();
+            sort = Sort.by("ngaySua").descending();
         }
 
         CommonEnum.LoaiHoaDon loaiHoaDon;
