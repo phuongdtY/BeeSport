@@ -149,7 +149,7 @@ const ModalSanPham: React.FC<ModalSanPhamProps> = ({
           <Button
             type="primary"
             style={{ background: "green" }}
-            onClick={() => handleChonSanPham(record.id, record.giaTien)}
+            onClick={() => handleChonSanPham(record)}
           >
             <FaCartPlus />
           </Button>

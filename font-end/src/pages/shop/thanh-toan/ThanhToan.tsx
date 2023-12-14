@@ -207,7 +207,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
                   },
                 });
                 window.location.href = resVNPay.data;
-              } else if (res.status == 201 && values.phuongThucThanhToan == 1) {
+              } else if (res.status == 201 && values.phuongThucThanhToan == 3) {
                 setLoading(false);
                 navigate("/");
                 message.success("Đặt hàng thành công");
@@ -329,7 +329,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
         layout="vertical"
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
-        initialValues={{ phuongThucThanhToan: 1 }}
+        initialValues={{ phuongThucThanhToan: 3 }}
       >
         <Card title="THÔNG TIN NHẬN HÀNG" bordered={true}>
           <Form.Item label="Họ và Tên:">
@@ -485,7 +485,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
           <Form.Item name="phuongThucThanhToan">
             <Radio.Group>
               <Space direction="vertical">
-                <Radio value={1}>
+                <Radio value={3}>
                   <Card style={{ width: "450px" }}>
                     Thanh toán khi nhận hàng
                   </Card>
