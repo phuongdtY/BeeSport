@@ -21,6 +21,13 @@ public class DonHangClientController {
         return ResponseEntity.ok(service.getAllHoaDonCuaTaiKhoan(id, trangThai));
     }
 
+    @GetMapping("/{ma}")
+    public ResponseEntity<?> getOneDonHang(
+            @PathVariable(name = "ma")String maHoaDon
+    ) {
+        return ResponseEntity.ok(service.getOneDonHang(maHoaDon));
+    }
+
     @GetMapping("/count")
     public ResponseEntity<?> countSoHoaDon(
             @RequestParam(value = "taiKhoanId")Long id,

@@ -50,6 +50,7 @@ public class SecurityConfiguration {
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/gio-hang/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/gio-hang-chi-tiet/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/hoa-don/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/client/api/don-hang/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/giao-dich/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/hoa-don-chi-tiet/**")).permitAll()
 //                        .requestMatchers(new AntPathRequestMatcher("/admin/api/tai-khoan/doi-mat-khau")).permitAll()

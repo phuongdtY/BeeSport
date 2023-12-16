@@ -80,6 +80,7 @@ const Header: React.FC = () => {
   const items: MenuItem[] = [
     getItem(<Link to="/">Trang chủ</Link>, "1"),
     getItem(<Link to="/san-pham">Sản phẩm</Link>, "2"),
+    getItem(<Link to="/thong-tin-don-hang">Thông tin đơn hàng</Link>, "3"),
   ];
 
   const roleId = localStorage.getItem("roleId");
