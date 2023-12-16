@@ -379,10 +379,10 @@ const index: React.FC = () => {
           <Divider />
           <DescriptionItem title="Họ và tên" content={contentModal?.hoVaTen} />
           <Divider style={{ margin: 0 }} />
-          <DescriptionItem
+          {/* <DescriptionItem
             title="CMT/CCCD"
             content={contentModal?.canCuocCongDan}
-          />
+          /> */}
           <Divider style={{ margin: 0 }} />
           <DescriptionItem
             title="Ngày sinh"
@@ -404,7 +404,7 @@ const index: React.FC = () => {
             <a href={`mailto:${contentModal?.email}`}>{contentModal?.email}</a>
           </DescriptionItem>
           <Divider style={{ margin: 0 }} />
-          <DescriptionItem
+          {/* <DescriptionItem
             title="Địa chỉ"
             content={
               <>
@@ -414,7 +414,7 @@ const index: React.FC = () => {
                 {contentModal?.thanhPho}
               </>
             }
-          />
+          /> */}
           <Divider style={{ margin: 0 }} />
           <DescriptionItem title="Trạng thái">
             {contentModal?.trangThai.ten==="ACTIVE" ? (

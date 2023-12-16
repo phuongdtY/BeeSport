@@ -39,6 +39,7 @@ import {
   TableParams,
   DescriptionItemProps,
 } from "~/interfaces/nhanVien.type";
+import axios from "axios";
 
 const DescriptionItem: React.FC<DescriptionItemProps> = ({
   title,
@@ -51,8 +52,16 @@ const DescriptionItem: React.FC<DescriptionItemProps> = ({
     <p>{children}</p>
   </Space>
 );
-
+interface Option {
+  value?: number | null;
+  label: React.ReactNode;
+  children?: Option[];
+  isLeaf?: boolean;
+}
 const index: React.FC = () => {
+  const [provinces, setProvinces] = useState<Option[]>([]);
+  const [districts, setDistricts] = useState<Option[]>([]);
+  const [wards, setWards] = useState<Option[]>([]);
   const [modal1Open, setModal1Open] = useState(false);
   const [contentModal, setContentModal] = useState<DataType>();
   const [data, setData] = useState<DataType[]>([]);
@@ -75,6 +84,85 @@ const index: React.FC = () => {
     sortOrder: params.sortOrder,
     gioiTinhList: params.filters?.gioiTinh,
   });
+  const fetchProvinces = async () => {
+    try {
+      const provinceRes = await axios.get(
+        "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
+        {
+          headers: {
+            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
+            ContentType: "application/json",
+          },
+        }
+      );
+
+      const provinceOptions: Option[] = provinceRes.data.data.map(
+        (province: any) => ({
+          value: province.ProvinceID,
+          label: province.ProvinceName,
+          isLeaf: false,
+        })
+      );
+      setProvinces(provinceOptions);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchDistricts = async (idProvince: number|undefined) => {
+    try {
+      const districtRes = await axios.get(
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/district`,
+        {
+          params: {
+            province_id: idProvince,
+          },
+          headers: {
+            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
+            ContentType: "application/json",
+          },
+        }
+      );
+      const districtOptions: Option[] = districtRes.data.data.map(
+        (district: any) => ({
+          value: district.DistrictID,
+          label: district.DistrictName,
+          isLeaf: false,
+        })
+      );
+      setDistricts(districtOptions);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchWards = async (idDistrict: number|undefined) => {
+    try {
+      const wardRes = await axios.get(
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
+        {
+          params: {
+            district_id: idDistrict,
+          },
+          headers: {
+            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
+            ContentType: "application/json",
+          },
+        }
+      );
+      const wardOptions: Option[] = wardRes.data.data.map((ward: any) => ({
+        value: ward.WardCode,
+        label: ward.WardName,
+        isLeaf: false,
+      }));
+      setWards(wardOptions);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const getLabelById = (id: string | number | undefined, options: any[]) => {
+    const option = options.find((opt) => opt.value === id);
+    console.log("option",option)
+    return option ? option.label : "";
+  };
   const columns: ColumnsType<DataType> = [
     {
       title: "STT",
@@ -188,11 +276,26 @@ const index: React.FC = () => {
       render: (id) => {
         const showModal = () => {
           setModal1Open(true);
-          request
-            .get("nhan-vien/edit/" + id)
-            .then((res) => setContentModal(res.data))
-            .catch((err) => console.log(err));
-        };
+          fetchProvinces();
+        // fetchDistricts(res.data?.thanhPho);
+        // fetchWards(res.data?.quanHuyen);
+        request
+        .get("nhan-vien/edit/" + id)
+        .then((res) => {
+          setContentModal(res.data);
+    
+          // Assuming res.data contains the necessary information for fetching districts and wards
+          const provinceId = res.data?.thanhPho;
+          const districtId = res.data?.quanHuyen;
+    
+          // Fetch districts
+          fetchDistricts(provinceId);
+    
+          // Fetch wards
+          fetchWards(districtId);
+        })
+        .catch((err) => console.log(err));
+    };
 
         const actionItems: MenuProps["items"] = [
           {
@@ -410,8 +513,9 @@ const index: React.FC = () => {
               <>
                 {contentModal?.diaChiCuThe}
                 <br />
-                {contentModal?.phuongXa}, {contentModal?.quanHuyen},{" "}
-                {contentModal?.thanhPho}
+                {getLabelById(contentModal?.phuongXa, wards)} {", "}
+      {getLabelById(Number(contentModal?.quanHuyen), districts)} {", "} 
+      {getLabelById(Number(contentModal?.thanhPho), provinces)}
               </>
             }
           />

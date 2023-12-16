@@ -128,7 +128,7 @@ const UpdateKhachHang: React.FC = () => {
         fetchProvinces();
         fetchDistricts(res.data?.thanhPho);
         fetchWards(res.data?.quanHuyen);
-const trangThaiValue = res.data?.trangThai?.ten === "ACTIVE" || res.data?.trangThai === null ? false : true;
+        const trangThaiValue = res.data?.trangThai.ten === "ACTIVE";
           const gioiTinhValue = res.data?.gioiTinh?.ten || "OTHER";
           const ngaySinhValue = dayjs(res.data?.ngaySinh);
         form.setFieldsValue({
