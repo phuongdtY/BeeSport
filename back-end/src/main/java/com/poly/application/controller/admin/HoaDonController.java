@@ -68,8 +68,8 @@ public class HoaDonController {
     }
 
     @PostMapping("/add-san-pham/{id}")
-    public ResponseEntity<?> addHoaDonChiTiet(@PathVariable(name = "id")Long id,@RequestBody CreateHoaDonChiTietRequest createHoaDonChiTietRequest) {
-        return  new ResponseEntity<>(hoaDonChiTietService.add(createHoaDonChiTietRequest, id), HttpStatus.CREATED);
+    public ResponseEntity<?> addHoaDonChiTiet(@PathVariable(name = "id") Long id, @RequestBody CreateHoaDonChiTietRequest createHoaDonChiTietRequest) {
+        return new ResponseEntity<>(hoaDonChiTietService.add(createHoaDonChiTietRequest, id), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -100,7 +100,7 @@ public class HoaDonController {
             @RequestParam(value = "sortOrder", defaultValue = "", required = false) String sortOrder
     ) {
 
-        Page<HoaDonChiTietResponse> hoaDonChiTietResponses = hoaDonChiTietService.getPageAllByIdHoaDon(page, pageSize, searchText, sorter, sortOrder,id);
+        Page<HoaDonChiTietResponse> hoaDonChiTietResponses = hoaDonChiTietService.getPageAllByIdHoaDon(page, pageSize, searchText, sorter, sortOrder, id);
         HoaDonResponse hoaDonResponse = hoaDonService.findById(id);
 
         HoaDonHoaDonChiTietListResponseDTO hoaDonHoaDonChiTietListResponseDTO = new HoaDonHoaDonChiTietListResponseDTO();
@@ -110,12 +110,12 @@ public class HoaDonController {
     }
 
     @GetMapping("/ctsp/{id}")
-    public ResponseEntity<?> getOneCtsp(@PathVariable(name = "id")Long id){
+    public ResponseEntity<?> getOneCtsp(@PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(chiTietSanPhamService.getOneCtspById(id));
     }
 
     @GetMapping("/hoa-don-cho")
-    public ResponseEntity<?> get7HoaDonPendingByDate(){
+    public ResponseEntity<?> get7HoaDonPendingByDate() {
         return ResponseEntity.ok(hoaDonService.get7HoaDonPendingByDateNew());
     }
 
@@ -125,7 +125,7 @@ public class HoaDonController {
     }
 
     @GetMapping("/export/pdf")
-    public void exportToPDF(HttpServletResponse response, @Param("id")Long id) throws DocumentException, IOException {
+    public void exportToPDF(HttpServletResponse response, @Param("id") Long id) throws DocumentException, IOException {
         response.setContentType("application/pdf");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         String currentDateTime = dateFormatter.format(new Date());
@@ -134,7 +134,16 @@ public class HoaDonController {
         String headerValue = "attachment; filename=users_" + currentDateTime + ".pdf";
         response.setHeader(headerKey, headerValue);
 
-        pdfExportService.exportPDF(response,id);
+        pdfExportService.exportPDF(response, id);
+    }
+
+    @GetMapping("/cancel/{id}")
+    public ResponseEntity<?> cancelHoaDon(
+            @PathVariable(name = "id") Long id,
+            @RequestParam(value = "ghiChu", required = false) String ghiChu
+    ) {
+        ;
+        return ResponseEntity.ok(hoaDonService.cancelHoaDon(id, ghiChu));
     }
 
 }

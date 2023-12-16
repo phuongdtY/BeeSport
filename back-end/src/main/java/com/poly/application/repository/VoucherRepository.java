@@ -64,14 +64,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
     Long soLanDaSuDungVoucherTaiKhoan(@Param("idVoucher") Long idVoucher,
                                       @Param("idTaiKhoan") Long idTaiKhoan);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE Voucher v SET v.soLuong = :soLuong WHERE v.id = :id")
-    void updateSoLuongVoucherHoaDon(
-            @Param("soLuong") Integer soLuong,
-            @Param("id")Long id
-    );
-
     @Query("SELECT vct FROM VoucherChiTiet vct WHERE vct.voucher.id = :idVoucher AND vct.taiKhoan.id = :idTaiKhoan")
     VoucherChiTiet findVoucherChiTiet(
             @Param("idVoucher") Long idVoucher,

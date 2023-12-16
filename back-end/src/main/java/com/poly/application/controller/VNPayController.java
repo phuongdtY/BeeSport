@@ -128,11 +128,12 @@ public class VNPayController {
             fields.remove("vnp_SecureHash");
         }
         String maGiaoDich = request.getParameter("vnp_TxnRef");
+        String ngayThanhToan = request.getParameter("vnp_PayDate");
         if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
-            String url = service.updateByMa(maGiaoDich, CommonEnum.TrangThaiGiaoDich.SUCCESS);
+            String url = service.updateByMa(maGiaoDich, ngayThanhToan, CommonEnum.TrangThaiGiaoDich.SUCCESS);
             return new RedirectView(url + "?thanhToan=success");
         } else {
-            String url = service.updateByMa(maGiaoDich, CommonEnum.TrangThaiGiaoDich.FAILED);
+            String url = service.updateByMa(maGiaoDich,ngayThanhToan , CommonEnum.TrangThaiGiaoDich.PENDING);
             return new RedirectView(url + "?thanhToan=failed");
         }
     }

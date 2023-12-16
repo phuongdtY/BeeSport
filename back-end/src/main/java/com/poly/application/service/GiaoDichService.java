@@ -1,15 +1,9 @@
 package com.poly.application.service;
 
 import com.poly.application.common.CommonEnum;
-import com.poly.application.entity.GiaoDich;
 import com.poly.application.model.request.create_request.CreateGiaoDichRequest;
-import com.poly.application.model.request.create_request.CreatedGioHangChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedGiaoDichRequest;
-import com.poly.application.model.request.update_request.UpdatedGioHangChiTietRequest;
 import com.poly.application.model.response.GiaoDichResponse;
-import com.poly.application.model.response.GioHangChiTietResponse;
-import com.poly.application.model.response.HoaDonResponse;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -21,7 +15,7 @@ public interface GiaoDichService {
 
     GiaoDichResponse update(Long id, UpdatedGiaoDichRequest request);
 
-    String updateByMa(String ma, CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich);
+    String updateByMa(String ma, String ngayThanhToan, CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich);
 
     List<GiaoDichResponse> getListGiaoDich(Long idHoaDon);
 

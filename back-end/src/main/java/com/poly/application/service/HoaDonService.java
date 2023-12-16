@@ -29,4 +29,6 @@ public interface HoaDonService {
 
     Long getSoLuongHoaDonCho();
 
+    HoaDonResponse cancelHoaDon(Long id, String ghiChuTimeLine);
+
 }

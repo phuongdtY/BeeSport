@@ -209,9 +209,10 @@ public class CommonEnum {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum TrangThaiGiaoDich {
-        SUCCESS("SUCCESS", "Thành công", "success"),
-        FAILED("FAILED", "Thất bại", "error"),
-        PENDING("PENDING", "Đang chờ xử lý", "warning");
+        SUCCESS("SUCCESS", "Đã thanh toán", "success"),
+        FAILED("FAILED", "Hủy bỏ", "error"),
+        PENDING("PENDING", "Chờ thanh toán", "warning"),
+        REFUND("REFUND", "Hoàn tiền", "processing");
 
         private final String ten;
         private final String moTa;

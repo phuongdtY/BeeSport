@@ -738,32 +738,51 @@ const detailHoaDon: React.FC = () => {
     ghiChuTimeLine: string
   ) => {
     setOrderStatus(status);
-    try {
-      const res = await request.put("hoa-don/" + id, {
-        trangThaiHoaDon: status.ten,
-        ghiChuTimeLine: ghiChuTimeLine,
-      });
-      setLoadingForm(false);
-      setTongTien(tinhTongTien(Number(tienShip)));
-      fetchDataTimeline();
-      fetchHoaDonData();
-      console.log(values);
-      if (status.ten == "PENDING" && data?.loaiHoaDon.ten == "ONLINE") {
+    console.log(status);
+
+    if (status.ten === "CANCELLED") {
+      try {
+        const res = await request.get(`hoa-don/cancel/${id}`, {
+          params: {
+            ghiChu: ghiChuTimeLine,
+          },
+        });
+        console.log(res.data);
+        fetchDataTimeline();
+        fetchHoaDonData();
+        setOpen(false);
+      } catch (error) {
+        console.log(error);
       }
-      if (res.data) {
-        message.success("Đã " + title + " hóa đơn thành công");
+    } else {
+      try {
+        const res = await request.put("hoa-don/" + id, {
+          trangThaiHoaDon: status.ten,
+          ghiChuTimeLine: ghiChuTimeLine,
+        });
+        setLoadingForm(false);
+        setTongTien(tinhTongTien(Number(tienShip)));
+        fetchDataTimeline();
+        fetchHoaDonData();
+        setOpen(false);
+        console.log(values);
         if (status.ten == "PENDING" && data?.loaiHoaDon.ten == "ONLINE") {
-          showExportHoaDonModal();
         }
-      } else {
-        console.error("Phản hồi API không như mong đợi:", res);
-      }
-    } catch (error: any) {
-      if (error.response && error.response.status === 400) {
-        message.error(error.response.data.message);
-      } else {
-        console.error("Lỗi không xác định:", error);
-        message.error(title + " hóa đơn thất bại");
+        if (res.data) {
+          message.success("Đã " + title + " hóa đơn thành công");
+          if (status.ten == "PENDING" && data?.loaiHoaDon.ten == "ONLINE") {
+            showExportHoaDonModal();
+          }
+        } else {
+          console.error("Phản hồi API không như mong đợi:", res);
+        }
+      } catch (error: any) {
+        if (error.response && error.response.status === 400) {
+          message.error(error.response.data.message);
+        } else {
+          console.error("Lỗi không xác định:", error);
+          message.error(title + " hóa đơn thất bại");
+        }
       }
     }
   };
@@ -872,6 +891,8 @@ const detailHoaDon: React.FC = () => {
                         (orderStatus?.ten === "CONFIRMED" &&
                           data?.loaiHoaDon?.ten === "COUNTER") ||
                         (orderStatus?.ten === "PENDING" &&
+                          data?.loaiHoaDon?.ten === "ONLINE") ||
+                        (orderStatus?.ten === "PICKUP" &&
                           data?.loaiHoaDon?.ten === "ONLINE")) && (
                         <Button
                           type="primary"
