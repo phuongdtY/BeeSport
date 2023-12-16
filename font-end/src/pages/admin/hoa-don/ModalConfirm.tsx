@@ -1,14 +1,4 @@
-import {
-  Modal,
-  Form,
-  Select,
-  Col,
-  Row,
-  Input,
-  Card,
-  Button,
-  Divider,
-} from "antd";
+import { Modal, Input, Button } from "antd";
 import React, { useState } from "react";
 import { UpdatedRequest } from "~/interfaces/hoaDon.type";
 
@@ -33,13 +23,11 @@ const ConfirmHoaDonComponent: React.FC<ConfirmHoaDonGhiChuProps> = ({
   status,
   titleStatus,
 }) => {
-  const [form] = Form.useForm();
   const [ghiChuTimeLine, setGhiChuTimeLine] = useState("");
   const [visible, setVisible] = React.useState(false);
 
   const handleOk = async () => {
     try {
-      const values = await form.validateFields();
       onUpdate(updateRequest, status, titleStatus, ghiChuTimeLine);
     } catch (info) {
       console.log("Validate Failed:", info);
@@ -65,7 +53,7 @@ const ConfirmHoaDonComponent: React.FC<ConfirmHoaDonGhiChuProps> = ({
       onOk={() => {
         handleOk();
         setGhiChuTimeLine("");
-        onCancel();
+        // onCancel();
       }}
     >
       <Input.TextArea

@@ -26,7 +26,8 @@ public class VoucherResponse {
 
     private String ten;
 
-    private Integer soLuong;
+    @Enumerated(EnumType.STRING)
+    private CommonEnum.LoaiVoucher loaiVoucher;
 
     private LocalDateTime ngayBatDau;
 

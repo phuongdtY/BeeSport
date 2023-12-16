@@ -41,7 +41,7 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
             "   OR (:idTaiKhoan IS NOT NULL AND v.id IN (SELECT vct.voucher.id FROM VoucherChiTiet vct WHERE vct.taiKhoan.id = :idTaiKhoan AND vct.soLanSuDung > 0))\n")
     List<Voucher> getListVoucherOK(@Param("idTaiKhoan") Long id);
 
-    @Query("SELECT v FROM Voucher v WHERE v.trangThai IN ('ONGOING', 'ENDING_SOON') AND (v.soLuong > 0 OR v.soLuong IS NULL) ORDER BY v.ngaySua DESC")
+    @Query("SELECT v FROM Voucher v WHERE v.trangThai IN ('ONGOING', 'ENDING_SOON') ORDER BY v.ngaySua DESC")
     List<Voucher> getListVoucherSuDung();
 
     @Query("SELECT v FROM Voucher v WHERE v.trangThai != 'CANCELLED'")
@@ -63,14 +63,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
             "AND hd.taiKhoan.id = :idTaiKhoan")
     Long soLanDaSuDungVoucherTaiKhoan(@Param("idVoucher") Long idVoucher,
                                       @Param("idTaiKhoan") Long idTaiKhoan);
-
-    @Transactional
-    @Modifying
-    @Query("UPDATE Voucher v SET v.soLuong = :soLuong WHERE v.id = :id")
-    void updateSoLuongVoucherHoaDon(
-            @Param("soLuong") Integer soLuong,
-            @Param("id")Long id
-    );
 
     @Query("SELECT vct FROM VoucherChiTiet vct WHERE vct.voucher.id = :idVoucher AND vct.taiKhoan.id = :idTaiKhoan")
     VoucherChiTiet findVoucherChiTiet(

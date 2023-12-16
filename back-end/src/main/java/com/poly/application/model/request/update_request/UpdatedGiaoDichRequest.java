@@ -24,6 +24,8 @@ public class UpdatedGiaoDichRequest {
 
     private BigDecimal soTienGiaoDich;
 
+    private LocalDateTime ngayThanhToan;
+
     private LocalDateTime ngayTao;
 
     private LocalDateTime ngaySua;

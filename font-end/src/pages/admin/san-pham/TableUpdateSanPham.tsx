@@ -41,7 +41,7 @@ function TableUpdateSanpham({ idSanPham }) {
   const [dataMauSacFull, setDataMauSacFull] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [idMauSac, setIdMauSac] = useState();
-  const [mauSac, setMauSac] = useState();
+  const [mauSac, setMauSac] = useState(null);
   const [checkedMauSac, setCheckedMauSac] = useState();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -419,7 +419,10 @@ function TableUpdateSanpham({ idSanPham }) {
               <Row gutter={[10, 10]} key={record.id}>
                 <Col>
                   <Radio.Button
-                    onClick={() => setMauSac(record)}
+                    onClick={() => {
+                      console.log(record);
+                      setMauSac(record);
+                    }}
                     value={record.id}
                   >
                     {record.ten}
