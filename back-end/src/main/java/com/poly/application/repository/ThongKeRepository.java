@@ -26,7 +26,7 @@ public class ThongKeRepository {
 
     public ThongKeTheoDMYResponse thongKeTheoNgay(LocalDate ngayThanhToan) {
         String queryString = "SELECT \n" +
-                "   SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.tong_tien_khi_giam ELSE 0 END) AS tong_tien_thu_duoc,\n" +
+                "   SUM(CASE WHEN du_an_tot_nghiep.giao_dich.trang_thai_giao_dich = 'SUCCESS' THEN du_an_tot_nghiep.giao_dich.so_tien_giao_dich ELSE 0 END) AS tong_tien_thu_duoc,\n" +
                 "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_thanh_cong,\n" +
                 "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'CANCELLED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_huy,\n" +
                 "   SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don_chi_tiet.so_luong ELSE 0 END) AS tong_so_san_pham_ban_ra,\n" +
