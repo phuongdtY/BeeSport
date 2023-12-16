@@ -35,9 +35,10 @@ public class ThongKeRepository {
                 "\n" +
                 "FROM hoa_don\n" +
                 "LEFT JOIN du_an_tot_nghiep.hoa_don_chi_tiet ON du_an_tot_nghiep.hoa_don.id = du_an_tot_nghiep.hoa_don_chi_tiet.hoa_don_id\n" +
-                "LEFT JOIN du_an_tot_nghiep.chi_tiet_san_pham ON du_an_tot_nghiep.hoa_don_chi_tiet.chi_tiet_san_pham_id = du_an_tot_nghiep.chi_tiet_san_pham.id\n" +
-                "WHERE DATE(du_an_tot_nghiep.hoa_don.ngay_tao) = :ngayThanhToan \n" +
-                "   OR DATE(du_an_tot_nghiep.hoa_don.ngay_thanh_toan) = :ngayThanhToan";
+                "LEFT JOIN du_an_tot_nghiep.chi_tiet_san_pham ON du_an_tot_nghiep.hoa_don_chi_tiet.chi_tiet_san_pham_id = du_an_tot_nghiep.chi_tiet_san_pham.id \n" +
+                "LEFT JOIN du_an_tot_nghiep.giao_dich ON du_an_tot_nghiep.hoa_don.id = du_an_tot_nghiep.giao_dich.hoa_don_id \n" +
+                " WHERE DATE(du_an_tot_nghiep.giao_dich.ngay_thanh_toan) = :ngayThanhToan \n" +
+                "   OR DATE(du_an_tot_nghiep.giao_dich.ngay_thanh_toan) = :ngayThanhToan";
 
 
         Object[] result = (Object[]) entityManager.createNativeQuery(queryString)
@@ -67,9 +68,9 @@ public class ThongKeRepository {
     public ThongKeTheoDMYResponse thongKeTheoTuan(LocalDate startOfWeek, LocalDate endOfWeek) {
 
         String queryString = "SELECT \n" +
-                "   SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.tong_tien_khi_giam ELSE 0 END) AS tong_tien_thu_duoc,\n" +
+                "   SUM(CASE WHEN du_an_tot_nghiep.giao_dich.trang_thai_giao_dich = 'SUCCESS' THEN du_an_tot_nghiep.giao_dich.so_tien_giao_dich ELSE 0 END) AS tong_tien_thu_duoc,\n" +
                 "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_thanh_cong,\n" +
-                "    COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'CANCELLED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_huy,\n" +
+                "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'CANCELLED' THEN du_an_tot_nghiep.hoa_don.id END) AS so_don_hang_huy,\n" +
                 "   SUM(CASE WHEN du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don_chi_tiet.so_luong ELSE 0 END) AS tong_so_san_pham_ban_ra,\n" +
                 "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'COUNTER' AND du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_tai_quay,\n" +  // Đếm các hóa đơn có loại 'COUNTER'
                 "   COUNT(CASE WHEN du_an_tot_nghiep.hoa_don.loai_hoa_don = 'ONLINE' AND du_an_tot_nghiep.hoa_don.trang_thai = 'APPROVED' THEN du_an_tot_nghiep.hoa_don.id END) AS tong_so_don_online \n" +  // Đếm các hóa đơn có loại 'ONLINE'
@@ -77,8 +78,9 @@ public class ThongKeRepository {
                 "FROM hoa_don\n" +
                 "LEFT JOIN du_an_tot_nghiep.hoa_don_chi_tiet ON du_an_tot_nghiep.hoa_don.id = du_an_tot_nghiep.hoa_don_chi_tiet.hoa_don_id\n" +
                 "LEFT JOIN du_an_tot_nghiep.chi_tiet_san_pham ON du_an_tot_nghiep.hoa_don_chi_tiet.chi_tiet_san_pham_id = du_an_tot_nghiep.chi_tiet_san_pham.id\n" +
-                "WHERE (DATE(du_an_tot_nghiep.hoa_don.ngay_tao) BETWEEN :startOfWeek AND :endOfWeek \n" +
-                "   OR DATE(du_an_tot_nghiep.hoa_don.ngay_thanh_toan) BETWEEN :startOfWeek AND :endOfWeek)";
+                "LEFT JOIN du_an_tot_nghiep.giao_dich ON du_an_tot_nghiep.hoa_don.id = du_an_tot_nghiep.giao_dich.hoa_don_id \n" +
+                "WHERE (DATE(du_an_tot_nghiep.giao_dich.ngay_thanh_toan) BETWEEN :startOfWeek AND :endOfWeek \n" +
+                "   OR DATE(du_an_tot_nghiep.giao_dich.ngay_thanh_toan) BETWEEN :startOfWeek AND :endOfWeek)";
 
         Object[] result = (Object[]) entityManager.createNativeQuery(queryString)
                     .setParameter("startOfWeek", startOfWeek)
@@ -134,12 +136,13 @@ public class ThongKeRepository {
     public Page<ThongKeTheoDoanhThuResponse> thongKeTheoDoanhThu(Pageable pageable) {
         String queryString = "SELECT sp.id, sp.ten AS tenSanPham," +
                 "       SUM(hdct.so_luong) AS tongSoLuongBan," +
-                "       SUM(hdct.so_luong * hdct.don_gia) AS doanhThu " +
+                "       SUM(gd.so_tien_giao_dich) AS doanhThu " +
                 "FROM san_pham sp " +
                 "JOIN chi_tiet_san_pham ctsp ON sp.id = ctsp.san_pham_id " +
                 "JOIN hoa_don_chi_tiet hdct ON ctsp.id = hdct.chi_tiet_san_pham_id " +
                 "JOIN hoa_don hd ON hdct.hoa_don_id = hd.id " +
-                "WHERE hdct.trang_thai = 'APPROVED' " +
+                "JOIN giao_dich gd ON hd.id = gd.hoa_don_id " +
+                "WHERE gd.trang_thai_giao_dich = 'SUCCESS' " +
                 "GROUP BY sp.id, sp.ten " +
                 "ORDER BY doanhThu DESC";
 
