@@ -10,6 +10,8 @@ public interface DonHangService {
 
     List<HoaDonResponse> getAllHoaDonCuaTaiKhoan(Long idTaiKhoan, String trangThaiHoaDon);
 
+    HoaDonResponse getOneDonHang(String maHoaDon);
+
     Long countSoHoaDon(Long taiKhoanId, String trangThaiHoaDon);
 
 }
