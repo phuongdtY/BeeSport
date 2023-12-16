@@ -44,6 +44,9 @@ public class GiaoDich {
     @Column(name = "so_tien_giao_dich")
     private BigDecimal soTienGiaoDich;
 
+    @Column(name = "ngay_thanh_toan", columnDefinition = "TIMESTAMP")
+    private LocalDateTime ngayThanhToan;
+
     @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "ngay_tao", columnDefinition = "TIMESTAMP")

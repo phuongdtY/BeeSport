@@ -49,8 +49,9 @@ public class Voucher implements Serializable {
     @Column(name = "ten")
     private String ten;
 
-    @Column(name = "so_luong")
-    private Integer soLuong;
+    @Column(name = "loai_voucher")
+    @Enumerated(EnumType.STRING)
+    private CommonEnum.LoaiVoucher loaiVoucher;
 
     @Column(name = "ngay_bat_dau",columnDefinition = "TIMESTAMP")
     private LocalDateTime ngayBatDau;

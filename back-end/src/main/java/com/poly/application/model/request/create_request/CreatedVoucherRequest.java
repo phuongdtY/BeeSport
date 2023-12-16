@@ -21,7 +21,8 @@ public class  CreatedVoucherRequest {
 
     private String ten;
 
-    private Integer soLuong;
+    @Enumerated(EnumType.STRING)
+    private CommonEnum.LoaiVoucher loaiVoucher;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ngayBatDau;

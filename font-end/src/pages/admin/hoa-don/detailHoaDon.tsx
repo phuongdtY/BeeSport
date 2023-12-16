@@ -740,19 +740,8 @@ const detailHoaDon: React.FC = () => {
     setOrderStatus(status);
     try {
       const res = await request.put("hoa-don/" + id, {
-        ma: data?.ma,
-        diaChiNguoiNhan: data?.diaChiNguoiNhan,
-        emailNguoiNhan: values?.emailNguoiNhan,
-        ghiChu: values?.ghiChu,
         trangThaiHoaDon: status.ten,
-        loaiHoaDon: data?.loaiHoaDon.ten,
-        nguoiNhan: values?.nguoiNhan,
-        sdtNguoiNhan: values?.sdtNguoiNhan,
-        phiShip: tienShip,
-        tongTien: tinhTongTien(Number(tienShip)),
-        tongTienKhiGiam: tinhTongTien(Number(tienShip)),
         ghiChuTimeLine: ghiChuTimeLine,
-        idPhuongThuc: 1,
       });
       setLoadingForm(false);
       setTongTien(tinhTongTien(Number(tienShip)));
