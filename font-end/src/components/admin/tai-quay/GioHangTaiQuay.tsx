@@ -129,7 +129,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     setIdTaiKhoan(idKhachHang);
 
     try {
-      const response = await request.get("/voucher/list", {
+      const response = await request.get("/voucher/list-su-dung", {
         params: {
           idTaiKhoan: idKhachHang,
         },
@@ -288,7 +288,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     const hoaDonData = {
       id: id,
       ma: hoaDon.ma,
-      loaiHoaDon: "COUNTER",
+      // loaiHoaDon: "COUNTER",
       taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
       tongTien: tongTien,
       tongTienKhiGiam: tongTienKhiGiam,
@@ -301,7 +301,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       phiShip: phiShip, // Thêm phiShip vào hoaDonData
       diaChiNguoiNhan: address, // Thêm address vào hoaDonData
       donToiThieu: 12000,
-      trangThaiHoaDon: "CONFIRMED",
+      // trangThaiHoaDon: "CONFIRMED",
       ghiChu: ghiChu,
       nguoiNhan: customerInfo.nguoiNhan,
       sdtNguoiNhan: customerInfo.sdtNguoiNhan,
@@ -327,15 +327,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       onOk: async () => {
         const hoaDonData = getHoaDonData();
 
-        const hoaDonCho = {
-          ...hoaDonData,
-          trangThaiHoaDon: "CONFIRMED",
-          giamGia: giamGia,
-          loaiHoaDon: "ONLINE",
-        };
-
-        console.log(hoaDonCho);
-
         try {
           const resGD = await request.post("giao-dich", {
             taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
@@ -351,6 +342,13 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         } catch (error) {
           console.log(error);
         }
+
+        const hoaDonCho = {
+          ...hoaDonData,
+          trangThaiHoaDon: "CONFIRMED",
+          giamGia: giamGia,
+          loaiHoaDon: "ONLINE",
+        };
 
         try {
           const response = await request.put(`/hoa-don/${id}`, hoaDonCho);
@@ -382,24 +380,11 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
               console.log(error);
             }
           } else {
-            message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
+            message.error("Có lỗi xảy ra khi lưu hóa đơn.");
           }
         } catch (error) {
           console.error("Error making payment:", error);
           message.error("Có lỗi xảy ra khi thanh toán hóa đơn.");
-        }
-
-        try {
-          const response = await request.put(`/hoa-don/${id}`, hoaDonCho);
-          if (response.status === 200) {
-            loadHoaDon();
-            message.success("Hóa đơn đã được lưu thành công.");
-          } else {
-            message.error("Có lỗi xảy ra khi lưu hóa đơn.");
-          }
-        } catch (error) {
-          console.error("Error saving invoice:", error);
-          message.error("Có lỗi xảy ra khi lưu hóa đơn.");
         }
       },
     });
