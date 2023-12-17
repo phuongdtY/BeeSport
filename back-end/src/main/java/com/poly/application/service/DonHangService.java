@@ -12,4 +12,6 @@ public interface DonHangService {
 
     Long countSoHoaDon(Long taiKhoanId, String trangThaiHoaDon);
 
+    void sendEmailDonHang(Long id);
+
 }

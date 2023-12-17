@@ -37,12 +37,12 @@ import java.util.Locale;
 @Component
 public class PDFExporter {
 
-    private String formatLocalDateTime(LocalDateTime localDateTime) {
+    public String formatLocalDateTime(LocalDateTime localDateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         return localDateTime.format(formatter);
     }
 
-    private String formatLocalDateTimeNgay(LocalDateTime localDateTime) {
+    public String formatLocalDateTimeNgay(LocalDateTime localDateTime) {
         int ngay = localDateTime.getDayOfMonth();
         int thang = localDateTime.getMonthValue();
         int nam = localDateTime.getYear();
@@ -52,7 +52,7 @@ public class PDFExporter {
         return ngayThangNam;
     }
 
-    private String formatNumberVietNam(BigDecimal number) {
+    public String formatNumberVietNam(BigDecimal number) {
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         return currencyFormat.format(number);
     }
