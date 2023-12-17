@@ -46,8 +46,10 @@ public class VoucherController {
     }
 
     @GetMapping("/list-su-dung")
-    public ResponseEntity<?> getListSuDung() {
-        return ResponseEntity.ok(service.getListVoucherSuDung());
+    public ResponseEntity<?> getListSuDung(
+            @RequestParam(value = "idTaiKhoan", defaultValue = "") Long id
+    ) {
+        return ResponseEntity.ok(service.getListVoucherSuDung(id));
     }
 
     @GetMapping("/da-su-dung")
