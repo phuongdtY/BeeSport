@@ -70,7 +70,7 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             "    AND (:idKichCo IS NULL OR obj.kichCo.id = :idKichCo OR :idKichCo = '')" +
             "    AND (:idLoaiDe IS NULL OR obj.loaiDe.id = :idLoaiDe OR :idLoaiDe = '')" +
             "    AND (:idThuongHieu IS NULL OR obj.sanPham.thuongHieu.id = :idThuongHieu OR :idThuongHieu = '') " +
-            "   ORDER BY  obj.soLuong DESC, obj.ngayTao DESC " )
+            "   ORDER BY CASE WHEN obj.soLuong = 0 THEN 1 ELSE 0 END, obj.ngaySua DESC")
     Page<ChiTietSanPham> filterChiTietSanPham(
             Pageable pageable,
             @Param("searchText") String searchText,

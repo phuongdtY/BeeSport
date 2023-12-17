@@ -176,7 +176,10 @@ const DonHangChiTiet: React.FC<DonHangChiTietProps> = ({ currentKey }) => {
           </>
         ))
       ) : (
-        <Empty style={{ margin: "140px 0px" }} />
+        <Empty
+          style={{ margin: "140px 0px" }}
+          description={"Chưa có đơn hàng"}
+        />
       )}
     </Spin>
   );

@@ -132,15 +132,13 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
     },
   ];
 
-  const handleCapNhatGioHang = async (id) => {
+  const handleCapNhatGioHang = async (id, soLuong) => {
     try {
-      const response = await request4s.put(
-        `/hoa-don/hoa-don-chi-tiet/${id}`,
-        dataGioHang?.map((item) => ({
-          id: item.id,
-          soLuong: item.soLuong,
-        }))
+      const response = await request.put(
+        `/hoa-don-chi-tiet/so-luong/${id}`,
+        soLuong
       );
+      console.log(response.data);
     } catch (error) {
       console.error("Error updating cart:", error);
       // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
@@ -164,6 +162,9 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
           tongTien: newSoLuongValue * productToUpdate.donGia,
         };
         updatedInputSoLuongList[index] = newSoLuongValue;
+        // console.log("ID ChiTietSanPham:", productToUpdate.chiTietSanPham.id);
+        // console.log("Số lượng mới:", newSoLuongValue);
+        handleCapNhatGioHang(productToUpdate.id, newSoLuongValue);
       } else {
         if (newSoLuongValue < 1) {
           if (updatedSoLuongTon === 0) {
@@ -199,9 +200,9 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
     }
   };
 
-  useEffect(() => {
-    handleCapNhatGioHang(id);
-  }, [dataGioHang]);
+  // useEffect(() => {
+  //   handleCapNhatGioHang(id);
+  // }, [dataGioHang]);
 
   const passTotalPriceToParentCallback = (price) => {
     // Gọi hàm callback để truyền tổng tiền lên component cha
