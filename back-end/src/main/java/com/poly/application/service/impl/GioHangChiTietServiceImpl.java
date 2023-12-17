@@ -1,14 +1,14 @@
 package com.poly.application.service.impl;
 
 import com.amazonaws.services.mq.model.NotFoundException;
+import com.poly.application.entity.GioHang;
 import com.poly.application.entity.GioHangChiTiet;
-import com.poly.application.entity.SanPham;
 import com.poly.application.model.mapper.GioHangChiTietMapper;
 import com.poly.application.model.request.create_request.CreatedGioHangChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedGioHangChiTietRequest;
 import com.poly.application.model.response.GioHangChiTietResponse;
-import com.poly.application.model.response.SanPhamResponse;
 import com.poly.application.repository.GioHangChiTietRepository;
+import com.poly.application.repository.GioHangRepository;
 import com.poly.application.service.GioHangChiTietService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +22,9 @@ public class GioHangChiTietServiceImpl implements GioHangChiTietService {
 
     @Autowired
     private GioHangChiTietRepository repository;
+
+    @Autowired
+    private GioHangRepository gioHangRepository;
 
     @Autowired
     private GioHangChiTietMapper mapper;
@@ -54,9 +57,14 @@ public class GioHangChiTietServiceImpl implements GioHangChiTietService {
     }
 
     @Override
-    public void deleteAll() {
-        repository.deleteAll();
+    public void deleteAll(Long idGioHang) {
+        GioHang gioHang = gioHangRepository.findById(idGioHang).orElse(null);
+
+        if (gioHang != null) {
+            gioHang.getGioHangChiTietList().forEach(ghct -> repository.delete(ghct));
+        }
     }
+
 
     @Override
     public GioHangChiTietResponse update(Long idGioHangChiTiet, UpdatedGioHangChiTietRequest request) {

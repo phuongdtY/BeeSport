@@ -1,6 +1,5 @@
 package com.poly.application.controller.admin;
 
-import com.poly.application.entity.GioHangChiTiet;
 import com.poly.application.model.request.create_request.CreatedGioHangChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedGioHangChiTietRequest;
 import com.poly.application.service.GioHangChiTietService;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -38,8 +38,8 @@ public class GioHangChiTietController {
         return ResponseEntity.noContent().build();
     }
     @DeleteMapping("/delete-all")
-    public ResponseEntity<?> deleteALL() {
-        service.deleteAll();
+    public ResponseEntity<?> deleteALL(@RequestParam(name = "idGioHang")Long idGioHang) {
+        service.deleteAll(idGioHang);
         return ResponseEntity.noContent().build();
     }
 

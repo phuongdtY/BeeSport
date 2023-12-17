@@ -1,6 +1,7 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.entity.ChiTietSanPham;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.HoaDonChiTiet;
 import com.poly.application.entity.VoucherChiTiet;
@@ -13,6 +14,7 @@ import com.poly.application.model.request.update_request.UpdatedHoaDonChiTietReq
 import com.poly.application.model.request.update_request.UpdatedVoucherChiTietRequest;
 import com.poly.application.model.response.HoaDonChiTietResponse;
 import com.poly.application.model.response.HoaDonResponse;
+import com.poly.application.repository.ChiTietSanPhamRepository;
 import com.poly.application.repository.HoaDonChiTietRepository;
 import com.poly.application.service.HoaDonChiTietService;
 import com.poly.application.service.HoaDonService;
@@ -36,6 +38,9 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
 
     @Autowired
     private HoaDonChiTietRepository hoaDonChiTietRepository;
+
+    @Autowired
+    private ChiTietSanPhamRepository chiTietSanPhamRepository;
 
     @Autowired
     private HoaDonService hoaDonService;
@@ -81,10 +86,11 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
             list.add(hoaDonChiTietMapper.convertCreateHoaDonChiTietRequestToHoaDonChiTietEntity(request));
         }
         System.out.println(list);
-     hoaDonChiTietRepository.saveAll(list);
+        hoaDonChiTietRepository.saveAll(list);
     }
 
     @Override
+    @Transactional
     public void updateList(List<UpdatedHoaDonChiTietRequest> requestList) {
         List<HoaDonChiTiet> newHoaDonChiTietList = new ArrayList<>();
         List<HoaDonChiTiet> updatedHoaDonChiTietList = new ArrayList<>();
@@ -92,14 +98,27 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
         for (UpdatedHoaDonChiTietRequest updateRequest : requestList) {
             if (updateRequest.getId() != null) {
                 // If the DTO has an ID, it means it's an update
+
                 Optional<HoaDonChiTiet> optional = hoaDonChiTietRepository.findById(updateRequest.getId());
                 if (optional.isPresent()) {
+                    ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(optional.get().getChiTietSanPham().getId()).orElse(null);
                     HoaDonChiTiet existingHoaDonChiTiet = optional.get();
+                    if (updateRequest.getSoLuong() > existingHoaDonChiTiet.getSoLuong()) {
+                        Integer soLuongSuDung = updateRequest.getSoLuong() - existingHoaDonChiTiet.getSoLuong();
+                        chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - soLuongSuDung);
+                    } else if (updateRequest.getSoLuong() < existingHoaDonChiTiet.getSoLuong()) {
+                        Integer soLuongSuDung = existingHoaDonChiTiet.getSoLuong() - updateRequest.getSoLuong();
+                        chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() + soLuongSuDung);
+                    }
+                    chiTietSanPhamRepository.save(chiTietSanPham);
                     updateRequest.setId(existingHoaDonChiTiet.getId());
                     hoaDonChiTietMapper.convertUpdateRequestToEntity(updateRequest, existingHoaDonChiTiet);
                     updatedHoaDonChiTietList.add(existingHoaDonChiTiet);
                 }
             } else if (updateRequest.getId() == null) {
+                ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(updateRequest.getChiTietSanPham().getId()).orElse(null);
+                chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - updateRequest.getSoLuong());
+                chiTietSanPhamRepository.save(chiTietSanPham);
                 HoaDonChiTiet newHoaDonChiTiet = new HoaDonChiTiet();
                 newHoaDonChiTiet.setTrangThaiHoaDonChiTiet(CommonEnum.TrangThaiHoaDonChiTiet.APPROVED);
                 hoaDonChiTietMapper.convertUpdateRequestToEntity(updateRequest, newHoaDonChiTiet);
@@ -147,15 +166,16 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
 
     @Override
     public void delete(Long id) {
-        Optional<HoaDonChiTiet> optional = hoaDonChiTietRepository.findById(id);
-
-        if (optional.isEmpty()) {
-            throw new com.amazonaws.services.mq.model.NotFoundException("hóa đơn chi tiết không tồn tại");
+        Optional<HoaDonChiTiet> hoaDonChiTiet = hoaDonChiTietRepository.findById(id);
+        if (hoaDonChiTiet.isEmpty()) {
+            throw new NotFoundException("Hóa đơn chi tiết không tồn tại");
+        } else {
+            ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(hoaDonChiTiet.get().getChiTietSanPham().getId()).orElse(null);
+            chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() + hoaDonChiTiet.get().getSoLuong());
+            chiTietSanPhamRepository.save(chiTietSanPham);
+            hoaDonChiTietRepository.deleteById(id);
         }
 
-        HoaDonChiTiet donChiTiet = optional.get();
-
-        hoaDonChiTietRepository.delete(donChiTiet);
 
     }
 
