@@ -181,8 +181,10 @@ const detailHoaDon: React.FC = () => {
       render: (text, record, index) =>
         edit === true ? (
           <InputNumber
+            min={1}
             value={record.soLuong}
             inputMode="numeric"
+            max={record.soLuong + record.chiTietSanPham.soLuong}
             onChange={(newSoLuong) => {
               handleSoLuongChange(index, newSoLuong);
             }}
