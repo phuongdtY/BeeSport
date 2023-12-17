@@ -323,32 +323,7 @@ export function UpdateVoucherKhachHang({ id }) {
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            noStyle
-            shouldUpdate={(prevValues, currentValues) =>
-              prevValues.soLanSuDung !== currentValues.soLanSuDung
-            }
-          >
-            {({ getFieldValue }) =>
-              getFieldValue("soLanSuDung") === 1 ? (
-                <Form.Item
-                  name="soLuong"
-                  label="Số lượng"
-                  rules={[
-                    { required: true, message: "Bạn chưa điền số lượng!" },
-                  ]}
-                >
-                  <InputNumber
-                    defaultValue={0}
-                    style={{ width: "100%" }}
-                    min={1}
-                    formatter={(value) => formatSoLuong(value)}
-                    parser={(value: any) => value.replace(/,/g, "")}
-                  />
-                </Form.Item>
-              ) : null
-            }
-          </Form.Item>
+
           <Form.Item
             label="Thời gian áp dụng"
             name="dateRange"
