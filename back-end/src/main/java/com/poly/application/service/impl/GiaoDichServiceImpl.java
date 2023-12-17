@@ -41,6 +41,9 @@ public class GiaoDichServiceImpl implements GiaoDichService {
             TaiKhoan taiKhoan = taiKhoanRepository.findById(request.getTaiKhoan().getId()).orElse(null);
             createGiaoDich.setTaiKhoan(taiKhoan);
         }
+        if(request.getNgayThanhToan()==null && request.getTrangThaiGiaoDich()== CommonEnum.TrangThaiGiaoDich.SUCCESS){
+            createGiaoDich.setNgayThanhToan(LocalDateTime.now());
+        }
 
         createGiaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
         GiaoDich savedGiaoDich = giaoDichRepository.save(createGiaoDich);
@@ -73,6 +76,9 @@ public class GiaoDichServiceImpl implements GiaoDichService {
         }
         if (request.getPhuongThucThanhToan() != null) {
             giaoDich.setPhuongThucThanhToan(request.getPhuongThucThanhToan());
+        }
+        if(request.getNgayThanhToan()==null && request.getTrangThaiGiaoDich()== CommonEnum.TrangThaiGiaoDich.SUCCESS){
+            giaoDich.setNgayThanhToan(LocalDateTime.now());
         }
         return giaoDichMapper.convertGiaoDichEntityToGiaoDichResponse(giaoDichRepository.save(giaoDich));
     }

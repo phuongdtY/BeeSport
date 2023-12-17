@@ -68,8 +68,14 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
         if (hoaDonChiTietRepository.existsHoaDonChiTietByChiTietSanPhamIdAndHoaDonId(createHoaDonChiTietRequest.getChiTietSanPham().getId(), id)) {
             HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findHoaDonChiTietByChiTietSanPhamIdAndHoaDonId(createHoaDonChiTietRequest.getChiTietSanPham().getId(), id);
             hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() + 1);
+            ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(createHoaDonChiTietRequest.getChiTietSanPham().getId()).orElse(null);
+            chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - 1);
+            chiTietSanPhamRepository.save(chiTietSanPham);
             return hoaDonChiTietMapper.convertHoaDonChiTietEntityToHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
         }
+        ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(createHoaDonChiTietRequest.getChiTietSanPham().getId()).orElse(null);
+        chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - 1);
+        chiTietSanPhamRepository.save(chiTietSanPham);
         HoaDonChiTiet createHoaDonChiTiet = hoaDonChiTietMapper.convertCreateHoaDonChiTietRequestToHoaDonChiTietEntity(createHoaDonChiTietRequest);
         HoaDonResponse hoaDonResponse = hoaDonService.findById(id);
         HoaDon hoaDon = hoaDonMapper.convertHoaDonResponseToEntity(hoaDonResponse);
@@ -151,7 +157,6 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     public HoaDonChiTietResponse update(Long id, UpdatedHoaDonChiTietRequest updatedHoaDonChiTietRequest) {
         HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Hóa đơn chi tiết không tồn tại"));
-
         hoaDonChiTiet.setSoLuong(updatedHoaDonChiTietRequest.getSoLuong());
 //        hoaDonChiTiet.setDonGia(updatedHoaDonChiTietRequest.getDonGia());
 //        hoaDonChiTiet.setTrangThaiHoaDonChiTiet(updatedHoaDonChiTietRequest.getTrangThaiHoaDonChiTiet());
@@ -162,6 +167,24 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
 //        hoaDonChiTiet.setNguoiSua(updatedHoaDonChiTietRequest.getNguoiSua());
 
         return hoaDonChiTietMapper.convertHoaDonChiTietEntityToHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
+    }
+
+    @Override
+    public HoaDonChiTietResponse updateSoLuong(Long id, Integer soLuong) {
+        HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findById(id).orElse(null);
+        ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(hoaDonChiTiet.getChiTietSanPham().getId()).orElse(null);
+        if (soLuong > hoaDonChiTiet.getSoLuong()) {
+            Integer soLuongSuDung = soLuong - hoaDonChiTiet.getSoLuong();
+            chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - soLuongSuDung);
+
+        } else if (soLuong < hoaDonChiTiet.getSoLuong()) {
+            Integer soLuongSuDung = hoaDonChiTiet.getSoLuong() - soLuong;
+            chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() + soLuongSuDung);
+        }
+        hoaDonChiTiet.setSoLuong(soLuong);
+        chiTietSanPhamRepository.save(chiTietSanPham);
+        return hoaDonChiTietMapper.convertHoaDonChiTietEntityToHoaDonChiTietResponse(hoaDonChiTietRepository.save(hoaDonChiTiet));
+
     }
 
     @Override
@@ -182,8 +205,19 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     @Override
     public void updateHoaDonChiTiet(List<UpdatedHoaDonChiTietRequest> updatedHoaDonChiTietRequests) {
         for (UpdatedHoaDonChiTietRequest request : updatedHoaDonChiTietRequests) {
+            HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findById(request.getId()).orElse(null);
+            ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(request.getChiTietSanPham().getId()).orElse(null);
+            if (request.getSoLuong() > hoaDonChiTiet.getSoLuong()) {
+                Integer soLuongSuDung = request.getSoLuong() - hoaDonChiTiet.getSoLuong();
+                chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - soLuongSuDung);
+            } else if (request.getSoLuong() < hoaDonChiTiet.getSoLuong()) {
+                Integer soLuongSuDung = hoaDonChiTiet.getSoLuong() - request.getSoLuong();
+                chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() + soLuongSuDung);
+            }
+            chiTietSanPhamRepository.save(chiTietSanPham);
             update(request.getId(), request);
         }
+
     }
 
     @Override
