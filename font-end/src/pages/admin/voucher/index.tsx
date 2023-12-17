@@ -65,21 +65,6 @@ const index: React.FC = () => {
       sorter: true,
     },
     {
-      title: "Số lượng",
-      dataIndex: "soLuong",
-      key: "soLuong",
-      align: "center",
-      sorter: true,
-      width: 130,
-      render: (soLuong) => {
-        return soLuong === null ? (
-          <GiInfinity style={{ color: "red" }} />
-        ) : (
-          soLuong
-        );
-      },
-    },
-    {
       title: "Thời gian",
       dataIndex: "ngayBatDau",
       align: "center",
@@ -118,14 +103,11 @@ const index: React.FC = () => {
     },
     {
       title: "Loại Voucher",
+      dataIndex: "loaiVoucher",
       align: "center",
-      render: (_, voucher) => {
-        if (voucher.voucherChiTietList.length == 0) {
-          return <Tag color="magenta">Hóa đơn</Tag>;
-        } else {
-          return <Tag color="lime">Khách hàng</Tag>;
-        }
-      },
+      render: (loaiVoucher) => (
+        <Tag color={loaiVoucher?.mauSac}>{loaiVoucher?.moTa}</Tag>
+      ),
     },
     {
       title: "Trạng Thái",
@@ -144,20 +126,13 @@ const index: React.FC = () => {
       key: "id",
       align: "center",
       render: (id) => (
-        <Space>
-          <Button type="link" style={{ padding: 0 }}>
-            <Tooltip title="Chi tiết">
-              <EyeOutlined style={{ color: "orange" }} />
-            </Tooltip>
-          </Button>
-          <Tooltip title="Chỉnh sửa">
-            <Link to={`/admin/voucher/update/${id}`}>
-              <Button type="link" style={{ padding: 0 }}>
-                <EditOutlined />
-              </Button>
-            </Link>
-          </Tooltip>
-        </Space>
+        <Tooltip title="Chỉnh sửa">
+          <Link to={`/admin/voucher/update/${id}`}>
+            <Button type="link" style={{ padding: 0 }}>
+              <EditOutlined />
+            </Button>
+          </Link>
+        </Tooltip>
       ),
     },
   ];
