@@ -194,14 +194,15 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
           }
         }
       }
+      handleCapNhatGioHang(id);
       setDataGioHang(updatedData);
       setInputSoLuongList(updatedInputSoLuongList);
     }
   };
 
-  useEffect(() => {
-    handleCapNhatGioHang(id);
-  }, [dataGioHang]);
+  // useEffect(() => {
+  //   handleCapNhatGioHang(id);
+  // }, [dataGioHang]);
 
   const passTotalPriceToParentCallback = (price) => {
     // Gọi hàm callback để truyền tổng tiền lên component cha

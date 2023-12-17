@@ -33,6 +33,8 @@ import { useNavigate } from "react-router";
 function TableUpdateSanpham({ idSanPham }) {
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
+  const [idLoaiDe, setIdLoaiDe] = useState(null);
+  const [idDiaHinhSan, setIdDiaHinhSan] = useState(null);
   const [openModalMauSac, setOpenModalMauSac] = useState(false);
   const [dataChiTietSanPham, setDataChiTietSanPham] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -64,6 +66,8 @@ function TableUpdateSanpham({ idSanPham }) {
     try {
       const res = await request.get("chi-tiet-san-pham/" + idSanPham);
       setDataChiTietSanPham(res.data);
+      setIdLoaiDe(res.data[0].loaiDe.id);
+      setIdDiaHinhSan(res.data[0].diaHinhSan.id);
       const list = [];
       res.data.forEach((item: string) => {
         const uniqueId = `${item.mauSac.id}-${item.kichCo.id}`;
@@ -373,10 +377,10 @@ function TableUpdateSanpham({ idSanPham }) {
         soLuong: soLuong,
         giaTien: giaTien,
         loaiDe: {
-          id: 1,
+          id: idLoaiDe,
         },
         diaHinhSan: {
-          id: 1,
+          id: idDiaHinhSan,
         },
         sanPham: { id: idSanPham },
         trangThai: "ACTIVE",

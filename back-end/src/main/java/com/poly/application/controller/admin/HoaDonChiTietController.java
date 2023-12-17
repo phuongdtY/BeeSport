@@ -40,7 +40,7 @@ public class HoaDonChiTietController {
     }
 
     @PutMapping("/so-luong/{id}")
-    public ResponseEntity<?> updateHoaDonChiTietSoLuong(@PathVariable(name = "id") Long id, @RequestParam(name = "soLuong", defaultValue = "0") Integer soLuong) {
+    public ResponseEntity<?> updateHoaDonChiTietSoLuong(@PathVariable(name = "id") Long id, @RequestBody Integer soLuong) {
         return ResponseEntity.ok(service.updateSoLuong(id, soLuong));
     }
 
