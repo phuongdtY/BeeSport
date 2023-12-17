@@ -115,9 +115,7 @@ const TaiQuay: React.FC = () => {
             lastIndex = i - 1;
             if (item.children) {
               try {
-                await request.put(`hoa-don/${invoiceId}`, {
-                  trangThaiHoaDon: "CANCELLED",
-                });
+                await request.get(`hoa-don/cancel/${invoiceId}`);
                 // Cập nhật giao diện sau khi hóa đơn được hủy
                 fetchRecentInvoices();
                 message.success("Hóa đơn đã được hủy thành công");
