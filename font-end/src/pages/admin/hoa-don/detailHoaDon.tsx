@@ -269,13 +269,14 @@ const detailHoaDon: React.FC = () => {
     },
     {
       title: "Thời gian thanh toán",
-      dataIndex: "ngaySua",
-      key: "ngaySua",
+      dataIndex: "ngayThanhToan",
+      key: "ngayThanhToan",
       align: "center",
       width: "15%",
-      render: (ngaySua) => {
-        return dayjs(ngaySua).format("HH:mm, DD/MM/YYYY");
-      },
+      render: (ngayThanhToan) =>
+        ngayThanhToan
+          ? dayjs(ngayThanhToan).format("HH:mm, DD/MM/YYYY")
+          : "...",
     },
 
     {
@@ -472,7 +473,7 @@ const detailHoaDon: React.FC = () => {
       cancelText: "Hủy",
       onOk: async () => {
         try {
-          const res = await request.delete(`hoa-don/${id}`);
+          const res = await request.delete(`hoa-don-chi-tiet/delete/${id}`);
           fetchHoaDonData();
           if (res.data) {
             message.success("Xóa sản phẩm thành công");
@@ -605,7 +606,7 @@ const detailHoaDon: React.FC = () => {
       onOk: async () => {
         console.log(dataList);
         try {
-          const res = await request.post(
+          const res = await request.put(
             "hoa-don-chi-tiet/update-list",
             dataList
           );
@@ -870,21 +871,17 @@ const detailHoaDon: React.FC = () => {
                   </Space>
                   {edit == false && (
                     <Space>
-                      {((orderStatus?.ten === "PENDING" &&
-                        data?.loaiHoaDon?.ten === "COUNTER") ||
-                        (orderStatus?.ten === "CONFIRMED" &&
-                          data?.loaiHoaDon?.ten === "COUNTER") ||
-                        (orderStatus?.ten === "PENDING" &&
-                          data?.loaiHoaDon?.ten === "ONLINE")) && (
-                        <Button
-                          type="primary"
-                          onClick={async () => {
-                            showConfirmModal(confirmedStatus, "Xác nhận");
-                          }}
-                        >
-                          Xác nhận
-                        </Button>
-                      )}
+                      {orderStatus?.ten === "PENDING" &&
+                        data?.loaiHoaDon?.ten === "ONLINE" && (
+                          <Button
+                            type="primary"
+                            onClick={async () => {
+                              showConfirmModal(confirmedStatus, "Xác nhận");
+                            }}
+                          >
+                            Xác nhận
+                          </Button>
+                        )}
 
                       {((orderStatus?.ten === "PENDING" &&
                         data?.loaiHoaDon?.ten === "COUNTER") ||
@@ -932,172 +929,173 @@ const detailHoaDon: React.FC = () => {
                 </Space>
               </Col>
               <Col span={8}>
-                {/* {data?.sdtNguoiNhan !== null ||
-                  ("" && ( */}
-                <>
-                  <Divider>Thông tin nhận hàng</Divider>
+                {data?.sdtNguoiNhan !== null && (
+                  <>
+                    <Divider>Thông tin nhận hàng</Divider>
 
-                  <Form form={form} onFinish={onFinish} style={{ top: 0 }}>
-                    <Form.Item label={<Text strong>Người nhận</Text>}>
-                      {edit == true ? (
-                        <Form.Item
-                          name="nguoiNhan"
-                          style={{ margin: 0 }}
-                          rules={[
-                            {
-                              whitespace: true,
-                              required: true,
-                              message: "Vui lòng nhập người nhận!",
-                            },
-                          ]}
-                        >
-                          <Input />
-                        </Form.Item>
-                      ) : (
-                        <Text>{data?.nguoiNhan}</Text>
-                      )}
-                    </Form.Item>
-
-                    <Form.Item label={<Text strong>Số điện thoại</Text>}>
-                      {edit == true ? (
-                        <Form.Item
-                          name="sdtNguoiNhan"
-                          style={{ margin: 0 }}
-                          rules={[
-                            {
-                              whitespace: true,
-                              required: true,
-                              message: "Vui lòng nhập người nhận!",
-                            },
-                          ]}
-                        >
-                          <Input />
-                        </Form.Item>
-                      ) : (
-                        <Text>{data?.sdtNguoiNhan}</Text>
-                      )}
-                    </Form.Item>
-
-                    <Form.Item label={<Text strong>E-mail</Text>}>
-                      {edit == true ? (
-                        <Form.Item
-                          name="emailNguoiNhan"
-                          style={{ margin: 0 }}
-                          rules={[
-                            {
-                              whitespace: true,
-                              required: true,
-                              message: "Vui lòng nhập người nhận!",
-                            },
-                          ]}
-                        >
-                          <Input />
-                        </Form.Item>
-                      ) : (
-                        <Text>{data?.emailNguoiNhan}</Text>
-                      )}
-                    </Form.Item>
-
-                    <Form.Item label={<Text strong>Ghi chú đơn hàng</Text>}>
-                      {edit == true ? (
-                        <Form.Item name="ghiChu" style={{ margin: 0 }}>
-                          <Input />
-                        </Form.Item>
-                      ) : (
-                        <Text>{data?.ghiChu}</Text>
-                      )}
-                    </Form.Item>
-
-                    <Form.Item label={<Text strong>Phí ship</Text>}>
-                      {edit == true ? (
-                        <Form.Item
-                          name="phiShip"
-                          style={{ margin: 0 }}
-                          // rules={[
-                          //   {
-                          //     required: true,
-                          //     message: "Vui lòng nhập người nhận!",
-                          //   },
-                          // ]}
-                        >
-                          <InputNumber
-                            defaultValue={0}
-                            style={{ width: "100%" }}
-                            min={0}
-                            step={10000}
-                            formatter={(value) => `${formatGiaTienVND(value)}`}
-                            parser={(value: any) => value.replace(/\D/g, "")}
-                          />
-                        </Form.Item>
-                      ) : (
-                        <Text>{formatGiaTienVND(data?.phiShip)}</Text>
-                      )}
-                    </Form.Item>
-                    <Form.Item
-                      name="diaChiNguoiNhan"
-                      label={
-                        <Space>
-                          {edit == true ? (
-                            <Tooltip title="Chỉnh sửa">
-                              <Button
-                                onClick={() => setDiaChiOpen(true)}
-                                type="link"
-                                style={{ margin: 0, padding: 0 }}
-                              >
-                                <EditOutlined />
-                              </Button>
-                            </Tooltip>
-                          ) : null}
-
-                          <Text strong>Địa chỉ</Text>
-                        </Space>
-                      }
-                    >
-                      <Text>
-                        {edit == true
-                          ? form.getFieldValue("diaChiNguoiNhan")
-                          : data?.diaChiNguoiNhan}
-                      </Text>
-                    </Form.Item>
-
-                    {data?.trangThaiHoaDon.ten == "PENDING" && (
-                      <Form.Item>
-                        <Space>
-                          {edit == true ? (
-                            <>
-                              <Button
-                                danger
-                                htmlType="button"
-                                onClick={() => {
-                                  setEdit(false);
-                                  fetchHoaDonData();
-                                }}
-                              >
-                                Hủy chỉnh sửa
-                              </Button>
-                              <Button
-                                type="primary"
-                                style={{ background: "green" }}
-                                htmlType="submit"
-                              >
-                                Hoàn tất
-                              </Button>
-                            </>
-                          ) : (
-                            <Button
-                              icon={<EditOutlined />}
-                              type="primary"
-                              onClick={() => setEdit(true)}
-                            >
-                              Chỉnh sửa
-                            </Button>
-                          )}
-                        </Space>
+                    <Form form={form} onFinish={onFinish} style={{ top: 0 }}>
+                      <Form.Item label={<Text strong>Người nhận</Text>}>
+                        {edit == true ? (
+                          <Form.Item
+                            name="nguoiNhan"
+                            style={{ margin: 0 }}
+                            rules={[
+                              {
+                                whitespace: true,
+                                required: true,
+                                message: "Vui lòng nhập người nhận!",
+                              },
+                            ]}
+                          >
+                            <Input />
+                          </Form.Item>
+                        ) : (
+                          <Text>{data?.nguoiNhan}</Text>
+                        )}
                       </Form.Item>
-                    )}
-                  </Form>
-                </>
-                {/* ))} */}
+
+                      <Form.Item label={<Text strong>Số điện thoại</Text>}>
+                        {edit == true ? (
+                          <Form.Item
+                            name="sdtNguoiNhan"
+                            style={{ margin: 0 }}
+                            rules={[
+                              {
+                                whitespace: true,
+                                required: true,
+                                message: "Vui lòng nhập người nhận!",
+                              },
+                            ]}
+                          >
+                            <Input />
+                          </Form.Item>
+                        ) : (
+                          <Text>{data?.sdtNguoiNhan}</Text>
+                        )}
+                      </Form.Item>
+
+                      <Form.Item label={<Text strong>E-mail</Text>}>
+                        {edit == true ? (
+                          <Form.Item
+                            name="emailNguoiNhan"
+                            style={{ margin: 0 }}
+                            rules={[
+                              {
+                                whitespace: true,
+                                required: true,
+                                message: "Vui lòng nhập người nhận!",
+                              },
+                            ]}
+                          >
+                            <Input />
+                          </Form.Item>
+                        ) : (
+                          <Text>{data?.emailNguoiNhan}</Text>
+                        )}
+                      </Form.Item>
+
+                      <Form.Item label={<Text strong>Ghi chú đơn hàng</Text>}>
+                        {edit == true ? (
+                          <Form.Item name="ghiChu" style={{ margin: 0 }}>
+                            <Input />
+                          </Form.Item>
+                        ) : (
+                          <Text>{data?.ghiChu}</Text>
+                        )}
+                      </Form.Item>
+
+                      <Form.Item label={<Text strong>Phí ship</Text>}>
+                        {edit == true ? (
+                          <Form.Item
+                            name="phiShip"
+                            style={{ margin: 0 }}
+                            // rules={[
+                            //   {
+                            //     required: true,
+                            //     message: "Vui lòng nhập người nhận!",
+                            //   },
+                            // ]}
+                          >
+                            <InputNumber
+                              defaultValue={0}
+                              style={{ width: "100%" }}
+                              min={0}
+                              step={10000}
+                              formatter={(value) =>
+                                `${formatGiaTienVND(value)}`
+                              }
+                              parser={(value: any) => value.replace(/\D/g, "")}
+                            />
+                          </Form.Item>
+                        ) : (
+                          <Text>{formatGiaTienVND(data?.phiShip)}</Text>
+                        )}
+                      </Form.Item>
+                      <Form.Item
+                        name="diaChiNguoiNhan"
+                        label={
+                          <Space>
+                            {edit == true ? (
+                              <Tooltip title="Chỉnh sửa">
+                                <Button
+                                  onClick={() => setDiaChiOpen(true)}
+                                  type="link"
+                                  style={{ margin: 0, padding: 0 }}
+                                >
+                                  <EditOutlined />
+                                </Button>
+                              </Tooltip>
+                            ) : null}
+
+                            <Text strong>Địa chỉ</Text>
+                          </Space>
+                        }
+                      >
+                        <Text>
+                          {edit == true
+                            ? form.getFieldValue("diaChiNguoiNhan")
+                            : data?.diaChiNguoiNhan}
+                        </Text>
+                      </Form.Item>
+
+                      {data?.trangThaiHoaDon.ten == "PENDING" && (
+                        <Form.Item>
+                          <Space>
+                            {edit == true ? (
+                              <>
+                                <Button
+                                  danger
+                                  htmlType="button"
+                                  onClick={() => {
+                                    setEdit(false);
+                                    fetchHoaDonData();
+                                  }}
+                                >
+                                  Hủy chỉnh sửa
+                                </Button>
+                                <Button
+                                  type="primary"
+                                  style={{ background: "green" }}
+                                  htmlType="submit"
+                                >
+                                  Hoàn tất
+                                </Button>
+                              </>
+                            ) : (
+                              <Button
+                                icon={<EditOutlined />}
+                                type="primary"
+                                onClick={() => setEdit(true)}
+                              >
+                                Chỉnh sửa
+                              </Button>
+                            )}
+                          </Space>
+                        </Form.Item>
+                      )}
+                    </Form>
+                  </>
+                )}
               </Col>
               <Col span={1}></Col>
               <Col span={8}>

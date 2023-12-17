@@ -43,9 +43,25 @@ const index: React.FC = () => {
   const [data, setData] = useState<DataType[]>([]);
   const { confirm } = Modal;
 
+  const idGioHangTaiKhoan = localStorage.getItem("cartIdTaiKhoan");
+  const idGioHangNull = localStorage.getItem("cartId");
+  const currentPathname = window.location.pathname;
+
+  const fetchData = async () => {
+    try {
+      const res = await request.get(
+        `/gio-hang/${
+          idGioHangTaiKhoan != null ? idGioHangTaiKhoan : idGioHangNull
+        }`
+      );
+      setData(res.data.gioHangChiTietList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    gioHang();
-  }, [idGioHangNull, idGioHangTaiKhoan]);
+    fetchData();
+  }, [idGioHangTaiKhoan, idGioHangNull, currentPathname]);
 
   const confirmDelete = (id) => {
     confirm({
@@ -62,36 +78,11 @@ const index: React.FC = () => {
       setLoading(true);
       await request.delete(`gio-hang-chi-tiet/${id}`);
       setLoading(false);
-      gioHang();
+      fetchData();
       message.success("Xóa sản phẩm thành công");
     } catch (error) {
       message.error("Xóa sản phẩm thất bại");
       setLoading(false);
-    }
-  };
-
-  const gioHang = async () => {
-    setData([]);
-    if (idGioHangTaiKhoan != null) {
-      try {
-        setLoading(true);
-        const res = await request.get(`gio-hang/${idGioHangTaiKhoan}`);
-        setData(res.data.gioHangChiTietList);
-        setLoading(false);
-      } catch (error) {
-        message.error("Lấy sản phẩm giỏ hàng thất bại");
-        setLoading(false);
-      }
-    } else {
-      try {
-        setLoading(true);
-        const res = await request.get(`gio-hang/${idGioHangNull}`);
-        setData(res.data.gioHangChiTietList);
-        setLoading(false);
-      } catch (error) {
-        message.error("Lấy sản phẩm giỏ hàng thất bại");
-        setLoading(false);
-      }
     }
   };
 
@@ -328,9 +319,6 @@ const index: React.FC = () => {
                           TIẾP TỤC MUA SẮM
                         </Button>
                       </Link>
-                      <Button onClick={onUpdateCart} type="primary">
-                        CẬP NHẬT GIỎ HÀNG
-                      </Button>
                     </Space>
                   )}
                 />

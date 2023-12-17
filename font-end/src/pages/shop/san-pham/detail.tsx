@@ -175,18 +175,22 @@ const detailSanPham: React.FC = () => {
   };
 
   const getCartId = async () => {
-    let cartId = localStorage.getItem("cartId");
+    return new Promise(async (resolve, reject) => {
+      let cartId = localStorage.getItem("cartId");
 
-    if (!cartId) {
-      try {
-        cartId = await generateUniqueCartId();
-        localStorage.setItem("cartId", cartId);
-      } catch (error) {
-        console.error("Lỗi khi lấy ID giỏ hàng:", error);
+      if (!cartId) {
+        try {
+          const newCartId = await generateUniqueCartId();
+          localStorage.setItem("cartId", newCartId);
+          resolve(newCartId);
+        } catch (error) {
+          console.error("Lỗi khi lấy ID giỏ hàng:", error);
+          reject(error);
+        }
+      } else {
+        resolve(cartId);
       }
-    }
-
-    return cartId;
+    });
   };
 
   const onFinish = async () => {
@@ -203,20 +207,17 @@ const detailSanPham: React.FC = () => {
       return;
     }
 
-    let cartId;
-
-    // If idGioHangNull is null, get a new cartId
-    if (idGioHangNull == null && idGioHangTaiKhoan == null) {
-      getCartId();
-      cartId = localStorage.getItem("cartId");
-    } else if (idGioHangTaiKhoan != null) {
-      cartId = idGioHangTaiKhoan;
-    } else {
-      // Otherwise, use the provided idGioHangNull
-      cartId = idGioHangNull;
-    }
-
     try {
+      let cartId;
+
+      // If idGioHangTaiKhoan is not null, use it directly
+      if (idGioHangTaiKhoan != null) {
+        cartId = idGioHangTaiKhoan;
+      } else {
+        // Otherwise, use the provided idGioHangNull or generate a new one
+        cartId = await getCartId();
+      }
+
       const productResponse = await request.get(
         "/chi-tiet-san-pham/get-one/" + id,
         {
@@ -239,7 +240,7 @@ const detailSanPham: React.FC = () => {
         });
 
         message.success("Thêm sản phẩm vào giỏ hàng thành công");
-        navigate("/gio-hang");
+        await navigate("/gio-hang");
       }
     } catch (error) {
       message.error("Thêm sản phẩm vào giỏ hàng thất bại");
