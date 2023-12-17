@@ -135,6 +135,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         },
       });
 
+      console.log(response.data);
+
       if (response.status === 200) {
         const fetchedVouchers = response.data;
 
