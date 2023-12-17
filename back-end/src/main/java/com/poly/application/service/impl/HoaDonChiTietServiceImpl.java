@@ -176,7 +176,7 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
         ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(hoaDonChiTiet.getChiTietSanPham().getId()).orElse(null);
         if(soLuong> hoaDonChiTiet.getSoLuong()+chiTietSanPham.getSoLuong()){
             Integer soLuongTon =hoaDonChiTiet.getSoLuong()+chiTietSanPham.getSoLuong();
-            throw new BadRequestException("Bạn chỉ có thể mua tối đa"+ soLuongTon);
+            throw new BadRequestException("Bạn chỉ có thể mua tối đa "+ soLuongTon);
         }
         if (soLuong > hoaDonChiTiet.getSoLuong()) {
             Integer soLuongSuDung = soLuong - hoaDonChiTiet.getSoLuong();

@@ -57,6 +57,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
   const { confirm } = Modal;
   const [inputSoLuongList, setInputSoLuongList] = useState<Array<number>>([]);
   const { Text } = Typography;
+  const [maxValueSL, setMaxValueSL] = useState(0);
 
   useEffect(() => {
     // Khởi tạo mảng inputSoLuongList với giá trị mặc định là 0 theo độ dài của dataGioHang
@@ -80,17 +81,6 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
           <Space direction="vertical">
             <Text strong>{chiTietSanPham.sanPham.ten}</Text>
             <Text>{`[${chiTietSanPham.mauSac.ten} - ${chiTietSanPham.kichCo.kichCo} - ${chiTietSanPham.loaiDe.ten} - ${chiTietSanPham.diaHinhSan.ten}]`}</Text>
-            {chiTietSanPham.soLuong === 0 && (
-              <Text type="danger" strong italic>
-                Hết hàng
-              </Text>
-            )}
-            {chiTietSanPham.soLuong > 0 &&
-              record.soLuong > chiTietSanPham.soLuong && (
-                <Text type="danger" italic strong>
-                  Chỉ có thể mua tối đa {chiTietSanPham.soLuong} sản phẩm
-                </Text>
-              )}
           </Space>
         </Space>
       ),
@@ -101,6 +91,8 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
       width: 60,
       render: (text, record, index) => (
         <InputNumber
+          min={1}
+          max={record.soLuong + record.chiTietSanPham.soLuong}
           style={{ width: 60 }}
           value={inputSoLuongList[index] || record.soLuong}
           inputMode="numeric"
@@ -139,14 +131,21 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
       const response = await request.get(`/hoa-don-chi-tiet/so-luong/${id}`, {
         params: { soLuong: soLuong },
       });
+      getDataGioHang();
       console.log(response.data);
     } catch (error: any) {
       // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
       if (error.response.status == 400) {
-        message.error(error.response.data);
+        const inputString = error.response.data;
+        const match = inputString.match(/\b\d+\b/);
+
+        // Check if a match is found
+        const maxValue = match ? match[0] : null;
+        setMaxValueSL(maxValue);
       } else {
         console.error("Error updating cart:", error);
       }
+      getDataGioHang();
     }
   };
 
@@ -159,55 +158,18 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
       const updatedInputSoLuongList = [...inputSoLuongList];
       const updatedSoLuongTon = updatedData[index].chiTietSanPham.soLuong;
 
-      if (newSoLuongValue >= 1) {
-        updatedData[index] = {
-          ...productToUpdate,
-          soLuong: newSoLuongValue,
-          tongTien: newSoLuongValue * productToUpdate.donGia,
-        };
-        updatedInputSoLuongList[index] = newSoLuongValue;
-        // console.log("ID ChiTietSanPham:", productToUpdate.chiTietSanPham.id);
-        console.log("Số lượng mới:", newSoLuongValue);
-        handleCapNhatGioHang(productToUpdate.id, newSoLuongValue);
-      } else {
-        if (newSoLuongValue < 1) {
-          if (updatedSoLuongTon === 0) {
-            message.error(
-              `Sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] đã hết hàng`
-            );
-            updatedInputSoLuongList[index] = 0;
-          } else {
-            message.error("Số lượng không thể nhỏ hơn 1");
-            updatedData[index].soLuong = 1;
-            updatedData[index].tongTien = productToUpdate.donGia;
-            updatedInputSoLuongList[index] = 1;
-          }
-        }
-        // } else {
-        //   if (updatedSoLuongTon === 0) {
-        //     message.error(
-        //       `Sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] đã hết hàng`
-        //     );
-        //     updatedInputSoLuongList[index] = 0;
-        //   } else {
-        //     message.error(
-        //       `Bạn chỉ có thể mua tối đa ${updatedSoLuongTon} sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] `
-        //     );
-        //     updatedData[index].soLuong = updatedSoLuongTon;
-        //     updatedData[index].tongTien =
-        //       updatedSoLuongTon * productToUpdate.donGia;
-        //     updatedInputSoLuongList[index] = updatedSoLuongTon;
-        //   }
-        // }
-      }
+      updatedData[index] = {
+        ...productToUpdate,
+        soLuong: newSoLuongValue,
+        tongTien: newSoLuongValue * productToUpdate.donGia,
+      };
+      updatedInputSoLuongList[index] = newSoLuongValue;
+      handleCapNhatGioHang(productToUpdate.id, newSoLuongValue);
+
       setDataGioHang(updatedData);
       setInputSoLuongList(updatedInputSoLuongList);
     }
   };
-
-  // useEffect(() => {
-  //   handleCapNhatGioHang(id);
-  // }, [dataGioHang]);
 
   const passTotalPriceToParentCallback = (price) => {
     // Gọi hàm callback để truyền tổng tiền lên component cha
@@ -217,7 +179,6 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
   // Thêm một useEffect để theo dõi sự thay đổi của dataGioHang và tính toán tổng tiền
   useEffect(() => {
     const total = dataGioHang.reduce((acc, item) => acc + item.tongTien, 0);
-    // Gọi hàm callback để truyền tổng tiền lên component cha khi tổng tiền thay đổi
     passTotalPriceToParentCallback(total);
   }, [dataGioHang]);
 
