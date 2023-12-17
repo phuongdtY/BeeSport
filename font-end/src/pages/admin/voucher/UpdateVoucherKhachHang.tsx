@@ -117,6 +117,7 @@ export function UpdateVoucherKhachHang({ id }) {
             values.hinhThucGiam === 2 ? values.giaTriGiam : values.giamToiDa,
           giamToiDa: values.giamToiDa,
           soLuong: values.soLuong,
+          loaiVoucher: "CUSTOMER",
         };
         try {
           setLoading(true);
