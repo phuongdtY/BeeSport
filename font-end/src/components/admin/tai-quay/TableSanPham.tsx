@@ -140,10 +140,13 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
         params: { soLuong: soLuong },
       });
       console.log(response.data);
-    } catch (error) {
-      console.error("Error updating cart:", error);
+    } catch (error: any) {
       // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
-      message.error("Có lỗi xảy ra khi cập nhật giỏ hàng.");
+      if (error.response.status == 400) {
+        message.error(error.response.data);
+      } else {
+        console.error("Error updating cart:", error);
+      }
     }
   };
 
@@ -156,7 +159,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
       const updatedInputSoLuongList = [...inputSoLuongList];
       const updatedSoLuongTon = updatedData[index].chiTietSanPham.soLuong;
 
-      if (newSoLuongValue >= 1 && newSoLuongValue <= updatedSoLuongTon) {
+      if (newSoLuongValue >= 1) {
         updatedData[index] = {
           ...productToUpdate,
           soLuong: newSoLuongValue,
@@ -179,22 +182,23 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
             updatedData[index].tongTien = productToUpdate.donGia;
             updatedInputSoLuongList[index] = 1;
           }
-        } else {
-          if (updatedSoLuongTon === 0) {
-            message.error(
-              `Sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] đã hết hàng`
-            );
-            updatedInputSoLuongList[index] = 0;
-          } else {
-            message.error(
-              `Bạn chỉ có thể mua tối đa ${updatedSoLuongTon} sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] `
-            );
-            updatedData[index].soLuong = updatedSoLuongTon;
-            updatedData[index].tongTien =
-              updatedSoLuongTon * productToUpdate.donGia;
-            updatedInputSoLuongList[index] = updatedSoLuongTon;
-          }
         }
+        // } else {
+        //   if (updatedSoLuongTon === 0) {
+        //     message.error(
+        //       `Sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] đã hết hàng`
+        //     );
+        //     updatedInputSoLuongList[index] = 0;
+        //   } else {
+        //     message.error(
+        //       `Bạn chỉ có thể mua tối đa ${updatedSoLuongTon} sản phẩm ${updatedData[index].chiTietSanPham.sanPham.ten} [${updatedData[index].chiTietSanPham.mauSac.ten} - ${updatedData[index].chiTietSanPham.kichCo.kichCo}] `
+        //     );
+        //     updatedData[index].soLuong = updatedSoLuongTon;
+        //     updatedData[index].tongTien =
+        //       updatedSoLuongTon * productToUpdate.donGia;
+        //     updatedInputSoLuongList[index] = updatedSoLuongTon;
+        //   }
+        // }
       }
       setDataGioHang(updatedData);
       setInputSoLuongList(updatedInputSoLuongList);

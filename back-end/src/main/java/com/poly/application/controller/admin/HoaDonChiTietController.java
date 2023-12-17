@@ -1,5 +1,6 @@
 package com.poly.application.controller.admin;
 
+import com.poly.application.exception.BadRequestException;
 import com.poly.application.model.request.create_request.CreateHoaDonChiTietRequest;
 import com.poly.application.model.request.update_request.UpdatedHoaDonChiTietRequest;
 import com.poly.application.service.HoaDonChiTietService;
@@ -42,7 +43,12 @@ public class HoaDonChiTietController {
 
     @GetMapping("/so-luong/{id}")
     public ResponseEntity<?> updateHoaDonChiTietSoLuong(@PathVariable(name = "id") Long id, @RequestParam(name = "soLuong", defaultValue = "0") Integer soLuong) {
-        return ResponseEntity.ok(service.updateSoLuong(id, soLuong));
+        try {
+            return ResponseEntity.ok(service.updateSoLuong(id, soLuong));
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 
     @DeleteMapping("/delete/{id}")

@@ -5,6 +5,7 @@ import com.poly.application.entity.ChiTietSanPham;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.HoaDonChiTiet;
 import com.poly.application.entity.VoucherChiTiet;
+import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.HoaDonChiTietMapper;
 import com.poly.application.model.mapper.HoaDonMapper;
@@ -173,6 +174,10 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     public HoaDonChiTietResponse updateSoLuong(Long id, Integer soLuong) {
         HoaDonChiTiet hoaDonChiTiet = hoaDonChiTietRepository.findById(id).orElse(null);
         ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(hoaDonChiTiet.getChiTietSanPham().getId()).orElse(null);
+        if(soLuong> hoaDonChiTiet.getSoLuong()+chiTietSanPham.getSoLuong()){
+            Integer soLuongTon =hoaDonChiTiet.getSoLuong()+chiTietSanPham.getSoLuong();
+            throw new BadRequestException("Bạn chỉ có thể mua tối đa"+ soLuongTon);
+        }
         if (soLuong > hoaDonChiTiet.getSoLuong()) {
             Integer soLuongSuDung = soLuong - hoaDonChiTiet.getSoLuong();
             chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong() - soLuongSuDung);
