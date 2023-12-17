@@ -133,11 +133,12 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
   ];
 
   const handleCapNhatGioHang = async (id, soLuong) => {
+    console.log(soLuong);
+
     try {
-      const response = await request.put(
-        `/hoa-don-chi-tiet/so-luong/${id}`,
-        soLuong
-      );
+      const response = await request.get(`/hoa-don-chi-tiet/so-luong/${id}`, {
+        params: { soLuong: soLuong },
+      });
       console.log(response.data);
     } catch (error) {
       console.error("Error updating cart:", error);
@@ -163,7 +164,7 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
         };
         updatedInputSoLuongList[index] = newSoLuongValue;
         // console.log("ID ChiTietSanPham:", productToUpdate.chiTietSanPham.id);
-        // console.log("Số lượng mới:", newSoLuongValue);
+        console.log("Số lượng mới:", newSoLuongValue);
         handleCapNhatGioHang(productToUpdate.id, newSoLuongValue);
       } else {
         if (newSoLuongValue < 1) {
@@ -195,7 +196,6 @@ const TableSanPham: React.FC<TableSanPhamProps> = ({
           }
         }
       }
-      handleCapNhatGioHang(id);
       setDataGioHang(updatedData);
       setInputSoLuongList(updatedInputSoLuongList);
     }

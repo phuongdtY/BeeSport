@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,8 +40,8 @@ public class HoaDonChiTietController {
         return ResponseEntity.ok("Thành công");
     }
 
-    @PutMapping("/so-luong/{id}")
-    public ResponseEntity<?> updateHoaDonChiTietSoLuong(@PathVariable(name = "id") Long id, @RequestBody Integer soLuong) {
+    @GetMapping("/so-luong/{id}")
+    public ResponseEntity<?> updateHoaDonChiTietSoLuong(@PathVariable(name = "id") Long id, @RequestParam(name = "soLuong", defaultValue = "0") Integer soLuong) {
         return ResponseEntity.ok(service.updateSoLuong(id, soLuong));
     }
 
