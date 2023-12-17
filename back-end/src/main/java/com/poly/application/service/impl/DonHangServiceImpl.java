@@ -64,6 +64,12 @@ public class DonHangServiceImpl implements DonHangService {
     }
 
     @Override
+    public HoaDonResponse getOneDonHang(String maHoaDon) {
+        HoaDon hoaDon = repository.getOneDonHang(maHoaDon);
+        return mapper.convertHoaDonEntityToHoaDonResponse(hoaDon);
+    }
+
+    @Override
     public Long countSoHoaDon(Long taiKhoanId, String trangThaiHoaDon) {
         CommonEnum.TrangThaiHoaDon trangThai = null;
 

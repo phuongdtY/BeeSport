@@ -23,8 +23,10 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
             "hd.taiKhoan.soDienThoai LIKE %:searchText% OR hd.taiKhoan.email LIKE %:searchText% OR " +
             "hd.nguoiNhan LIKE %:searchText% OR hd.sdtNguoiNhan LIKE %:searchText% OR " +
             "hd.emailNguoiNhan LIKE %:searchText%) " +
-            "AND (:loaiHoaDon IS NULL OR hd.loaiHoaDon = :loaiHoaDon ) " +
-            "AND (:trangThaiHoaDon IS NULL OR hd.trangThaiHoaDon = :trangThaiHoaDon)")
+            "AND (:loaiHoaDon IS NULL OR hd.loaiHoaDon = :loaiHoaDon) " +
+            "AND (:trangThaiHoaDon IS NULL OR hd.trangThaiHoaDon = :trangThaiHoaDon))"
+    )
+
     Page<HoaDon> findPageHoaDon(
             Pageable pageable,
             @Param("searchText") String searchText,
@@ -46,13 +48,5 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
     );
     @Query("SELECT COUNT(hd) FROM HoaDon hd WHERE hd.trangThaiHoaDon = 'PENDING' AND hd.loaiHoaDon = 'COUNTER'")
     Long getSoLuongHoaDonCho();
-
-    @Transactional
-    @Modifying
-    @Query("UPDATE Voucher v SET v.soLuong = :soLuong WHERE v.id = :id")
-    void updateSoLuongVoucherHoaDon(
-            @Param("soLuong") Integer soLuong,
-            @Param("id")Long id
-    );
 
 }

@@ -50,7 +50,6 @@ const index: React.FC = () => {
       dataIndex: "listHinhAnhSanPham",
       key: "anh",
       align: "center",
-      sorter: true,
       render: (listHinhAnhSanPham) => (
         <Image
           width={80}

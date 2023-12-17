@@ -9,7 +9,7 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum GioiTinh{
+    public enum GioiTinh {
         MALE("MALE", "Nam", "blue"),
         FEMALE("FEMALE", "Nữ", "magenta"),
         OTHER("OTHER", "Khác", "default");
@@ -22,10 +22,10 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum Ten{
-        MANAGER("MANAGER","Quản Lý",""),
-        EMPLOYEE("EMPLOYEE","Nhân Viên",""),
-        CUSTOMER("CUSTOMER","Khách Hàng","");
+    public enum Ten {
+        MANAGER("MANAGER", "Quản Lý", ""),
+        EMPLOYEE("EMPLOYEE", "Nhân Viên", ""),
+        CUSTOMER("CUSTOMER", "Khách Hàng", "");
 
         private final String ten;
         private final String moTa;
@@ -35,7 +35,7 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum TrangThaiSanPham{
+    public enum TrangThaiSanPham {
         ACTIVE("ACTIVE", "Đang bán", "success"),
         INACTIVE("INACTIVE", "Ngừng kinh doanh", "default");
 
@@ -47,9 +47,9 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum LoaiHoaDon{
-        ONLINE("ONLINE","Website","green"),
-        COUNTER("COUNTER","Tại quầy","blue");
+    public enum LoaiHoaDon {
+        ONLINE("ONLINE", "Website", "green"),
+        COUNTER("COUNTER", "Tại quầy", "blue");
 
 
         private final String ten;
@@ -60,7 +60,7 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum TrangThaiHoaDon{
+    public enum TrangThaiHoaDon {
 
         PENDING("PENDING", "Chờ xác nhận", "warning"),
         CONFIRMED("CONFIRMED", "Đã xác nhận", "success"),
@@ -77,7 +77,7 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum TrangThaiHoaDonChiTiet{
+    public enum TrangThaiHoaDonChiTiet {
         APPROVED("APPROVED", "Đã Xác Nhận", "primary"),
         UNAPPROVED("UNAPPROVED", "Không Xác Nhận", "error");
 
@@ -89,7 +89,7 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum LoaiDiaChi{
+    public enum LoaiDiaChi {
         HOME("HOME", "Nhà riêng", ""),
         COMPANY("COMPANY", "Công ty", ""),
         OTHER("OTHER", "Khác", "");
@@ -102,7 +102,7 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum TrangThaiThuocTinh{
+    public enum TrangThaiThuocTinh {
         ACTIVE("ACTIVE", "Hoạt động", "success"),
         INACTIVE("INACTIVE", "Không hoạt động", "red");
 
@@ -114,7 +114,7 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum TrangThaiDiaChi{
+    public enum TrangThaiDiaChi {
         ACTIVE("ACTIVE", "Hoạt động", ""),
         INACTIVE("INACTIVE", "Không hoạt động", ""),
         DELETED("DELETED", "Xóa", ""),
@@ -128,7 +128,7 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum TrangThaiChiTietSanPham{
+    public enum TrangThaiChiTietSanPham {
         ACTIVE("ACTIVE", "Hoạt động", "success"),
         INACTIVE("INACTIVE", "Ngừng kinh doanh", "red"),
         OUT_OF_STOCK("OUT_OF_STOCK", "Hết hàng", "green"),
@@ -142,7 +142,7 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum TrangThaiHinhAnh{
+    public enum TrangThaiHinhAnh {
         DEFAULT("DEFAULT", "Mặc định", "success"),
         AVATAR("AVATAR", "Ảnh đại diện", "red"),
         DELETED("DELETED", "Đã xóa", "green");
@@ -155,9 +155,9 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum HinhThucGiam{
-        ACTIVE("ACTIVE", "Hoạt động","success"),
-        INACTIVE("INACTIVE", "Không hoạt động","error");
+    public enum HinhThucGiam {
+        ACTIVE("ACTIVE", "Hoạt động", "success"),
+        INACTIVE("INACTIVE", "Không hoạt động", "error");
 
         private final String ten;
         private final String moTa;
@@ -167,22 +167,35 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum TrangThaiVoucher{
-        UPCOMING("UPCOMING", "Sắp diễn ra","gold"),
-        ONGOING("ONGOING", "Đang diễn ra","green"),
-        ENDING_SOON("ENDING_SOON", "Sắp hết hạn","volcano"),
-        EXPIRED("EXPIRED", "Hết hạn","blue"),
-        OUT_OF_STOCK("OUT_OF_STOCK", "Đã hết","purple"),
-        CANCELLED("CANCELLED", "Hủy bỏ","red");
+    public enum TrangThaiVoucher {
+        UPCOMING("UPCOMING", "Sắp diễn ra", "gold"),
+        ONGOING("ONGOING", "Đang diễn ra", "green"),
+        ENDING_SOON("ENDING_SOON", "Sắp hết hạn", "volcano"),
+        EXPIRED("EXPIRED", "Hết hạn", "blue"),
+        OUT_OF_STOCK("OUT_OF_STOCK", "Đã hết", "purple"),
+        CANCELLED("CANCELLED", "Hủy bỏ", "red");
 
         private final String ten;
         private final String moTa;
         private final String mauSac;
     }
+
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum TrangThaiVoucherChiTiet{
+    public enum LoaiVoucher {
+        INVOICE("INVOICE", "Hóa đơn", "gold"),
+        ONGOING("CUSTOMER", "Khách hàng", "green");
+
+        private final String ten;
+        private final String moTa;
+        private final String mauSac;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum TrangThaiVoucherChiTiet {
         ACTIVE("ACTIVE", "Hoạt động", "success"),
         INACTIVE("INACTIVE", "Không hoạt động", "red"),
         DELETED("DELETED", "Đã xóa", "red");
@@ -195,10 +208,11 @@ public class CommonEnum {
     @AllArgsConstructor
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-    public enum TrangThaiGiaoDich{
-        SUCCESS("SUCCESS", "Thành công","success"),
-        FAILED("FAILED", "Thất bại","error"),
-        PENDING("PENDING", "Đang chờ xử lý","warning");
+    public enum TrangThaiGiaoDich {
+        SUCCESS("SUCCESS", "Đã thanh toán", "success"),
+        FAILED("FAILED", "Hủy bỏ", "error"),
+        PENDING("PENDING", "Chờ thanh toán", "warning"),
+        REFUND("REFUND", "Hoàn tiền", "processing");
 
         private final String ten;
         private final String moTa;

@@ -30,6 +30,8 @@ import TextArea from "antd/es/input/TextArea";
 import { formatGiaTienVND } from "~/utils/formatResponse";
 import KhoVoucher from "./KhoVoucher";
 const { Text } = Typography;
+const idGioHangTaiKhoan = localStorage.getItem("cartIdTaiKhoan");
+const idGioHangNull = localStorage.getItem("cartId");
 const tailLayout = {
   wrapperCol: { offset: 15, span: 9 },
 };
@@ -176,13 +178,22 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
           if (res.status === 201) {
             try {
               const hoaDonChiTietData = dataHoaDonChiTiet(res.data.id);
-              console.log(hoaDonChiTietData);
-
               const response = await request.post(
                 "hoa-don-chi-tiet/add-list",
                 hoaDonChiTietData
               );
-              await request.delete("gio-hang-chi-tiet/delete-all");
+              let cartId;
+              if (idGioHangTaiKhoan != null) {
+                cartId = idGioHangTaiKhoan;
+              } else {
+                // Otherwise, use the provided idGioHangNull
+                cartId = idGioHangNull;
+              }
+              await request.delete("gio-hang-chi-tiet/delete-all", {
+                params: {
+                  idGioHang: cartId,
+                },
+              });
             } catch (error) {
               console.log(error);
             }

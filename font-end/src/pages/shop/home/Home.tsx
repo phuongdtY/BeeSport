@@ -26,7 +26,6 @@ const { Meta } = Card;
 const Home: React.FC = () => {
   const [sanPhamMoiNhat, setSanPhamMoiNhat] = useState([]);
   const [sanPhamBanChay, setSanPhamBanChay] = useState([]);
-
   useEffect(() => {
     // Call API sản phẩm mới nhất
     const fetchMoiNhat = async () => {

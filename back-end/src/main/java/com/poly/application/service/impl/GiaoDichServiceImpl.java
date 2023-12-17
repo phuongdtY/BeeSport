@@ -3,10 +3,7 @@ package com.poly.application.service.impl;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.common.GenCode;
 import com.poly.application.entity.GiaoDich;
-import com.poly.application.entity.HoaDon;
-import com.poly.application.entity.MauSac;
 import com.poly.application.entity.TaiKhoan;
-import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
 import com.poly.application.model.mapper.GiaoDichMapper;
 import com.poly.application.model.request.create_request.CreateGiaoDichRequest;
@@ -17,8 +14,9 @@ import com.poly.application.repository.TaiKhoanRepository;
 import com.poly.application.service.GiaoDichService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,6 +40,9 @@ public class GiaoDichServiceImpl implements GiaoDichService {
         if (request.getTaiKhoan() != null) {
             TaiKhoan taiKhoan = taiKhoanRepository.findById(request.getTaiKhoan().getId()).orElse(null);
             createGiaoDich.setTaiKhoan(taiKhoan);
+        }
+        if(request.getNgayThanhToan()==null && request.getTrangThaiGiaoDich()== CommonEnum.TrangThaiGiaoDich.SUCCESS){
+            createGiaoDich.setNgayThanhToan(LocalDateTime.now());
         }
 
         createGiaoDich.setMaGiaoDich(GenCode.generateGiaoDichCode());
@@ -76,17 +77,25 @@ public class GiaoDichServiceImpl implements GiaoDichService {
         if (request.getPhuongThucThanhToan() != null) {
             giaoDich.setPhuongThucThanhToan(request.getPhuongThucThanhToan());
         }
+        if(request.getNgayThanhToan()==null && request.getTrangThaiGiaoDich()== CommonEnum.TrangThaiGiaoDich.SUCCESS){
+            giaoDich.setNgayThanhToan(LocalDateTime.now());
+        }
         return giaoDichMapper.convertGiaoDichEntityToGiaoDichResponse(giaoDichRepository.save(giaoDich));
     }
 
     @Override
-    public String updateByMa(String ma, CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich) {
+    public String updateByMa(String ma, String ngayThanhToan, CommonEnum.TrangThaiGiaoDich trangThaiGiaoDich) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+        // Chuyển đổi chuỗi thành LocalDateTime
+        LocalDateTime localDateTime = LocalDateTime.parse(ngayThanhToan, formatter);
         Optional<GiaoDich> detail = giaoDichRepository.findByMaGiaoDich(ma);
         if (detail.isEmpty()) {
             throw new NotFoundException("Giao dịch không tồn tại trong hệ thống!");
         }
         GiaoDich giaoDich = detail.get();
         giaoDich.setTrangThaiGiaoDich(trangThaiGiaoDich);
+        giaoDich.setNgayThanhToan(localDateTime);
         giaoDichRepository.save(giaoDich);
         if (giaoDich.getHoaDon().getLoaiHoaDon().getTen().equals("ONLINE") && giaoDich.getTaiKhoan() != null) {
             return "http://localhost:5173/don-hang";

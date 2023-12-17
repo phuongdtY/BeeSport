@@ -1,5 +1,6 @@
 package com.poly.application.model.request.create_request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.PhuongThucThanhToan;
@@ -22,6 +23,8 @@ public class CreateGiaoDichRequest {
     private String maGiaoDich;
 
     private BigDecimal soTienGiaoDich;
+
+    private LocalDateTime ngayThanhToan;
 
     private LocalDateTime ngayTao;
 

@@ -20,6 +20,7 @@ public interface HoaDonChiTietService {
     HoaDonChiTietResponse findById(Long id);
 
     HoaDonChiTietResponse update(Long id, UpdatedHoaDonChiTietRequest updatedHoaDonChiTietRequest);
+    HoaDonChiTietResponse updateSoLuong(Long id, Integer soLuong);
 
     void delete(Long id);
 

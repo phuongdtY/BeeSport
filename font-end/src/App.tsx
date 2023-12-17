@@ -43,6 +43,7 @@ import SanPham from "./pages/shop/san-pham/SanPham.tsx";
 import ThongKe from "./pages/admin/thong-ke/ThongKe.tsx";
 import ProtectedRoute from "./pages/admin/component/ProtextedRoute.tsx";
 import DonHangCuaToi from "./pages/shop/don-hang-cua-toi/DonHangCuaToi.tsx";
+import ThongTinDonHang from "./pages/shop/don-hang-cua-toi/ThongTinDonHang.tsx";
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
         <Route path="/gio-hang" element={<GioHang />} />
         <Route path="/san-pham/detail/:id" element={<DetailSanPham />} />
         <Route path="/don-hang" element={<DonHangCuaToi />} />
+        <Route path="/thong-tin-don-hang" element={<ThongTinDonHang />} />
       </Route>
       <Route
         path="/admin/*"

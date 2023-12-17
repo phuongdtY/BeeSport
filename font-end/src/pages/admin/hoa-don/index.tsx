@@ -50,47 +50,27 @@ const index: React.FC = () => {
       sorter: true,
       width: "5%",
     },
+
     {
-      title: "Tổng tiền",
-      dataIndex: "tongTien",
+      title: "Khách hàng",
+      dataIndex: "taiKhoan",
+      key: "taiKhoan",
+      align: "center",
+      sorter: true,
+      render: (taiKhoan, record) => {
+        return taiKhoan != null ? taiKhoan.hoVaTen : "Khách hàng lẻ";
+      },
+    },
+    {
+      title: "Tổng tiền đơn hàng",
+      dataIndex: "tongTienKhiGiam",
       key: "tongTien",
       align: "center",
       sorter: true,
       width: "20%",
       render: (tongTien) => <span>{formatGiaTienVND(tongTien)}</span>,
     },
-    {
-      title: "Số điện thoại người nhận",
-      dataIndex: "sdtNguoiNhan",
-      key: "sdtNguoiNhan",
-      align: "center",
-      sorter: true,
-      width: "20%",
-      render: (sdtNguoiNhan, record) => (
-        <span>
-          {(sdtNguoiNhan == null || sdtNguoiNhan === "") &&
-          record.loaiHoaDon?.ten === "COUNTER"
-            ? "Khách hàng lẻ"
-            : sdtNguoiNhan}
-        </span>
-      ),
-    },
-    {
-      title: "Tên người nhận",
-      dataIndex: "nguoiNhan",
-      key: "nguoiNhan",
-      align: "center",
-      sorter: true,
-      width: "20%",
-      render: (nguoiNhan, record) => (
-        <span>
-          {(nguoiNhan == null || nguoiNhan === "") &&
-          record.loaiHoaDon?.ten === "COUNTER"
-            ? "Khách hàng lẻ"
-            : nguoiNhan}
-        </span>
-      ),
-    },
+
     {
       title: "Loại Hóa Đơn",
       dataIndex: "loaiHoaDon",
