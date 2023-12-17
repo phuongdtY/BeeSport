@@ -194,17 +194,19 @@ public class HoaDonServiceImpl implements HoaDonService {
         }
 
 //        trừ số lượng sản phẩm trong kho đối với đơn online
-        if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CONFIRMED && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
+//        if (hoaDon.getTrangThaiHoaDon() == CommonEnum.TrangThaiHoaDon.CONFIRMED && hoaDon.getLoaiHoaDon() == CommonEnum.LoaiHoaDon.ONLINE) {
             for (HoaDonChiTiet hdct : hoaDon.getHoaDonChiTietList()) {
                 ChiTietSanPham ctsp = chiTietSanPhamRepository.findById(hdct.getChiTietSanPham().getId()).get();
                 ctsp.setSoLuong(ctsp.getSoLuong() - hdct.getSoLuong());
-                if (ctsp.getSoLuong() <= 0) {
-                    ctsp.setSoLuong(0);
-                    ctsp.setTrangThai(CommonEnum.TrangThaiChiTietSanPham.OUT_OF_STOCK);
-                }
+//                if (ctsp.getSoLuong() <= 0) {
+//                    ctsp.setSoLuong(0);
+//                    ctsp.setTrangThai(CommonEnum.TrangThaiChiTietSanPham.OUT_OF_STOCK);
+//                }
                 chiTietSanPhamRepository.save(ctsp);
             }
-        }
+//        }
+
+
 
         return hoaDonMapper.convertHoaDonEntityToHoaDonResponse(hoaDonRepository.save(hoaDon));
     }
