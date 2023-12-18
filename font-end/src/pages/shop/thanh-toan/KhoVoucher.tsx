@@ -133,37 +133,18 @@ const KhoVoucher = ({ open, close, onOK, tongTien, tuDongGiamGia }) => {
   return (
     <Modal
       title="Chọn BeeSport Voucher"
-      style={{ top: 60 }}
+      style={{ top: 20 }}
       width={520}
       open={open}
       onOk={() => onOK(voucher, tinhGiamGia(voucher))}
       onCancel={close}
     >
-      <Space>
-        <Input
-          //   status={statusInput}
-          size="large"
-          placeholder="Nhập mã giảm giá"
-          //   value={maVoucher}
-          //   onChange={(value) => setMavoucher(value.target.value)}
-          style={{ width: 370, borderRadius: 3 }}
-        />
-        <Button
-          size="large"
-          type="primary"
-          style={{ borderRadius: 5 }}
-          //   onClick={addVoucher}
-        >
-          Áp dụng
-        </Button>
-      </Space>
-      {/* <Text type="danger">{errorInput}</Text> */}
       {data.length > 0 ? (
         <List>
           <Radio.Group value={checkedVoucher}>
             <VirtualList
               data={data}
-              height={400}
+              height={500}
               itemHeight={47}
               itemKey="email"
             >
@@ -191,7 +172,7 @@ const KhoVoucher = ({ open, close, onOK, tongTien, tuDongGiamGia }) => {
                         }
                       >
                         <Card
-                          title={item.ten + item.loaiVoucher?.moTa}
+                          title={item.ten}
                           size="small"
                           style={{ width: "440px" }}
                         >
@@ -220,7 +201,6 @@ const KhoVoucher = ({ open, close, onOK, tongTien, tuDongGiamGia }) => {
                               style={{ padding: 0, margin: 0 }}
                             >
                               <Space>
-                                <Text>{item.trangThai.ten}</Text>
                                 <Text italic>
                                   {`Hạn sử dụng: ${dayjs(
                                     item.ngayKetThuc

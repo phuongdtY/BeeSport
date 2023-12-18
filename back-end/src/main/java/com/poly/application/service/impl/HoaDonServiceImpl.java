@@ -118,6 +118,18 @@ public class HoaDonServiceImpl implements HoaDonService {
             createHoaDon.setTaiKhoan(taiKhoan);
         }
 
+        if (createHoaDonRequest.getVoucher() != null){
+            Voucher voucher = voucherRepository.findById(createHoaDonRequest.getVoucher().getId()).orElse(null);
+            assert voucher != null;
+            if(voucher.getLoaiVoucher().getTen().equals( CommonEnum.LoaiVoucher.CUSTOMER.getTen())){
+                VoucherChiTiet vctFind = voucherRepository.findVoucherChiTiet(createHoaDonRequest.getVoucher().getId(), createHoaDonRequest.getTaiKhoan().getId());
+                vctFind.setSoLanSuDung(vctFind.getSoLanSuDung() - 1);
+                System.out.println("phuongdty");
+                voucherChiTietRepository.save(vctFind);
+            }
+
+        }
+
         createHoaDon.setMa(GenCode.generateHoaDonCode());
         HoaDon savedHoaDon = hoaDonRepository.save(createHoaDon);
         timeLine.setGhiChu("chờ xác nhận");
