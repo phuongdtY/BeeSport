@@ -66,7 +66,6 @@ function ModalAddDiaChi({ openModal, closeModal }) {
           setLoading(false);
           message.success("Thêm địa chỉ mới thành công");
           closeModal();
-          navigate("/");
         } catch (error: any) {
           console.log("Error:", error); // In lỗi ra để xác định lý do
           if (error.response && error.response.data) {
@@ -364,13 +363,6 @@ function ModalAddDiaChi({ openModal, closeModal }) {
         </Form.Item>
         <Form.Item {...tailLayout}>
           <Space>
-            <Button
-              type="dashed"
-              htmlType="reset"
-              // style={{marginRight:"100px" }}
-            >
-              Reset
-            </Button>
             <Button
               style={{ marginRight: "110px" }}
               type="primary"

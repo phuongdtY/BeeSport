@@ -16,6 +16,7 @@ import {
   Switch,
   DatePicker,
   message,
+  Checkbox,
 } from "antd";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -134,8 +135,8 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
           quanHuyen: Number(res.data?.quanHuyen),
           phuongXa: res.data?.phuongXa,
           diaChiCuThe: res.data?.diaChiCuThe,
-          // matKhau:res.data?.matKhau,
-          trangThaiDiaChi: trangThaiDiaChi, // Convert to boolean
+          trangThaiDiaChi:
+            res.data.trangThaiDiaChi.ten == "DEFAULT" ? true : false,
         });
         setData(res.data);
         setLoadingForm(false);
@@ -149,6 +150,13 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
   }, [id]);
 
   const onFinish = (values: UpdatedRequest) => {
+    const trangThaiDiaChi =
+      values.trangThaiDiaChi === undefined
+        ? "DEFAULT"
+        : values.trangThaiDiaChi == true
+        ? "DEFAULT"
+        : "INACTIVE";
+
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -168,10 +176,8 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
             phuongXa: values.phuongXa,
             diaChiCuThe: values.diaChiCuThe,
             taiKhoan: { id: idTaiKhoan },
-
-            trangThaiDiaChi: values.trangThaiDiaChi,
+            trangThaiDiaChi: trangThaiDiaChi,
           });
-          console.log("Id++++", res);
           if (res.data) {
             message.success("Cập nhật địa chỉ thành công");
             closeModal();
@@ -192,6 +198,7 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
 
   return (
     <Modal
+      title="CẬP NHẬT ĐỊA CHỈ"
       style={{ top: 20 }}
       width={600}
       open={openModal}
@@ -199,147 +206,133 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
       footer
     >
       <>
-        <Card title="CẬP NHẬT ĐỊA CHỈ">
-          <Skeleton loading={loadingForm}>
-            <Form
-              labelCol={{ span: 8 }}
-              wrapperCol={{ span: 16 }}
-              style={{ maxWidth: 500 }}
-              onFinish={onFinish}
-              layout="horizontal"
-              form={form}
+        <Skeleton loading={loadingForm}>
+          <Form
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            style={{ maxWidth: 500 }}
+            onFinish={onFinish}
+            layout="horizontal"
+            form={form}
+          >
+            <Form.Item
+              name="hoVaTen"
+              label="Họ và tên"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập tên !",
+                },
+              ]}
             >
-              <Form.Item
-                name="hoVaTen"
-                label="Họ và tên"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập tên !",
-                  },
-                ]}
-              >
-                <Input />
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="soDienThoai"
+              label="Số điện thoại"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn số điện thoại!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập email !",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="thanhPho"
+              label="Tỉnh / Thành"
+              rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa điền Tỉnh / Thành !",
+                },
+              ]}
+            >
+              <Select
+                options={provinces}
+                placeholder="Tỉnh/ Thành Phố"
+                onChange={(value) => {
+                  form.setFieldsValue({
+                    quanHuyen: undefined,
+                    phuongXa: undefined,
+                  });
+                  fetchDistricts(value);
+                }}
+              />
+            </Form.Item>
+            <Form.Item
+              name="quanHuyen"
+              label="Quận / Huyện:"
+              rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa điền Quận / Huyện!",
+                },
+              ]}
+            >
+              <Select
+                options={districts}
+                placeholder="Quận / Huyện"
+                onChange={(value) => {
+                  form.setFieldsValue({ phuongXa: undefined });
+                  fetchWards(value);
+                }}
+              />
+            </Form.Item>
+            <Form.Item
+              name="phuongXa"
+              label="Phường / Xã"
+              rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa điền Phường / Xã !",
+                },
+              ]}
+            >
+              <Select options={wards} placeholder="Phường / Xã" />
+            </Form.Item>
+            <Form.Item
+              name="diaChiCuThe"
+              label="Địa chỉ cụ thể"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập địa chỉ cụ thể !",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            {form.getFieldValue("trangThaiDiaChi") == false && (
+              <Form.Item label="Đặt làm mặc định">
+                <Form.Item name="trangThaiDiaChi" valuePropName="checked">
+                  <Checkbox />
+                </Form.Item>
               </Form.Item>
-              <Form.Item
-                name="soDienThoai"
-                label="Số điện thoại"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn số điện thoại!",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name="email"
-                label="Email"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập email !",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name="thanhPho"
-                label="Tỉnh / Thành"
-                rules={[
-                  {
-                    required: true,
-                    message: "Bạn chưa điền Tỉnh / Thành !",
-                  },
-                ]}
-              >
-                <Select
-                  options={provinces}
-                  placeholder="Tỉnh/ Thành Phố"
-                  onChange={(value) => {
-                    form.setFieldsValue({
-                      quanHuyen: undefined,
-                      phuongXa: undefined,
-                    });
-                    fetchDistricts(value);
-                  }}
-                />
-              </Form.Item>
-              <Form.Item
-                name="quanHuyen"
-                label="Quận / Huyện:"
-                rules={[
-                  {
-                    required: true,
-                    message: "Bạn chưa điền Quận / Huyện!",
-                  },
-                ]}
-              >
-                <Select
-                  options={districts}
-                  placeholder="Quận / Huyện"
-                  onChange={(value) => {
-                    form.setFieldsValue({ phuongXa: undefined });
-                    fetchWards(value);
-                  }}
-                />
-              </Form.Item>
-              <Form.Item
-                name="phuongXa"
-                label="Phường / Xã"
-                rules={[
-                  {
-                    required: true,
-                    message: "Bạn chưa điền Phường / Xã !",
-                  },
-                ]}
-              >
-                <Select options={wards} placeholder="Phường / Xã" />
-              </Form.Item>
-              <Form.Item
-                name="diaChiCuThe"
-                label="Địa chỉ cụ thể"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập địa chỉ cụ thể !",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name="trangThaiDiaChi"
-                label="Trạng thái địa chỉ"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn trạng thái địa chỉ",
-                  },
-                ]}
-              >
-                <Radio.Group>
-                  <Radio value="ACTIVE">Hoạt động</Radio>
-                  {/* <Radio value="INACTIVE">Không hoạt động</Radio> */}
-                  {/* <Radio value="DELETED">Xóa</Radio> */}
-                  <Radio value="DEFAULT">Mặc định</Radio>
-                </Radio.Group>
-              </Form.Item>
-              <Form.Item wrapperCol={{ offset: 17 }}>
-                <Space>
-                  <Button type="dashed" htmlType="reset">
-                    Reset
-                  </Button>
-                  <Button type="primary" htmlType="submit">
-                    Cập nhật
-                  </Button>
-                </Space>
-              </Form.Item>
-            </Form>
-          </Skeleton>
-        </Card>
+            )}
+
+            <Form.Item wrapperCol={{ offset: 20 }}>
+              <Space>
+                <Button type="primary" htmlType="submit">
+                  Cập nhật
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Skeleton>
       </>
     </Modal>
   );
