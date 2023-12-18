@@ -322,7 +322,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       !hoaDonData.diaChiNguoiNhan ||
       !hoaDonData.nguoiNhan ||
       !hoaDonData.sdtNguoiNhan ||
-      !dataHoaDon.emailNguoiNhan
+      !hoaDonData.emailNguoiNhan
     ) {
       message.warning("Vui lòng điền đầy đủ thông tin người nhận và địa chỉ.");
       return;

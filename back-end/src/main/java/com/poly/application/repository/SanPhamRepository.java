@@ -1,14 +1,11 @@
 package com.poly.application.repository;
 
 import com.poly.application.common.CommonEnum;
-import com.poly.application.entity.ChiTietSanPham;
-import com.poly.application.entity.DiaHinhSan;
-import com.poly.application.entity.KichCo;
-import com.poly.application.entity.LoaiDe;
-import com.poly.application.entity.MauSac;
 import com.poly.application.entity.SanPham;
-import com.poly.application.entity.ThuongHieu;
-import com.poly.application.model.response.*;
+import com.poly.application.model.response.SanPhamBanChayResponse;
+import com.poly.application.model.response.SanPhamDetailResponse;
+import com.poly.application.model.response.SanPhamFilterResponse;
+import com.poly.application.model.response.SanPhamMoiNhatResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -88,7 +85,6 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "GROUP BY sp.id, sp.ten, ha.duongDan, sp.ngayTao " +
             "ORDER BY SUM(hdct.soLuong) DESC")
     List<SanPhamBanChayResponse> findAllSanPhamBanChay();
-
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamDetailResponse(sp.id, sp.ma, sp.ten, sp.moTa, MIN(cps.giaTien), MAX(cps.giaTien), sp.trangThai) " +
             "FROM SanPham sp " +
