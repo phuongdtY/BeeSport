@@ -100,7 +100,7 @@ public class GiaoDichServiceImpl implements GiaoDichService {
         if (giaoDich.getHoaDon().getLoaiHoaDon().getTen().equals("ONLINE") && giaoDich.getTaiKhoan() != null) {
             return "http://localhost:5173/don-hang";
         } else if (giaoDich.getHoaDon().getLoaiHoaDon().getTen().equals("ONLINE") && giaoDich.getTaiKhoan() == null) {
-            return "http://localhost:5173/san-pham";
+            return "http://localhost:5173/thong-tin-don-hang";
         } else if (giaoDich.getHoaDon().getLoaiHoaDon().getTen().equals("COUNTER")) {
             return "http://localhost:5173/admin/ban-hang-tai-quay";
         }

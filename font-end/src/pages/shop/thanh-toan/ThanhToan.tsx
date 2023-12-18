@@ -32,6 +32,7 @@ import { formatGiaTienVND } from "~/utils/formatResponse";
 import KhoVoucher from "./KhoVoucher";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import ModalDiaChi22 from "./ModalDiaChi";
+import requestClient from "~/utils/requestClient";
 const { Text } = Typography;
 const idGioHangTaiKhoan = localStorage.getItem("cartIdTaiKhoan");
 const idGioHangNull = localStorage.getItem("cartId");
@@ -68,7 +69,39 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
   const tongTien = () => {
     return tamTinh - giamGiam + phiShip;
   };
+  useEffect(() => {
+    const getOne = async () => {
+      try {
+        const res = await request.get("dia-chi/default", {
+          params: {
+            idTaiKhoan: idTaiKhoan,
+          },
+        });
+        console.log(res.data);
+        const values = res.data;
+        const districts = await fetchDistricts(values.thanhPho);
+        const wards = await fetchWards(values.quanHuyen);
+        setIdQuanHuyen(values.quanHuyen);
+        setIdPhuongXa(values.phuongXa);
 
+        form.setFieldsValue({
+          hoVaTen: values.hoVaTen,
+          soDienThoai: values.soDienThoai,
+          email: values.email,
+          thanhPho: Number(values.thanhPho),
+          quanHuyen: Number(values.quanHuyen),
+          phuongXa: values.phuongXa,
+          diaChiCuThe: values.diaChiCuThe,
+          phiShip: phiShip,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (idTaiKhoan !== null) {
+      getOne();
+    }
+  }, [idTaiKhoan]);
   useEffect(() => {
     const getPhiShip = async () => {
       try {
@@ -247,9 +280,14 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
                 });
                 window.location.href = resVNPay.data;
               } else if (res.status == 201 && values.phuongThucThanhToan == 3) {
-                setLoading(false);
-                navigate("/");
-                message.success("Đặt hàng thành công");
+                try {
+                  await requestClient.get(`don-hang/sendEmail/${res.data.id}`);
+                  message.success("Đặt hàng thành công");
+                  setLoading(false);
+                  navigate("/thong-tin-don-hang");
+                } catch (error) {
+                  console.log(error);
+                }
               }
             } catch (error) {
               console.log(error);

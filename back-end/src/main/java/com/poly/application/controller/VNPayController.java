@@ -3,6 +3,8 @@ package com.poly.application.controller;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.config.VNPayConfig;
 import com.poly.application.model.response.GiaoDichResponse;
+import com.poly.application.model.response.HoaDonResponse;
+import com.poly.application.service.DonHangService;
 import com.poly.application.service.GiaoDichService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +36,15 @@ import java.util.TimeZone;
 public class VNPayController {
 
     @Autowired
-    private GiaoDichService service;
+    private GiaoDichService giaoDichService;
+
+    @Autowired
+    private DonHangService donHangService;
 
     @GetMapping("/create-payment")
     public ResponseEntity<?> createdPayment(@RequestParam("soTienThanhToan") long soTienThanhToan,
                                             @RequestParam("maGiaoDich") String vnp_TxnRef,
-                                            @RequestParam(value = "vnp_BankCode",defaultValue = "") String vnp_BankCode
+                                            @RequestParam(value = "vnp_BankCode", defaultValue = "") String vnp_BankCode
 
 
     ) throws UnsupportedEncodingException {
@@ -131,11 +136,15 @@ public class VNPayController {
         String maGiaoDich = request.getParameter("vnp_TxnRef");
         String ngayThanhToan = request.getParameter("vnp_PayDate");
         if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
-            String url = service.updateByMa(maGiaoDich, ngayThanhToan, CommonEnum.TrangThaiGiaoDich.SUCCESS);
-            GiaoDichResponse giaoDichResponse = service.findByMaGiaoDich(maGiaoDich);
-            return new RedirectView(url + "?hoaDon="+giaoDichResponse.getHoaDon().getId()+"&&thanhToan=success");
+            String url = giaoDichService.updateByMa(maGiaoDich, ngayThanhToan, CommonEnum.TrangThaiGiaoDich.SUCCESS);
+            GiaoDichResponse giaoDichResponse = giaoDichService.findByMaGiaoDich(maGiaoDich);
+            HoaDonResponse hoaDonResponse = donHangService.getOneDonHang(giaoDichResponse.getHoaDon().getMa());
+            if(hoaDonResponse.getLoaiHoaDon()== CommonEnum.LoaiHoaDon.ONLINE){
+                donHangService.sendEmailDonHang(hoaDonResponse.getId());
+            }
+            return new RedirectView(url + "?hoaDon=" + giaoDichResponse.getHoaDon().getId() + "&&thanhToan=success");
         } else {
-            String url = service.updateByMa(maGiaoDich,ngayThanhToan , CommonEnum.TrangThaiGiaoDich.PENDING);
+            String url = giaoDichService.updateByMa(maGiaoDich, ngayThanhToan, CommonEnum.TrangThaiGiaoDich.PENDING);
             return new RedirectView(url + "?thanhToan=failed");
         }
     }

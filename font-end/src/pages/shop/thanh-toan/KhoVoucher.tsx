@@ -25,10 +25,14 @@ const KhoVoucher = ({ open, close, onOK, tongTien, tuDongGiamGia }) => {
   const [data, setData] = useState([]);
   const [voucher, setVoucher] = useState(null);
   const [checkedVoucher, setCheckedVoucher] = useState(null);
-
+  const idTaiKhoan = localStorage.getItem("acountId");
   const fetchData = async () => {
     try {
-      const res = await request.get("voucher/list");
+      const res = await request.get("voucher/list-su-dung", {
+        params: {
+          idTaiKhoan: idTaiKhoan,
+        },
+      });
       setData(res.data);
     } catch (error) {
       console.error(error);
@@ -90,7 +94,11 @@ const KhoVoucher = ({ open, close, onOK, tongTien, tuDongGiamGia }) => {
   useEffect(() => {
     const getVoucherSuDung = async () => {
       try {
-        const res = await request.get("voucher/list-su-dung");
+        const res = await request.get("voucher/list-su-dung", {
+          params: {
+            idTaiKhoan: idTaiKhoan,
+          },
+        });
         timGiamGiaCaoNhat(res.data);
       } catch (error) {
         console.error(error);
@@ -106,69 +114,6 @@ const KhoVoucher = ({ open, close, onOK, tongTien, tuDongGiamGia }) => {
     return 0;
   };
 
-  useEffect(() => {
-    // Update the remaining time every second
-    const intervalId = setInterval(() => {
-      setData((prevData) =>
-        prevData.map((item) => ({
-          ...item,
-          formattedRemainingTime: getFormattedRemainingTime(item),
-        }))
-      );
-    }, 1000);
-
-    // Clear the interval when the component unmounts
-    return () => clearInterval(intervalId);
-  }, []);
-  const getFormattedRemainingTime = (item) => {
-    const now = new Date();
-    const ngayBatDau = new Date(item.ngayBatDau);
-    const ngayKetThuc = new Date(item.ngayKetThuc);
-
-    const duration = ngayBatDau > now ? ngayBatDau - now : ngayKetThuc - now;
-
-    const days = Math.floor(duration / (1000 * 60 * 60 * 24));
-    const hours = Math.floor(
-      (duration % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-    const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((duration % (1000 * 60)) / 1000);
-
-    let formattedTime = "";
-
-    if (days > 0) {
-      formattedTime += `${days} ngày `;
-    }
-    if (hours > 0) {
-      formattedTime += `${hours} giờ `;
-    }
-    if (minutes > 0) {
-      formattedTime += `${minutes} phút `;
-    }
-    if (seconds > 0 || formattedTime === "") {
-      formattedTime += `${seconds} giây`;
-    }
-
-    return formattedTime.trim(); // Remove leading/trailing spaces
-  };
-
-  const getFormattedStatus = (item) => {
-    switch (item.trangThai.ten) {
-      case "UPCOMING":
-        return `Sắp diễn ra: ${getFormattedRemainingTime(item)}`;
-      case "ONGOING":
-        return `Hạn sử dụng: ${dayjs(item.ngayKetThuc).format("DD-MM-YYYY")}`;
-      case "ENDING_SOON":
-        return (
-          <Text type="danger">
-            Sắp hết hạn: {getFormattedRemainingTime(item)}
-          </Text>
-        );
-      default:
-        return item.trangThai.moTa;
-    }
-  };
-  const conicColors = { "10%": "#87d068", "50%": "#ffe58f", "100%": "#FF0000" };
   const tinhGiamGia = (voucher) => {
     if (voucher !== null || undefined) {
       const { hinhThucGiam, giamToiDa, giaTriGiam } = voucher;
@@ -246,7 +191,7 @@ const KhoVoucher = ({ open, close, onOK, tongTien, tuDongGiamGia }) => {
                         }
                       >
                         <Card
-                          title={item.ten}
+                          title={item.ten + item.loaiVoucher?.moTa}
                           size="small"
                           style={{ width: "440px" }}
                         >
@@ -274,27 +219,13 @@ const KhoVoucher = ({ open, close, onOK, tongTien, tuDongGiamGia }) => {
                               direction="vertical"
                               style={{ padding: 0, margin: 0 }}
                             >
-                              {item.soLuong !== null ? (
-                                <Progress
-                                  style={{
-                                    width: "380px",
-                                    padding: 0,
-                                    margin: 0,
-                                  }}
-                                  size={"small"}
-                                  percent={phanTram(item)}
-                                  strokeColor={conicColors}
-                                  showInfo={false}
-                                />
-                              ) : null}
                               <Space>
-                                <Text
-                                  type="secondary"
-                                  style={{ padding: 0, margin: 0 }}
-                                >
-                                  Đã dùng :{phanTram(item)}%,
+                                <Text>{item.trangThai.ten}</Text>
+                                <Text italic>
+                                  {`Hạn sử dụng: ${dayjs(
+                                    item.ngayKetThuc
+                                  ).format("DD-MM-YYYY")}`}
                                 </Text>
-                                <Text>{getFormattedStatus(item)}</Text>
                               </Space>
                             </Space>
                           </Space>

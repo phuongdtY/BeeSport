@@ -199,7 +199,7 @@ export function UpdateVoucherKhachHang({ id }) {
         <Space>
           <InputNumber
             value={soLanSuDung}
-            min={1}
+            min={0}
             style={{ width: "100%" }}
             formatter={(value) => `${formatSoLuong(value)}`}
             parser={(value) => value.replace(/,/g, "")}

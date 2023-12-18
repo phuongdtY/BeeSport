@@ -1,7 +1,7 @@
 import axios from "axios";
 const requestClient = axios.create({
   baseURL: "http://localhost:8080/client/api",
-  timeout: 5000,
+  timeout: 7000,
 });
 requestClient.interceptors.request.use(
   (config) => {

@@ -109,6 +109,7 @@ const ThongTinDonHang: React.FC = () => {
       </Text>
       <br />
       <Input
+        allowClear
         style={{ width: 400, marginLeft: 60 }}
         value={maHoaDon}
         onChange={(e) => handleSearch(e.target.value)} // Sử dụng prop onChange để lấy giá trị từ ô Input khi nó thay đổi
@@ -178,7 +179,7 @@ const ThongTinDonHang: React.FC = () => {
         </>
       ) : (
         <Empty
-          style={{ margin: "140px 0px" }}
+          style={{ margin: "99px 0px" }}
           //   description={"Không tìm thấy đơn hàng có mã " + "#" + maHoaDon}
           description={`Không tìm thấy đơn hàng `}
         />
