@@ -21,10 +21,17 @@ const DangNhap: React.FC = () => {
   const onFinish = async (values: DangNhapRequest) => {
     try {
       const response = await requestDangNhap.post("/sign-in", values);
+      const { refreshToken,roleId,acountId,ten } = response.data; // Assuming your response contains accessToken and refreshToken
       const { refreshToken, roleId, acountId } = response.data; // Assuming your response contains accessToken and refreshToken
       localStorage.setItem("refreshToken", refreshToken); // Store the access token
       localStorage.setItem("roleId", roleId);
       localStorage.setItem("acountId", acountId);
+      localStorage.setItem("ten", ten);
+      // localStorage.setItem("idGioHang", idGioHang);
+      // console.log("IdGioHang",idGioHang)
+      console.log("acountId",acountId)
+      // console.log("AA  "+ response.data.refreshToken)
+      console.log("BB  "+ response.data.roleId )
 
       if (response.data.roleId === 1) {
         // localStorage.setItem("2","11")
@@ -78,22 +85,23 @@ const DangNhap: React.FC = () => {
           onFinish={onFinish}
           layout="horizontal"
         >
-          <Form.Item
-            name="sdt"
-            rules={[
-              {
-                required: true,
-                message: "Bạn chưa điền số điện thoại!",
-              },
-              {
-                pattern: /^0[35789]\d{8}$/,
-                message: "Số điện thoại không hợp lệ!",
-              },
-            ]}
-            style={{ width: "100%" }} // Đặt chiều rộng 100%
-          >
-            <Input prefix={<PhoneOutlined />} placeholder="Số Điện Thoại" />
-          </Form.Item>
+
+<Form.Item
+                name="sdt"
+                rules={[
+                  {
+                    required: true,
+                    message: "Bạn chưa điền số điện thoại!",
+                  },
+                  {
+                    pattern: /^0[35789]\d{8}$/,
+                    message: "Số điện thoại không hợp lệ!",
+                  },
+                ]}
+                style={{ width: "100%" }} // Đặt chiều rộng 100%
+              >
+                <Input prefix={<PhoneOutlined />} placeholder="Số Điện Thoại" />
+              </Form.Item>
           <Form.Item
             name="matKhau"
             rules={[
@@ -104,7 +112,10 @@ const DangNhap: React.FC = () => {
             ]}
             style={{ width: "100%" }}
           >
-            <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder="Mật khẩu"
+            />
           </Form.Item>
           <Form.Item style={{ width: 500 }}>
             <Row style={{ marginBottom: 10, height: 35 }}>
@@ -148,7 +159,9 @@ const DangNhap: React.FC = () => {
             </Row>
           </Form.Item>
           {error && (
-            <div style={{ color: "red", marginTop: "10px" }}>{error}</div>
+            <div style={{ color: "red", marginTop: "10px" }}>
+              {error}
+            </div>
           )}
         </Form>
       </Card>

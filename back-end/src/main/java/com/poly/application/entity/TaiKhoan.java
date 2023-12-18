@@ -37,8 +37,7 @@ import java.util.List;
 @Setter
 @Table(name = "tai_khoan")
 @Entity
-@ToString
-@Builder
+//@ToString
 public class TaiKhoan implements Serializable {
 
     @Id

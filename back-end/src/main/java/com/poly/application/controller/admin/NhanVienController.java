@@ -5,6 +5,7 @@ import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
 import com.poly.application.model.response.TaiKhoanResponse;
 import com.poly.application.service.QuenMatKhauService;
 import com.poly.application.service.TaiKhoanService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 @CrossOrigin("*")
 @RestController
@@ -54,6 +57,14 @@ public class NhanVienController {
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody UpdatedTaiKhoanRequest request) {
         TaiKhoanResponse taiKhoan = taiKhoanService.update(id, request);
         return ResponseEntity.ok(taiKhoan);
+    }
+
+    @GetMapping("/excel")
+    public void exportExcel(HttpServletResponse response) throws IOException {
+        byte[] excelFile = taiKhoanService.exportExcelTaiKhoan();
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=nhan_vien.xlsx");
+        response.getOutputStream().write(excelFile);
     }
 
 

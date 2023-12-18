@@ -7,6 +7,7 @@ import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
 import com.poly.application.model.response.TaiKhoanResponse;
 import org.springframework.data.domain.Page;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -32,6 +33,12 @@ public interface TaiKhoanService {
     TaiKhoan getAllTaiKhoan(String email);
 
     String changePassword(PasswordRequest passwordRequest);
+
+    byte[] exportExcelTaiKhoan() throws IOException;
+
+    byte[] exportExcelTaiKhoan1() throws IOException;
+     List<TaiKhoan> getAllTaiKhoan();
+
 
 }
 ;

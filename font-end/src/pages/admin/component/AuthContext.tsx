@@ -1,12 +1,20 @@
+import React from "react";
+import { Route, Navigate } from "react-router-dom";
+import AdminLayout from "~/layouts/AdminLayout/AdminLayout";
 
-class AuthService {
+
+const ProtectedKH: React.FC<{
+  element: React.ReactElement;
+}> = ({ element }) => {
+  const refreshToken = localStorage.getItem("refreshToken");
+  const isAuthenticated = Boolean(refreshToken);
+  if (isAuthenticated) {
+        return element;
+  }else{return <Navigate to="/sign-up" replace={true} state={{ from: "/" }} />;}
+
+  // Redirect to sign-in page if not authenticated
   
-  getCurrentUser(value : string) {
-    const userStr = localStorage.getItem(value);
-    if (userStr) return JSON.parse(userStr);
+};
 
-    return null;
-  }
-}
 
-export default new AuthService();
+export default ProtectedKH;

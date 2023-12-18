@@ -80,6 +80,9 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         user.setVaiTro(roleRepository.findId(Long.valueOf(3)));
         user.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
         user.setAnhDaiDien("defaultAvatar.jpg");
+        if(user.getGioiTinh()==null){
+            user.setGioiTinh(CommonEnum.GioiTinh.OTHER);
+        }
         user.setMatKhau(passwordEncoder.encode(signUpRequest.getMatKhau()));
         TaiKhoan taiKhoan = userRepository.save(user);
         taiKhoan.setMatKhau(signUpRequest.getMatKhau());
@@ -99,11 +102,16 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         Optional<VaiTro> roleId = roleRepository.findById(Long.valueOf(1));
         VaiTro role = roleId.get();
             TaiKhoan user = new TaiKhoan();
-            user.setHoVaTen("Cao Văn Doanh");
-            user.setSoDienThoai("0865636648");
-            user.setEmail("cvdoanh2k3@gmail.com");
+            user.setHoVaTen("hoanggiang");
+            user.setSoDienThoai("0348079280");
+            user.setEmail("giangminh0302@gmail.com");
             user.setVaiTro(role);
-            user.setMatKhau(new BCryptPasswordEncoder().encode("123"));
+            user.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
+            user.setAnhDaiDien("defaultAvatar.jpg");
+            if(user.getGioiTinh()==null){
+                user.setGioiTinh(CommonEnum.GioiTinh.OTHER);
+            }
+            user.setMatKhau(new BCryptPasswordEncoder().encode("Aa123123@"));
             userRepository.save(user);
 //        GioHang gioHang = new GioHang();
 //        gioHang.setMaGioHang(GenCode.generateGioHangCode());
@@ -136,6 +144,7 @@ public class AuthenticationServiceIplm implements AuthenticationService {
         jwtAuthenticationResponse.setRoleId(taiKhoan.getVaiTro().getId());
         jwtAuthenticationResponse.setAcountId(taiKhoan.getId());
         jwtAuthenticationResponse.setSdt(taiKhoan.getSoDienThoai());
+        jwtAuthenticationResponse.setTen(taiKhoan.getHoVaTen());
 //        jwtAuthenticationResponse.setIdGioHang(gioHang.getId());
         return jwtAuthenticationResponse;
     }
