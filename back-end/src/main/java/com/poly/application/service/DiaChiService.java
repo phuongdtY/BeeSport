@@ -18,6 +18,8 @@ public interface DiaChiService {
 
     List<DiaChiReponse> findByListDiaChi(Long idTaiKhoan);
 
+    DiaChiReponse getDiaChiDefaultByIDTaiKhoan(Long idtaiKhoan);
+
     DiaChiReponse findById(Long id);
 
     DiaChi update(Long id, UpdatedDiaChiRequest request);
