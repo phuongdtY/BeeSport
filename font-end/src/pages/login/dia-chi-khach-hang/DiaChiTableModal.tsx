@@ -81,7 +81,6 @@ function ModalDiaChi({ openModal, closeModal }) {
   });
   const handOnClickUpdateDc = (id: any) => {
     setIdDiaChi(id);
-    console.log("Id+" + id);
     setModalUpdateDiaChi(true);
   };
   const handOnClickUpdateTT = async (id: any) => {
@@ -98,20 +97,20 @@ function ModalDiaChi({ openModal, closeModal }) {
         console.error("Lỗi không xác định:", error);
       }
     }
-};
-const handOnClickDeleteTT = async (id: any) => {
-  try {
-    //   const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
-    const idTaiKhoan = localStorage.getItem("acountId");
-    const res = await requestDC.delete("dia-chi/delete/" + id);
-    fetchDataAndLoadData();
-  } catch (error: any) {
-    if (error.response && error.response.status === 400) {
-    } else {
-      console.error("Lỗi không xác định:", error);
+  };
+  const handOnClickDeleteTT = async (id: any) => {
+    try {
+      //   const trangThai = values.trangThai ? "ACTIVE" : "INACTIVE";
+      const idTaiKhoan = localStorage.getItem("acountId");
+      const res = await requestDC.delete("dia-chi/delete/" + id);
+      fetchDataAndLoadData();
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+      } else {
+        console.error("Lỗi không xác định:", error);
+      }
     }
-  }
-};
+  };
   const getParams = (params: TableParams) => ({
     currentPage: data.length !== 0 ? params.pagination?.current : 1,
     pageSize: params.pagination?.pageSize,
@@ -122,7 +121,6 @@ const handOnClickDeleteTT = async (id: any) => {
     sortOrder: params.sortOrder,
     gioiTinhList: params.filters?.gioiTinh,
   });
-  // console.log("datas",data)
   const columns: ColumnsType<DataType> = [
     {
       title: "STT",
@@ -209,9 +207,7 @@ const handOnClickDeleteTT = async (id: any) => {
       sorter: true,
       ellipsis: true,
       render: (thanhPho, record) => {
-        // console.log("recot",record);
-         mangGiaTri.push(record.thanhPho);
-        // console.log("manggiatri",mangGiaTri)
+        mangGiaTri.push(record.thanhPho);
         return getProvinceLabelFromId();
       },
     },
@@ -222,14 +218,8 @@ const handOnClickDeleteTT = async (id: any) => {
       key: "quanHuyen",
       sorter: true,
       ellipsis: true,
-      // render: (record) =>{ console.log("aaaa",record.quanHuyen);return mangGiaTriQH.push(record.quanHuyen);
-      //   // return getDistrictLabelFromId();
-      // },
       render: (quanHuyen, record) => {
-        // console.log("recot",record);
-        //  mangGiaTri.push(record.quanHuyen);
         mangGiaTriQH.push(record.quanHuyen);
-        console.log("manggiatriQH",mangGiaTriQH)
         return getDistrictLabelFromId();
       },
     },
@@ -241,13 +231,7 @@ const handOnClickDeleteTT = async (id: any) => {
       sorter: true,
       ellipsis: true,
       render: (phuongXa, record) => {
-        // console.log("recot",record.phuongXa);
         mangGiaTriPX.push(String(record.phuongXa));
-        console.log("px",mangGiaTriPX)
-        // return record.phuongXa
-         
-        // mangGiaTriPX.push(Number(record.phuongXa));
-        // console.log("manggiatriPX",mangGiaTriPX)
         return getWardLabelFromId();
       },
     },
@@ -337,7 +321,6 @@ const handOnClickDeleteTT = async (id: any) => {
   const [fakeArray, setFakeArray] = useState<Option[]>([]);
   const fetchProvinces = async () => {
     try {
-      console.log("đây là hd1")
       const provinceRes = await axios.get(
         "https://online-gateway.ghn.vn/shiip/public-api/master-data/province",
         {
@@ -346,9 +329,7 @@ const handOnClickDeleteTT = async (id: any) => {
             ContentType: "application/json",
           },
         }
-        
       );
-      console.log("đây là hd2")
       const provinceOptions: Option[] = provinceRes.data.data.map(
         (province: any) => ({
           value: province.ProvinceID,
@@ -356,9 +337,8 @@ const handOnClickDeleteTT = async (id: any) => {
           isLeaf: false,
         })
       );
-  
+
       setProvinces(provinceOptions);
-      console.log('Provinces:', provinceOptions); // Log the updated provinces
     } catch (error) {
       console.error(error);
     }
@@ -377,7 +357,6 @@ const handOnClickDeleteTT = async (id: any) => {
           },
         }
       );
-      console.log("districh",districtRes)
       const districtOptions: Option[] = districtRes.data.data.map(
         (district: any) => ({
           value: district.DistrictID,
@@ -392,32 +371,31 @@ const handOnClickDeleteTT = async (id: any) => {
   };
   const fetchWards = async (idDistrict: number | undefined) => {
     try {
-      const idDis =  data.map((item) => item.quanHuyen);
+      const idDis = data.map((item) => item.quanHuyen);
       const wardOptions: Option[] = [];
-    
-    for (const districtId of idDis || []) {
-      const wardRes = await axios.get(
-        `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtId}`,
-        {
-          headers: {
-            token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
-            ContentType: "application/json",
-          },
-        }
-      );
-      console.log("wardRes", wardRes);
-      const wardsForDistrict: Option[] = wardRes.data.data.map((ward: any) => ({
-        value: ward.WardCode,
-        label: ward.WardName,
-        isLeaf: false,
-      }));
-      
-      wardOptions.push(...wardsForDistrict);
-      console.log("wardsForDistrict", wardsForDistrict);
-    }
 
-    setWards(wardOptions);
-    console.log("wardOptions", wardOptions);
+      for (const districtId of idDis || []) {
+        const wardRes = await axios.get(
+          `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtId}`,
+          {
+            headers: {
+              token: "4d0b3d7c-65a5-11ee-a59f-a260851ba65c",
+              ContentType: "application/json",
+            },
+          }
+        );
+        const wardsForDistrict: Option[] = wardRes.data.data.map(
+          (ward: any) => ({
+            value: ward.WardCode,
+            label: ward.WardName,
+            isLeaf: false,
+          })
+        );
+
+        wardOptions.push(...wardsForDistrict);
+      }
+
+      setWards(wardOptions);
     } catch (error) {
       console.error(error);
     }
@@ -428,50 +406,39 @@ const handOnClickDeleteTT = async (id: any) => {
   let mangGiaTriPX: string[] = [];
   const getProvinceLabelFromId = () => {
     const idArray = Array.isArray(mangGiaTri) ? mangGiaTri : [mangGiaTri];
-  
+
     // Get the last element in the array
     const lastId = idArray[idArray.length - 1];
-    // console.log("lastId",lastId)
-    // Find the province with the last ID
     const lastProvince = provinces.find((p) => p.value == lastId);
-    // console.log("lastProvince",lastProvince)
-    // Return the label of the last province or 'Không tìm thấy' if not found
-    return lastProvince ? lastProvince.label : 'Không tìm thấy';
+    return lastProvince ? lastProvince.label : "Không tìm thấy";
   };
   const getDistrictLabelFromId = () => {
     const idArray = Array.isArray(mangGiaTriQH) ? mangGiaTriQH : [mangGiaTriQH];
-  console.log("QH",idArray)
     // Get the last element in the array
     const lastId = idArray[idArray.length - 1];
-    
+
     // Find the district with the last ID
     const lastDistrict = districts.find((d) => d.value == lastId);
-  
+
     // Return the label of the last district or 'Không tìm thấy' if not found
-    return lastDistrict ? lastDistrict.label : 'Không tìm thấy';
+    return lastDistrict ? lastDistrict.label : "Không tìm thấy";
   };
 
   const getWardLabelFromId = () => {
     const idArray = Array.isArray(mangGiaTriPX) ? mangGiaTriPX : [mangGiaTriPX];
-  console.log("px1",idArray)
     // Get the last element in the array
     const lastId = idArray[idArray.length - 1];
-    
+
     // Find the district with the last ID
     const lastIdNumber = parseInt(lastId);
     const lastWard = wards.find((d) => d.value == lastIdNumber);
-    console.log("px2",lastWard)
     // Return the label of the last district or 'Không tìm thấy' if not found
-    return lastWard ? lastWard.label : 'Không tìm thấy';
+    return lastWard ? lastWard.label : "Không tìm thấy";
   };
-  
+
   const fetchDataAndLoadData = async () => {
     setLoading(true);
     const fetchedData = await fetchData(getParams(tableParams));
-    // console.log("Dịa chỉ"+fetchData)
-    // fetchProvinces();
-    //   fetchDistricts(fetchedData.data?.thanhPho);
-    //   fetchWards(fetchedData.data?.quanHuyen);
     setData(fetchedData.content);
     setCurrentPage(fetchedData.pageable.pageNumber + 1);
     setPageSize(fetchedData.pageable.pageSize);
@@ -491,17 +458,13 @@ const handOnClickDeleteTT = async (id: any) => {
     if (JSON.stringify(updatedTableParams) !== JSON.stringify(tableParams)) {
       setTableParams(updatedTableParams);
     }
-    // console.log("10"+fetchedData.content);
-
   };
   useEffect(() => {
     fetchDataAndLoadData();
     fetchProvinces();
     fetchDistricts(id);
-    // console.log("Đéo biết",id)
     fetchWards(id);
-    // fetchWards();
-  }, [tableParams, modalAddDiaChi, modalUpdateDiaChi,]);
+  }, [tableParams, modalAddDiaChi, modalUpdateDiaChi]);
 
   const handleTableChange = (
     pagination: TablePaginationConfig,
@@ -554,7 +517,7 @@ const handOnClickDeleteTT = async (id: any) => {
       trangThaiDiaChi: value,
     });
   };
-  
+
   return (
     <>
       <Modal
@@ -673,21 +636,20 @@ const handOnClickDeleteTT = async (id: any) => {
           <Table
             pagination={tableParams.pagination}
             columns={columns}
-            dataSource={data.map((item, index) => { 
-              console.log("pro",data)
-               return ({
-              ...item,
-              
-              key: index.toString(),
-            })})}
+            dataSource={data.map((item, index) => {
+              return {
+                ...item,
+
+                key: index.toString(),
+              };
+            })}
             loading={loading}
             onChange={handleTableChange}
             showSorterTooltip={false}
             scroll={{ y: 365 }}
           />
-          
         </Card>
-        
+
         <ModalAddDiaChi
           openModal={modalAddDiaChi}
           closeModal={() => setModalAddDiaChi(false)}

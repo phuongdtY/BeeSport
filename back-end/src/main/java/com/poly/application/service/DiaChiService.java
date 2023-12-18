@@ -8,11 +8,15 @@ import com.poly.application.model.request.update_request.UpdatedDiaChiRequest;
 import com.poly.application.model.response.DiaChiReponse;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface DiaChiService {
 
     Page<DiaChiReponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String trangThaiDiaChi, String searchText,Long idKH);
 
     DiaChiReponse add(Long id,CreatedDiaChiRequest request);
+
+    List<DiaChiReponse> findByListDiaChi(Long idTaiKhoan);
 
     DiaChiReponse findById(Long id);
 

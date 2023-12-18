@@ -32,15 +32,21 @@ public class DiaChiController {
             @RequestParam(value = "sortOrder", defaultValue = "", required = false) String sortOrder,
             @RequestParam("taiKhoanId") Long taiKhoanId
     ) {
-        return ResponseEntity.ok(diaChiService.getAll(page, pageSize, sorter,sortOrder, trangThaiDiaChi, searchText,taiKhoanId));
+        return ResponseEntity.ok(diaChiService.getAll(page, pageSize, sorter, sortOrder, trangThaiDiaChi, searchText, taiKhoanId));
     }
+
     @PostMapping("/add")
-    public ResponseEntity<?> addDiaChi( @RequestParam("id") Long id,@RequestBody CreatedDiaChiRequest createDCRequest) {
-        return new ResponseEntity<>(diaChiService.add(id,createDCRequest), HttpStatus.CREATED);
+    public ResponseEntity<?> addDiaChi(@RequestParam("id") Long id, @RequestBody CreatedDiaChiRequest createDCRequest) {
+        return new ResponseEntity<>(diaChiService.add(id, createDCRequest), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> findList(@RequestParam(value = "idTaiKhoan", required = false) Long idTaiKhoan) {
+        return ResponseEntity.ok(diaChiService.findByListDiaChi(idTaiKhoan));
     }
 
     @GetMapping("/edit/{id}")
-    public ResponseEntity<?> getOne(@PathVariable("id")Long id){
+    public ResponseEntity<?> getOne(@PathVariable("id") Long id) {
         return ResponseEntity.ok(diaChiService.findById(id));
     }
 

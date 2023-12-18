@@ -3,6 +3,7 @@ package com.poly.application.service.impl;
 import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.DiaChi;
 import com.poly.application.entity.DiaHinhSan;
+import com.poly.application.entity.HoaDon;
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DiaChiServiceImpl implements DiaChiService {
@@ -38,7 +40,7 @@ public class DiaChiServiceImpl implements DiaChiService {
     private TaiKhoanRepository taiKhoanRepository;
 
     @Override
-    public Page<DiaChiReponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String trangThaiDiaChi, String searchText,Long taiKhoanId) {
+    public Page<DiaChiReponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String trangThaiDiaChi, String searchText, Long taiKhoanId) {
         Sort sort;
         if ("ascend".equals(sortOrder)) {
             sort = Sort.by(sortField).ascending();
@@ -51,21 +53,30 @@ public class DiaChiServiceImpl implements DiaChiService {
         CommonEnum.TrangThaiDiaChi trangThai;
         if (trangThaiDiaChi == null || trangThaiDiaChi.equals("")) {
             trangThai = null;
-        }else {
+        } else {
             trangThai = CommonEnum.TrangThaiDiaChi.valueOf(trangThaiDiaChi);
         }
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<DiaChi> diaChiPage = diaChiRepository.findAllByTaiKhoanId(pageable, searchText,trangThai,taiKhoanId);
+        Page<DiaChi> diaChiPage = diaChiRepository.findAllByTaiKhoanId(pageable, searchText, trangThai, taiKhoanId);
         return diaChiPage.map(diaChiMapper::convertEntityToResponse);
     }
 
     @Override
-    public DiaChiReponse add(Long id,CreatedDiaChiRequest request) {
+    public DiaChiReponse add(Long id, CreatedDiaChiRequest request) {
         DiaChi createdDiaChi = diaChiMapper.convertCreateResponseToEntity(request);
         createdDiaChi.setTrangThaiDiaChi(CommonEnum.TrangThaiDiaChi.ACTIVE);
         createdDiaChi.setTaiKhoan(taiKhoanRepository.findId(id));
         DiaChi savedDC = diaChiRepository.save(createdDiaChi);
         return diaChiMapper.convertEntityToResponse(savedDC);
+    }
+
+    @Override
+    public List<DiaChiReponse> findByListDiaChi(Long idTaiKhoan) {
+        List<DiaChi> diaChis = diaChiRepository.findByListDiaChi(idTaiKhoan);
+        return diaChis
+                .stream()
+                .map(diaChiMapper::convertEntityToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
