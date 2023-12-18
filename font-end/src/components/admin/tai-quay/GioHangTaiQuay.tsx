@@ -134,9 +134,6 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           idTaiKhoan: idKhachHang,
         },
       });
-
-      console.log(response.data);
-
       if (response.status === 200) {
         const fetchedVouchers = response.data;
 
@@ -315,11 +312,22 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
   };
 
   const handleLuuHoaDon = async (id) => {
+    const hoaDonData = getHoaDonData();
+
     if (totalPriceFromTable == 0) {
-      // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
       message.warning("Chưa có sản phẩm nào trong giỏ hàng.");
-      return; // Ngăn chặn việc lưu hóa đơn nếu không có sản phẩm trong giỏ hàng
+      return;
     }
+    if (
+      !hoaDonData.diaChiNguoiNhan ||
+      !hoaDonData.nguoiNhan ||
+      !hoaDonData.sdtNguoiNhan ||
+      !hoaDonData.emailNguoiNhan
+    ) {
+      message.warning("Vui lòng điền đầy đủ thông tin người nhận và địa chỉ.");
+      return;
+    }
+
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -328,6 +336,8 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       cancelText: "Hủy",
       onOk: async () => {
         const hoaDonData = getHoaDonData();
+
+        console.log(hoaDonData);
 
         try {
           const resGD = await request.post("giao-dich", {
