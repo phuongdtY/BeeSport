@@ -64,7 +64,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "FROM SanPham sp " +
             "JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id " +
             "JOIN HinhAnhSanPham hi ON sp.id = hi.sanPham.id " +
-            "WHERE cps.trangThai = 'ACTIVE' " +
+            "WHERE sp.trangThai = 'ACTIVE' " +
             "AND hi.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
             "GROUP BY sp.id, sp.ten, hi.duongDan " +
             "ORDER BY MAX(cps.ngayTao) DESC")
@@ -78,7 +78,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "JOIN HoaDon hd ON hdct.hoaDon.id = hd.id " +
             "JOIN HinhAnhSanPham ha ON sp.id = ha.sanPham.id " +
             "WHERE hd.trangThaiHoaDon = 'APPROVED' " +
-            "AND ctsp.trangThai = 'ACTIVE' " +
+            "AND sp.trangThai = 'ACTIVE' " +
             "AND ha.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
             "AND ctsp.giaTien = (SELECT MIN(ctsp3.giaTien) FROM ChiTietSanPham ctsp3 WHERE ctsp3.sanPham.id = sp.id) " +
             "AND ctsp2.giaTien = (SELECT MAX(ctsp4.giaTien) FROM ChiTietSanPham ctsp4 WHERE ctsp4.sanPham.id = sp.id) " +
