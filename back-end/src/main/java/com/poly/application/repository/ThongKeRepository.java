@@ -52,7 +52,6 @@ public class ThongKeRepository {
         Long tongSoDonTaiQuay = result[4] != null ? ((Number) result[4]).longValue() : 0L;
         Long tongSoDonOnline = result[5] != null ? ((Number) result[5]).longValue() : 0L;
 
-
         ThongKeTheoDMYResponse response = new ThongKeTheoDMYResponse();
         response.setTongDoanhThu(tongTien);
         response.setTongSoDonThanhCong(soDonThanhCong);
@@ -60,7 +59,6 @@ public class ThongKeRepository {
         response.setTongSoSanPhamDaBan(soSanPhamDaBan);
         response.setTongSoDonTaiQuay(tongSoDonTaiQuay);
         response.setTongSoDonOnline(tongSoDonOnline);
-
 
         return response;
     }
