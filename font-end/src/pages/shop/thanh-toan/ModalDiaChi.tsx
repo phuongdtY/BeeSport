@@ -9,18 +9,16 @@ interface Option {
 }
 import { PlusOutlined } from "@ant-design/icons";
 import { formatPhoneNumber } from "~/utils/formatResponse";
-import {
-  DataType,
-  TableParams,
-  DescriptionItemProps,
-} from "~/interfaces/diaChi.type";
-import { requestDC } from "~/utils/requestDiaChi";
+import { DataType } from "~/interfaces/diaChi.type";
 import axios from "axios";
 import request from "~/utils/request";
+import ModalUpdateDCKhachHang from "~/pages/login/dia-chi-khach-hang/ModalUpdateDiaChi";
+import ModalAddDiaChi from "~/pages/login/dia-chi-khach-hang/DiaChiMoi";
 
 const { Text } = Typography;
 function ModalDiaChi22({ openModal, closeModal, onClickDiaChi }) {
   const [modalAddDiaChi, setModalAddDiaChi] = useState(false);
+  const [idDiaChi, setIdDiaChi] = useState(null);
   const [modalUpdateDiaChi, setModalUpdateDiaChi] = useState(false);
   const [data, setData] = useState<DataType[]>([]);
   const [dataList, setDataList] = useState<DataType[]>([]);
@@ -117,7 +115,7 @@ function ModalDiaChi22({ openModal, closeModal, onClickDiaChi }) {
 
   useEffect(() => {
     fetchDataDC();
-  }, []);
+  }, [modalUpdateDiaChi, modalAddDiaChi]);
   const idTaiKhoan = localStorage.getItem("acountId");
   const fetchDataDC = async () => {
     try {
@@ -139,6 +137,7 @@ function ModalDiaChi22({ openModal, closeModal, onClickDiaChi }) {
         title="Địa chỉ của tôi"
         style={{ top: 20 }}
         width={600}
+        footer
         open={openModal}
         onCancel={closeModal}
       >
@@ -155,6 +154,10 @@ function ModalDiaChi22({ openModal, closeModal, onClickDiaChi }) {
                   style={{ padding: 0 }}
                   type="link"
                   key="list-loadmore-edit"
+                  onClick={() => {
+                    setIdDiaChi(item.id);
+                    setModalUpdateDiaChi(true);
+                  }}
                 >
                   Sửa
                 </Button>,
@@ -175,7 +178,7 @@ function ModalDiaChi22({ openModal, closeModal, onClickDiaChi }) {
                 <Space>
                   <Text strong>{item.hoVaTen}</Text>
                   {item.trangThaiDiaChi.ten == "DEFAULT" && (
-                    <Tag color="red">{item.trangThaiDiaChi.ten}</Tag>
+                    <Tag color="red">{item.trangThaiDiaChi.moTa}</Tag>
                   )}
                 </Space>
                 <Space split={<Divider type="vertical" />}>
@@ -190,10 +193,23 @@ function ModalDiaChi22({ openModal, closeModal, onClickDiaChi }) {
             </List.Item>
           )}
         />
-        <Button type="dashed" icon={<PlusOutlined />}>
+        <Button
+          type="dashed"
+          icon={<PlusOutlined />}
+          onClick={() => setModalAddDiaChi(true)}
+        >
           Thêm địa chỉ mới
         </Button>
       </Modal>
+      <ModalUpdateDCKhachHang
+        openModal={modalUpdateDiaChi}
+        closeModal={() => setModalUpdateDiaChi(false)}
+        id={idDiaChi}
+      />
+      <ModalAddDiaChi
+        closeModal={() => setModalAddDiaChi(false)}
+        openModal={modalAddDiaChi}
+      />
     </>
   );
 }
