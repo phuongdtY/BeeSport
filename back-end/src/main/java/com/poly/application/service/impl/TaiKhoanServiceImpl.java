@@ -1,6 +1,8 @@
 package com.poly.application.service.impl;
 
 import com.poly.application.common.CommonEnum;
+import com.poly.application.common.GenCode;
+import com.poly.application.entity.GioHang;
 import com.poly.application.entity.TaiKhoan;
 import com.poly.application.exception.BadRequestException;
 import com.poly.application.exception.NotFoundException;
@@ -9,10 +11,16 @@ import com.poly.application.model.mapper.TaiKhoanMapper;
 import com.poly.application.model.request.create_request.CreatedTaiKhoanRequest;
 import com.poly.application.model.request.update_request.UpdatedTaiKhoanRequest;
 import com.poly.application.model.response.TaiKhoanResponse;
+import com.poly.application.repository.GioHangRepository;
 import com.poly.application.repository.TaiKhoanRepository;
 import com.poly.application.repository.VaiTroRepository;
 import com.poly.application.service.TaiKhoanService;
 import com.poly.application.utils.EmailSend;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +33,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.http.HttpHeaders;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +60,9 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private GioHangRepository gioHangRepository;
 
     @Override
     public Page<TaiKhoanResponse> getAll(Integer page, Integer pageSize, String sortField, String sortOrder, String gioiTinhString, String searchText, String trangThaiString) {
@@ -159,6 +173,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         if(request.getGioiTinh()==null){
             request.setGioiTinh(CommonEnum.GioiTinh.OTHER);
         }
+
         TaiKhoan createdTaiKhoan = taiKhoanMapper.convertCreateRequestToEntity(request);
         createdTaiKhoan.setTrangThai(CommonEnum.TrangThaiThuocTinh.ACTIVE);
         createdTaiKhoan.setVaiTro(vaiTroRepository.findId(Long.valueOf(3)));
@@ -168,6 +183,11 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         emailSender.sendEmail(savedTaiKhoan);
         createdTaiKhoan.setMatKhau(new BCryptPasswordEncoder().encode(savedTaiKhoan.getMatKhau()));
         savedTaiKhoan = taiKhoanRepository.save(createdTaiKhoan);
+        GioHang gioHang = new GioHang();
+        gioHang.setMaGioHang(GenCode.generateGioHangCode());
+        gioHang.setTrangThai(1);
+        gioHang.setTaiKhoan(taiKhoanRepository.getOne(savedTaiKhoan.getId()));
+        gioHangRepository.save(gioHang);
         return taiKhoanMapper.convertEntityToResponse(savedTaiKhoan);
     }
 
@@ -203,6 +223,144 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         } else {
             return "Đổi mật khẩu thất bại";
         }
+    }
+
+    @Override
+    public byte[] exportExcelTaiKhoan() throws IOException {
+        List<TaiKhoan> taiKhoanList = taiKhoanRepository.findAllNhanVienExcel(); // Implement this method in your service
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("TaiKhoan");
+
+            // Create header row
+            Row headerRow = sheet.createRow(0);
+            headerRow.createCell(0).setCellValue("ID");
+            headerRow.createCell(1).setCellValue("Ho va Ten");
+            headerRow.createCell(2).setCellValue("Can Cuoc Cong Dan");
+            headerRow.createCell(3).setCellValue("Ngay sinh");
+            headerRow.createCell(4).setCellValue("Gioi tinh");
+            headerRow.createCell(5).setCellValue("So dien thoai");
+            headerRow.createCell(6).setCellValue("Email");
+            headerRow.createCell(7).setCellValue("Thanh pho");
+            headerRow.createCell(8).setCellValue("Quyen huyen");
+            headerRow.createCell(9).setCellValue("Phuong xa");
+            headerRow.createCell(10).setCellValue("Dia chi cu the");
+            headerRow.createCell(11).setCellValue("Anh dai dien");
+            headerRow.createCell(12).setCellValue("Mat khau");
+            headerRow.createCell(13).setCellValue("Ngay tao");
+            headerRow.createCell(14).setCellValue("Ngay sua");
+            headerRow.createCell(15).setCellValue("Trang thai");
+            headerRow.createCell(16).setCellValue("Vai tro ID");
+
+            // Create data rows
+            int rowNum = 1;
+            for (TaiKhoan taiKhoan : taiKhoanList) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(taiKhoan.getId());
+                row.createCell(1).setCellValue(taiKhoan.getHoVaTen());
+                row.createCell(2).setCellValue(taiKhoan.getCanCuocCongDan());
+                row.createCell(3).setCellValue(taiKhoan.getNgaySinh());
+                if (taiKhoan.getGioiTinh() != null) {
+                    row.createCell(4).setCellValue(taiKhoan.getGioiTinh().getMoTa());
+                } else {
+                    row.createCell(4).setCellValue((String) null);
+                }
+                row.createCell(5).setCellValue(taiKhoan.getSoDienThoai());
+                row.createCell(6).setCellValue(taiKhoan.getEmail());
+                row.createCell(7).setCellValue(taiKhoan.getThanhPho());
+                row.createCell(8).setCellValue(taiKhoan.getQuanHuyen());
+                row.createCell(9).setCellValue(taiKhoan.getPhuongXa());
+                row.createCell(10).setCellValue(taiKhoan.getDiaChiCuThe());
+                row.createCell(11).setCellValue(taiKhoan.getAnhDaiDien());
+                row.createCell(12).setCellValue(taiKhoan.getMatKhau());
+                row.createCell(13).setCellValue(taiKhoan.getNgayTao());
+                row.createCell(14).setCellValue(taiKhoan.getNgaySua());
+                if (taiKhoan.getTrangThai() != null) {
+                    row.createCell(15).setCellValue(taiKhoan.getTrangThai().getMoTa());
+                } else {
+                    row.createCell(15).setCellValue((String) null);
+                }
+
+                row.createCell(16).setCellValue(taiKhoan.getVaiTro().getTen());
+            }
+
+            // Set the response headers
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            workbook.close();
+        return outputStream.toByteArray();
+    }
+
+    @Override
+    public byte[] exportExcelTaiKhoan1() throws IOException {
+        List<TaiKhoan> taiKhoanList = taiKhoanRepository.findAllKhachHangExcel(); // Implement this method in your service
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("TaiKhoan");
+
+        // Create header row
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("ID");
+        headerRow.createCell(1).setCellValue("Ho va Ten");
+        headerRow.createCell(2).setCellValue("Can Cuoc Cong Dan");
+        headerRow.createCell(3).setCellValue("Ngay sinh");
+        headerRow.createCell(4).setCellValue("Gioi tinh");
+        headerRow.createCell(5).setCellValue("So dien thoai");
+        headerRow.createCell(6).setCellValue("Email");
+        headerRow.createCell(7).setCellValue("Thanh pho");
+        headerRow.createCell(8).setCellValue("Quyen huyen");
+        headerRow.createCell(9).setCellValue("Phuong xa");
+        headerRow.createCell(10).setCellValue("Dia chi cu the");
+        headerRow.createCell(11).setCellValue("Anh dai dien");
+        headerRow.createCell(12).setCellValue("Mat khau");
+        headerRow.createCell(13).setCellValue("Ngay tao");
+        headerRow.createCell(14).setCellValue("Ngay sua");
+        headerRow.createCell(15).setCellValue("Trang thai");
+        headerRow.createCell(16).setCellValue("Vai tro ID");
+
+        // Create data rows
+        int rowNum = 1;
+        for (TaiKhoan taiKhoan : taiKhoanList) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(taiKhoan.getId());
+            row.createCell(1).setCellValue(taiKhoan.getHoVaTen());
+            row.createCell(2).setCellValue(taiKhoan.getCanCuocCongDan());
+            row.createCell(3).setCellValue(taiKhoan.getNgaySinh());
+            if (taiKhoan.getGioiTinh() != null) {
+                row.createCell(4).setCellValue(taiKhoan.getGioiTinh().getMoTa());
+            } else {
+                row.createCell(4).setCellValue((String) null);
+            }
+            row.createCell(5).setCellValue(taiKhoan.getSoDienThoai());
+            row.createCell(6).setCellValue(taiKhoan.getEmail());
+            row.createCell(7).setCellValue(taiKhoan.getThanhPho());
+            row.createCell(8).setCellValue(taiKhoan.getQuanHuyen());
+            row.createCell(9).setCellValue(taiKhoan.getPhuongXa());
+            row.createCell(10).setCellValue(taiKhoan.getDiaChiCuThe());
+            row.createCell(11).setCellValue(taiKhoan.getAnhDaiDien());
+            row.createCell(12).setCellValue(taiKhoan.getMatKhau());
+            row.createCell(13).setCellValue(taiKhoan.getNgayTao());
+            row.createCell(14).setCellValue(taiKhoan.getNgaySua());
+            if (taiKhoan.getTrangThai() != null) {
+                row.createCell(15).setCellValue(taiKhoan.getTrangThai().getMoTa());
+            } else {
+                row.createCell(15).setCellValue((String) null);
+            }
+
+            row.createCell(16).setCellValue(taiKhoan.getVaiTro().getTen());
+        }
+
+        // Set the response headers
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        return outputStream.toByteArray();
+    }
+
+
+    @Override
+    public List<TaiKhoan> getAllTaiKhoan() {
+        return taiKhoanRepository.findAll();
     }
 
 //    public TaiKhoanResponse converToResponse(TaiKhoan taiKhoan){

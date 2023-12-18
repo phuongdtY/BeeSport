@@ -11,6 +11,8 @@ public class JwtAuthenticationResponse {
 
     private String sdt;
 
+    private String ten;
+
     private Long roleId;
 
     private Long acountId;

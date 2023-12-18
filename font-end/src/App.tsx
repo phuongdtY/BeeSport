@@ -44,6 +44,10 @@ import ThongKe from "./pages/admin/thong-ke/ThongKe.tsx";
 import ProtectedRoute from "./pages/admin/component/ProtextedRoute.tsx";
 import DonHangCuaToi from "./pages/shop/don-hang-cua-toi/DonHangCuaToi.tsx";
 import ThongTinDonHang from "./pages/shop/don-hang-cua-toi/ThongTinDonHang.tsx";
+import ProtectedKH from "./pages/admin/component/AuthContext.tsx";
+import DoiMatKhau from "./pages/login/doi-mat-khau/DoiMatKhau.tsx";
+import UpdateTT from "./pages/login/thong-tin/ThongTin.tsx";
+import AddDCKh from "./pages/login/dia-chi-khach-hang/DiaChiMoi.tsx";
 
 function App() {
   return (
@@ -51,6 +55,9 @@ function App() {
       <Route path="/sign-in" element={<Signin />} />
       <Route path="/sign-up" element={<Signup />} />
       <Route path="/forgot-password" element={<Forgotpassword />} />
+      <Route path="/doi-mat-khau" element={<ProtectedKH element={<DoiMatKhau />} />} />
+      <Route path="/them-dia-chi" element={<ProtectedKH element={<AddDCKh />} />} />
+      <Route path="/thong-tin" element={<ProtectedKH element={<UpdateTT />} />} />
       <Route path="" element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/san-pham" element={<SanPham />} />

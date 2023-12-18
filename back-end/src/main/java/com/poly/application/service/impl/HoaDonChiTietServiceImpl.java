@@ -90,6 +90,9 @@ public class HoaDonChiTietServiceImpl implements HoaDonChiTietService {
     public void addList(List<CreateHoaDonChiTietRequest> requestList) {
         List<HoaDonChiTiet> list = new ArrayList<>();
         for (CreateHoaDonChiTietRequest request : requestList) {
+            ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(request.getChiTietSanPham().getId()).orElse(null);
+            chiTietSanPham.setSoLuong(chiTietSanPham.getSoLuong()-request.getSoLuong());
+            chiTietSanPhamRepository.save(chiTietSanPham);
             list.add(hoaDonChiTietMapper.convertCreateHoaDonChiTietRequestToHoaDonChiTietEntity(request));
         }
         System.out.println(list);

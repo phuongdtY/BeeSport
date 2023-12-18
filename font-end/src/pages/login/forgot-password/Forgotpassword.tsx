@@ -78,7 +78,7 @@ const add: React.FC = () => {
                     message: "Vui lòng nhập email!",
                   },
                 ]}
-                style={{ width: "500px" }} // Đặt chiều rộng 100%
+                style={{ width: "400px" }} // Đặt chiều rộng 100%
               >
                 <Input prefix={<MailOutlined />} placeholder="E-mail" />
               </Form.Item>

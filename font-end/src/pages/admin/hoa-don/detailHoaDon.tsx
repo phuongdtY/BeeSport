@@ -931,7 +931,7 @@ const detailHoaDon: React.FC = () => {
                 </Space>
               </Col>
               <Col span={8}>
-                {data?.sdtNguoiNhan !== null && (
+                {data?.loaiHoaDon?.ten == "ONLINE" && (
                   <>
                     <Divider>Thông tin nhận hàng</Divider>
 

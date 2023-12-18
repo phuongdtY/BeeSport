@@ -13,6 +13,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import logo from "~/image/logo.jpg";
 import request, { requestLogout } from "~/utils/request";
+import { max } from "moment";
+import ModalDiaChi from "~/pages/login/dia-chi-khach-hang/DiaChiTableModal";
+import ModalThongTin from "~/pages/login/thong-tin/ThongTin";
+import ModalDoiMK from "~/pages/login/doi-mat-khau/DoiMatKhau";
 
 type MenuItem = Required<MenuProps>["items"][number];
 const getItem = (
@@ -32,6 +36,9 @@ const getItem = (
 };
 
 const Header: React.FC = () => {
+  const [modalDiaChi, setModalDiaChi] = useState(false);
+  const [modalThongTin, setModalThongTin] = useState(false);
+  const [modalDoiMK, setModalDoiMK] = useState(false);
   const [count, setCount] = useState<number | undefined>();
   const idGioHangTaiKhoan = localStorage.getItem("cartIdTaiKhoan");
   const idGioHangNull = localStorage.getItem("cartId");
@@ -66,6 +73,10 @@ const Header: React.FC = () => {
       localStorage.removeItem("cartIdTaiKhoan");
       navigate("/");
       window.location.reload();
+      localStorage.removeItem("ten");
+      // localStorage.removeItem("idGioHang");
+
+      navigate("/sign-in");
       message.success("Đăng xuất thành công");
     } catch (error) {
       console.error("Error during logout:", error);
@@ -84,10 +95,20 @@ const Header: React.FC = () => {
   ];
 
   const roleId = localStorage.getItem("roleId");
+  const ten = localStorage.getItem("ten");
+  console.log("aaaa", roleId);
   const { Option } = Select;
   const [modalVisible, setModalVisible] = useState(false);
   const showModal = () => {
     setModalVisible(true);
+  };
+  const handleOk = () => {
+    // Handle any logic you need when the OK button is clicked
+    setModalVisible(false);
+  };
+  const handleCancel = () => {
+    // Handle any logic you need when the Cancel button is clicked or modal is closed
+    setModalVisible(false);
   };
   return (
     <header
@@ -129,19 +150,55 @@ const Header: React.FC = () => {
             }
           }}
         >
-          {roleId === "1" && <Option value="1">Quản lý</Option>}
-          {roleId === "2" && <Option value="2">Nhân viên</Option>}
-          {roleId === "3" && <Option value="3">Khách hàng</Option>}
-          <Option value="thongtin">Thông tin</Option>
+          {/* {roleId === "1" && <Option value="1">{ten}</Option>}
+          {roleId === "2" && <Option value="2">{ten}</Option>}
+          {roleId === "3" && <Option value="3">{ten}</Option>} */}
+          {/* <Option value="thongtin">Thông tin</Option> */}
+          
+          {/* <Option value="doiMatKhau">
+            <Link to={"/doi-mat-khau"}>Đổi mật khẩu</Link>
+          </Option>
+          <Option value="logout">Logout</Option> */}
+          {roleId === "1" && <Option value="1">{ten}</Option>}
+          {roleId === "2" && <Option value="2">{ten}</Option>}
+          {roleId === "3" && <Option value="3">{ten}</Option>}
+          {roleId === "3" && (
+            <Option>
+              <Button
+                style={{ margin: 0, padding: 0 }}
+                type="link"
+                onClick={() => setModalDiaChi(true)}
+              >
+                Địa chỉ của tôi
+              </Button>{" "}
+            </Option>
+          )}
+          <Option value="thongtin">
+            <Button
+              style={{ margin: 0, padding: 0 }}
+              type="link"
+              onClick={() => setModalThongTin(true)}
+            >
+              Thông tin
+            </Button>
+          </Option>
           {idTaiKhoan != null ? (
             <Option value="donHang">
               <Link to={"/don-hang"}>Đơn hàng của tôi</Link>
             </Option>
           ) : null}
           <Option value="doiMatKhau">
-            <Link to={"/doi-mat-khau"}>Đổi mật khẩu</Link>
+            <Button
+              style={{ margin: 0, padding: 0 }}
+              type="link"
+              onClick={() => setModalDoiMK(true)}
+            >
+              Đổi mật khẩu
+            </Button>
           </Option>
-          <Option value="logout">Logout</Option>
+          <Option style={{ color: "#3D6EE0" }} value="logout">
+            Logout
+          </Option>
         </Select>
       ) : (
         <Link
@@ -159,6 +216,9 @@ const Header: React.FC = () => {
           <ShoppingCartOutlined style={{ fontSize: "25px" }} />
         </Badge>
       </Link>
+      <ModalDiaChi openModal={modalDiaChi} closeModal={()=>setModalDiaChi(false)} />
+      <ModalThongTin openModal={modalThongTin} closeModal={()=>setModalThongTin(false)} />
+      <ModalDoiMK openModal={modalDoiMK} closeModal={()=>setModalDoiMK(false)} />
     </header>
   );
 };
