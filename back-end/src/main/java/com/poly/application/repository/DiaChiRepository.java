@@ -31,8 +31,11 @@ public interface DiaChiRepository extends JpaRepository<DiaChi,Long> {
     @Query("SELECT dc FROM DiaChi dc WHERE dc.id =:id")
     Optional<DiaChi> findId(@Param("id") Long id);
 
-    @Query("SELECT obj FROM DiaChi  obj WHERE obj.taiKhoan.id =:idTaiKhoan")
+    @Query("SELECT obj FROM DiaChi obj WHERE obj.taiKhoan.id =:idTaiKhoan  ORDER BY CASE WHEN obj.trangThaiDiaChi = 'DEFAULT' THEN 0 ELSE 1 END")
     List<DiaChi> findByListDiaChi(Long idTaiKhoan);
+
+    @Query("SELECT obj FROM DiaChi obj WHERE obj.taiKhoan.id = :idTaiKhoan AND obj.trangThaiDiaChi = 'DEFAULT'")
+    DiaChi getDiaChiDefaultByIdTaiKhoan(@Param("idTaiKhoan") Long idTaiKhoan);
 
     @Query("SELECT DISTINCT d.trangThaiDiaChi FROM DiaChi d")
     List<CommonEnum.TrangThaiDiaChi> findAllTrangThaiDiaChi();

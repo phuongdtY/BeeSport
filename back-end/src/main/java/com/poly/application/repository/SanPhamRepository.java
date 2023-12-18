@@ -1,14 +1,11 @@
 package com.poly.application.repository;
 
 import com.poly.application.common.CommonEnum;
-import com.poly.application.entity.ChiTietSanPham;
-import com.poly.application.entity.DiaHinhSan;
-import com.poly.application.entity.KichCo;
-import com.poly.application.entity.LoaiDe;
-import com.poly.application.entity.MauSac;
 import com.poly.application.entity.SanPham;
-import com.poly.application.entity.ThuongHieu;
-import com.poly.application.model.response.*;
+import com.poly.application.model.response.SanPhamBanChayResponse;
+import com.poly.application.model.response.SanPhamDetailResponse;
+import com.poly.application.model.response.SanPhamFilterResponse;
+import com.poly.application.model.response.SanPhamMoiNhatResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -67,7 +64,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "FROM SanPham sp " +
             "JOIN ChiTietSanPham cps ON sp.id = cps.sanPham.id " +
             "JOIN HinhAnhSanPham hi ON sp.id = hi.sanPham.id " +
-            "WHERE cps.trangThai = 'ACTIVE' " +
+            "WHERE sp.trangThai = 'ACTIVE' " +
             "AND hi.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
             "GROUP BY sp.id, sp.ten, hi.duongDan " +
             "ORDER BY MAX(cps.ngayTao) DESC")
@@ -81,14 +78,13 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
             "JOIN HoaDon hd ON hdct.hoaDon.id = hd.id " +
             "JOIN HinhAnhSanPham ha ON sp.id = ha.sanPham.id " +
             "WHERE hd.trangThaiHoaDon = 'APPROVED' " +
-            "AND ctsp.trangThai = 'ACTIVE' " +
+            "AND sp.trangThai = 'ACTIVE' " +
             "AND ha.id = (SELECT MIN(hi2.id) FROM HinhAnhSanPham hi2 WHERE hi2.sanPham.id = sp.id) " +
             "AND ctsp.giaTien = (SELECT MIN(ctsp3.giaTien) FROM ChiTietSanPham ctsp3 WHERE ctsp3.sanPham.id = sp.id) " +
             "AND ctsp2.giaTien = (SELECT MAX(ctsp4.giaTien) FROM ChiTietSanPham ctsp4 WHERE ctsp4.sanPham.id = sp.id) " +
             "GROUP BY sp.id, sp.ten, ha.duongDan, sp.ngayTao " +
             "ORDER BY SUM(hdct.soLuong) DESC")
     List<SanPhamBanChayResponse> findAllSanPhamBanChay();
-
 
     @Query("SELECT NEW com.poly.application.model.response.SanPhamDetailResponse(sp.id, sp.ma, sp.ten, sp.moTa, MIN(cps.giaTien), MAX(cps.giaTien), sp.trangThai) " +
             "FROM SanPham sp " +

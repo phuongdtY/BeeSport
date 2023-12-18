@@ -26,12 +26,15 @@ public class DiaChi2Controller {
 
     @Autowired
     private DiaChiService diaChiService;
-
-
+    
     @GetMapping("/list")
     public ResponseEntity<?> findList(@RequestParam(value = "idTaiKhoan", required = false) Long idTaiKhoan) {
         return ResponseEntity.ok(diaChiService.findByListDiaChi(idTaiKhoan));
     }
 
+    @GetMapping("/default")
+    public ResponseEntity<?> getDiaChiDefaultByIdtaiKhoan(@RequestParam(name = "idTaiKhoan") Long idTaiKhoan) {
+        return ResponseEntity.ok(diaChiService.getDiaChiDefaultByIDTaiKhoan(idTaiKhoan));
+    }
 
 }

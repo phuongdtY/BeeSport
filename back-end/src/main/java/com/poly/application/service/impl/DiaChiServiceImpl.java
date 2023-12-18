@@ -80,6 +80,11 @@ public class DiaChiServiceImpl implements DiaChiService {
     }
 
     @Override
+    public DiaChiReponse getDiaChiDefaultByIDTaiKhoan(Long idtaiKhoan) {
+        return diaChiMapper.convertEntityToResponse(diaChiRepository.getDiaChiDefaultByIdTaiKhoan(idtaiKhoan));
+    }
+
+    @Override
     public DiaChiReponse findById(Long id) {
         Optional<DiaChi> diaChi = diaChiRepository.findId(id);
         if (diaChi.isEmpty()) {
