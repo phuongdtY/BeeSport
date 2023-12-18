@@ -322,7 +322,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
       !hoaDonData.diaChiNguoiNhan ||
       !hoaDonData.nguoiNhan ||
       !hoaDonData.sdtNguoiNhan ||
-      !hoaDonData.emailNguoiNhan
+      !dataHoaDon.emailNguoiNhan
     ) {
       message.warning("Vui lòng điền đầy đủ thông tin người nhận và địa chỉ.");
       return;
@@ -411,15 +411,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
     );
 
     if (invalidQuantityItems.length > 0) {
-      // const invalidItemNames = invalidQuantityItems.map(
-      //   (item) =>
-      //     `${item.chiTietSanPham.sanPham.ten} [ ${item.chiTietSanPham.mauSac.ten} - ${item.chiTietSanPham.kichCo.kichCo} ]`
-      // );
-      // message.warning(
-      //   `Sản phẩm ${invalidItemNames.join(", ")} có số lượng không hợp lệ`
-      // );
-
-      return; // Ngăn chặn việc thanh toán nếu có mặt hàng không hợp lệ
+      return;
     }
     if (totalPriceFromTable == 0) {
       // Nếu không có chi tiết hóa đơn nào trong hoaDonData, hiển thị thông báo cho người dùng
@@ -479,6 +471,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         } catch (error) {
           console.log(error);
         }
+
         try {
           const response = await request.put(`/hoa-don/${id}`, hoaDonThanhToan);
           if (response.status === 200) {
