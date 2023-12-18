@@ -55,6 +55,7 @@ import {
   formatGiaTien,
   formatGiaTienVND,
   formatNgayTao,
+  formatSoLuong,
 } from "~/utils/formatResponse";
 import React from "react";
 import { FaBoxOpen, FaShippingFast } from "react-icons/fa";
@@ -147,17 +148,6 @@ const detailHoaDon: React.FC = () => {
           <Space direction="vertical">
             <Text strong>{chiTietSanPham.sanPham.ten}</Text>
             <Text>{`[${chiTietSanPham.mauSac.ten} - ${chiTietSanPham.kichCo.kichCo} - ${chiTietSanPham.loaiDe.ten} - ${chiTietSanPham.diaHinhSan.ten}]`}</Text>
-            {chiTietSanPham.soLuong === 0 && (
-              <Text type="danger" strong italic>
-                Hết hàng
-              </Text>
-            )}
-            {chiTietSanPham.soLuong > 0 &&
-              record.soLuong > chiTietSanPham.soLuong && (
-                <Text type="danger" italic strong>
-                  Chỉ có thể mua tối đa {chiTietSanPham.soLuong} sản phẩm
-                </Text>
-              )}
           </Space>
         </Space>
       ),
@@ -184,9 +174,11 @@ const detailHoaDon: React.FC = () => {
             min={1}
             value={record.soLuong}
             inputMode="numeric"
-            max={record.soLuong + record.chiTietSanPham.soLuong}
+            max={Number(
+              getSoLuongById(record.id) + record.chiTietSanPham.soLuong
+            )}
             onChange={(newSoLuong) => {
-              handleSoLuongChange(index, newSoLuong);
+              handleSoLuongChange(index, newSoLuong, record);
             }}
           />
         ) : (
@@ -789,7 +781,14 @@ const detailHoaDon: React.FC = () => {
       }
     }
   };
-  const handleSoLuongChange = (index, newSoLuong) => {
+  function getSoLuongById(id) {
+    const filteredData = hoaDonChiTietList.filter((item) => item.id === id);
+    return filteredData.length > 0 ? filteredData[0].soLuong : 0;
+  }
+
+  const handleSoLuongChange = (index, newSoLuong, record) => {
+    console.log(getSoLuongById(record.id));
+
     setDataTableSanPham((prevData) => {
       const newData = [...prevData];
       newData[index].soLuong = newSoLuong;

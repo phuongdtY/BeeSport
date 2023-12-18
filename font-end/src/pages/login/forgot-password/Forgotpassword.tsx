@@ -15,7 +15,7 @@ import * as React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { QuenMatKhauRequest, DataType } from "~/interfaces/taiKhoan.type";
-import {requestTimMatKhau1} from "~/utils/request";
+import { requestTimMatKhau1 } from "~/utils/request";
 const { confirm } = Modal;
 const add: React.FC = () => {
   const navigate = useNavigate();
@@ -76,6 +76,14 @@ const add: React.FC = () => {
                     whitespace: true,
                     required: true,
                     message: "Vui lòng nhập email!",
+                  },
+                  {
+                    max: 200,
+                    message: "Email không được vượt quá 200 ký tự",
+                  },
+                  {
+                    type: "email",
+                    message: "E-mail không hợp lệ!",
                   },
                 ]}
                 style={{ width: "400px" }} // Đặt chiều rộng 100%
