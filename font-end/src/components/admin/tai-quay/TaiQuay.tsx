@@ -41,6 +41,7 @@ const TaiQuay: React.FC = () => {
       // Dọn dẹp sau khi tải xuống
       URL.revokeObjectURL(fileURL);
       document.body.removeChild(downloadLink);
+      // hihi88
       navigate("/admin/ban-hang-tai-quay");
     } catch (error) {
       console.log(error);
