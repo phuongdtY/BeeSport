@@ -64,7 +64,24 @@ public class DiaChiServiceImpl implements DiaChiService {
     @Override
     public DiaChiReponse add(Long id, CreatedDiaChiRequest request) {
         DiaChi createdDiaChi = diaChiMapper.convertCreateResponseToEntity(request);
-        createdDiaChi.setTrangThaiDiaChi(CommonEnum.TrangThaiDiaChi.ACTIVE);
+        Optional<DiaChi> optional = diaChiRepository.findById(id);
+        if (optional.isEmpty()) {
+            throw new NotFoundException("Địa chỉ không tồn tại");
+        }
+
+        DiaChi detail = optional.get();
+
+        if (request.getTrangThaiDiaChi() == CommonEnum.TrangThaiDiaChi.DEFAULT) {
+            // Đặt các địa chỉ khác thành ACTIVE
+            diaChiRepository.findByTaiKhoanAndIdNot(detail.getTaiKhoan(), id)
+                    .forEach(address -> {
+                        address.setTrangThaiDiaChi(CommonEnum.TrangThaiDiaChi.ACTIVE);
+                        diaChiRepository.save(address);
+                    });
+        }
+
+        // Đặt địa chỉ hiện tại thành trạng thái được yêu cầu
+        createdDiaChi.setTrangThaiDiaChi(request.getTrangThaiDiaChi());
         createdDiaChi.setTaiKhoan(taiKhoanRepository.findId(id));
         DiaChi savedDC = diaChiRepository.save(createdDiaChi);
         return diaChiMapper.convertEntityToResponse(savedDC);
