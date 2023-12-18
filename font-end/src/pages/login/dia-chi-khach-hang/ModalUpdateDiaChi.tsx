@@ -155,7 +155,7 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
         ? "DEFAULT"
         : values.trangThaiDiaChi == true
         ? "DEFAULT"
-        : "INACTIVE";
+        : "ACTIVE";
 
     confirm({
       title: "Xác Nhận",

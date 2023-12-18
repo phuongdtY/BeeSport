@@ -15,6 +15,7 @@ import {
   Space,
   message,
   Select,
+  Checkbox,
 } from "antd";
 
 import { requestTimMatKhau } from "~/utils/request";
@@ -51,6 +52,12 @@ function ModalAddDiaChi({ openModal, closeModal }) {
       onOk: async () => {
         try {
           setLoading(true);
+          values.trangThaiDiaChi =
+          values.trangThaiDiaChi === undefined
+            ? "DEFAULT"
+            : values.trangThaiDiaChi === true
+            ? "DEFAULT"
+            : "ACTIVE";
           const idTaiKhoan = localStorage.getItem("acountId");
           const local123 = localStorage.getItem("refreshToken");
           const response = await requestDC.post(
@@ -361,6 +368,13 @@ function ModalAddDiaChi({ openModal, closeModal }) {
         >
           <Input />
         </Form.Item>
+        
+              <Form.Item label="Đặt làm mặc định">
+                <Form.Item name="trangThaiDiaChi" valuePropName="checked">
+                  <Checkbox />
+                </Form.Item>
+              </Form.Item>
+       
         <Form.Item {...tailLayout}>
           <Space>
             <Button
