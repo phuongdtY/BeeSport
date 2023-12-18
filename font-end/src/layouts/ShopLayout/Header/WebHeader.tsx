@@ -150,19 +150,15 @@ const Header: React.FC = () => {
             }
           }}
         >
-          {roleId === "1" && <Option value="1">Quản lý</Option>}
-          {roleId === "2" && <Option value="2">Nhân viên</Option>}
-          {roleId === "3" && <Option value="3">Khách hàng</Option>}
-          <Option value="thongtin">Thông tin</Option>
-          {idTaiKhoan != null ? (
-            <Option value="donHang">
-              <Link to={"/don-hang"}>Đơn hàng của tôi</Link>
-            </Option>
-          ) : null}
-          <Option value="doiMatKhau">
+          {/* {roleId === "1" && <Option value="1">{ten}</Option>}
+          {roleId === "2" && <Option value="2">{ten}</Option>}
+          {roleId === "3" && <Option value="3">{ten}</Option>} */}
+          {/* <Option value="thongtin">Thông tin</Option> */}
+          
+          {/* <Option value="doiMatKhau">
             <Link to={"/doi-mat-khau"}>Đổi mật khẩu</Link>
           </Option>
-          <Option value="logout">Logout</Option>
+          <Option value="logout">Logout</Option> */}
           {roleId === "1" && <Option value="1">{ten}</Option>}
           {roleId === "2" && <Option value="2">{ten}</Option>}
           {roleId === "3" && <Option value="3">{ten}</Option>}
@@ -186,6 +182,11 @@ const Header: React.FC = () => {
               Thông tin
             </Button>
           </Option>
+          {idTaiKhoan != null ? (
+            <Option value="donHang">
+              <Link to={"/don-hang"}>Đơn hàng của tôi</Link>
+            </Option>
+          ) : null}
           <Option value="doiMatKhau">
             <Button
               style={{ margin: 0, padding: 0 }}
@@ -215,6 +216,9 @@ const Header: React.FC = () => {
           <ShoppingCartOutlined style={{ fontSize: "25px" }} />
         </Badge>
       </Link>
+      <ModalDiaChi openModal={modalDiaChi} closeModal={()=>setModalDiaChi(false)} />
+      <ModalThongTin openModal={modalThongTin} closeModal={()=>setModalThongTin(false)} />
+      <ModalDoiMK openModal={modalDoiMK} closeModal={()=>setModalDoiMK(false)} />
     </header>
   );
 };
