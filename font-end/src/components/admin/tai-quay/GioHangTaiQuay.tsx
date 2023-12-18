@@ -431,7 +431,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
         // Tạo đối tượng hóa đơn với trạng thái APPROVE
         const hoaDonData = getHoaDonData();
         const trangThai = isChecked ? "CONFIRMED" : "APPROVED";
-        const ngayHomNay = dayjs().endOf("day");
+        const ngayHomNay = dayjs();
         const hoaDonThanhToan = {
           ...hoaDonData,
           trangThaiHoaDon: trangThai,
@@ -446,6 +446,7 @@ const GioHangTaiQuay: React.FC<{ id: number; loadHoaDon: () => void }> = ({
           const resGD = await request.post("giao-dich", {
             taiKhoan: idTaiKhoan !== null ? { id: idTaiKhoan } : null,
             soTienGiaoDich: tongTienKhiGiam,
+            ngayThanhToan: dayjs(),
             hoaDon: {
               id: id,
             },

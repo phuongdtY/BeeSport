@@ -184,8 +184,8 @@ public class CommonEnum {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum LoaiVoucher {
-        INVOICE("INVOICE", "Hóa đơn", "gold"),
-        ONGOING("CUSTOMER", "Khách hàng", "green");
+        INVOICE("INVOICE", "Hóa đơn", "blue"),
+        CUSTOMER("CUSTOMER", "Khách hàng", "purple");
 
         private final String ten;
         private final String moTa;

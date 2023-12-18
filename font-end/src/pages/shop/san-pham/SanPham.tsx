@@ -485,7 +485,7 @@ const SanPham: React.FC = () => {
           </Space>
           <Row gutter={16}>
             {sanPhams.map((product) => (
-              <Col key={product.id}>
+              <Col key={product.id} style={{ marginRight: 25 }}>
                 <Link
                   to={`/san-pham/detail/${product.id}`}
                   style={{ color: "black", margin: 0 }}
