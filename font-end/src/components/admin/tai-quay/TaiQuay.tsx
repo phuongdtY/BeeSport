@@ -3,16 +3,55 @@ import React, { useRef, useState, useEffect } from "react";
 import GioHangTaiQuay from "./GioHangTaiQuay";
 import request from "~/utils/request";
 import { ExclamationCircleFilled } from "@ant-design/icons";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
 const TaiQuay: React.FC = () => {
+  const navigate = useNavigate();
   const [activeKey, setActiveKey] = useState<string | undefined>(undefined);
   const [items, setItems] = useState<React.ReactNode[]>([]);
+  const exportPdfExecuted = useRef(false);
   const [hoaDonCho, setHoaDonCho] = useState(0);
   const newTabIndex = useRef(1);
   const { confirm } = Modal;
   const { Text } = Typography;
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const thanhToanParam = queryParams.get("thanhToan");
+  const hoaDonParam = queryParams.get("hoaDon");
+  const exportPDF = async () => {
+    try {
+      const response = await request.get("/hoa-don/export/pdf", {
+        params: { id: hoaDonParam },
+        responseType: "blob", // Quan trọng để xác định kiểu dữ liệu trả về là một Blob
+      });
+      // Tạo một URL tạm thời từ blob
+      const file = new Blob([response.data], {
+        type: "application/pdf",
+      });
+      const fileURL = URL.createObjectURL(file);
+      // Tạo một thẻ <a> tạm thời để tải xuống
+      const downloadLink = document.createElement("a");
+      downloadLink.href = fileURL;
+      downloadLink.setAttribute("download", `HoaDon_${hoaDonParam}.pdf`); // Đặt tên file ở đây
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      // Dọn dẹp sau khi tải xuống
+      URL.revokeObjectURL(fileURL);
+      document.body.removeChild(downloadLink);
+      navigate("/admin/ban-hang-tai-quay");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (thanhToanParam === "success" && !exportPdfExecuted.current) {
+      exportPDF();
+      exportPdfExecuted.current = true;
+    }
+  }, [thanhToanParam, hoaDonParam]);
 
   const fetchRecentInvoices = async () => {
     try {

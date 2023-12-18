@@ -2,6 +2,7 @@ package com.poly.application.controller;
 
 import com.poly.application.common.CommonEnum;
 import com.poly.application.config.VNPayConfig;
+import com.poly.application.model.response.GiaoDichResponse;
 import com.poly.application.service.GiaoDichService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,7 +132,8 @@ public class VNPayController {
         String ngayThanhToan = request.getParameter("vnp_PayDate");
         if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
             String url = service.updateByMa(maGiaoDich, ngayThanhToan, CommonEnum.TrangThaiGiaoDich.SUCCESS);
-            return new RedirectView(url + "?thanhToan=success");
+            GiaoDichResponse giaoDichResponse = service.findByMaGiaoDich(maGiaoDich);
+            return new RedirectView(url + "?hoaDon="+giaoDichResponse.getHoaDon().getId()+"&&thanhToan=success");
         } else {
             String url = service.updateByMa(maGiaoDich,ngayThanhToan , CommonEnum.TrangThaiGiaoDich.PENDING);
             return new RedirectView(url + "?thanhToan=failed");
