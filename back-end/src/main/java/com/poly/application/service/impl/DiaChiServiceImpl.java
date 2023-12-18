@@ -130,6 +130,7 @@ public class DiaChiServiceImpl implements DiaChiService {
         detail.setQuanHuyen(request.getQuanHuyen());
         detail.setPhuongXa(request.getPhuongXa());
         detail.setDiaChiCuThe(request.getDiaChiCuThe());
+        detail.setDiaChi(request.getDiaChi());
 //        detail.setTrangThaiDiaChi(request.getTrangThaiDiaChi());
         if (request.getTrangThaiDiaChi() == CommonEnum.TrangThaiDiaChi.DEFAULT) {
             List<DiaChi> otherAddresses = diaChiRepository.findByTaiKhoanAndIdNot(detail.getTaiKhoan(), id);

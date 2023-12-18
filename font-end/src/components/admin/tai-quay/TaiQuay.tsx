@@ -48,7 +48,11 @@ const TaiQuay: React.FC = () => {
     }
   };
   useEffect(() => {
-    if (thanhToanParam === "success" && !exportPdfExecuted.current) {
+    if (
+      thanhToanParam === "success" &&
+      !exportPdfExecuted.current &&
+      hoaDonParam != null
+    ) {
       exportPDF();
       exportPdfExecuted.current = true;
     }

@@ -28,6 +28,8 @@ public class DiaChiReponse {
 
     private String diaChiCuThe;
 
+    private String diaChi;
+
 
     private LocalDateTime ngayTao;
 

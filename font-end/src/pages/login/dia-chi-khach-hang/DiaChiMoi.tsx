@@ -43,6 +43,21 @@ function ModalAddDiaChi({ openModal, closeModal }) {
   const [wards, setWards] = useState<Option[]>([]);
   const [districts, setDistricts] = useState<Option[]>([]);
   const onSubmit = async (values: any) => {
+    const getProvinceLabelFromId = () => {
+      const province = provinces.find((p) => p.value === values.thanhPho);
+      return province?.label;
+    };
+    const getDistrictLabelFromId = () => {
+      const district = districts.find((d) => d.value === values.quanHuyen);
+      return district?.label;
+    };
+    const getWardLabelFromId = () => {
+      const ward = wards.find((w) => w.value === values.phuongXa);
+      return ward?.label;
+    };
+
+    const diaChi = `${getWardLabelFromId()}, ${getDistrictLabelFromId()}, ${getProvinceLabelFromId()}`;
+
     confirm({
       title: "Xác Nhận",
       icon: <ExclamationCircleFilled />,
@@ -52,12 +67,13 @@ function ModalAddDiaChi({ openModal, closeModal }) {
       onOk: async () => {
         try {
           setLoading(true);
+          values.diaChi = diaChi;
           values.trangThaiDiaChi =
-          values.trangThaiDiaChi === undefined
-            ? "DEFAULT"
-            : values.trangThaiDiaChi === true
-            ? "DEFAULT"
-            : "ACTIVE";
+            values.trangThaiDiaChi === undefined
+              ? "DEFAULT"
+              : values.trangThaiDiaChi === true
+              ? "DEFAULT"
+              : "ACTIVE";
           const idTaiKhoan = localStorage.getItem("acountId");
           const local123 = localStorage.getItem("refreshToken");
           const response = await requestDC.post(
@@ -72,6 +88,7 @@ function ModalAddDiaChi({ openModal, closeModal }) {
           console.log("Response from API:", response); // In dữ liệu từ API
           setLoading(false);
           message.success("Thêm địa chỉ mới thành công");
+          form.resetFields();
           closeModal();
         } catch (error: any) {
           console.log("Error:", error); // In lỗi ra để xác định lý do
@@ -368,13 +385,13 @@ function ModalAddDiaChi({ openModal, closeModal }) {
         >
           <Input />
         </Form.Item>
-        
-              <Form.Item label="Đặt làm mặc định">
-                <Form.Item name="trangThaiDiaChi" valuePropName="checked">
-                  <Checkbox />
-                </Form.Item>
-              </Form.Item>
-       
+
+        <Form.Item label="Đặt làm mặc định">
+          <Form.Item name="trangThaiDiaChi" valuePropName="checked">
+            <Checkbox />
+          </Form.Item>
+        </Form.Item>
+
         <Form.Item {...tailLayout}>
           <Space>
             <Button

@@ -20,6 +20,8 @@ public class CreatedDiaChiRequest {
 
     private String diaChiCuThe;
 
+    private String diaChi;
+
 
     private LocalDateTime ngayTao;
 

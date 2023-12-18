@@ -24,6 +24,8 @@ public class UpdatedDiaChiRequest {
 
     private String diaChiCuThe;
 
+    private String diaChi;
+
 
     private CommonEnum.TrangThaiDiaChi trangThaiDiaChi;
 

@@ -150,6 +150,22 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
   }, [id]);
 
   const onFinish = (values: UpdatedRequest) => {
+    const getProvinceLabelFromId = () => {
+      const province = provinces.find((p) => p.value === values.thanhPho);
+      return province?.label;
+    };
+    const getDistrictLabelFromId = () => {
+      const district = districts.find((d) => d.value === values.quanHuyen);
+      return district?.label;
+    };
+    const getWardLabelFromId = () => {
+      const ward = wards.find((w) => w.value === values.phuongXa);
+      return ward?.label;
+    };
+
+    const diaChi = `${getWardLabelFromId()}, ${getDistrictLabelFromId()}, ${getProvinceLabelFromId()}`;
+    console.log(diaChi);
+
     const trangThaiDiaChi =
       values.trangThaiDiaChi === undefined
         ? "DEFAULT"
@@ -176,6 +192,7 @@ function ModalUpdateDCKhachHang({ openModal, closeModal, id }) {
             phuongXa: values.phuongXa,
             diaChiCuThe: values.diaChiCuThe,
             taiKhoan: { id: idTaiKhoan },
+            diaChi: diaChi,
             trangThaiDiaChi: trangThaiDiaChi,
           });
           if (res.data) {
