@@ -23,10 +23,8 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Long> {
             "hd.taiKhoan.soDienThoai LIKE %:searchText% OR hd.taiKhoan.email LIKE %:searchText% OR " +
             "hd.nguoiNhan LIKE %:searchText% OR hd.sdtNguoiNhan LIKE %:searchText% OR " +
             "hd.emailNguoiNhan LIKE %:searchText%) " +
-            "AND (:loaiHoaDon IS NULL OR hd.loaiHoaDon = :loaiHoaDon) " +
-            "AND (:trangThaiHoaDon IS NULL OR hd.trangThaiHoaDon = :trangThaiHoaDon))"
-    )
-
+            "AND (:loaiHoaDon IS NULL OR hd.loaiHoaDon = :loaiHoaDon ) " +
+            "AND (:trangThaiHoaDon IS NULL OR hd.trangThaiHoaDon = :trangThaiHoaDon)")
     Page<HoaDon> findPageHoaDon(
             Pageable pageable,
             @Param("searchText") String searchText,
