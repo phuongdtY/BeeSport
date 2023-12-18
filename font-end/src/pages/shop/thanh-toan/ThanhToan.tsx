@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Component } from "react";
 import { useNavigate } from "react-router-dom";
 import { LuTicket } from "react-icons/lu";
+
 import {
   Button,
   Card,
@@ -29,6 +30,8 @@ import { Content, Header } from "antd/es/layout/layout";
 import TextArea from "antd/es/input/TextArea";
 import { formatGiaTienVND } from "~/utils/formatResponse";
 import KhoVoucher from "./KhoVoucher";
+import { FaMapMarkedAlt } from "react-icons/fa";
+import ModalDiaChi22 from "./ModalDiaChi";
 const { Text } = Typography;
 const idGioHangTaiKhoan = localStorage.getItem("cartIdTaiKhoan");
 const idGioHangNull = localStorage.getItem("cartId");
@@ -48,10 +51,11 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
   const [wards, setWards] = useState<Option[]>([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [modalDiaChi, setModalDiaChi] = useState(false);
   const [openModalVoucher, setOpenModalVoucher] = useState(false);
   const { confirm } = Modal;
-  const [idQuanHuyen, setIdQuanHuyen] = useState(false);
-  const [idPhuongXa, setIdPhuongXa] = useState(false);
+  const [idQuanHuyen, setIdQuanHuyen] = useState(null);
+  const [idPhuongXa, setIdPhuongXa] = useState(null);
   const [phiShip, setPhiShip] = useState(0);
   const [giamGiam, setGiamGia] = useState(0);
   const [idVoucher, setIdVoucher] = useState(null);
@@ -113,6 +117,30 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
       donGia: item.chiTietSanPham.giaTien,
       trangThaiHoaDonChiTiet: "APPROVED",
     }));
+  };
+
+  const onClickDiaChi = async (values) => {
+    try {
+      // Assuming fetchDistricts and fetchWards are asynchronous functions that return Promises
+      const districts = await fetchDistricts(values.thanhPho);
+      const wards = await fetchWards(values.quanHuyen);
+      setIdQuanHuyen(values.quanHuyen);
+      setIdPhuongXa(values.phuongXa);
+
+      form.setFieldsValue({
+        hoVaTen: values.hoVaTen,
+        soDienThoai: values.soDienThoai,
+        email: values.email,
+        thanhPho: Number(values.thanhPho),
+        quanHuyen: Number(values.quanHuyen),
+        phuongXa: values.phuongXa,
+        diaChiCuThe: values.diaChiCuThe,
+        phiShip: phiShip,
+      });
+    } catch (error) {
+      // Handle fetchDistricts or fetchWards error if necessary
+      console.error("Error fetching districts or wards:", error);
+    }
   };
 
   const onSubmit = async (values: any) => {
@@ -342,11 +370,26 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
         wrapperCol={{ span: 24 }}
         initialValues={{ phuongThucThanhToan: 3 }}
       >
-        <Card title="THÔNG TIN NHẬN HÀNG" bordered={true}>
+        <Card
+          title={
+            <Space>
+              <Text>THÔNG TIN NHẬN HÀNG</Text>
+              {idTaiKhoan !== null && (
+                <Button
+                  type="default"
+                  icon={<FaMapMarkedAlt />}
+                  onClick={() => setModalDiaChi(true)}
+                />
+              )}
+            </Space>
+          }
+          bordered={true}
+        >
           <Form.Item label="Họ và Tên:">
             <Form.Item
               noStyle
               name="hoVaTen"
+              style={{ width: "100%" }}
               rules={[
                 {
                   required: true,
@@ -362,6 +405,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
               <Input />
             </Form.Item>
           </Form.Item>
+
           <Space>
             <Form.Item label="Số Điện Thoại:">
               <Form.Item
@@ -446,7 +490,7 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
                   placeholder="Quận / Huyện"
                   onChange={(value) => {
                     form.setFieldsValue({ phuongXa: undefined });
-                    fetchWards(value);
+                    fetchWards(idQuanHuyen);
                     setIdQuanHuyen(value);
                     setPhiShip(0);
                   }}
@@ -618,6 +662,11 @@ const ThanhToan = ({ tamTinh, dataSanPham, soSanPham }) => {
           ĐẶT HÀNG
         </Button>
       </Form>
+      <ModalDiaChi22
+        openModal={modalDiaChi}
+        closeModal={() => setModalDiaChi(false)}
+        onClickDiaChi={onClickDiaChi}
+      />
     </Content>
   );
 };

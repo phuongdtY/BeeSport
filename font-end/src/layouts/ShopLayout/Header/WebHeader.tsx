@@ -53,7 +53,6 @@ const Header: React.FC = () => {
             idGioHangTaiKhoan != null ? idGioHangTaiKhoan : idGioHangNull
           }`
         );
-        console.log(res);
         setCount(res.data.gioHangChiTietList.length);
       } catch (error) {
         console.log(error);
@@ -96,7 +95,6 @@ const Header: React.FC = () => {
 
   const roleId = localStorage.getItem("roleId");
   const ten = localStorage.getItem("ten");
-  console.log("aaaa", roleId);
   const { Option } = Select;
   const [modalVisible, setModalVisible] = useState(false);
   const showModal = () => {
@@ -154,7 +152,7 @@ const Header: React.FC = () => {
           {roleId === "2" && <Option value="2">{ten}</Option>}
           {roleId === "3" && <Option value="3">{ten}</Option>} */}
           {/* <Option value="thongtin">Thông tin</Option> */}
-          
+
           {/* <Option value="doiMatKhau">
             <Link to={"/doi-mat-khau"}>Đổi mật khẩu</Link>
           </Option>
@@ -216,9 +214,18 @@ const Header: React.FC = () => {
           <ShoppingCartOutlined style={{ fontSize: "25px" }} />
         </Badge>
       </Link>
-      <ModalDiaChi openModal={modalDiaChi} closeModal={()=>setModalDiaChi(false)} />
-      <ModalThongTin openModal={modalThongTin} closeModal={()=>setModalThongTin(false)} />
-      <ModalDoiMK openModal={modalDoiMK} closeModal={()=>setModalDoiMK(false)} />
+      <ModalDiaChi
+        openModal={modalDiaChi}
+        closeModal={() => setModalDiaChi(false)}
+      />
+      <ModalThongTin
+        openModal={modalThongTin}
+        closeModal={() => setModalThongTin(false)}
+      />
+      <ModalDoiMK
+        openModal={modalDoiMK}
+        closeModal={() => setModalDoiMK(false)}
+      />
     </header>
   );
 };

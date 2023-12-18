@@ -36,6 +36,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request -> request.requestMatchers(new AntPathRequestMatcher("/api/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/san-pham/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/vn-pay/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/admin/api/dia-chi/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/don-hang/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/giao-dich/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin/api/voucher/**")).permitAll()

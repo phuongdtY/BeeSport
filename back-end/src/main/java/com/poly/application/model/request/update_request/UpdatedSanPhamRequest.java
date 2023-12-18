@@ -1,5 +1,6 @@
 package com.poly.application.model.request.update_request;
 
+import com.poly.application.common.CommonEnum;
 import com.poly.application.entity.DiaHinhSan;
 import com.poly.application.entity.LoaiDe;
 import com.poly.application.entity.ThuongHieu;
@@ -22,7 +23,7 @@ public class UpdatedSanPhamRequest {
     @NotNull(message = "Vui lòng chọn thương hiệu")
     private ThuongHieu thuongHieu;
 
-    private String trangThai;
+    private CommonEnum.TrangThaiThuocTinh trangThai;
 
 
 }
