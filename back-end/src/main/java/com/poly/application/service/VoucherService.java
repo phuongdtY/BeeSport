@@ -19,7 +19,7 @@ public interface VoucherService {
 
     List<VoucherResponse> getListVoucher(Long id);
 
-    List<VoucherResponse> getListVoucherSuDung();
+    List<VoucherResponse> getListVoucherSuDung(Long id);
 
     VoucherResponse add(CreatedVoucherRequest request);
 

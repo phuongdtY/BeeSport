@@ -41,8 +41,11 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
             "   OR (:idTaiKhoan IS NOT NULL AND v.id IN (SELECT vct.voucher.id FROM VoucherChiTiet vct WHERE vct.taiKhoan.id = :idTaiKhoan AND vct.soLanSuDung > 0))\n")
     List<Voucher> getListVoucherOK(@Param("idTaiKhoan") Long id);
 
-    @Query("SELECT v FROM Voucher v WHERE v.trangThai IN ('ONGOING', 'ENDING_SOON') ORDER BY v.ngaySua DESC")
-    List<Voucher> getListVoucherSuDung();
+    @Query("SELECT v FROM Voucher v  " +
+            "WHERE v.id NOT IN (SELECT vct.voucher.id FROM VoucherChiTiet vct WHERE v.trangThai IN ('ONGOING','ENDING_SOON'))\n" +
+            "   OR (:idTaiKhoan IS NOT NULL AND v.id IN (SELECT vct.voucher.id FROM VoucherChiTiet vct WHERE vct.taiKhoan.id = :idTaiKhoan AND vct.soLanSuDung > 0))\n")
+    List<Voucher> getListVoucherSuDung(@Param("idTaiKhoan") Long idTaiKhoan);
+
 
     @Query("SELECT v FROM Voucher v WHERE v.trangThai != 'CANCELLED'")
     List<Voucher> danhSachVoucherKhongHuy();

@@ -73,8 +73,8 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public List<VoucherResponse> getListVoucherSuDung() {
-        List<Voucher> list = repository.getListVoucherSuDung();
+    public List<VoucherResponse> getListVoucherSuDung(Long id) {
+        List<Voucher> list = repository.getListVoucherSuDung(id);
         return list
                 .stream()
                 .map(mapper::convertEntityToResponse)
